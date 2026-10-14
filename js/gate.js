@@ -18,6 +18,11 @@ function updateSizeUi(){
   sizeUi.lab.textContent='Text size '+(fsIdx+1)+'/'+SIZES.length;
 }
 applySize();
+var TKEY='callan-theme',theme='dark',themeBtn=null;
+try{var tv=localStorage.getItem(TKEY);if(tv==='light'||tv==='dark')theme=tv;}catch(e){}
+function applyTheme(){document.documentElement.setAttribute('data-theme',theme);}
+function setTheme(t){theme=t;applyTheme();try{localStorage.setItem(TKEY,t);}catch(e){}if(themeBtn){themeBtn.textContent=theme==='dark'?'\u2600 Light mode':'\u263E Dark mode';themeBtn.setAttribute('aria-label',theme==='dark'?'Switch to light mode':'Switch to dark mode');}}
+applyTheme();
 
 function el(tag,props){
   var e=document.createElement(tag),k,i,c;
@@ -147,6 +152,8 @@ function addBar(){
   var lab=el('span',{'aria-live':'polite'});
   sizeUi={minus:minus,plus:plus,lab:lab};updateSizeUi();
   kids.push(el('span',{class:'g-sz',role:'group','aria-label':'Text size'},minus,reset,plus,lab));
+  themeBtn=el('button',{type:'button',onclick:function(){setTheme(theme==='dark'?'light':'dark');}});setTheme(theme);
+  kids.push(themeBtn);
   kids.push(el('a',{href:'index.html'},'Home'));
   if(prof.is_admin)kids.push(el('a',{href:'admin.html'},'Teacher panel'));
   kids.push(el('button',{type:'button',onclick:signOut},'Sign out'));

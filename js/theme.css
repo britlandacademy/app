@@ -1,0 +1,40 @@
+/* Dark panel theme shared by all pages */
+:root:root{
+  --bg:#0f1115;--card:#181b22;--surface:#1d212a;--ink:#f3f4f6;--muted:#a3aab7;--line:#2e3441;
+  --accent:#f5c542;--accent-ink:#111111;--chip:#262b37;--band:#181b22;--band-ink:#ffffff;--band-muted:#a3aab7;
+  --ok:#7fd29a;--ok-bg:#16301f;--bad:#ff9e94;--bad-bg:#3a1f1d;--warn:#f0c36a;--warn-bg:#3a2e12;
+  color-scheme:dark}
+/* Light mode (the band with the logo stays dark) */
+:root[data-theme="light"]:root{
+  --bg:#f3f4f7;--card:#ffffff;--surface:#ffffff;--ink:#14171f;--muted:#4f5663;--line:#d3d8e0;
+  --accent:#14171f;--accent-ink:#ffffff;--chip:#e7e9ee;--band:#181b22;--band-ink:#ffffff;--band-muted:#a3aab7;
+  --ok:#1d5e2e;--ok-bg:#e3efe5;--bad:#9c2a22;--bad-bg:#f6e4e2;--warn:#6b4a00;--warn-bg:#f3ead0;
+  color-scheme:light}
+html,body{background:var(--bg);color:var(--ink)}
+.band{background:linear-gradient(135deg,#232733,#181b22)!important;border:1px solid var(--line)!important;border-radius:14px!important}
+.card,.item,.hbox,.tblwrap,.g-box,.facts,.rule,.panel>.card{border-radius:12px!important}
+.card,.hbox{border:1px solid var(--line)}
+.item,input.txt,select,.opt,.chip,textarea.rep,.rule{background:var(--surface)}
+.facts{background:var(--chip)}
+h2.sep{background:var(--chip)!important;color:var(--ink)!important;border-radius:10px!important}
+.btn,button.btn,.g-btn,.g-sz button,button,a.btn{border-radius:10px}
+.btn.primary,button.primary,.g-btn:not(.ghost){background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.tab{border-radius:10px;background:var(--card)}
+.tab.on{border-color:var(--accent);background:var(--chip);color:var(--ink)}
+.chip2{border-radius:10px;background:var(--card)}
+.chip2.on{background:var(--accent)!important;color:var(--accent-ink)!important;border-color:var(--accent)!important}
+.chip2.on small{color:var(--accent-ink)!important}
+.opt:has(input:checked){border-color:var(--accent);background:var(--chip)}
+.area .chip{background:var(--chip);border-color:var(--accent)}
+.bar>div,.bar div{background:var(--accent)}
+:root[data-theme="light"] .bar>div{background:#2e7d4a}
+.bar{background:var(--chip)}
+.g-ov{background:var(--bg)}
+a{color:var(--accent)}
+.tstat,.tab.on .tstat{color:var(--muted)!important}
+.tab:disabled{opacity:.7}
+
+:root[data-theme="light"] .chip2.done{border-color:#2e7d4a}
+:root[data-theme="light"] .chip2.on{background:var(--accent)!important}
+:root[data-theme="light"] a:not(.btn):not(.card){color:#14171f}
+.g-bar button{color:var(--ink)}
