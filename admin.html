@@ -54,7 +54,7 @@ td.g{background:var(--ok-bg)}td.m{background:var(--warn-bg)}td.r{background:var(
 </section>
 
 <section class="card" aria-labelledby="h-sc"><h2 id="h-sc">Notas</h2>
-  <div class="row"><label for="kind">Mostrar</label><select id="kind"><option value="check">Lesson Checks</option><option value="ex">Exercises (Lessons 1 e 2)</option></select>
+  <div class="row"><label for="kind">Mostrar</label><select id="kind"><option value="check">Lesson Checks</option><option value="ex">Exercises</option></select>
   <label for="mst">Stage</label><select id="mst"></select>
   <button type="button" id="csv" class="ghost">Exportar todas as tentativas (CSV)</button><span class="msg" id="scmsg" aria-live="polite"></span></div>
   <p class="hint">Escolha o Stage para ver as lessons dele. Cada célula mostra a melhor nota do aluno na lesson (pontos / total). Verde: 80% ou mais. Amarelo: 50% a 79%. Vermelho: abaixo de 50%.</p>
@@ -171,8 +171,8 @@ function renderMat(){
   const kind=$('kind').value;
   const studs=PROFILES.filter(p=>p.status!=='pending'&&!p.is_admin);
   let lo=1,hi=12;
-  if(kind==='ex'){lo=1;hi=2;}else{const r=STG[parseInt($('mst').value,10)||0];lo=r[0];hi=r[1];}
-  $('mst').disabled=kind==='ex';
+  {const r=STG[parseInt($('mst').value,10)||0];lo=r[0];hi=r[1];}
+  $('mst').disabled=false;
   const heads=['Aluno'];for(let i=lo;i<=hi;i++)heads.push(String(i));heads.push('Média');
   const tb=el('tbody',{});
   if(!studs.length)tb.append(el('tr',{},el('td',{colspan:String(hi-lo+3)},'Nenhum aluno ainda.')));

@@ -201,7 +201,7 @@ function route(){
       }
       prof=pr.data;
       if(prof.status==='pending'){
-        message('Waiting for approval',['Your request was sent, '+(prof.name||'')+'. Your teacher needs to approve your access.','Come back later and press "Check again".'],
+        message('Waiting for approval',['Your request was sent, '+(prof.name||prof.email||'student')+'. Your teacher needs to approve your access.','Come back later and press "Check again".'],
           [btn('Check again',route),btn('Sign out',signOut,true)]);return;
       }
       if(prof.status==='blocked'){
