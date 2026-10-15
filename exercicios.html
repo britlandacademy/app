@@ -165,6 +165,7 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 <footer>The order of the options changes at every attempt.</footer>
 </div>
 
+<script src="js/i18n.js" charset="utf-8"></script>
 <script src="js/config.js" charset="utf-8"></script>
 <script src="js/gate.js" charset="utf-8"></script>
 <script>
@@ -457,7 +458,7 @@ function reportText(){
   STAGES.forEach(t=>{const ls=stageLessons(t);if(ls.length)lines.push('Stage '+t.n+': '+ls.filter(L=>lessonStats(L).complete).length+' of '+ls.length+' lessons completed');});
   LESSONS.forEach(L=>{const st=lessonStats(L);if(!st.done)return;lines.push(L.title+': '+st.pts+' of '+st.tot+' ('+st.pct+'%) · '+(st.complete?'completed':st.done+' of '+st.n+' exercises'));});
   lines.push('','History:');
-  s.attempts.filter(a=>BYID[a.l]).reverse().forEach(a=>{const L=BYID[a.l];const k=L.ex.findIndex(x=>x.id===a.e)+1;lines.push(fmt(a.at)+' · '+L.title+' · exercise '+k+' · '+a.s+'/'+a.t);});
+  s.attempts.filter(a=>BYID[a.l]&&!/^wb/.test(String(a.e))).reverse().forEach(a=>{const L=BYID[a.l];const k=L.ex.findIndex(x=>x.id===a.e)+1;lines.push(fmt(a.at)+' · '+L.title+' · exercise '+k+' · '+a.s+'/'+a.t);});
   return lines.join('\n');
 }
 let confirmDel=false;
@@ -468,7 +469,7 @@ function renderHistory(){
   LESSONS.forEach(L=>{const st=lessonStats(L);if(!st.done)return;
     sum.append(el('div',{class:'hbox'},el('p',{class:'lab'},L.title),el('p',{class:'big-score'},st.pts+' / '+st.tot),
       el('p',{class:'hint'},st.pct+'% · '+(st.complete?'completed ✔':st.done+' of '+st.n+' exercises'))));});
-  const rows=s.attempts.filter(a=>BYID[a.l]).reverse();
+  const rows=s.attempts.filter(a=>BYID[a.l]&&!/^wb/.test(String(a.e))).reverse();
   const tbl=el('table',{},el('caption',{class:'hint'},'All attempts, newest first'),
     el('thead',{},el('tr',{},['Date and time','Lesson','Exercise','Score','%'].map(h=>el('th',{scope:'col'},h)))),
     el('tbody',{},rows.length?rows.map(a=>{const L=BYID[a.l];const k=L.ex.findIndex(x=>x.id===a.e)+1;

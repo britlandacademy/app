@@ -59,7 +59,7 @@ var CSS=
 '.g-tab[aria-pressed="true"]{background:var(--accent,#111);color:var(--accent-ink,#fff);border-color:var(--accent,#111)}'+
 '.g-err{color:var(--bad,#9c2a22);font-weight:700;min-height:1.3em;margin:10px 0 0}'+
 '.g-ok{color:var(--ok,#1d5e2e);font-weight:700}'+
-'.g-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:6px 14px;max-width:1120px;margin:0 auto 10px;font-size:.92rem;color:var(--muted,#4d4d4d)}'+
+'.g-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:6px 14px;max-width:1120px;margin:0 auto 10px;padding:6px 16px 0;box-sizing:border-box;font-size:.92rem;color:var(--muted,#4d4d4d)}'+
 '.g-bar b{color:var(--ink,#111)}'+
 '.g-sz{display:inline-flex;align-items:center;gap:6px}.g-sz button{border:2px solid var(--line,#b8b8b8);border-radius:3px;padding:2px 10px;min-width:44px;min-height:44px;font-weight:700;color:var(--ink,#111);background:none;cursor:pointer;text-decoration:none}.g-sz button[disabled]{opacity:.4;cursor:default}.g-sz span{min-width:7.5em;text-align:center}.g-bar a,.g-bar button{font:inherit;font-size:.92rem;color:var(--ink,#111);background:none;border:0;border-bottom:1px solid currentColor;padding:6px 2px;cursor:pointer;text-decoration:none;min-height:36px}';
 
@@ -70,10 +70,11 @@ function showOverlay(){
   overlay.textContent='';return overlay;
 }
 function hideOverlay(){if(overlay){overlay.remove();overlay=null;}}
+function langRow(){return window.I18N?el('div',{class:'g-langrow'},window.I18N.selector()):null;}
 function brand(){return el('p',{class:'g-hint'},'Callan Method \u00b7 Teacher: Paulo S. Cruz');}
 
 function box(title){
-  var o=showOverlay(),b=el('div',{class:'g-box'},brand(),el('h1',{},title));
+  var o=showOverlay(),b=el('div',{class:'g-box'},langRow(),brand(),el('h1',{},title));
   o.append(b);return b;
 }
 function message(title,lines,buttons){
@@ -154,6 +155,7 @@ function addBar(){
   kids.push(el('span',{class:'g-sz',role:'group','aria-label':'Text size'},minus,reset,plus,lab));
   themeBtn=el('button',{type:'button',onclick:function(){setTheme(theme==='dark'?'light':'dark');}});setTheme(theme);
   kids.push(themeBtn);
+  if(window.I18N)kids.push(window.I18N.selector());
   kids.push(el('a',{href:'index.html'},'Home'));
   if(prof.is_admin)kids.push(el('a',{href:'admin.html'},'Teacher panel'));
   kids.push(el('button',{type:'button',onclick:signOut},'Sign out'));
