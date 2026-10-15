@@ -292,6 +292,7 @@ $('augo').addEventListener('click',async()=>{
 
 
 /* ----- placement test results ----- */
+function tl(p){return p.test_lang||(p.answers&&p.answers.lang)||'en';}
 function loadPlacement(){
   $('pllink').textContent=location.href.replace(/admin\.html.*$/,'placement.html');
   return sb.from('placement').select('*').order('created_at',{ascending:false}).limit(300).then(r=>{
@@ -306,9 +307,9 @@ function loadPlacement(){
         if(!del.dataset.sure){del.dataset.sure='1';del.textContent='Confirm?';return;}
         sb.from('placement').delete().eq('id',p.id).then(x=>{if(x.error)setMsg('plmsg','Error: '+x.error.message,'bad');else loadPlacement();});
       }},'Delete');
-      tb.append(el('tr',{},el('td',{},fmt(p.created_at)),el('td',{},p.name),el('td',{},p.contact),el('td',{},p.cefr||'–'),el('td',{},'Stage '+p.level),el('td',{},p.score+' / '+p.total),el('td',{},del)));
+      tb.append(el('tr',{},el('td',{},fmt(p.created_at)),el('td',{},p.name),el('td',{},p.contact),el('td',{},({en:'English',es:'Spanish',pt:'Portuguese'})[tl(p)]),el('td',{},p.cefr||'–'),el('td',{},tl(p)==='en'?'Stage '+p.level:tl(p)==='es'?'Stage '+Math.min(6,Math.ceil(p.level/2)):'–'),el('td',{},p.score+' / '+p.total),el('td',{},del)));
     });
-    t.append(th(['Date','Name','Contact','English level','Stage','Score','Action']),tb);
+    t.append(th(['Date','Name','Contact','Language','Level','Stage','Score','Action']),tb);
   });
 }
 loadPlacement();

@@ -193,6 +193,7 @@ var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they 
 ['Delete','Apagar','Borrar'],
 ['Confirm?','Confirmar?','¿Confirmar?'],
 ['No results yet.','Nenhum resultado ainda.','Aún no hay resultados.'],
+['\uD83C\uDFAF Take the free placement test','\uD83C\uDFAF Faça o teste de nível gratuito','\uD83C\uDFAF Haz la prueba de nivel gratuita'],
 ['Take the free placement test','Faça o teste de nível gratuito','Haz la prueba de nivel gratuita'],
 ['Find your level (A1 to C2) and your Callan Stage','Descubra seu nível (A1 a C2) e sua etapa Callan','Descubre tu nivel (A1 a C2) y tu etapa Callan'],
 ['Placement test','Teste de nível','Prueba de nivel'],
@@ -219,6 +220,20 @@ var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they 
 ['Choose an answer.','Escolha uma resposta.','Elige una respuesta.'],
 ['Your result was sent to your teacher.','Seu resultado foi enviado ao seu professor.','Tu resultado fue enviado a tu profesor.'],
 ['Your result could not be sent to your teacher. Take a screenshot of this page and send it to him.','Não foi possível enviar seu resultado ao professor. Tire uma captura de tela desta página e envie a ele.','No se pudo enviar tu resultado al profesor. Haz una captura de pantalla de esta página y envíasela.'],
+['Choose the language you want to be tested in.','Escolha o idioma em que quer ser testado.','Elige el idioma en el que quieres hacer la prueba.'],
+['Change language','Trocar de idioma','Cambiar de idioma'],
+['Answer the questions to find the best level for you. Choose "I don\'t know" if you are not sure: do not guess.','Responda às perguntas para descobrir o melhor nível para você. Escolha "Não sei" se não tiver certeza: não chute.','Responde a las preguntas para descubrir el mejor nivel para ti. Elige "No lo sé" si no estás seguro: no adivines.'],
+['This test is in {0}. The questions get harder step by step. The test stops when the questions become too difficult for you.','Este teste é em {0}. As perguntas ficam mais difíceis aos poucos. O teste termina quando as perguntas ficarem difíceis demais para você.','Esta prueba es en {0}. Las preguntas se hacen más difíciles poco a poco. La prueba termina cuando las preguntas sean demasiado difíciles para ti.'],
+['Your {0} level (approximate):','Seu nível de {0} (aproximado):','Tu nivel de {0} (aproximado):'],
+['Stage {0}','Etapa {0}','Etapa {0}'],
+['Talk to Teacher Paulo to start at {0}.','Fale com o professor Paulo para começar na {0}.','Habla con el profesor Paulo para empezar en la {0}.'],
+['Talk to Teacher Paulo to start your classes.','Fale com o professor Paulo para começar suas aulas.','Habla con el profesor Paulo para empezar tus clases.'],
+['Your teacher, Paulo S. Cruz, will confirm your level.','Seu professor, Paulo S. Cruz, vai confirmar o seu nível.','Tu profesor, Paulo S. Cruz, confirmará tu nivel.'],
+['Find your level. It takes about 10 minutes.','Descubra o seu nível. Leva cerca de 10 minutos.','Descubre tu nivel. Lleva unos 10 minutos.'],
+['Congratulations! 🎉 You finished the test and you already have a base to build on. The hardest part is starting, and you have started.','Parabéns! 🎉 Você terminou o teste e já tem uma base para construir. O mais difícil é começar, e você começou.','¡Felicidades! 🎉 Terminaste la prueba y ya tienes una base sobre la que construir. Lo más difícil es empezar, y ya empezaste.'],
+['Well done! 👏 You already communicate in everyday situations and have a good base. With a little guided practice, your fluency will grow fast.','Muito bem! 👏 Você já se comunica em situações do dia a dia e tem uma boa base. Com um pouco de prática orientada, sua fluência vai crescer rápido.','¡Muy bien! 👏 Ya te comunicas en situaciones cotidianas y tienes una buena base. Con un poco de práctica guiada, tu fluidez crecerá rápido.'],
+['Excellent result! 🌟 You understand and express yourself with confidence. The next step is gaining precision and naturalness.','Excelente resultado! 🌟 Você entende e se expressa com confiança. O próximo passo é ganhar precisão e naturalidade.','¡Excelente resultado! 🌟 Entiendes y te expresas con confianza. El siguiente paso es ganar precisión y naturalidad.'],
+['Impressive! 🏆 You have a very solid command of the language. Now the work is refining the details and getting closer to native speech.','Impressionante! 🏆 Você tem um domínio muito sólido do idioma. Agora o trabalho é refinar os detalhes e se aproximar da fala nativa.','¡Impresionante! 🏆 Tienes un dominio muy sólido del idioma. Ahora el trabajo es pulir los detalles y acercarte al habla nativa.'],
 ['Complete Lesson {0} Check to unlock Lesson {1} Check.','Complete o Lesson Check da Lição {0} para liberar o da Lição {1}.','Completa el Lesson Check de la Lección {0} para desbloquear el de la Lección {1}.']
 ];
 function esc(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}

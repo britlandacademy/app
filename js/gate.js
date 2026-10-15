@@ -52,6 +52,7 @@ var CSS=
 '.g-box input:focus-visible,.g-btn:focus-visible,.g-tab:focus-visible{outline:3px solid var(--accent,#111);outline-offset:2px}'+
 '.g-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}'+
 '.g-btn{min-height:46px;padding:10px 20px;font:inherit;font-weight:700;cursor:pointer;border-radius:3px;border:2px solid var(--accent,#111);background:var(--accent,#111);color:var(--accent-ink,#fff)}'+
+'.g-btn.g-cta,a.g-btn.g-cta:not(.ghost){background:#1fa05a;border-color:#1fa05a;color:#fff;flex:1 1 100%;font-size:1.05rem;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;text-align:center;box-shadow:0 2px 0 rgba(0,0,0,.25)}.g-btn.g-cta:hover{filter:brightness(1.08)}'+
 '.g-btn.ghost{background:transparent;color:var(--accent,#111)}'+
 '.g-btn[disabled]{opacity:.6;cursor:default}'+
 '.g-tabs{display:flex;gap:8px;margin:14px 0 4px}'+
@@ -74,7 +75,7 @@ function langRow(){return window.I18N?el('div',{class:'g-langrow'},window.I18N.s
 function brand(){return el('p',{class:'g-hint'},'Callan Method \u00b7 Teacher: Paulo S. Cruz');}
 
 function box(title){
-  var o=showOverlay(),b=el('div',{class:'g-box'},langRow(),brand(),el('p',{class:'g-hint'},el('a',{href:'placement.html',style:'color:inherit;font-weight:700'},'Take the free placement test')),el('h1',{},title));
+  var o=showOverlay(),b=el('div',{class:'g-box'},langRow(),brand(),el('h1',{},title));
   o.append(b);return b;
 }
 function message(title,lines,buttons){
@@ -114,7 +115,7 @@ function showLogin(mode){
     mode==='up'?[el('label',{for:'g-name'},'Your name'),name]:null,
     el('label',{for:'g-email'},'E-mail'),email,
     el('label',{for:'g-pass'},mode==='in'?'Password':'Choose a password (at least 8 characters)'),pass,
-    err,el('div',{class:'g-row'},go));
+    err,el('div',{class:'g-row'},go,el('a',{class:'g-btn g-cta',href:'placement.html'},'\uD83C\uDFAF Take the free placement test')));
   form.addEventListener('submit',function(ev){
     ev.preventDefault();err.textContent='';
     var em=email.value.trim().toLowerCase(),pw=pass.value,nm=name.value.trim().replace(/\s+/g,' ');
