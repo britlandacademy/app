@@ -60,6 +60,8 @@ var CSS=
 '.g-tab[aria-pressed="true"]{background:var(--accent,#111);color:var(--accent-ink,#fff);border-color:var(--accent,#111)}'+
 '.g-err{color:var(--bad,#9c2a22);font-weight:700;min-height:1.3em;margin:10px 0 0}'+
 '.g-ok{color:var(--ok,#1d5e2e);font-weight:700}'+
+'.g-stagebox{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:14px 0;padding:12px 14px;border:2px solid var(--accent,#111);border-radius:3px;background:var(--surface,var(--bg,#fff))}'+
+'.g-stagebox label{font-weight:700;margin:0}.g-stagebox select{min-height:46px;min-width:9em;padding:6px 10px;font:inherit;font-size:1.05rem;color:var(--ink,#111);background:var(--bg,#fff);border:2px solid var(--line,#b8b8b8);border-radius:3px}'+
 '.g-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:6px 14px;max-width:1120px;margin:0 auto 10px;padding:6px 16px 0;box-sizing:border-box;font-size:.92rem;color:var(--muted,#4d4d4d)}'+
 '.g-bar b{color:var(--ink,#111)}'+
 '.g-sz{display:inline-flex;align-items:center;gap:6px}.g-sz button{border:2px solid var(--line,#b8b8b8);border-radius:3px;padding:2px 10px;min-width:44px;min-height:44px;font-weight:700;color:var(--ink,#111);background:none;cursor:pointer;text-decoration:none}.g-sz button[disabled]{opacity:.4;cursor:default}.g-sz span{min-width:7.5em;text-align:center}.g-bar a,.g-bar button{font:inherit;font-size:.92rem;color:var(--ink,#111);background:none;border:0;border-bottom:1px solid currentColor;padding:6px 2px;cursor:pointer;text-decoration:none;min-height:36px}';
@@ -157,7 +159,9 @@ function addBar(){
   themeBtn=el('button',{type:'button',onclick:function(){setTheme(theme==='dark'?'light':'dark');}});setTheme(theme);
   kids.push(themeBtn);
   if(window.I18N)kids.push(window.I18N.selector());
-  var ss=stageSelect();if(ss)kids.push(ss);
+  var tabsNav=document.getElementById('tabs');
+  if(tabsNav&&OPTS.kinds&&OPTS.kinds.length){var sb2=stageBox();if(sb2)tabsNav.parentNode.insertBefore(sb2,tabsNav);}
+  else{var ss=stageSelect();if(ss)kids.push(ss);}
   kids.push(el('a',{href:'index.html'},'Home'));
   if(prof.is_admin)kids.push(el('a',{href:'admin.html'},'Teacher panel'));
   kids.push(el('button',{type:'button',onclick:signOut},'Sign out'));
@@ -200,6 +204,12 @@ function stageSelect(){
   var sel=el('select',{'aria-label':'Stage',onchange:function(){setStage(parseInt(sel.value,10));}}),i,o;
   for(i=1;i<=mx;i++){o=el('option',{value:String(i)},'Stage '+i);if(i===window.CALLAN_STAGE)o.selected=true;sel.append(o);}
   return sel;
+}
+function stageBox(){
+  var mx=stageOf(Math.max(upto(),1)),cur=curStage(),i,o;
+  var sel=el('select',{id:'g-stage','aria-label':'Stage',onchange:function(){setStage(parseInt(sel.value,10));}});
+  for(i=1;i<=12;i++){o=el('option',{value:String(i)},'Stage '+i);if(i>mx)o.disabled=true;if(i===cur)o.selected=true;sel.append(o);}
+  return el('div',{class:'g-stagebox'},el('label',{for:'g-stage'},'Choose the Stage to load'),sel,el('span',{class:'g-hint'},'Only this Stage is downloaded, to save data.'));
 }
 function fetchAttempts(kind){
   return sb.from('attempts').select('lesson,ex,score,total,created_at').eq('kind',kind).eq('user_id',user.id)
