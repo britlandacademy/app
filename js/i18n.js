@@ -193,6 +193,8 @@ var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they 
 ['Delete','Apagar','Borrar'],
 ['Confirm?','Confirmar?','¿Confirmar?'],
 ['No results yet.','Nenhum resultado ainda.','Aún no hay resultados.'],
+['Take the free placement test','Faça o teste de nível gratuito','Haz la prueba de nivel gratuita'],
+['Find your level (A1 to C2) and your Callan Stage','Descubra seu nível (A1 a C2) e sua etapa Callan','Descubre tu nivel (A1 a C2) y tu etapa Callan'],
 ['Placement test','Teste de nível','Prueba de nivel'],
 ['Callan Placement test','Callan \u00b7 Teste de nível','Callan \u00b7 Prueba de nivel'],
 ['Find the best Stage for you. It takes about 10 minutes.','Descubra a melhor etapa para você. Leva cerca de 10 minutos.','Descubre la mejor etapa para ti. Lleva unos 10 minutos.'],

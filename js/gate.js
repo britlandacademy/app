@@ -74,7 +74,7 @@ function langRow(){return window.I18N?el('div',{class:'g-langrow'},window.I18N.s
 function brand(){return el('p',{class:'g-hint'},'Callan Method \u00b7 Teacher: Paulo S. Cruz');}
 
 function box(title){
-  var o=showOverlay(),b=el('div',{class:'g-box'},langRow(),brand(),el('h1',{},title));
+  var o=showOverlay(),b=el('div',{class:'g-box'},langRow(),brand(),el('p',{class:'g-hint'},el('a',{href:'placement.html',style:'color:inherit;font-weight:700'},'Take the free placement test')),el('h1',{},title));
   o.append(b);return b;
 }
 function message(title,lines,buttons){
