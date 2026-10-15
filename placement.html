@@ -267,8 +267,8 @@ function render(){
     var note=el('p',{class:'note'});
     if(canSpeak||item.mp3){
       box.append(el('div',{class:'btnrow',style:'margin:0 0 10px'},
-        el('button',{type:'button',class:'btn',onclick:function(){if(!speak(item.say,.9))note.textContent=item.say;}},'▶ '+T('Listen')),
-        el('button',{type:'button',class:'btn',onclick:function(){if(!speak(item.say,.6))note.textContent=item.say;}},'▶ '+T('Slowly'))));
+        el('button',{type:'button',class:'btn',onclick:function(){play(item,1,note);}},'▶ '+T('Listen')),
+        el('button',{type:'button',class:'btn',onclick:function(){play(item,.75,note);}},'▶ '+T('Slowly'))));
       box.append(note);
     }else{box.append(el('p',{class:'passage'},item.say));}
   }
