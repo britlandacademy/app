@@ -167,6 +167,15 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 .nav button{flex:1;min-height:48px;padding:8px 14px;font:inherit;font-weight:700;color:var(--accent);background:transparent;border:2px solid var(--accent);border-radius:3px;cursor:pointer}
 .nav button:disabled{opacity:.45;cursor:not-allowed}
 .stage{max-width:720px}
+@media (min-width:1000px){
+.stage{max-width:none;display:grid;grid-template-columns:300px minmax(0,1fr);gap:0 32px;align-items:start}
+.stage>#ttl{grid-column:1/-1}
+.stage>.side{grid-column:1;grid-row:2;position:sticky;top:12px}
+.stage>.side .pick{grid-template-columns:1fr}
+.stage>#out{grid-column:2;grid-row:2/span 3;max-width:860px}
+.stage>.nav{grid-column:2;max-width:860px}
+.stage>.hint{grid-column:2}
+}
 </style>
 <div class="wrap">
 <header>
@@ -191,11 +200,13 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 <link rel="stylesheet" href="js/theme.css">
 <main class="stage">
 <h2 class="sep" id="ttl">Lesson 1</h2>
+<aside class="side">
 <div class="pick">
   <div><label for="st">Stage</label><select id="st"></select></div>
   <div><label for="ls">Lesson</label><select id="ls"></select></div>
 </div>
 <div class="nav"><button type="button" id="prev">← Previous</button><button type="button" id="next">Next →</button></div>
+</aside>
 <div id="out"></div>
 <div class="nav" style="margin-top:22px"><button type="button" id="prev2">← Previous</button><button type="button" id="next2">Next →</button></div>
 <p class="hint" style="margin-top:14px"><a href="index.html" style="color:var(--ink)">← Back to the start page</a></p>
