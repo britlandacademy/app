@@ -72,7 +72,7 @@ function showOverlay(){
 }
 function hideOverlay(){if(overlay){overlay.remove();overlay=null;}}
 function langRow(){return window.I18N?el('div',{class:'g-langrow'},window.I18N.selector()):null;}
-function brand(){return el('p',{class:'g-hint'},'Callan Method \u00b7 Teacher: Paulo S. Cruz');}
+function brand(){return el('p',{class:'g-hint'},'Student Area - Teacher Paulo Cruz');}
 
 function box(title){
   var o=showOverlay(),b=el('div',{class:'g-box'},langRow(),brand(),el('h1',{},title));
