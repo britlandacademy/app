@@ -91,6 +91,12 @@ var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they 
 ['Stage {0} · Lesson {1} Check','Etapa {0} · Lição {1} Check','Etapa {0} · Lección {1} Check'],
 /* ---- page headers ---- */
 ['Third Edition','Terceira Edição','Tercera Edición'],
+['Lessons · Britland Academy','Lições · Britland Academy','Lecciones · Britland Academy'],
+['Lesson Checks · Britland Academy','Lesson Checks · Britland Academy','Lesson Checks · Britland Academy'],
+['Exercises · Britland Academy','Exercícios · Britland Academy','Ejercicios · Britland Academy'],
+['Workbook · Britland Academy','Workbook · Britland Academy','Workbook · Britland Academy'],
+['Placement test · Britland Academy','Teste de nível · Britland Academy','Prueba de nivel · Britland Academy'],
+['Teacher panel · Britland Academy','Painel do professor · Britland Academy','Panel del profesor · Britland Academy'],
 ['Callan Lessons','Callan · Lições','Callan · Lecciones'],
 ['Callan Lesson Checks','Callan · Lesson Checks','Callan · Lesson Checks'],
 ['Callan Exercises','Callan · Exercícios','Callan · Ejercicios'],
