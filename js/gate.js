@@ -44,6 +44,7 @@ var CSS=
 '.g-ov{position:fixed;inset:0;z-index:9999;overflow:auto;background:var(--bg,#fff);color:var(--ink,#111);padding:24px max(16px,env(safe-area-inset-right)) 40px max(16px,env(safe-area-inset-left));box-sizing:border-box}'+
 '.g-ov{--bg:#0A1626;--card:#102038;--surface:#142848;--ink:#F2F5FA;--muted:#A9B6CA;--mut:#A9B6CA;--line:#2A3F63;--chip:#1A3156;--accent:#F5C542;--accent-ink:#0B1B33;--acc:#F5C542;--hl:#F5C542;--hli:#0B1B33;--link:#7DB2F5;--band1:#12376B;--band2:#0A1B33}'+'html[data-theme="light"] .g-ov{--bg:#F4F6FA;--card:#FFFFFF;--surface:#FFFFFF;--ink:#0B1B33;--muted:#475671;--mut:#475671;--line:#D3DAE6;--chip:#E6ECF5;--accent:#F5C542;--accent-ink:#0B1B33;--acc:#F5C542;--hl:#F5C542;--hli:#0B1B33;--link:#1F4E99;--band1:#12376B;--band2:#0A1B33}'+
 '.g-ov *{box-sizing:border-box}'+
+'.g-logo{display:block;width:min(100%,300px);height:auto;margin:0 auto 14px}.g-logo.l{display:none}html[data-theme="light"] .g-logo.d{display:none}html[data-theme="light"] .g-logo.l{display:block}'+
 '.g-box{max-width:460px;margin:6vh auto 0;background:var(--card,#ececec);border:1px solid var(--line,#b8b8b8);border-radius:3px;padding:22px 20px}'+
 '.g-box h1{font-size:1.5rem;line-height:1.2;margin:0 0 6px}'+
 '.g-box p{margin:8px 0}'+
@@ -53,7 +54,8 @@ var CSS=
 '.g-box input:focus-visible,.g-btn:focus-visible,.g-tab:focus-visible{outline:3px solid var(--accent,#111);outline-offset:2px}'+
 '.g-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}'+
 '.g-btn{min-height:46px;padding:10px 20px;font:inherit;font-weight:700;cursor:pointer;border-radius:3px;border:2px solid var(--accent,#111);background:var(--accent,#111);color:var(--accent-ink,#fff)}'+
-'.g-btn.g-cta,a.g-btn.g-cta:not(.ghost){background:#1fa05a;border-color:#1fa05a;color:#fff;flex:1 1 100%;font-size:1.05rem;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;text-align:center;box-shadow:0 2px 0 rgba(0,0,0,.25)}.g-btn.g-cta:hover{filter:brightness(1.08)}'+
+'html[data-theme="light"] .g-btn.g-cta,html[data-theme="light"] a.g-btn.g-cta:not(.ghost){border:2px solid #0f2a50!important}'+
+'.g-btn.g-cta,a.g-btn.g-cta:not(.ghost){background:#fff;border-color:#fff;color:#0f2a50;font-weight:700;flex:1 1 100%;font-size:1.05rem;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;text-align:center;box-shadow:0 2px 0 rgba(0,0,0,.25)}.g-btn.g-cta:hover{filter:brightness(1.08)}'+
 '.g-btn.ghost{background:transparent;color:var(--accent,#111)}'+
 '.g-btn[disabled]{opacity:.6;cursor:default}'+
 '.g-tabs{display:flex;gap:8px;margin:14px 0 4px}'+
@@ -70,15 +72,15 @@ var CSS=
 function injectCss(){var s=document.createElement('style');s.textContent=CSS;document.head.append(s);}
 
 function showOverlay(){
-  if(!overlay){overlay=el('div',{class:'g-ov',role:'dialog','aria-modal':'true','aria-label':'Sign in'});document.body.append(overlay);}
+  if(!overlay){if(window.I18N&&I18N.def)I18N.def('pt');overlay=el('div',{class:'g-ov',role:'dialog','aria-modal':'true','aria-label':'Sign in'});document.body.append(overlay);}
   overlay.textContent='';return overlay;
 }
-function hideOverlay(){if(overlay){overlay.remove();overlay=null;}}
+function hideOverlay(){if(overlay){overlay.remove();overlay=null;if(window.I18N&&I18N.def)I18N.def('en');}}
 function langRow(){return window.I18N?el('div',{class:'g-langrow'},window.I18N.selector()):null;}
 function brand(){return el('p',{class:'g-hint'},'Student Area - Teacher Paulo Cruz');}
 
 function box(title){
-  var o=showOverlay(),b=el('div',{class:'g-box'},langRow(),brand(),el('h1',{},title));
+  var o=showOverlay(),b=el('div',{class:'g-box'},langRow(),el('div',{class:'bl-lock','aria-label':'Britland Academy'},el('img',{src:'img/britland-shield.png',alt:''}),el('span',{class:'bl-name'},el('b',{},'BRITLAND'),el('i',{},'ACADEMY'))),brand(),el('h1',{},title));
   o.append(b);return b;
 }
 function message(title,lines,buttons){
@@ -118,7 +120,7 @@ function showLogin(mode){
     mode==='up'?[el('label',{for:'g-name'},'Your name'),name]:null,
     el('label',{for:'g-email'},'E-mail'),email,
     el('label',{for:'g-pass'},mode==='in'?'Password':'Choose a password (at least 8 characters)'),pass,
-    err,el('div',{class:'g-row'},go,el('a',{class:'g-btn g-cta',href:'placement.html'},'\uD83C\uDFAF Take the free placement test')));
+    err,el('div',{class:'g-row'},go,el('a',{class:'g-btn g-cta',href:'placement.html'},'Take the free placement test')));
   form.addEventListener('submit',function(ev){
     ev.preventDefault();err.textContent='';
     var em=email.value.trim().toLowerCase(),pw=pass.value,nm=name.value.trim().replace(/\s+/g,' ');

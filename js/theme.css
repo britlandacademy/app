@@ -38,3 +38,31 @@ a{color:var(--accent)}
 :root[data-theme="light"] .chip2.on{background:var(--accent)!important}
 :root[data-theme="light"] a:not(.btn):not(.card){color:#14171f}
 .g-bar button{color:var(--ink)}
+
+/* Marca Britland: escudo à esquerda, Callan à direita */
+.band>.bl,.head>.bl{height:60px;width:auto;flex:none;order:0}
+.band>div,.head>div{order:1}
+.band>.logo,.head>.logo{order:2;margin-left:auto}
+@media(max-width:560px){.band>.bl,.head>.bl{height:48px}}
+
+
+/* Britland: texto real */
+@font-face{font-family:BLSerif;src:url(fonts/bl-serif.woff) format("woff");font-weight:700;font-display:swap}
+@font-face{font-family:BLSans;src:url(fonts/bl-sans.woff) format("woff");font-weight:500;font-display:swap}
+.bl-lock{display:flex;align-items:center;gap:14px;justify-content:center}
+.bl-lock img{height:84px;width:auto;flex:none}
+.bl-lock.stack{flex-direction:column;gap:8px}
+.bl-lock.stack img{height:92px}
+.bl-name{display:flex;flex-direction:column;line-height:1}
+.bl-lock.stack .bl-name{align-items:center}
+.bl-name b{font:700 1.9rem/1 BLSerif,Georgia,serif;letter-spacing:.01em;color:#fff}
+.bl-name i{font:500 1.05rem/1 BLSans,Helvetica,Arial,sans-serif;font-style:normal;letter-spacing:.1em;margin-top:8px;color:#ec4654}
+html[data-theme="light"] .g-ov .bl-name b{color:#0f2a50}
+html[data-theme="light"] .g-ov .bl-name i{color:#b01928}
+.band .bl-lock{flex:none;order:0}
+.band .bl-lock.stack b{font-size:1.45rem}.band .bl-lock.stack i{font-size:.85rem;margin-top:6px}
+.band .bl-lock.stack img{height:84px}
+.head .bl-lock{flex:none;order:0}
+.head .bl-lock.stack b{font-size:1.45rem}.head .bl-lock.stack i{font-size:.85rem;margin-top:6px}.head .bl-lock.stack img{height:84px}
+.head .bl-name b{color:var(--ink)}
+@media(max-width:560px){.band .bl-lock.stack img,.head .bl-lock.stack img{height:64px}.band .bl-lock.stack b,.head .bl-lock.stack b{font-size:1.15rem}.band .bl-lock.stack i,.head .bl-lock.stack i{font-size:.7rem}}
