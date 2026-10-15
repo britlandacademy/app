@@ -66,3 +66,11 @@ html[data-theme="light"] .g-ov .bl-name i{color:#b01928}
 .head .bl-lock.stack b{font-size:1.45rem}.head .bl-lock.stack i{font-size:.85rem;margin-top:6px}.head .bl-lock.stack img{height:84px}
 .head .bl-name b{color:var(--ink)}
 @media(max-width:560px){.band .bl-lock.stack img,.head .bl-lock.stack img{height:64px}.band .bl-lock.stack b,.head .bl-lock.stack b{font-size:1.15rem}.band .bl-lock.stack i,.head .bl-lock.stack i{font-size:.7rem}}
+
+/* Títulos na fonte do logo (Noto Serif Bold) */
+h1,h2,h3,.band h1,#ttl,.stage>#ttl,.st b,.g-box h1,.card h3,.pl h2,.pl h3{font-family:BLSerif,Georgia,"Times New Roman",serif;font-weight:700}
+h2.sep,h2.sep#ttl,.big,.big-score,.card h2,.band h1{font-family:BLSerif,Georgia,"Times New Roman",serif;font-weight:700}
+
+.seal-foot{margin:34px 0 8px;padding-top:22px;border-top:1px solid var(--line);text-align:center}
+.seal-foot img{width:150px;height:auto}
+.stage>.seal-foot{grid-column:1/-1}
