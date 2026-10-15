@@ -255,12 +255,13 @@ function renderText(id,box){
 }
 const stSel=document.getElementById('st'),lsSel=document.getElementById('ls'),out=document.getElementById('out'),ttl=document.getElementById('ttl');
 const prevs=[document.getElementById('prev'),document.getElementById('prev2')],nexts=[document.getElementById('next'),document.getElementById('next2')];
-STAGES.forEach(t=>stSel.append(el('option',{value:String(t.n)},'Stage '+t.n)));
-let cur=1;
-try{const v=parseInt(localStorage.getItem('callan-lesson-last'),10);if(v>=1&&v<=UPTO)cur=v;}catch(e){}
+const CS=window.CALLAN_STAGE||1,CT=STAGES.find(t=>t.n===CS)||STAGES[0],LO=CT.from,HI=Math.min(CT.to,UPTO);
+STAGES.filter(t=>t.n===CT.n).forEach(t=>stSel.append(el('option',{value:String(t.n)},'Stage '+t.n)));
+let cur=LO;
+try{const v=parseInt(localStorage.getItem('callan-lesson-last'),10);if(v>=LO&&v<=HI)cur=v;}catch(e){}
 function fillLessons(n){
   const t=STAGES.find(x=>x.n===n);lsSel.textContent='';
-  for(let i=t.from;i<=t.to;i++)lsSel.append(el('option',{value:String(i)},'Lesson '+i));
+  for(let i=t.from;i<=Math.min(t.to,UPTO);i++)lsSel.append(el('option',{value:String(i)},'Lesson '+i));
 }
 function show(id,noscroll){
   cur=id;const t=stageOf(id),n=t.n;
@@ -271,14 +272,14 @@ function show(id,noscroll){
   box.append(player('Listen to Lesson '+id,'Stage '+n+'/Stage '+n+' Lesson '+id+'.mp3'));
   renderText(id,box);
   out.append(box);
-  prevs.forEach(b=>{b.disabled=id<=1;});nexts.forEach(b=>{b.disabled=id>=UPTO;});
+  prevs.forEach(b=>{b.disabled=id<=LO;});nexts.forEach(b=>{b.disabled=id>=HI;});
   try{localStorage.setItem('callan-lesson-last',String(id));}catch(e){}
   if(!noscroll)window.scrollTo({top:0});
 }
 stSel.addEventListener('change',()=>show(STAGES.find(t=>t.n===+stSel.value).from));
 lsSel.addEventListener('change',()=>show(+lsSel.value));
-prevs.forEach(b=>b.addEventListener('click',()=>{if(cur>1)show(cur-1);}));
-nexts.forEach(b=>b.addEventListener('click',()=>{if(cur<UPTO)show(cur+1);}));
+prevs.forEach(b=>b.addEventListener('click',()=>{if(cur>LO)show(cur-1);}));
+nexts.forEach(b=>b.addEventListener('click',()=>{if(cur<HI)show(cur+1);}));
 show(cur,true);
 });
 </script>

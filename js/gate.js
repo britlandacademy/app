@@ -94,7 +94,7 @@ function niceError(e){
   if(/password/i.test(m)&&/(least|short|weak)/i.test(m))return 'Choose a longer password (at least 8 characters).';
   if(/rate limit|too many/i.test(m))return 'Too many attempts. Wait a few minutes and try again.';
   if(/failed to fetch|network/i.test(m))return 'No connection. Check your internet and try again.';
-  return 'Something went wrong. Try again.';
+  return 'Something went wrong. Try again.'+(m?' ('+String(m).slice(0,140)+')':'');
 }
 
 /* ---------- login / request access ---------- */
@@ -156,6 +156,7 @@ function addBar(){
   themeBtn=el('button',{type:'button',onclick:function(){setTheme(theme==='dark'?'light':'dark');}});setTheme(theme);
   kids.push(themeBtn);
   if(window.I18N)kids.push(window.I18N.selector());
+  var ss=stageSelect();if(ss)kids.push(ss);
   kids.push(el('a',{href:'index.html'},'Home'));
   if(prof.is_admin)kids.push(el('a',{href:'admin.html'},'Teacher panel'));
   kids.push(el('button',{type:'button',onclick:signOut},'Sign out'));
@@ -165,18 +166,39 @@ function addBar(){
 
 /* ---------- content ---------- */
 function upto(){return prof.is_admin?206:(prof.status==='approved'?prof.lessons_upto:0);}
+var STG=[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[139,156],[157,174],[175,190],[191,206]];
+function stageOf(n){var i;for(i=0;i<STG.length;i++)if(n>=STG[i][0]&&n<=STG[i][1])return i+1;return 1;}
+function curStage(){
+  var top=Math.max(upto(),1),mx=stageOf(top),v=0;
+  try{v=parseInt(new URLSearchParams(location.search).get('stage')||localStorage.getItem('callan-stage'),10);}catch(e){}
+  return (v>=1&&v<=mx)?v:mx;
+}
+function setStage(n){try{localStorage.setItem('callan-stage',String(n));}catch(e){}
+  try{var u=new URL(location.href);u.searchParams.delete('stage');location.href=u.toString();}catch(e){location.reload();}}
 function loadContent(kinds){
   window.CHECKS=[];window.LESSON_TEXT={};window.EXLESSONS=[];
   window.LESSONS_UPTO=upto();
   if(!kinds||!kinds.length)return Promise.resolve();
-  return sb.from('content').select('lesson,kind,body').in('kind',kinds).order('lesson',{ascending:true}).then(function(r){
-    if(r.error)throw r.error;
-    (r.data||[]).forEach(function(row){
+  var st=curStage(),lo=STG[st-1][0],hi=Math.min(STG[st-1][1],Math.max(upto(),1));
+  window.CALLAN_STAGE=st;
+  function one(tries){
+    return sb.from('content').select('lesson,kind,body').in('kind',kinds).gte('lesson',lo).lte('lesson',hi).order('lesson',{ascending:true}).then(function(r){
+      if(r.error)throw r.error;return r.data||[];
+    }).catch(function(e){if(tries>0)return one(tries-1);throw e;});
+  }
+  return one(2).then(function(rows){
+    rows.forEach(function(row){
       if(row.kind==='check')window.CHECKS.push(row.body);
       else if(row.kind==='text')window.LESSON_TEXT[row.lesson]=row.body;
       else if(row.kind==='ex')window.EXLESSONS.push(row.body);
     });
   });
+}
+function stageSelect(){
+  var mx=stageOf(Math.max(upto(),1));if(mx<2||!OPTS.kinds||!OPTS.kinds.length)return null;
+  var sel=el('select',{'aria-label':'Stage',onchange:function(){setStage(parseInt(sel.value,10));}}),i,o;
+  for(i=1;i<=mx;i++){o=el('option',{value:String(i)},'Stage '+i);if(i===window.CALLAN_STAGE)o.selected=true;sel.append(o);}
+  return sel;
 }
 function fetchAttempts(kind){
   return sb.from('attempts').select('lesson,ex,score,total,created_at').eq('kind',kind).eq('user_id',user.id)
