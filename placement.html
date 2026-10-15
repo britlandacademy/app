@@ -376,11 +376,11 @@ function chooseTest(t){
   var al=ALLOWED[t];
   if(window.I18N&&al.indexOf(ui())<0)window.I18N.set(al[0]);
   $('top').hidden=(al.length<2);
-  Array.prototype.forEach.call(document.querySelectorAll('#top select option'),function(o){o.hidden=o.disabled=(al.indexOf(o.value)<0);});
+  Array.prototype.forEach.call(document.querySelectorAll('#top .lang-btn'),function(o){o.hidden=(al.indexOf(o.getAttribute('data-l'))<0);});
   texts();show('s-start');
 }
 ['en','es','pt'].forEach(function(t){$('b-'+t).addEventListener('click',function(){chooseTest(t);});});
-$('t-back').addEventListener('click',function(){S.test='';$('top').hidden=false;Array.prototype.forEach.call(document.querySelectorAll('#top select option'),function(o){o.hidden=o.disabled=false;});S.done=false;texts();show('s-lang');});
+$('t-back').addEventListener('click',function(){S.test='';$('top').hidden=false;Array.prototype.forEach.call(document.querySelectorAll('#top .lang-btn'),function(o){o.hidden=false;});S.done=false;texts();show('s-lang');});
 window.addEventListener('langchange',function(){
   if(S.test&&ALLOWED[S.test].indexOf(ui())<0){window.I18N.set(ALLOWED[S.test][0]);return;}
   texts();
