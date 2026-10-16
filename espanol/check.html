@@ -552,7 +552,7 @@ function showTab(t){
   renderTabs();window.scrollTo({top:0});
 }
 function reportText(){
-  const s=me();const lines=['Callan Español · Ejercicios de repaso · '+STAGETXT,'Profesor: Paulo S. Cruz','Alumno: '+s.name];
+  const s=me();const lines=['Callan Español · Ejercicios de repaso · '+STAGETXT,'Alumno: '+s.name];
   STAGES.forEach(t=>{const ls=stageLessons(t);if(ls.length)lines.push('Stage '+t.n+': '+ls.filter(L=>lessonStats(L).complete).length+' de '+ls.length+' ejercicios completados');});
   lines.push('');
   LESSONS.forEach(L=>{const st=lessonStats(L);if(st.done)lines.push(L.title+': '+st.pts+' of '+st.tot+' ('+st.pct+'%) · '+(st.complete?'completed':'pending'));});
