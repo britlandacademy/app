@@ -26,6 +26,7 @@ var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they 
 ['Your path','Seu caminho','Tu camino'],
 ['Continue','Continuar','Continuar'],
 ['Close','Fechar','Cerrar'],
+['correct','de acertos','de aciertos'],
 ['Your Stages','Seus Stages','Tus Etapas'],
 ['You are in Stage {0} · {1} of 12 Stages completed','Você está no Stage {0} · {1} de 12 Stages concluídos','Estás en la Etapa {0} · {1} de 12 Etapas completadas'],
 ['Stage {0} · Lessons {1}–{2}','Etapa {0} · Lições {1}–{2}','Etapa {0} · Lecciones {1}–{2}'],
@@ -250,14 +251,15 @@ var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they 
 ['Choose an answer.','Escolha uma resposta.','Elige una respuesta.'],
 ['Your result was sent to your teacher.','Seu resultado foi enviado ao seu professor.','Tu resultado fue enviado a tu profesor.'],
 ['Your result could not be sent to your teacher. Take a screenshot of this page and send it to him.','Não foi possível enviar seu resultado ao professor. Tire uma captura de tela desta página e envie a ele.','No se pudo enviar tu resultado al profesor. Haz una captura de pantalla de esta página y envíasela.'],
-['Choose the language you want to be tested in.','Escolha o idioma em que quer ser testado.','Elige el idioma en el que quieres hacer la prueba.'],
+['Printing is not allowed. Use the lessons on the site.','Não é permitido imprimir. Use as lições no site.','No se permite imprimir. Usa las lecciones en el sitio.'],
+['I want to learn...','Eu quero aprender...','Quiero aprender...'],
 ['Change language','Trocar de idioma','Cambiar de idioma'],
 ['Answer the questions to find the best level for you. Choose "I don\'t know" if you are not sure: do not guess.','Responda às perguntas para descobrir o melhor nível para você. Escolha "Não sei" se não tiver certeza: não chute.','Responde a las preguntas para descubrir el mejor nivel para ti. Elige "No lo sé" si no estás seguro: no adivines.'],
 ['This test is in {0}. The questions get harder step by step. The test stops when the questions become too difficult for you.','Este teste é em {0}. As perguntas ficam mais difíceis aos poucos. O teste termina quando as perguntas ficarem difíceis demais para você.','Esta prueba es en {0}. Las preguntas se hacen más difíciles poco a poco. La prueba termina cuando las preguntas sean demasiado difíciles para ti.'],
 ['Your {0} level (approximate):','Seu nível de {0} (aproximado):','Tu nivel de {0} (aproximado):'],
 ['Stage {0}','Etapa {0}','Etapa {0}'],
-['Talk to Teacher Paulo to start at {0}.','Fale com o professor Paulo para começar na {0}.','Habla con el profesor Paulo para empezar en la {0}.'],
-['Talk to Teacher Paulo to start your classes.','Fale com o professor Paulo para começar suas aulas.','Habla con el profesor Paulo para empezar tus clases.'],
+['Talk to us to start at {0}.','Fale com a gente para começar na {0}.','Habla con nosotros para empezar en la {0}.'],
+['Talk to us to start your classes.','Fale com a gente para começar suas aulas.','Habla con nosotros para empezar tus clases.'],
 ['Your teacher, Paulo S. Cruz, will confirm your level.','Seu professor, Paulo S. Cruz, vai confirmar o seu nível.','Tu profesor, Paulo S. Cruz, confirmará tu nivel.'],
 ['Find your level. It takes about 10 minutes.','Descubra o seu nível. Leva cerca de 10 minutos.','Descubre tu nivel. Lleva unos 10 minutos.'],
 ['Congratulations! 🎉 You finished the test and you already have a base to build on. The hardest part is starting, and you have started.','Parabéns! 🎉 Você terminou o teste e já tem uma base para construir. O mais difícil é começar, e você começou.','¡Felicidades! 🎉 Terminaste la prueba y ya tienes una base sobre la que construir. Lo más difícil es empezar, y ya empezaste.'],
@@ -421,5 +423,5 @@ function start(){
   obs.observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:ATTRS});
 }
 if(document.body)start();else document.addEventListener('DOMContentLoaded',start);
-window.I18N={def:defLang,t:tr,selector:selector,set:setLang,get lang(){return lang;}};
+window.I18N={flag:function(l){return flagSVG(l,++FLAGN);},def:defLang,t:tr,selector:selector,set:setLang,get lang(){return lang;}};
 })();

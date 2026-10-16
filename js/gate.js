@@ -163,7 +163,8 @@ function addBar(){
   kids.push(themeBtn);
   if(window.I18N)kids.push(window.I18N.selector());
   var tabsNav=document.getElementById('tabs');
-  if(tabsNav&&OPTS.kinds&&OPTS.kinds.length){var sb2=stageBox();if(sb2)tabsNav.parentNode.insertBefore(sb2,tabsNav);}
+  if(OPTS.noStageBox){}
+  else if(tabsNav&&OPTS.kinds&&OPTS.kinds.length){var sb2=stageBox();if(sb2)tabsNav.parentNode.insertBefore(sb2,tabsNav);}
   else{var ss=stageSelect();if(ss)kids.push(ss);}
   kids.push(el('a',{href:'index.html'},'Home'));
   if(prof.is_admin)kids.push(el('a',{href:'admin.html'},'Teacher panel'));

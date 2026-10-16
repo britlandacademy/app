@@ -187,6 +187,14 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 .pl .passage{background:var(--chip);padding:12px 14px;border-radius:8px;margin:0 0 10px;overflow-wrap:anywhere}
 .pl .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
 .pl .btn{min-height:46px;padding:10px 20px;font:inherit;font-weight:700;cursor:pointer;border:2px solid var(--accent);background:transparent;color:var(--accent)}
+.pl .btn .fl{display:inline-flex;vertical-align:middle;margin-right:12px}.pl .btn .fl svg{width:34px;height:34px}.pl #s-lang .btn{display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.pl #r-path{margin:6px 0 14px}.pl #r-path .cv-path{margin:0}.pl #r-path .cv-p{opacity:0;animation:plin .5s ease forwards}
+.pl #r-path .cv-p.cur .cv-img{box-shadow:0 0 0 3px #F5C542,0 0 18px rgba(245,197,66,.7);animation:plpulse 1.2s ease 1.6s 2}
+.pl .big.pop{animation:plpop .7s cubic-bezier(.2,1.4,.4,1)}
+@keyframes plin{from{opacity:0;transform:translateY(10px) scale(.85)}to{opacity:1;transform:none}}
+@keyframes plpop{0%{transform:scale(1)}40%{transform:scale(1.35);color:#F5C542}100%{transform:scale(1)}}
+@keyframes plpulse{50%{transform:scale(1.12)}}
+@media(prefers-reduced-motion:reduce){.pl #r-path .cv-p,.pl .big.pop,.pl #r-path .cv-p.cur .cv-img{animation:none!important;opacity:1}}
 .pl .btn.primary{background:var(--accent);color:var(--accent-ink)}
 .pl .btn[disabled]{opacity:.5;cursor:default}
 .pl .err{color:var(--bad);font-weight:700;min-height:1.3em;margin:10px 0 0}
@@ -198,11 +206,11 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 <main class="pl">
 <section class="card" id="s-lang">
   <h2>Placement test</h2>
-  <p id="t-lang-sub">Choose the language you want to be tested in.</p>
+  <p id="t-lang-sub">I want to learn...</p>
   <div class="btnrow" style="flex-direction:column">
-    <button type="button" class="btn primary" id="b-en" data-noi18n="1">🇬🇧 English</button>
-    <button type="button" class="btn primary" id="b-es" data-noi18n="1">🇪🇸 Español</button>
-    <button type="button" class="btn primary" id="b-pt" data-noi18n="1">🇧🇷 Português</button>
+    <button type="button" class="btn primary" id="b-en" data-noi18n="1"><span class="fl" data-fl="en"></span><span class="bn" data-noi18n="1">English</span></button>
+    <button type="button" class="btn primary" id="b-es" data-noi18n="1"><span class="fl" data-fl="es"></span><span class="bn" data-noi18n="1">Español</span></button>
+    <button type="button" class="btn primary" id="b-pt" data-noi18n="1"><span class="fl" data-fl="pt"></span><span class="bn" data-noi18n="1">Português</span></button>
   </div>
 </section>
 <section class="card" id="s-start" hidden>
@@ -228,6 +236,7 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
   <p id="r-lvl"></p>
   <p class="big" id="r-cefr" data-noi18n="1"></p>
   <div id="r-stage-box" hidden>
+    <div id="r-path"></div>
     <p>Suggested Stage:</p>
     <p class="big" id="r-stage"></p>
     <p id="r-lessons"></p>
@@ -241,6 +250,7 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 </main>
 
 <script src="js/i18n.js" charset="utf-8"></script>
+<script src="js/covers.js" charset="utf-8"></script>
 <script src="js/config.js" charset="utf-8"></script>
 <script>
 'use strict';
@@ -256,6 +266,7 @@ function el(tag,props){var e=document.createElement(tag),k,i,c;props=props||{};
 function $(id){return document.getElementById(id);}
 function shuf(a){var r=a.slice();for(var i=r.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=r[i];r[i]=r[j];r[j]=t;}return r;}
 if(window.I18N)$('top').append(window.I18N.selector());
+if(window.I18N&&I18N.flag)document.querySelectorAll('.fl').forEach(function(e){e.innerHTML=I18N.flag(e.dataset.fl)});
 var S={test:'',lvl:0,idx:0,right:0,total:0,log:[],name:'',contact:'',cur:null,done:false};
 var BANK=[];
 var VOICE={en:'en-GB',es:'es-ES',pt:'pt-BR'};
@@ -282,8 +293,9 @@ function texts(){
   $('t-h2').textContent=T('Placement test');
   $('t-p1').textContent=T('Answer the questions to find the best level for you. Choose "I don\'t know" if you are not sure: do not guess.');
   $('t-p2').textContent=T('This test is in {0}. The questions get harder step by step. The test stops when the questions become too difficult for you.').replace('{0}',S.test?lname(S.test):'');
-  $('t-lang-sub').textContent=T('Choose the language you want to be tested in.');
+  $('t-lang-sub').textContent=T('I want to learn...');
   $('t-back').textContent=T('Change language');
+  ['en','es','pt'].forEach(function(t){var n=lname(t);document.querySelector('#b-'+t+' .bn').textContent=n.charAt(0).toUpperCase()+n.slice(1);});
 }
 function render(){
   var item=BANK[S.lvl][S.idx],box=$('qbox');box.textContent='';$('e-q').textContent='';
@@ -322,9 +334,9 @@ function finish(level,passedAll,partial){
   var x=passedAll?12:(level-1)+(partial||0)*0.5;
   var cef=CEFR[Math.min(16,Math.round(x*16/12))];
   S.cefr=cef;S.level=level;
-  paint();save(level);
+  paint(true);save(level);
 }
-function paint(){
+function paint(fx){
   var level=S.level,cef=S.cefr;
   $('r-lvl').textContent=T('Your {0} level (approximate):').replace('{0}',lname(S.test));
   $('r-cefr').textContent=cef;
@@ -334,21 +346,35 @@ function paint(){
     $('r-stage-box').hidden=false;
     $('r-stage').textContent=T('Stage {0}').replace('{0}',level);
     $('r-lessons').textContent=T('Lessons {0} to {1}').replace('{0}',r[0]).replace('{1}',r[1]);
-    cta=T('Talk to Teacher Paulo to start at {0}.').replace('{0}',T('Stage {0}').replace('{0}',level));
+    cta=T('Talk to us to start at {0}.').replace('{0}',T('Stage {0}').replace('{0}',level));
   }else if(S.test==='es'){
     var e=etapa(level);
     $('r-stage-box').hidden=false;
     $('r-stage').textContent=T('Stage {0}').replace('{0}',e);
     $('r-lessons').textContent='';
-    cta=T('Talk to Teacher Paulo to start at {0}.').replace('{0}',T('Stage {0}').replace('{0}',e));
+    cta=T('Talk to us to start at {0}.').replace('{0}',T('Stage {0}').replace('{0}',e));
   }else{
     $('r-stage-box').hidden=true;
-    cta=T('Talk to Teacher Paulo to start your classes.');
+    cta=T('Talk to us to start your classes.');
   }
   $('r-score').textContent=T('Score: {0}').replace('{0}',S.right+' / '+S.total);
   $('r-congrats').textContent=T(MSG[band(cef)]);
   $('r-cta').textContent=cta;
   show('s-res');
+  if(fx)celebrate(level);
+}
+var RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+function celebrate(level){
+  var cef=S.cefr,idx=CEFR.indexOf(cef),box=$('r-cefr'),path=$('r-path');path.textContent='';
+  if((S.test==='en'||S.test==='es')&&window.Covers){
+    var es=S.test==='es',st=es?etapa(level):level;path.append(Covers.path({es:es,state:function(i){return {cls:i<st?'done':i===st?'cur':'lock'};}}));
+    Array.prototype.forEach.call(path.querySelectorAll('.cv-p'),function(e,i){e.style.animationDelay=(i*.09)+'s';});
+  }
+  if(RM||idx<0){box.textContent=cef;}
+  else{var k=0,step=Math.max(70,1500/Math.max(1,idx+1));box.textContent=CEFR[0];
+    (function tick(){if(k>=idx){box.textContent=cef;box.classList.add('pop');
+        if(idx>=3&&window.Covers){Covers.confetti(S.test==='en'?level:S.test==='es'?etapa(level):1);Covers.chime();}return;}
+      k++;box.textContent=CEFR[k];setTimeout(tick,step);})();}
 }
 function save(level){
   var msg=$('r-save');
