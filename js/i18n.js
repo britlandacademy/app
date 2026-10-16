@@ -22,6 +22,7 @@ var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they 
 ['Check your e-mail','Verifique seu e-mail','Revisa tu correo'],
 ['We sent a link to confirm your e-mail. After that, your teacher will approve your access.','Enviamos um link para confirmar seu e-mail. Depois disso, seu professor vai aprovar o seu acesso.','Enviamos un enlace para confirmar tu correo. Después, tu profesor aprobará tu acceso.'],
 ['Back','Voltar','Volver'],
+['Why?','Por quê?','¿Por qué?'],
 ['Wrong e-mail or password.','E-mail ou senha incorretos.','Correo o contraseña incorrectos.'],
 ['This e-mail is already registered. Use "Sign in".','Este e-mail já está cadastrado. Use "Entrar".','Este correo ya está registrado. Usa "Iniciar sesión".'],
 ['This e-mail is not confirmed yet. Ask your teacher.','Este e-mail ainda não foi confirmado. Fale com seu professor.','Este correo aún no está confirmado. Habla con tu profesor.'],

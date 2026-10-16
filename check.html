@@ -85,6 +85,7 @@ button.small{min-height:44px;padding:6px 14px;font:inherit;font-size:.95rem;back
 .ok .mark{color:var(--ok)} .bad .mark{color:var(--bad)}
 .fb .warn{margin:4px 0 0;padding:6px 10px;background:var(--warn-bg);color:var(--warn);border-radius:2px}
 .fb .msg{margin:4px 0 0}
+.why{margin:8px 0 0}.why-btn{font-weight:600}.why-txt{margin:6px 0 0;padding:8px 10px;border-left:3px solid var(--accent);background:var(--surface);border-radius:6px}
 .fb .model{margin:4px 0 0}
 .fb .model b{font-family:var(--font-display)}
 .score{margin:12px 0 0;font-weight:700;min-height:1.5em}
@@ -373,6 +374,16 @@ function lessonStats(L){let pts=0,done=0,tot=0;L.ex.forEach(ex=>{tot+=ex.items.l
 function unlocked(L){const p=BYID[L.id-1];return !p||lessonStats(p).complete;}
 function fmt(ts){try{return new Date(ts).toLocaleString('en-GB',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});}catch(e){return String(ts);}}
 
+/* ---------- explanation of the error ("Why?") ---------- */
+function whyBox(w){
+  const p=el('p',{class:'why-txt',hidden:true});
+  const b=el('button',{type:'button',class:'small why-btn','aria-expanded':'false',onclick:()=>{
+    const open=p.hidden;
+    if(open){const L=window.I18N&&I18N.lang,ix=L==='pt'?1:L==='es'?2:0;p.textContent=w[ix]||w[0];}
+    p.hidden=!open;b.setAttribute('aria-expanded',open?'true':'false');}},window.I18N?I18N.t('Why?'):'Why?');
+  return el('div',{class:'why'},b,p);
+}
+
 /* ---------- exercise ---------- */
 const hosts={};
 function buildEx(L,ex,k){
@@ -388,7 +399,7 @@ function buildEx(L,ex,k){
     const b=BUILD[ex.type==='mixed'?it.k:ex.type](it,id,i+1,pool);
     const fb=el('div',{class:'fb',hidden:true,'aria-live':'polite'});
     const li=el('li',{class:'item'},el('span',{class:'n'},String(i+1)),el('div',{},it.tag?el('p',{class:'tagline'},it.tag):null,b.nodes),fb);
-    list.append(li);return {li:li,fb:fb,b:b};
+    list.append(li);return {li:li,fb:fb,b:b,it:it};
   });
   form.append(list);
   const score=el('p',{class:'score','aria-live':'polite'});
@@ -406,6 +417,7 @@ function buildEx(L,ex,k){
       if(!r.ok&&r.msg)o.fb.append(el('p',{class:'msg'},r.msg));
       if(r.ok&&r.warn)o.fb.append(el('p',{class:'warn'},r.warn));
       o.fb.append(el('p',{class:'model'},'Model answer: ',el('b',{},r.model)));
+      if(!r.ok&&o.it.why)o.fb.append(whyBox(o.it.why));
       if(r.ok)right++;o.b.lock();
     });
     verify.disabled=true;
