@@ -1,17 +1,17 @@
 /* Dark panel theme shared by all pages */
 :root:root{
-  --bg:#0f1115;--card:#181b22;--surface:#1d212a;--ink:#f3f4f6;--muted:#a3aab7;--line:#2e3441;
-  --accent:#f5c542;--accent-ink:#111111;--chip:#262b37;--band:#181b22;--band-ink:#ffffff;--band-muted:#a3aab7;
+  --bg:#150f10;--card:#221819;--surface:#291e1f;--ink:#f6f3f3;--muted:#b6a4a5;--line:#402f30;
+  --accent:#f5c542;--accent-ink:#111111;--chip:#362728;--band:#221819;--band-ink:#ffffff;--band-muted:#b6a4a5;
   --ok:#7fd29a;--ok-bg:#16301f;--bad:#ff9e94;--bad-bg:#3a1f1d;--warn:#f0c36a;--warn-bg:#3a2e12;
   color-scheme:dark}
 /* Light mode (the band with the logo stays dark) */
 :root[data-theme="light"]:root{
-  --bg:#f3f4f7;--card:#ffffff;--surface:#ffffff;--ink:#14171f;--muted:#4f5663;--line:#d3d8e0;
-  --accent:#14171f;--accent-ink:#ffffff;--chip:#e7e9ee;--band:#181b22;--band-ink:#ffffff;--band-muted:#a3aab7;
+  --bg:#f7f3f3;--card:#ffffff;--surface:#ffffff;--ink:#1f1415;--muted:#4f5663;--line:#dfd4d5;
+  --accent:#1f1415;--accent-ink:#ffffff;--chip:#eee7e8;--band:#221819;--band-ink:#ffffff;--band-muted:#b6a4a5;
   --ok:#1d5e2e;--ok-bg:#e3efe5;--bad:#9c2a22;--bad-bg:#f6e4e2;--warn:#6b4a00;--warn-bg:#f3ead0;
   color-scheme:light}
 html,body{background:var(--bg);color:var(--ink)}
-.band{background:linear-gradient(135deg,#232733,#181b22)!important;border:1px solid var(--line)!important;border-radius:14px!important}
+.band{background:linear-gradient(135deg,#322425,#221819)!important;border:1px solid var(--line)!important;border-radius:14px!important}
 .card,.item,.hbox,.tblwrap,.g-box,.facts,.rule,.panel>.card{border-radius:12px!important}
 .card,.hbox{border:1px solid var(--line)}
 .item,input.txt,select,.opt,.chip,textarea.rep,.rule{background:var(--surface)}
@@ -36,7 +36,7 @@ a{color:var(--accent)}
 
 :root[data-theme="light"] .chip2.done{border-color:#2e7d4a}
 :root[data-theme="light"] .chip2.on{background:var(--accent)!important}
-:root[data-theme="light"] a:not(.btn):not(.card){color:#14171f}
+:root[data-theme="light"] a:not(.btn):not(.card){color:#1f1415}
 .g-bar button{color:var(--ink)}
 
 /* Marca Britland: escudo à esquerda, Callan à direita */
@@ -57,7 +57,7 @@ a{color:var(--accent)}
 .bl-lock.stack .bl-name{align-items:center}
 .bl-name b{font:700 1.9rem/1 BLSerif,Georgia,serif;letter-spacing:.01em;color:#fff}
 .bl-name i{font:500 1.05rem/1 BLSans,Helvetica,Arial,sans-serif;font-style:normal;letter-spacing:.1em;margin-top:8px;color:#ec4654}
-html[data-theme="light"] .g-ov .bl-name b{color:#0f2a50}
+html[data-theme="light"] .g-ov .bl-name b{color:#4d1217}
 html[data-theme="light"] .g-ov .bl-name i{color:#b01928}
 .band .bl-lock{flex:none;order:0}
 .band .bl-lock.stack b{font-size:1.45rem}.band .bl-lock.stack i{font-size:.85rem;margin-top:6px}
