@@ -37,7 +37,7 @@ function head(o){
 /* path of 12 covers */
 function path(o){
   var w=el('div','cv-path'),i,b,s;
-  for(i=1;i<=(o.es?6:12);i++){s=o.state(i);
+  for(i=1;i<=6;i++){s=o.state(i);
     b=el('div','cv-p '+s.cls);b.append(cover(i,60,o.es));
     if(s.cls==='done'){b.append(el('span','cv-tick','✔'));}
     if(o.txt&&s.cls!=='lock'&&s.avail!=null){var t=el('div','cv-num'),pc=s.avail?Math.round(100*s.done/s.avail):0;
@@ -69,14 +69,14 @@ function celebrate(o){
   var ov=el('div','cv-ov'),card=el('div','cv-card');card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');
   var kindT=o.kind,h=el('h2','',kindT+' · '+T('Stage '+o.n+' completed!'));h.id='cv-h';card.setAttribute('aria-labelledby','cv-h');
   var row=el('div','cv-row'),sh=el('div','cv-shine');sh.append(cover(o.n,130));row.append(sh);
-  if(o.n<12&&o.canNext){row.append(el('span','cv-arrow','→'));var nx=el('div','cv-nx');nx.append(cover(o.n+1,100));row.append(nx);}
+  if(o.n<6&&o.canNext){row.append(el('span','cv-arrow','→'));var nx=el('div','cv-nx');nx.append(cover(o.n+1,100));row.append(nx);}
   var pct=Math.round(o.avg*100);
   var sub=el('p','cv-sub',o.kind==='Workbook'?T('Workbook: all sections done, average '+pct+'%.'):T('Lesson Checks: all checks done, average '+pct+'%.'));
-  var act=el('div','cv-act'),go=el('button','cv-btn',o.n<12&&o.canNext?T('Go to Stage '+(o.n+1)+' →'):T('Continue'));
+  var act=el('div','cv-act'),go=el('button','cv-btn',o.n<6&&o.canNext?T('Go to Stage '+(o.n+1)+' →'):T('Continue'));
   go.type='button';
   function close(){document.removeEventListener('keydown',kd);ov.classList.add('out');setTimeout(function(){ov.remove();},250);}
   function kd(e){if(e.key==='Escape')close();}
-  go.onclick=function(){if(o.n<12&&o.canNext&&o.next){close();o.next(o.n+1);}else close();};
+  go.onclick=function(){if(o.n<6&&o.canNext&&o.next){close();o.next(o.n+1);}else close();};
   var sec=el('button','cv-sec',T('Close'));sec.type='button';sec.onclick=close;
   var snd=el('button','cv-snd',muted()?'🔇 '+T('Sound off'):'🔊 '+T('Sound on'));snd.type='button';
   snd.onclick=function(){try{localStorage.setItem('callan-mute',muted()?'0':'1');}catch(e){}snd.textContent=muted()?'🔇 '+T('Sound off'):'🔊 '+T('Sound on');if(!muted())chime();};
