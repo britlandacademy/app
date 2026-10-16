@@ -48,14 +48,14 @@ td.g{background:var(--ok-bg)}td.m{background:var(--warn-bg)}td.r{background:var(
 <section class="card" id="sec-pend" aria-labelledby="h-pend"><h2 id="h-pend">Pedidos de acesso</h2><div id="pend"></div></section>
 
 <section class="card" aria-labelledby="h-stu"><h2 id="h-stu">Alunos e liberação das lessons</h2>
-  <p class="hint">"Liberado até" é o número da última Lesson que o aluno pode abrir (0 a 112). Vale para texto, áudio, Lesson Checks e exercícios.</p>
+  <p class="hint">"Liberado até" é o número da última Lesson que o aluno pode abrir (0 a 112). Vale para texto, áudio e Ejercicios de repaso.</p>
   <div class="row"><label for="bulk">Liberar até a Lesson</label><input type="number" id="bulk" min="0" max="112" value="12"><span id="bulkstage"></span><button type="button" id="bulkgo">Aplicar a todos os alunos aprovados</button><span class="msg" id="bulkmsg" aria-live="polite"></span></div>
   <div class="tw"><table id="stu"></table></div>
   <p class="hint">Bloquear fecha o acesso na hora (o áudio já aberto pode tocar por até 2 horas). Para apagar uma conta de vez: Supabase, Authentication, Users, Delete.</p>
 </section>
 
 <section class="card" aria-labelledby="h-sc"><h2 id="h-sc">Notas</h2>
-  <div class="row"><label for="kind">Mostrar</label><select id="kind"><option value="check">Lesson Checks</option><option value="ex">Exercises</option><option value="wb">Workbook</option></select>
+  <div class="row"><label for="kind">Mostrar</label><select id="kind"><option value="check">Ejercicios de repaso (nº = repaso)</option><option value="dele">DELE (nº 1–6 = A1…C2)</option></select>
   <label for="mst">Stage</label><select id="mst"></select>
   <button type="button" id="csv" class="ghost">Exportar todas as tentativas (CSV)</button><span class="msg" id="scmsg" aria-live="polite"></span></div>
   <p class="hint">Escolha o Stage para ver as lessons dele. Cada célula mostra a melhor nota do aluno na lesson (pontos / total). Verde: 80% ou mais. Amarelo: 50% a 79%. Vermelho: abaixo de 50%.</p>
@@ -176,8 +176,8 @@ async function loadAttempts(){
   ATT=all;
 }
 function best(uid,kind,lesson){
-  const per={};const wb=kind==='wb',kk=wb?'ex':kind;
-  ATT.forEach(a=>{if(a.user_id===uid&&a.kind===kk&&a.lesson===lesson&&(kk!=='ex'||wb===/^wb/.test(String(a.ex)))){
+  const per={};const wb=kind==='dele',kk=wb?'ex':kind;
+  ATT.forEach(a=>{if(a.user_id===uid&&a.kind===kk&&a.lesson===lesson&&(kk!=='ex'||wb===/^dele:/.test(String(a.ex)))){
     const o=per[a.ex]||(per[a.ex]={s:0,t:a.total});if(a.score>o.s)o.s=a.score;if(a.total>o.t)o.t=a.total;}});
   const k=Object.keys(per);if(!k.length)return null;
   let s=0,t=0;k.forEach(e=>{s+=per[e].s;t+=per[e].t;});return {s:s,t:t};
@@ -223,7 +223,7 @@ function renderDet(){
   const rows=ATT.filter(a=>a.user_id===uid).reverse();
   const tb=el('tbody',{});
   if(!rows.length)tb.append(el('tr',{},el('td',{colspan:'5'},'Sem tentativas ainda.')));
-  rows.forEach(a=>tb.append(el('tr',{},el('td',{},fmt(a.created_at)),el('td',{},a.kind==='check'?'Lesson Check':(/^wb/.test(String(a.ex))?'Workbook '+String(a.ex).slice(-1):'Exercise')),el('td',{},'Lesson '+a.lesson),el('td',{},a.score+' / '+a.total),el('td',{},Math.round(a.score/a.total*100)+'%'))));
+  rows.forEach(a=>tb.append(el('tr',{},el('td',{},fmt(a.created_at)),el('td',{},a.kind==='check'?'Ejercicio de repaso':(/^dele:/.test(String(a.ex))?'DELE '+String(a.ex).split(':')[1]+' '+String(a.ex).split(':')[2]:'Ejercicio')),el('td',{},/^dele:/.test(String(a.ex))?'Nivel '+a.lesson:'Repaso '+a.lesson),el('td',{},a.score+' / '+a.total),el('td',{},Math.round(a.score/a.total*100)+'%'))));
   t.append(th(['Data','Tipo','Lesson','Nota','%']),tb);
 }
 $('kind').addEventListener('change',renderMat);
@@ -233,7 +233,7 @@ $('csv').addEventListener('click',()=>{
   const by={};PROFILES.forEach(p=>{by[p.id]=p;});
   const q=v=>'"'+String(v).replace(/"/g,'""')+'"';
   const lines=[['Aluno','E-mail','Tipo','Lesson','Exercicio','Pontos','Total','Percentual','Data'].map(q).join(';')];
-  ATT.forEach(a=>{const p=by[a.user_id]||{};lines.push([p.name||'',p.email||'',a.kind==='check'?'Lesson Check':(/^wb/.test(String(a.ex))?'Workbook':'Exercise'),a.lesson,a.ex,a.score,a.total,Math.round(a.score/a.total*100)+'%',fmt(a.created_at)].map(q).join(';'));});
+  ATT.forEach(a=>{const p=by[a.user_id]||{};lines.push([p.name||'',p.email||'',a.kind==='check'?'Ejercicio de repaso':(/^dele:/.test(String(a.ex))?'DELE':'Ejercicio'),a.lesson,a.ex,a.score,a.total,Math.round(a.score/a.total*100)+'%',fmt(a.created_at)].map(q).join(';'));});
   const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
   const u=URL.createObjectURL(blob),a=el('a',{href:u,download:'notas_callan.csv'});document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);
   setMsg('scmsg',ATT.length+' tentativas exportadas.','ok');
@@ -244,7 +244,7 @@ function ctInfo(){
   return sb.from('content').select('lesson,kind').limit(1000).then(r=>{
     if(r.error){$('ctinfo').textContent='Não foi possível ler o conteúdo: '+r.error.message;return;}
     const c={text:0,check:0,ex:0};(r.data||[]).forEach(x=>{c[x.kind]=(c[x.kind]||0)+1;});
-    $('ctinfo').textContent='No servidor agora: '+c.text+' lessons (texto), '+c.check+' Lesson Checks, '+c.ex+' conjuntos de exercícios.';
+    $('ctinfo').textContent='No servidor agora: '+c.text+' lessons (texto), '+c.check+' Ejercicios de repaso.';
   });
 }
 $('ctgo').addEventListener('click',async()=>{
