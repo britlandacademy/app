@@ -1,0 +1,8 @@
+/* Marca Español: azul-marinho + vermelho + dourado de ação (index, teste de nível, login) */
+:root:root,:root[data-theme="dark"]:root{--bg:#0B1620;--card:#102232;--surface:#142B3F;--ink:#F6F1E7;--muted:#B5BFC9;--mut:#B5BFC9;--line:#2D4258;--chip:#1A3550;--accent:#E8B84A;--accent-ink:#10273A;--acc:#E8B84A;--hl:#E8B84A;--hli:#10273A;--link:#F0C766;--band1:#8F1F27;--band2:#10273A}
+:root[data-theme="light"]:root{--bg:#F7F3EA;--card:#FFFFFF;--surface:#FFFFFF;--ink:#10273A;--muted:#4F5D6B;--mut:#4F5D6B;--line:#DDD3BF;--chip:#EFE6D2;--accent:#E8B84A;--accent-ink:#10273A;--acc:#E8B84A;--hl:#E8B84A;--hli:#10273A;--link:#9B1C24;--band1:#8F1F27;--band2:#10273A}
+.band{background:linear-gradient(135deg,var(--band1),var(--band2))!important;border:0!important;color:#fff}
+.band *{color:inherit}
+a:not(.btn):not(.card):not(.g-btn){color:var(--link)}
+.btn.primary,.g-btn:not(.ghost):not(.g-cta){background:#E8B84A!important;border-color:#E8B84A!important;color:#10273A!important}
+.lang-btn[aria-pressed="true"]{border-color:var(--link)!important;box-shadow:0 0 0 2px var(--link)!important}
