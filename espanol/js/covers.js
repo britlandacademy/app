@@ -3,6 +3,8 @@
 'use strict';
 var STG=[[1,16],[17,32],[33,52],[53,72],[73,92],[93,112]];
 var PER={ex:2,wb:4,check:1},MIN=0.7;
+var REP=[7,10,12,15,20,24,28,31,34,37,40,43,46,48,51,53,56,58,61,63,66,69,71,73,76,79,81,84,87,90,92,95,97,100,102,105,108,110,112];
+function repN(lo,hi){var n=0;for(var i=0;i<REP.length;i++)if(REP[i]>=lo&&REP[i]<=hi)n++;return n;}
 var COL=['#b3262b','#381215','#e8b84a','#8f1f27','#c9a85a','#862f36'];
 function T(s){try{return window.I18N&&I18N.t?I18N.t(s):s;}catch(e){return s;}}
 function stageOf(l){for(var i=0;i<STG.length;i++)if(l>=STG[i][0]&&l<=STG[i][1])return i+1;return 1;}
@@ -17,20 +19,20 @@ function stats(att,kind,n,upto){
     else if(kind==='ex'){if(a.k==='check'||!/^l\d+e/.test(e))continue;}
     else{if(a.k&&a.k!=='check')continue;if(!/^c\d+$/.test(e))continue;}
     p=a.t?a.s/a.t:0;if(best[e]===undefined||p>best[e])best[e]=p;}
-  var done=0,sum=0,total=PER[kind]*(hi-lo+1),byL={};
+  var done=0,sum=0,total=kind==='check'?repN(lo,hi):PER[kind]*(hi-lo+1),byL={};
   for(e in best){var m=e.match(/\d+/);l=m?+m[0]:0;if(kind==='wb'){l=+(e.match(/^wb(\d+)/)||[0,0])[1];}
     (byL[l]=byL[l]||[]).push(best[e]);}
   for(l in byL){var arr=byL[l].sort(function(x,y){return y-x;}).slice(0,PER[kind]);done+=arr.length;arr.forEach(function(v){sum+=v;});}
   var avg=done?sum/done:0;
-  var avail=upto?PER[kind]*Math.max(0,Math.min(hi,upto)-lo+1):total;
+  var avail=upto?(kind==='check'?repN(lo,Math.min(hi,upto)):PER[kind]*Math.max(0,Math.min(hi,upto)-lo+1)):total;
   return {done:done,total:total,avail:avail,avg:avg,complete:done>=total&&avg>=MIN};
 }
 /* header: cover + title + progress */
 function head(o){
   var w=el('div','cv-head'),img=cover(o.n,84),box=el('div','cv-txt');
-  box.append(el('b','',(o.title==='Exercises'||o.title==='Workbook'||o.title==='Lesson Checks')?T(o.title):o.title));
+  box.append(el('b','',o.title));
   if(o.total){var bar=el('div','cv-bar'),fill=el('i');fill.style.width=Math.round(100*o.done/o.total)+'%';bar.append(fill);box.append(bar);
-    box.append(el('small','',T(o.done+' of '+o.total+' lessons completed')));}
+    box.append(el('small','',o.done+' de '+o.total+' ejercicios completados'));}
   if(o.badge)box.append(el('em','cv-badge','✔ '+T(o.badge)));
   w.append(img,box);return w;
 }
@@ -71,7 +73,7 @@ function celebrate(o){
   var row=el('div','cv-row'),sh=el('div','cv-shine');sh.append(cover(o.n,130));row.append(sh);
   if(o.n<6&&o.canNext){row.append(el('span','cv-arrow','→'));var nx=el('div','cv-nx');nx.append(cover(o.n+1,100));row.append(nx);}
   var pct=Math.round(o.avg*100);
-  var sub=el('p','cv-sub',o.kind==='Workbook'?T('Workbook: all sections done, average '+pct+'%.'):T('Lesson Checks: all checks done, average '+pct+'%.'));
+  var sub=el('p','cv-sub',o.kind==='Workbook'?T('Workbook: all sections done, average '+pct+'%.'):('Ejercicios de repaso: todos completados, nota media '+pct+'%.'));
   var act=el('div','cv-act'),go=el('button','cv-btn',o.n<6&&o.canNext?T('Go to Stage '+(o.n+1)+' →'):T('Continue'));
   go.type='button';
   function close(){document.removeEventListener('keydown',kd);ov.classList.add('out');setTimeout(function(){ov.remove();},250);}
