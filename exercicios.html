@@ -159,6 +159,7 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 
 <div id="app" hidden>
   <div class="who"><span>Student: <b id="who"></b></span></div>
+  <div id="cvhead"></div>
   <nav class="tabs" id="tabs" aria-label="Stages"></nav>
   <div class="chips" id="chips" aria-label="Lessons"></div>
   <div id="panels"></div>
@@ -170,6 +171,7 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 <script src="js/i18n.js" charset="utf-8"></script>
 <script src="js/config.js" charset="utf-8"></script>
 <script src="js/gate.js" charset="utf-8"></script>
+<script src="js/covers.js" charset="utf-8"></script>
 <script>
 Gate.start({kinds:['ex'],attempts:'ex'},function(ctx){
 'use strict';
@@ -434,8 +436,25 @@ const tabsEl=document.getElementById('tabs'),panelsEl=document.getElementById('p
   chipsEl=document.getElementById('chips');
 const histPanel=el('section',{class:'panel',id:'panel-h',hidden:true,'aria-label':'My history'});
 let curStage=1;
+/* ---------- Student's Book cover: header, path and completion celebration ---------- */
+const CV_KIND='ex',CV_TITLE='Exercises';
+function cvUpdate(){
+  const h=document.getElementById('cvhead');h.textContent='';
+  if(curTab==='h')return;
+  const t0=STAGES[curStage-1];if(!t0)return;
+  const ls=stageLessons(t0),s=Covers.stats(me().attempts,CV_KIND,curStage);
+  h.append(Covers.head({title:CV_TITLE,n:curStage,done:ls.filter(L=>lessonStats(L).complete).length,total:ls.length,badge:s.complete?'Completed':''}));
+}
+function cvPath(){
+  const up=ctx.upto||0,w=document.createElement('div');
+  const hd=document.createElement('h2');hd.className='sep';hd.textContent=window.I18N?I18N.t('Your Stages'):'Your Stages';
+  w.append(hd,Covers.path({state:i=>{const open=Covers.STG[i-1][0]<=up,s=Covers.stats(me().attempts,CV_KIND,i);
+    return {cls:!open?'lock':(s.complete?'done':(i===curStage?'cur':'')),pct:s.total?100*s.done/s.total:0};}}));
+  histPanel.append(w);
+}
 function renderTabs(){
   tabsEl.textContent='';
+  cvUpdate();
   STAGES.forEach(t=>{
     const ls=stageLessons(t);if(!ls.length)return;
     const nDone=ls.filter(L=>lessonStats(L).complete).length;
@@ -477,7 +496,7 @@ function reportText(){
 let confirmDel=false;
 function renderHistory(){
   const s=me();if(!s)return;
-  histPanel.textContent='';
+  histPanel.textContent='';cvPath();
   const sum=el('div',{class:'hsum'});
   LESSONS.forEach(L=>{const st=lessonStats(L);if(!st.done)return;
     sum.append(el('div',{class:'hbox'},el('p',{class:'lab'},L.title),el('p',{class:'big-score'},st.pts+' / '+st.tot),

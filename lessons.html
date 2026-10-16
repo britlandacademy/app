@@ -166,6 +166,23 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 .nav{display:flex;gap:10px;margin:0 0 14px}
 .nav button{flex:1;min-height:48px;padding:8px 14px;font:inherit;font-weight:700;color:var(--accent);background:transparent;border:2px solid var(--accent);border-radius:3px;cursor:pointer}
 .nav button:disabled{opacity:.45;cursor:not-allowed}
+
+/* covers */
+.covers{margin:0 0 18px}
+.cvbig{margin:0 0 12px;text-align:center}
+.cvbig img{width:150px;height:auto;border-radius:5px;box-shadow:0 8px 22px rgba(0,0,0,.4);transition:opacity .25s,transform .25s}
+.cvbig figcaption{margin-top:8px;color:var(--muted);font-size:.9rem}
+.cvstrip{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.cvstrip button{padding:0;border:2px solid transparent;border-radius:4px;background:none;cursor:pointer;line-height:0;overflow:hidden;transition:transform .2s,border-color .2s,opacity .2s}
+.cvstrip button img{width:100%;height:auto;display:block}
+.cvstrip button:hover:not(:disabled){transform:translateY(-2px);border-color:var(--ink)}
+.cvstrip button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.cvstrip button[aria-current="true"]{border-color:#F5C542;transform:scale(1.06)}
+.cvstrip button:disabled{opacity:.28;filter:grayscale(1);cursor:not-allowed}
+.fadeout .cvbig img,.fadeout #out{opacity:0}
+@media(max-width:999px){.covers{display:flex;gap:16px;align-items:center}.cvbig{margin:0;flex:none}.cvbig img{width:110px}.cvstrip{flex:1 1 150px;min-width:150px}}
+@media(max-width:420px){.cvbig img{width:84px}.cvstrip{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){.cvbig img,.cvstrip button{transition:none}}
 .stage{max-width:720px}
 @media (min-width:1000px){
 .stage{max-width:none;display:grid;grid-template-columns:300px minmax(0,1fr);gap:0 32px;align-items:start}
@@ -201,6 +218,10 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 <main class="stage">
 <h2 class="sep" id="ttl">Lesson 1</h2>
 <aside class="side">
+<div class="covers" id="covers" aria-label="Student's Book">
+  <figure class="cvbig"><img id="cvbig" src="img/covers/cover-1.png" alt="" width="150" height="213"><figcaption id="cvcap"></figcaption></figure>
+  <div class="cvstrip" id="cvstrip" role="group" aria-label="Stage"></div>
+</div>
 <div class="pick">
   <div><label for="st">Stage</label><select id="st"></select></div>
   <div><label for="ls">Lesson</label><select id="ls"></select></div>
@@ -269,6 +290,24 @@ const stSel=document.getElementById('st'),lsSel=document.getElementById('ls'),ou
 const prevs=[document.getElementById('prev'),document.getElementById('prev2')],nexts=[document.getElementById('next'),document.getElementById('next2')];
 const CS=window.CALLAN_STAGE||1,CT=STAGES.find(t=>t.n===CS)||STAGES[0],LO=CT.from,HI=Math.min(CT.to,UPTO);
 STAGES.filter(t=>t.n===CT.n).forEach(t=>stSel.append(el('option',{value:String(t.n)},'Stage '+t.n)));
+/* ---- covers: big cover of this Stage + strip of all 12 ---- */
+(function(){
+  const img=document.getElementById('cvbig'),cap=document.getElementById('cvcap'),strip=document.getElementById('cvstrip');
+  img.src='img/covers/cover-'+CT.n+'.png';img.alt="Student's Book · Stage "+CT.n;img.height=Math.round(150*1.42);
+  const full=ALL.find(t=>t.n===CT.n);
+  cap.textContent="Student's Book · Stage "+CT.n+' · Lessons '+full.from+'–'+full.to;
+  ALL.forEach(t=>{
+    const open=t.from<=UPTO;
+    const b=el('button',{type:'button','aria-label':'Stage '+t.n+(open?'':' (locked)'),title:'Stage '+t.n,disabled:!open,'aria-current':t.n===CT.n?'true':null,onclick:()=>{
+      if(t.n===CT.n)return;
+      document.body.classList.add('fadeout');
+      setTimeout(()=>{try{localStorage.setItem('callan-stage',String(t.n));}catch(e){}
+        try{const u=new URL(location.href);u.searchParams.delete('stage');location.href=u.toString();}catch(e){location.reload();}},230);
+    }},el('img',{src:'img/covers/cover-'+t.n+'.png',alt:'',width:'60',height:'85'}));
+    strip.append(b);
+  });
+  img.style.opacity='0';requestAnimationFrame(()=>requestAnimationFrame(()=>{img.style.opacity='';}));
+})();
 let cur=LO;
 try{const v=parseInt(localStorage.getItem('callan-lesson-last'),10);if(v>=LO&&v<=HI)cur=v;}catch(e){}
 function fillLessons(n){

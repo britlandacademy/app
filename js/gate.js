@@ -218,7 +218,7 @@ function fetchAttempts(kind){
   return sb.from('attempts').select('lesson,ex,score,total,created_at').eq('kind',kind).eq('user_id',user.id)
     .order('created_at',{ascending:true}).limit(5000).then(function(r){
       if(r.error)throw r.error;
-      return (r.data||[]).map(function(a){return {l:a.lesson,e:a.ex,s:a.score,t:a.total,at:Date.parse(a.created_at)};});
+      return (r.data||[]).map(function(a){return {l:a.lesson,e:a.ex,s:a.score,t:a.total,at:Date.parse(a.created_at),k:kind};});
     });
 }
 function saveAttempt(kind,a){
@@ -259,7 +259,7 @@ function route(){
         message('No lessons yet',['Your access is approved, but no lesson has been released to you yet. Talk to your teacher.'],[btn('Check again',route),btn('Sign out',signOut,true)]);return;
       }
       return loadContent(OPTS.kinds).then(function(){
-        return OPTS.attempts?fetchAttempts(OPTS.attempts):[];
+        return OPTS.attempts?(Array.isArray(OPTS.attempts)?Promise.all(OPTS.attempts.map(fetchAttempts)).then(function(x){return [].concat.apply([],x);}):fetchAttempts(OPTS.attempts)):[];
       }).then(function(att){
         hideOverlay();addBar();
         CB({user:user,profile:prof,attempts:att,upto:upto()});
