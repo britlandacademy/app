@@ -278,7 +278,7 @@ function renderText(id,box){
     const k=b[0];
     if(k==='v')box.append(el('div',{class:'vrow'},b[1].map(c=>el('span',{},c))));
     else if(k==='qa'){box.append(el('div',{class:'qa'},el('p',{class:'qq'},b[1]),b[2]?el('p',{class:'qa-a'},b[2]):null));}
-    else if(k==='s')box.append(el('p',{class:'say'},b[1]));
+    else if(k==='s'||k==='ex')box.append(el('p',{class:'say'},b[1]));
     else if(k==='c')box.append(el('p',{class:'chartnote'},'Ver Gráfico '+b[1]));
     else if(k==='d'){
       const dp=player('Dictado '+b[1],base+'Dictados/Etapa '+n+' Dictado '+b[1]+'.mp3',true);
