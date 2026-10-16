@@ -359,18 +359,27 @@ function bI(L,d,id){
   });
   return {pre:[el('p',{class:'hint'},'Free writing: there is no single right answer. Your teacher can read it with you in class.')],rows:rows,grid:false,free:true};
 }
+let WAUD=null;
+function wbAudioPath(L,i){const t=stageOf(L.id);return 'Stage '+t.n+'/Workbook/Workbook Lesson '+String(L.id).padStart(3,'0')+' J'+(i+1)+'.mp3';}
+function playWb(L,i,rate,msg){
+  msg.textContent='';
+  if(WAUD){try{WAUD.pause();}catch(e){}}
+  return Gate.audioUrl(wbAudioPath(L,i)).then(u=>{const a=new Audio(u);a.playbackRate=rate;if('preservesPitch' in a)a.preservesPitch=true;WAUD=a;
+    a.onerror=()=>{msg.textContent='This audio is not available yet.';};
+    const p=a.play();if(p&&p.catch)p.catch(()=>{msg.textContent='This audio is not available yet.';});
+  },()=>{msg.textContent='This audio is not available yet.';});
+}
 function bJ(L,d,id){
-  const can=('speechSynthesis' in window);
   const rows=d.items.map((t,i)=>{
     const inp=el('input',{type:'text',id:id+'r'+i,class:'txt',autocomplete:'off',autocapitalize:'off',autocorrect:'off',spellcheck:'false','aria-label':'Write what you hear'});
-    const play=el('button',{type:'button',class:'small',onclick:()=>{if(!speak(t,.85))msg.textContent='Your browser cannot read aloud.';}},'🔊 Listen');
-    const slow=el('button',{type:'button',class:'small',onclick:()=>{if(!speak(t,.55))msg.textContent='Your browser cannot read aloud.';}},'🐢 Slowly');
+    const play=el('button',{type:'button',class:'small',onclick:()=>playWb(L,i,1,msg)},'🔊 Listen');
+    const slow=el('button',{type:'button',class:'small',onclick:()=>playWb(L,i,.75,msg)},'🐢 Slowly');
     const msg=el('span',{class:'hint'});
     return {nodes:[el('div',{class:'btnrow tight'},play,slow,msg),inp],
       get:()=>{if(!inp.value.trim())return {ok:false,msg:'Write what you hear.',model:t};return norm(inp.value)===norm(t)?{ok:true,model:t,warn:inp.value.trim().replace(/[.!?]+$/,'')!==inp.value.trim()&&!/[.!?]$/.test(inp.value.trim())?'':''}:{ok:false,msg:'Check the model answer.',model:t};},
       lock:()=>{inp.disabled=true;}};
   });
-  return {pre:[el('p',{class:'hint'},can?'Press Listen, then write the sentence. Use Slowly if you need more time.':'This browser cannot read aloud. Ask your teacher to dictate the sentences.')],rows:rows,grid:false};
+  return {pre:[el('p',{class:'hint'},'Press Listen, then write the sentence. Use Slowly if you need more time.')],rows:rows,grid:false};
 }
 function bO(L,d,id){
   const rows=d.items.map((it,i)=>{

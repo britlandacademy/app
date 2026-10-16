@@ -79,7 +79,7 @@ td.g{background:var(--ok-bg)}td.m{background:var(--warn-bg)}td.r{background:var(
 <section class="card" aria-labelledby="h-au"><h2 id="h-au">Áudios (MP3)</h2>
   <p class="hint" id="auinfo"></p>
   <div class="row"><input type="file" id="aufile" accept=".mp3,audio/mpeg" multiple aria-label="Arquivos MP3"><button type="button" id="augo">Enviar áudios</button></div>
-  <p class="hint">Escolha vários arquivos de uma vez (Ctrl+A na pasta). Os nomes devem ser como já estão: <i>Stage 1 Lesson 1.mp3</i> e <i>Stage 1 Lesson 6 Dictation 1.mp3</i>. O site organiza nas pastas certas sozinho.</p>
+  <p class="hint">Escolha vários arquivos de uma vez (Ctrl+A na pasta). Os nomes devem ser como já estão: <i>Stage 1 Lesson 1.mp3</i> e <i>Stage 1 Lesson 6 Dictation 1.mp3</i> e, para os ditados do Workbook, <i>Workbook Lesson 005 J1.mp3</i> (J1, J2, J3 = frase 1, 2, 3). O site organiza nas pastas certas sozinho.</p>
   <p class="msg" id="aumsg" aria-live="polite"></p>
   <div class="tw"><table id="aulist" hidden></table></div>
 </section>
@@ -269,6 +269,8 @@ $('ctgo').addEventListener('click',async()=>{
 function audioPath(name){
   let m=/^Stage (\d+) Lesson (\d+) Dictation (\d+)\.mp3$/i.exec(name);
   if(m)return 'Stage '+m[1]+'/Dictations/'+name;
+  m=/^Workbook Lesson (\d+) J(\d+)\.mp3$/i.exec(name);
+  if(m){const l=+m[1],S=[12,27,44,63,82,101,120,138,156,174,190,206];let n=1;while(n<12&&l>S[n-1])n++;return 'Stage '+n+'/Workbook/'+name;}
   m=/^Stage (\d+) Lesson (\d+)\.mp3$/i.exec(name);
   if(m)return 'Stage '+m[1]+'/'+name;
   return null;
@@ -279,11 +281,12 @@ async function auInfo(){
   for(const n of [1,2,3,4,5,6,7,8,9,10,11,12]){
     const a=await sb.storage.from('audio').list('Stage '+n,{limit:1000});
     const d=await sb.storage.from('audio').list('Stage '+n+'/Dictations',{limit:1000});
-    const na=(a.data||[]).filter(x=>/\.mp3$/i.test(x.name)).length,nd=(d.data||[]).filter(x=>/\.mp3$/i.test(x.name)).length;
-    total+=na+nd;
-    tb.append(el('tr',{},el('td',{},'Stage '+n),el('td',{},String(na)),el('td',{},String(nd))));
+    const w=await sb.storage.from('audio').list('Stage '+n+'/Workbook',{limit:1000});
+    const na=(a.data||[]).filter(x=>/\.mp3$/i.test(x.name)).length,nd=(d.data||[]).filter(x=>/\.mp3$/i.test(x.name)).length,nw=(w.data||[]).filter(x=>/\.mp3$/i.test(x.name)).length;
+    total+=na+nd+nw;
+    tb.append(el('tr',{},el('td',{},'Stage '+n),el('td',{},String(na)),el('td',{},String(nd)),el('td',{},String(nw))));
   }
-  t.append(th(['','Áudios das lessons','Ditados']),tb);t.hidden=false;
+  t.append(th(['','Áudios das lessons','Ditados','Ditados do Workbook']),tb);t.hidden=false;
   $('auinfo').textContent='No servidor agora: '+total+' arquivos de áudio.';
 }
 $('augo').addEventListener('click',async()=>{
