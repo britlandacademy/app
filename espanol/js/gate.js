@@ -100,7 +100,7 @@ function niceError(e){
   if(/password/i.test(m)&&/(least|short|weak)/i.test(m))return 'Choose a longer password (at least 8 characters).';
   if(/rate limit|too many/i.test(m))return 'Too many attempts. Wait a few minutes and try again.';
   if(/failed to fetch|network/i.test(m))return 'No connection. Check your internet and try again.';
-  return 'Something went wrong. Try again.'+(m?' ('+String(m).slice(0,140)+')':'');
+  return 'Something went wrong. Try again.'+(m?' ('+String(m).slice(0,140)+')':'')+(e&&e.stack?' ['+String(e.stack).split('\n').slice(1,3).join(' | ').replace(/https?:\/\/[^\/]+\/app\/espanol\//g,'').slice(0,200)+']':'');
 }
 
 /* ---------- login / request access ---------- */
