@@ -298,10 +298,28 @@ alias('Escolha vários arquivos de uma vez (Ctrl+A na pasta). Os nomes devem ser
 alias('Painel do professor','Teacher panel');
 
 var lang='en';
+var PG=(location.pathname.split('/').pop()||'index.html').replace(/\.html$/,'');
+var MODE=(PG==='workbook'||PG==='placement')?'free':(PG==='check'||PG==='exercicios')?'why':'lock';
+var HK='callan-why',hint='en';
+try{var hs=localStorage.getItem(HK);if(hs==='en'||hs==='pt'||hs==='es')hint=hs;}catch(e){}
 function detect(){
+  if(MODE!=='free'){try{localStorage.removeItem(KEY);}catch(e){}return 'en';}
   var s=null;try{s=localStorage.getItem(KEY);}catch(e){}
   if(s==='en'||s==='pt'||s==='es')return s;
   return 'en';
+}
+function refresh(){
+  var bs=document.querySelectorAll('.lang-sel .lang-btn');
+  for(var i=0;i<bs.length;i++){
+    var b=bs[i],fr=b.parentNode.getAttribute('data-free')==='1',cur=fr||MODE==='free'?lang:(MODE==='why'?hint:'en');
+    b.setAttribute('aria-pressed',b.getAttribute('data-l')===cur?'true':'false');
+  }
+}
+function after(){
+  if(MODE==='free'){defLang('en');return;}
+  try{localStorage.removeItem(KEY);}catch(e){}
+  if(lang!=='en'){lang='en';apply();try{window.dispatchEvent(new CustomEvent('langchange',{detail:'en'}));}catch(e){}}
+  refresh();
 }
 var IDX={en:0,pt:1,es:2};
 function tr(s){
@@ -364,20 +382,20 @@ function apply(){
   document.documentElement.setAttribute('lang',lang==='pt'?'pt-BR':lang);
   walk(document.body);doTitle();
 }
-function setLang(l){
+function setLang(l,force){
   if(!IDX.hasOwnProperty(l))return;
-  lang=l;try{localStorage.setItem(KEY,l);}catch(e){}
-  apply();
-  var bs=document.querySelectorAll('.lang-sel .lang-btn');
-  for(var i=0;i<bs.length;i++)bs[i].setAttribute('aria-pressed',bs[i].getAttribute('data-l')===l?'true':'false');
+  if(MODE!=='free'&&!force){
+    if(MODE==='why'){hint=l;try{localStorage.setItem(HK,l);}catch(e){}refresh();try{window.dispatchEvent(new CustomEvent('hintchange',{detail:l}));}catch(e){}}
+    return;
+  }
+  lang=l;if(MODE==='free'||!force){try{localStorage.setItem(KEY,l);}catch(e){}}
+  apply();refresh();
   try{window.dispatchEvent(new CustomEvent('langchange',{detail:l}));}catch(e){}
 }
 function defLang(l){
   var s=null;try{s=localStorage.getItem(KEY);}catch(e){}
   if(s==='en'||s==='pt'||s==='es'||!IDX.hasOwnProperty(l)||l===lang)return;
-  lang=l;apply();
-  var bs=document.querySelectorAll('.lang-sel .lang-btn');
-  for(var k=0;k<bs.length;k++)bs[k].setAttribute('aria-pressed',bs[k].getAttribute('data-l')===l?'true':'false');
+  lang=l;apply();refresh();
   try{window.dispatchEvent(new CustomEvent('langchange',{detail:l}));}catch(e){}
 }
 var FL={
@@ -396,16 +414,18 @@ function flagSVG(l,id){
    '<line x1="12" y1="1" x2="12" y2="23" stroke="rgba(255,255,255,.85)" stroke-width=".6"/><circle cx="12" cy="12" r="11" fill="none" stroke="rgba(128,128,128,.8)" stroke-width="1"/></svg>';
 }
 var FLAGN=0;
-function selector(){
-  var g=document.createElement('div');
+function selector(free){
+  var g=document.createElement('div');if(free)g.setAttribute('data-free','1');
   g.className='lang-sel';g.setAttribute('role','group');g.setAttribute('aria-label','Language');g.setAttribute('data-noi18n','1');
   LANGS.forEach(function(x){
     var b=document.createElement('button');b.type='button';b.className='lang-btn';b.setAttribute('data-l',x[0]);
-    b.setAttribute('aria-label',x[1]);b.title=x[1];b.setAttribute('aria-pressed',x[0]===lang?'true':'false');
+    b.setAttribute('aria-label',x[1]);b.title=x[1];
+    if(!free&&MODE==='lock'&&x[0]!=='en'){b.disabled=true;b.setAttribute('aria-disabled','true');}
     b.innerHTML=flagSVG(x[0],++FLAGN);
-    b.addEventListener('click',function(){setLang(x[0]);});
+    b.addEventListener('click',function(){setLang(x[0],!!free);});
     g.appendChild(b);
   });
+  setTimeout(refresh,0);
   return g;
 }
 var css=document.createElement('style');
@@ -414,6 +434,7 @@ css.textContent='.lang-sel{display:inline-flex;gap:8px;align-items:center}'+
  '.lang-btn[aria-pressed="true"]{border-color:var(--accent,#111);box-shadow:0 0 0 2px var(--accent,#111)}'+
  '.lang-btn:not([aria-pressed="true"]){opacity:.9}.lang-btn:hover{opacity:1}'+
  '.lang-btn:focus-visible{outline:3px solid var(--accent,#111);outline-offset:2px}'+
+ '.lang-btn:disabled{filter:grayscale(1);opacity:.4;cursor:not-allowed}.lang-btn:disabled:hover{opacity:.4}'+
  '.g-langrow{display:flex;justify-content:flex-end;margin:0 0 6px}';
 document.head.appendChild(css);
 lang=detect();
@@ -423,5 +444,5 @@ function start(){
   obs.observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:ATTRS});
 }
 if(document.body)start();else document.addEventListener('DOMContentLoaded',start);
-window.I18N={flag:function(l){return flagSVG(l,++FLAGN);},def:defLang,t:tr,selector:selector,set:setLang,get lang(){return lang;}};
+window.I18N={flag:function(l){return flagSVG(l,++FLAGN);},def:defLang,t:tr,selector:selector,set:setLang,after:after,mode:MODE,get lang(){return lang;},get hint(){return MODE==='why'?hint:lang;}};
 })();

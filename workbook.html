@@ -172,7 +172,7 @@ textarea.wrt{width:100%;font:inherit;font-size:1rem;color:var(--ink);background:
 .btnrow.tight{margin:0 0 8px;align-items:center}
 .pcellimg{}
 </style>
-<link rel="stylesheet" href="js/theme.css">
+<link rel="stylesheet" href="js/theme.css"><link rel="stylesheet" href="js/wm.css">
 
 <div class="wrap">
 <header>
@@ -477,7 +477,7 @@ function whyBox(w){
   const p=el('p',{class:'why-txt',hidden:true});
   const b=el('button',{type:'button',class:'small why-btn','aria-expanded':'false',onclick:()=>{
     const open=p.hidden;
-    if(open){const L=window.I18N&&I18N.lang,ix=L==='pt'?1:L==='es'?2:0;p.textContent=w[ix]||w[0];}
+    if(open){const L=window.I18N&&I18N.hint,ix=L==='pt'?1:L==='es'?2:0;p.textContent=w[ix]||w[0];}
     p.hidden=!open;b.setAttribute('aria-expanded',open?'true':'false');}},window.I18N?I18N.t('Why?'):'Why?');
   return el('div',{class:'why'},b,p);
 }
