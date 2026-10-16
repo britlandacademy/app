@@ -6,7 +6,7 @@ function T(s){try{return window.I18N&&I18N.t?I18N.t(s):s;}catch(e){return s;}}
 function ok(t){return t&&t.closest&&t.closest('input,textarea,select,[contenteditable="true"]');}
 function wm(label){
   var txt=String(label||'').replace(/[<>&"]/g,'').slice(0,60);
-  var svg='<svg xmlns="http://www.w3.org/2000/svg" width="340" height="220"><text x="20" y="150" transform="rotate(-24 170 110)" font-family="Arial,sans-serif" font-size="17" font-weight="700" fill="#808080" fill-opacity=".22">'+txt+'</text></svg>';
+  var svg='<svg xmlns="http://www.w3.org/2000/svg" width="520" height="340"><text x="40" y="200" transform="rotate(-24 260 170)" font-family="Arial,sans-serif" font-size="13" font-weight="400" fill="#808080" fill-opacity=".10">'+txt+'</text></svg>';
   var d=document.createElement('div');d.className='pr-wm';d.setAttribute('aria-hidden','true');
   d.style.backgroundImage='url("data:image/svg+xml;utf8,'+encodeURIComponent(svg)+'")';
   document.body.append(d);
