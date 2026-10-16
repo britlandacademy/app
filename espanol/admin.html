@@ -87,8 +87,10 @@ td.g{background:var(--ok-bg)}td.m{background:var(--warn-bg)}td.r{background:var(
 <script src="js/i18n.js" charset="utf-8"></script>
 <script src="js/config.js" charset="utf-8"></script>
 <script src="js/gate.js" charset="utf-8"></script>
+<script src="js/streak.js" charset="utf-8"></script>
 <script>
 Gate.start({admin:true,kinds:[]},function(ctx){
+  (function(){var m=document.querySelector('main')||document.body,b=document.createElement('div');b.id='streakAdmin';b.hidden=true;m.insertBefore(b,m.firstChild.nextSibling||null);if(window.Streak)Streak.admin(b);})();
 'use strict';
 const sb=Gate.sb,el=Gate.el;
 const $=id=>document.getElementById(id);

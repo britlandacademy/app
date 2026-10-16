@@ -110,6 +110,7 @@ a.card:hover .i-tg .r2,a.card:focus-visible .i-tg .r2{animation:rp 1.8s ease inf
 <h1 id="hi">Welcome</h1><p class="sub" id="sub">Choose an activity.</p>
 <section class="cont" id="cont" hidden><img class="cvr" id="cvr" src="img/covers/es-1.png" alt="" width="90" height="128"><div><small>Continúa donde lo dejaste</small><h2 id="ct">Lesson 1</h2><div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Ejercicios de repaso hechos" id="bar"><div id="fill"></div></div></div><a class="btn" href="check.html">Continue →</a><div id="cstrip" class="cstrip"></div></section>
 <div class="stats" id="stats" hidden><div class="st"><b id="s1">0</b><span>lessons available</span></div><div class="st"><b id="s2">0</b><span>ejercicios de repaso hechos</span></div><div class="st"><b id="s3">–</b><span>average score</span></div></div>
+<div id="streak" hidden></div>
 <div class="grid">
 <a class="card" href="lessons.html"><div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" class="i-book"><path class="rp" d="M12 6c2.5-1.5 5.5-1.5 8-.5V19c-2.5-1-5.5-1-8 .5z"/><path class="pg" d="M12 6C9.5 4.5 6.5 4.5 4 5.5V19c2.5-1 5.5-1 8 .5z"/><path class="tx" d="M15 9.5h3.2M15 12.5h3.2M6 9.5h3.2M6 12.5h3.2"/><g class="cv"><rect x="5.5" y="4" width="13" height="16" rx="1.6"/><path d="M8.7 4v16M12 8.5h3.5"/></g></svg></div><div class="tt"><b>Lessons</b><span>Read each lesson and listen to the audio</span><div class="pr" hidden><div class="bar"><div></div></div><small></small></div></div><i class="go" aria-hidden="true">→</i></a>
 <a class="card" href="check.html"><div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" class="i-ck"><rect class="bx" x="3.5" y="3.5" width="17" height="17" rx="3"/><path class="mk" d="M7.5 12.5l3.2 3.2L17 8.5"/></svg></div><div class="tt"><b>Ejercicios de repaso</b><span>Los ejercicios de repaso del libro</span><div class="pr" hidden><div class="bar"><div></div></div><small></small></div></div><i class="go" aria-hidden="true">→</i></a>
@@ -121,6 +122,7 @@ a.card:hover .i-tg .r2,a.card:focus-visible .i-tg .r2{animation:rp 1.8s ease inf
 <script src="js/config.js" charset="utf-8"></script>
 <script src="js/gate.js" charset="utf-8"></script>
 <script src="js/covers.js" charset="utf-8"></script>
+<script src="js/streak.js" charset="utf-8"></script>
 <script>
 var STAGES=[[1,16],[17,32],[33,52],[53,72],[73,92],[93,112]];
 var REP=[7,10,12,15,20,24,28,31,34,37,40,43,46,48,51,53,56,58,61,63,66,69,71,73,76,79,81,84,87,90,92,95,97,100,102,105,108,110,112];
@@ -132,6 +134,7 @@ Gate.start({kinds:[],attempts:['check','ex']},function(ctx){
   (ctx.attempts||[]).forEach(function(a){if(a.k==='ex'){if(/^dele:/.test(a.e))deleSet[a.e]=1;return;}var p=a.t?a.s/a.t:0;if(best[a.l]===undefined||p>best[a.l])best[a.l]=p;});
   var avail=REP.filter(function(l){return l<=upto;}),done=avail.filter(function(l){return best[l]!==undefined;}).length,sum=0;avail.forEach(function(l){if(best[l]!==undefined)sum+=best[l];});
   document.getElementById('stats').hidden=false;
+  if(window.Streak)Streak.mount(document.getElementById('streak'));
   document.getElementById('s1').textContent=upto;
   document.getElementById('s2').textContent=done;
   document.getElementById('s3').textContent=done?Math.round(sum/done*100)+'%':'–';

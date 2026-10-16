@@ -263,6 +263,7 @@ function route(){
         return OPTS.attempts?(Array.isArray(OPTS.attempts)?Promise.all(OPTS.attempts.map(fetchAttempts)).then(function(x){return [].concat.apply([],x);}):fetchAttempts(OPTS.attempts)):[];
       }).then(function(att){
         hideOverlay();addBar();
+        if(!OPTS.admin&&/(lessons|check|dele|exercicios|workbook|audio)/.test(location.pathname.split('/').pop()||'')){try{sb.rpc('ping_activity').then(function(){},function(){});}catch(e){}}
         CB({user:user,profile:prof,attempts:att,upto:upto()});
       });
     });

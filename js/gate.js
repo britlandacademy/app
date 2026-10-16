@@ -75,8 +75,8 @@ function showOverlay(){
   if(!overlay){if(window.I18N&&I18N.def)I18N.def('pt');overlay=el('div',{class:'g-ov',role:'dialog','aria-modal':'true','aria-label':'Sign in'});document.body.append(overlay);}
   overlay.textContent='';return overlay;
 }
-function hideOverlay(){if(overlay){overlay.remove();overlay=null;if(window.I18N&&I18N.def)I18N.def('en');}}
-function langRow(){return window.I18N?el('div',{class:'g-langrow'},window.I18N.selector()):null;}
+function hideOverlay(){if(overlay){overlay.remove();overlay=null;if(window.I18N){if(I18N.after)I18N.after();else if(I18N.def)I18N.def('en');}}}
+function langRow(){return window.I18N?el('div',{class:'g-langrow'},window.I18N.selector(true)):null;}
 function brand(){return el('p',{class:'g-hint'},'Student Area - Teacher Paulo Cruz');}
 
 function box(title){
@@ -263,6 +263,7 @@ function route(){
         return OPTS.attempts?(Array.isArray(OPTS.attempts)?Promise.all(OPTS.attempts.map(fetchAttempts)).then(function(x){return [].concat.apply([],x);}):fetchAttempts(OPTS.attempts)):[];
       }).then(function(att){
         hideOverlay();addBar();
+        if(!OPTS.admin&&/(lessons|check|dele|exercicios|workbook|audio)/.test(location.pathname.split('/').pop()||'')){try{sb.rpc('ping_activity').then(function(){},function(){});}catch(e){}}
         CB({user:user,profile:prof,attempts:att,upto:upto()});
       });
     });
