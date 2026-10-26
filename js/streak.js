@@ -77,7 +77,7 @@ function celebrate(n,start){
   o.innerHTML='<div class="sk-bx" role="dialog" aria-modal="true"><div class="sk-wrap l'+level+'"><i class="sk-aura"></i>'+acc(level)+'</div><h2>'+esc(title)+'</h2><div class="sk-big">'+esc(t.ndays.replace('{n}',n))+'</div><div class="sk-ph">'+esc(phr)+'</div><button type="button">'+esc(t.close)+'</button></div>';
   document.body.appendChild(o);
   o.querySelector('button').onclick=function(){o.remove();};
-  try{window.Covers&&Covers.confetti&&Covers.confetti();}catch(e){}
+  try{window.Covers&&Covers.confetti&&Covers.confetti(0,lang()==='es'?['#AA151B','#F1BF00','#AA151B','#F1BF00','#ffffff']:['#C8102E','#ffffff','#2a5db0','#C8102E','#ffffff','#2a5db0']);}catch(e){}
   play('leao_7dias');
 }
 function mount(box){

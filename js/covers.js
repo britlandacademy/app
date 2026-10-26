@@ -91,9 +91,9 @@ function celebrate(o){
   return true;
 }
 /* confetti burst on a fixed, click-through layer */
-function confetti(n){
+function confetti(n,cols){
   var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;if(reduce)return;
-  var ov=el('div','cv-fx'),c=['#F5C542','#ffffff',COL[(n||1)-1],COL[(n||1)-1],'#F5C542'],i,p;
+  var ov=el('div','cv-fx'),c=cols||['#F5C542','#ffffff',COL[(n||1)-1],COL[(n||1)-1],'#F5C542'],i,p;
   for(i=0;i<80;i++){p=el('i','cv-conf');p.style.left=(Math.random()*100)+'vw';p.style.background=c[i%c.length];
     p.style.animationDelay=(Math.random()*1)+'s';p.style.animationDuration=(2.4+Math.random()*2)+'s';p.style.transform='rotate('+(Math.random()*360)+'deg)';
     p.style.width=(6+Math.random()*6)+'px';p.style.height=(8+Math.random()*8)+'px';ov.append(p);}
