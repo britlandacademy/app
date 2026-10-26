@@ -120,7 +120,7 @@ function showLogin(mode){
     mode==='up'?[el('label',{for:'g-name'},'Your name'),name]:null,
     el('label',{for:'g-email'},'E-mail'),email,
     el('label',{for:'g-pass'},mode==='in'?'Password':'Choose a password (at least 8 characters)'),pass,
-    err,el('div',{class:'g-row'},go,el('a',{class:'g-btn g-cta',href:'placement.html'},'Take the free placement test')));
+    err,el('div',{class:'g-row'},go));
   form.addEventListener('submit',function(ev){
     ev.preventDefault();err.textContent='';
     var em=email.value.trim().toLowerCase(),pw=pass.value,nm=name.value.trim().replace(/\s+/g,' ');
