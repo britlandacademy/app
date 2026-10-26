@@ -106,16 +106,16 @@ function niceError(e){
 /* ---------- login / request access ---------- */
 function showLogin(mode){
   mode=mode||'in';
-  var b=box(mode==='in'?'Sign in':'Request access');
-  b.append(el('div',{class:'g-tabs',role:'group','aria-label':'Sign in or request access'},
+  var b=box(mode==='in'?'Sign in':'Create account');
+  b.append(el('div',{class:'g-tabs',role:'group','aria-label':'Sign in or create account'},
     el('button',{type:'button',class:'g-tab','aria-pressed':String(mode==='in'),onclick:function(){showLogin('in');}},'Sign in'),
-    el('button',{type:'button',class:'g-tab','aria-pressed':String(mode==='up'),onclick:function(){showLogin('up');}},'Request access')));
+    el('button',{type:'button',class:'g-tab','aria-pressed':String(mode==='up'),onclick:function(){showLogin('up');}},'Create account')));
   if(mode==='up')b.append(el('p',{class:'g-hint'},'First time here? Fill in the form. Your teacher will approve your access.'));
   var name=el('input',{id:'g-name',type:'text',autocomplete:'name',maxlength:'60',enterkeyhint:'next'});
   var email=el('input',{id:'g-email',type:'email',autocomplete:'email',inputmode:'email',autocapitalize:'none',spellcheck:'false',enterkeyhint:'next'});
   var pass=el('input',{id:'g-pass',type:'password',autocomplete:mode==='in'?'current-password':'new-password',enterkeyhint:'go'});
   var err=el('p',{class:'g-err','aria-live':'polite'});
-  var go=el('button',{type:'submit',class:'g-btn'},mode==='in'?'Sign in':'Send request');
+  var go=el('button',{type:'submit',class:'g-btn'},mode==='in'?'Sign in':'Create account');
   var form=el('form',{novalidate:true},
     mode==='up'?[el('label',{for:'g-name'},'Your name'),name]:null,
     el('label',{for:'g-email'},'E-mail'),email,
