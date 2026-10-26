@@ -64,7 +64,7 @@ html[data-theme="light"] .g-ov .bl-name i{color:#b01928}
 .band .bl-lock.stack img{height:84px}
 .head .bl-lock{flex:none;order:0}
 .head .bl-lock.stack b{font-size:1.45rem}.head .bl-lock.stack i{font-size:.85rem;margin-top:6px}.head .bl-lock.stack img{height:84px}
-.head .bl-name b{color:var(--ink)}
+.head .bl-name b{color:#fff}
 @media(max-width:560px){.band .bl-lock.stack img,.head .bl-lock.stack img{height:64px}.band .bl-lock.stack b,.head .bl-lock.stack b{font-size:1.15rem}.band .bl-lock.stack i,.head .bl-lock.stack i{font-size:.7rem}}
 
 /* Títulos na fonte do logo (Noto Serif Bold) */
@@ -91,3 +91,9 @@ a:not(.btn):not(.card):not(.g-btn){color:var(--link)}
 a.card:hover,.card:hover{border-color:var(--accent)}
 :focus-visible{outline:3px solid var(--gold2);outline-offset:2px}
 .bar>div,.bar div{background:var(--accent)}
+
+/* Faixa sempre escura: logos sempre claros, inclusive no modo claro */
+.head .logo,.band .logo,.head>.logo,.band>.logo{color:#fff!important}
+.head .bl-name b,.band .bl-name b{color:#fff!important}
+.head .bl-name i,.band .bl-name i{color:#ec4654!important}
+.head p,.head small,.head .sub,.band p,.band small{color:#cfd7e6!important}
