@@ -74,3 +74,20 @@ h2.sep,h2.sep#ttl,.big,.big-score,.card h2,.band h1{font-family:BLSerif,Georgia,
 .seal-foot{margin:34px 0 8px;padding-top:22px;border-top:1px solid var(--line);text-align:center}
 .seal-foot img{width:150px;height:auto}
 .stage>.seal-foot{grid-column:1/-1}
+
+/* ===== Britland look: same colours and buttons as the public site ===== */
+:root:root:root,:root[data-theme="dark"]:root:root{--bg:#0b1733;--card:#10224a;--surface:#132a5a;--ink:#f2f5fa;--muted:#b4bfd6;--mut:#b4bfd6;--line:#27407a;--chip:#1a3366;--accent:#c9a13b;--accent-ink:#1a1405;--acc:#c9a13b;--hl:#c9a13b;--hli:#1a1405;--link:#e4c06a;--band1:#10224a;--band2:#0b1733;--gold2:#e4c06a;--red:#b3202a}
+:root[data-theme="light"]:root:root{--bg:#faf8f3;--card:#ffffff;--surface:#ffffff;--ink:#17202f;--muted:#5a6577;--mut:#5a6577;--line:#e6e0d2;--chip:#efe9d9;--accent:#c9a13b;--accent-ink:#1a1405;--acc:#c9a13b;--hl:#c9a13b;--hli:#1a1405;--link:#1b3470;--band1:#10224a;--band2:#0b1733;--gold2:#e4c06a;--red:#b3202a}
+.band,.head{background:linear-gradient(160deg,var(--band2),var(--band1))!important;border:0!important;color:#fff}
+.btn,button.btn,a.btn,.g-btn,.g-sz button,.lang-btn{border-radius:99px!important;font-weight:700}
+.btn.primary,button.primary,.g-btn:not(.ghost):not(.g-cta),.btn:not(.ghost):not(.o){background:var(--accent)!important;border-color:var(--accent)!important;color:var(--accent-ink)!important}
+.btn.primary:hover,button.primary:hover,.g-btn:not(.ghost):not(.g-cta):hover,a.btn:hover{background:var(--gold2)!important;border-color:var(--gold2)!important}
+.btn.ghost,.g-btn.ghost{background:transparent!important;color:var(--ink)!important;border:2px solid var(--line)!important}
+.btn.ghost:hover,.g-btn.ghost:hover{border-color:var(--accent)!important}
+a:not(.btn):not(.card):not(.g-btn){color:var(--link)}
+:root[data-theme="light"] a:not(.btn):not(.card):not(.g-btn){color:var(--link)}
+.tab.on{border-color:var(--accent)}
+.chip2.on{background:var(--accent)!important;color:var(--accent-ink)!important}
+a.card:hover,.card:hover{border-color:var(--accent)}
+:focus-visible{outline:3px solid var(--gold2);outline-offset:2px}
+.bar>div,.bar div{background:var(--accent)}
