@@ -30,7 +30,7 @@ header{padding:8px 0 20px}
 .eyebrow{font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
 h1{font-family:var(--font-display);font-weight:700;font-size:clamp(1.7rem,5vw,2.5rem);line-height:1.15;margin:0 0 10px;text-wrap:balance}
 .intro{max-width:68ch;margin:0;color:var(--ink)}
-.gram{margin:0 0 14px;padding:14px 16px;border:1px solid var(--line);border-left:4px solid var(--accent,#F5C542);border-radius:3px;background:var(--surface);max-width:68ch}.gram h3{margin:0 0 2px;font-size:1.05rem}.gram .gref{margin:0 0 10px;color:var(--muted);font-size:.85rem}.gram .gtr{margin-top:10px;padding:6px 12px;border:1px solid var(--line);border-radius:3px;background:transparent;color:inherit;font:inherit;font-size:.85rem;cursor:pointer}.gram .gtr:hover{background:var(--line)}.gram dl{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:6px 14px}.gram dt{font-weight:700;color:var(--muted);font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;padding-top:2px}.gram dd{margin:0}@media (max-width:520px){.gram dl{grid-template-columns:1fr;gap:2px}.gram dd{margin-bottom:8px}}
+.gram{margin:0 0 14px;padding:14px 16px;border:1px solid var(--line);border-left:4px solid var(--accent,#F5C542);border-radius:3px;background:var(--surface);max-width:68ch}.gram h3{margin:0 0 2px;font-size:1.05rem}.gram .gref{margin:0 0 10px;color:var(--muted);font-size:.85rem}.gram .gtr{margin-top:10px;padding:6px 12px;border:1px solid var(--line);border-radius:3px;background:transparent;color:inherit;font:inherit;font-size:.85rem;cursor:pointer}.gram .gtr:hover{background:var(--line)}.gram dl{display:block!important}.gram dt{margin:14px 0 4px;padding-top:0}.gram dd{margin:0}.gram dd p{margin:0 0 4px}.gram dd ul{margin:0;padding-left:1.2em}.gram dd li{margin:0 0 4px}.gram dl{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:6px 14px}.gram dt{font-weight:700;color:var(--muted);font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;padding-top:2px}.gram dd{margin:0}@media (max-width:520px){.gram dl{grid-template-columns:1fr;gap:2px}.gram dd{margin-bottom:8px}}
 .rule{margin:14px 0 0;padding:12px 14px;border:1px solid var(--line);border-radius:3px;background:var(--surface);max-width:68ch}
 .rule b{font-weight:700}
 .eg{display:block;margin-top:4px;font-family:var(--font-display);font-size:1rem}
@@ -194,7 +194,16 @@ const LESSONS=(window.EXLESSONS||[]).filter(L=>L&&L.gram&&L.gram.parts&&L.gram.p
 const map=new Map();
 LESSONS.forEach(L=>{const k=L.gram.title;let e=map.get(k);if(!e){e={g:L.gram,ids:[]};map.set(k,e);}e.ids.push(L.id);if(!e.g.pt&&L.gram.pt)e.g=L.gram;});
 const cards=[];let allPt=false;
-function fill(c,pt){const g=c.e.g,usePt=pt&&g.pt&&g.pt.parts;c.dl.textContent='';(usePt?g.pt.parts:g.parts).forEach(p=>{c.dl.append(el('dt',{},p[0]),el('dd',{},p[1]));});c.h.textContent=usePt?'Gramática: '+g.pt.title:'Grammar: '+g.title;if(c.btn){c.btn.textContent=usePt?'Show in English':'Traduzir para o português';c.btn.setAttribute('aria-pressed',usePt?'true':'false');}c.pt=!!usePt;}
+function partDD(label,val){
+  const dd=el('dd',{});
+  let items=null;
+  if(Array.isArray(val))items=val;
+  else if(/^(Examples|Exemplos)$/.test(label)&&String(val).indexOf(' · ')>0)items=String(val).split(' · ');
+  if(items){const ul=el('ul',{});items.forEach(t=>ul.append(el('li',{},t)));dd.append(ul);}
+  else String(val).split('\n').forEach(t=>dd.append(el('p',{},t)));
+  return dd;
+}
+function fill(c,pt){const g=c.e.g,usePt=pt&&g.pt&&g.pt.parts;c.dl.textContent='';(usePt?g.pt.parts:g.parts).forEach(p=>{c.dl.append(el('dt',{},p[0]),partDD(p[0],p[1]));});c.h.textContent=usePt?'Gramática: '+g.pt.title:'Grammar: '+g.title;if(c.btn){c.btn.textContent=usePt?'Show in English':'Traduzir para o português';c.btn.setAttribute('aria-pressed',usePt?'true':'false');}c.pt=!!usePt;}
 map.forEach(e=>{const g=e.g;const h=el('h3',{});const dl=el('dl',{});const c={e,h,dl,btn:null,pt:false};
   const les=el('div',{class:'glessons'},'Lessons: ',e.ids.map(id=>el('a',{href:'exercicios.html?lesson='+id},String(id))));
   if(g.pt&&g.pt.parts){c.btn=el('button',{type:'button',class:'gtr noprint','aria-pressed':'false'},'Traduzir para o português');c.btn.addEventListener('click',()=>fill(c,!c.pt));}

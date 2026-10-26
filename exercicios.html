@@ -30,7 +30,7 @@ header{padding:8px 0 20px}
 .eyebrow{font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
 h1{font-family:var(--font-display);font-weight:700;font-size:clamp(1.7rem,5vw,2.5rem);line-height:1.15;margin:0 0 10px;text-wrap:balance}
 .intro{max-width:68ch;margin:0;color:var(--ink)}
-.gram{margin:0 0 14px;padding:14px 16px;border:1px solid var(--line);border-left:4px solid var(--accent,#F5C542);border-radius:3px;background:var(--surface);max-width:68ch}.gram h3{margin:0 0 2px;font-size:1.05rem}.gram .gref{margin:0 0 10px;color:var(--muted);font-size:.85rem}.gram .gtr{margin-top:10px;padding:6px 12px;border:1px solid var(--line);border-radius:3px;background:transparent;color:inherit;font:inherit;font-size:.85rem;cursor:pointer}.gram .gtr:hover{background:var(--line)}.gram dl{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:6px 14px}.gram dt{font-weight:700;color:var(--muted);font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;padding-top:2px}.gram dd{margin:0}@media (max-width:520px){.gram dl{grid-template-columns:1fr;gap:2px}.gram dd{margin-bottom:8px}}
+.gram{margin:0 0 14px;padding:14px 16px;border:1px solid var(--line);border-left:4px solid var(--accent,#F5C542);border-radius:3px;background:var(--surface);max-width:68ch}.gram h3{margin:0 0 2px;font-size:1.05rem}.gram .gref{margin:0 0 10px;color:var(--muted);font-size:.85rem}.gram .gtr{margin-top:10px;padding:6px 12px;border:1px solid var(--line);border-radius:3px;background:transparent;color:inherit;font:inherit;font-size:.85rem;cursor:pointer}.gram .gtr:hover{background:var(--line)}.gram dl{display:block!important}.gram dt{margin:14px 0 4px;padding-top:0}.gram dd{margin:0}.gram dd p{margin:0 0 4px}.gram dd ul{margin:0;padding-left:1.2em}.gram dd li{margin:0 0 4px}.gram dl{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:6px 14px}.gram dt{font-weight:700;color:var(--muted);font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;padding-top:2px}.gram dd{margin:0}@media (max-width:520px){.gram dl{grid-template-columns:1fr;gap:2px}.gram dd{margin-bottom:8px}}
 .rule{margin:14px 0 0;padding:12px 14px;border:1px solid var(--line);border-radius:3px;background:var(--surface);max-width:68ch}
 .rule b{font-weight:700}
 .eg{display:block;margin-top:4px;font-family:var(--font-display);font-size:1rem}
@@ -338,10 +338,19 @@ function whyBox(w){
 }
 
 /* ---------- grammar note (top of the lesson) ---------- */
+function partDD(label,val){
+  const dd=el('dd',{});
+  let items=null;
+  if(Array.isArray(val))items=val;
+  else if(/^(Examples|Exemplos)$/.test(label)&&String(val).indexOf(' · ')>0)items=String(val).split(' · ');
+  if(items){const ul=el('ul',{});items.forEach(t=>ul.append(el('li',{},t)));dd.append(ul);}
+  else String(val).split('\n').forEach(t=>dd.append(el('p',{},t)));
+  return dd;
+}
 function gramBox(g){
   if(!g||!g.parts||!g.parts.length)return null;
   const dl=el('dl',{});const h=el('h3',{},'Grammar: '+g.title);
-  const fill=pt=>{dl.textContent='';const src=pt&&g.pt?g.pt.parts:g.parts;src.forEach(p=>{dl.append(el('dt',{},p[0]),el('dd',{},p[1]));});h.textContent=(pt&&g.pt?'Gramática: '+g.pt.title:'Grammar: '+g.title);};
+  const fill=pt=>{dl.textContent='';const src=pt&&g.pt?g.pt.parts:g.parts;src.forEach(p=>{dl.append(el('dt',{},p[0]),partDD(p[0],p[1]));});h.textContent=(pt&&g.pt?'Gramática: '+g.pt.title:'Grammar: '+g.title);};
   fill(false);
   let btn=null;
   if(g.pt&&g.pt.parts){let on=false;btn=el('button',{type:'button',class:'gtr','aria-pressed':'false'},'Traduzir para o português');
