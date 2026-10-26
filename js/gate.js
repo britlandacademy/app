@@ -163,9 +163,9 @@ function addBar(){
   kids.push(themeBtn);
   if(window.I18N)kids.push(window.I18N.selector());
   var tabsNav=document.getElementById('tabs');
-  if(OPTS.noStageBox||BUS){}
+  if(OPTS.noStageBox){}
   else if(tabsNav&&OPTS.kinds&&OPTS.kinds.length){var sb2=stageBox();if(sb2)tabsNav.parentNode.insertBefore(sb2,tabsNav);}
-  else if(!BUS){var ss=stageSelect();if(ss)kids.push(ss);}
+  else{var ss=stageSelect();if(ss)kids.push(ss);}
   kids.push(el('a',{href:'index.html'},'Home'));
   if(prof.is_admin)kids.push(el('a',{href:'admin.html'},'Teacher panel'));
   kids.push(el('button',{type:'button',onclick:signOut},'Sign out'));
@@ -186,7 +186,7 @@ function upto(){if(BUS)return prof.is_admin?17:(prof.status==='approved'?(prof.b
 var STG=[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[139,156],[157,174],[175,190],[191,206]];
 function stageOf(n){var i;for(i=0;i<STG.length;i++)if(n>=STG[i][0]&&n<=STG[i][1])return i+1;return 1;}
 function curStage(){
-  var top=Math.max(upto(),1),mx=stageOf(top),v=0;
+  var top=Math.max(BUS?mainUpto():upto(),1),mx=stageOf(top),v=0;
   try{v=parseInt(new URLSearchParams(location.search).get('stage')||localStorage.getItem('callan-stage'),10);}catch(e){}
   return (v>=1&&v<=mx)?v:mx;
 }
@@ -211,16 +211,30 @@ function loadContent(kinds){
     });
   });
 }
+function mainUpto(){return prof.is_admin?206:(prof.status==='approved'?(prof.lessons_upto||0):0);}
+function bizUpto(){return prof.is_admin?17:(prof.status==='approved'?(prof.business_upto||0):0);}
+function goStage(v){
+  try{
+    if(v===13){var u=new URL(location.href);u.searchParams.set('course','business');u.searchParams.delete('stage');location.href=u.toString();return;}
+    if(BUS){try{localStorage.setItem('callan-stage',String(v));}catch(e){}var w=new URL(location.href);w.searchParams.delete('course');w.searchParams.delete('stage');location.href=w.toString();return;}
+  }catch(e){}
+  setStage(v);
+}
+function stageOpts(sel,disableLocked){
+  var mx=stageOf(Math.max(mainUpto(),1)),cur=BUS?13:curStage(),i,o;
+  for(i=1;i<=12;i++){if(!disableLocked&&i>mx)break;o=el('option',{value:String(i)},'Stage '+i);if(i>mx)o.disabled=true;if(i===cur)o.selected=true;sel.append(o);}
+  if(bizUpto()>0||disableLocked){o=el('option',{value:'13'},'Business');if(bizUpto()<1)o.disabled=true;if(cur===13)o.selected=true;sel.append(o);}
+}
 function stageSelect(){
-  var mx=stageOf(Math.max(upto(),1));if(mx<2||!OPTS.kinds||!OPTS.kinds.length)return null;
-  var sel=el('select',{'aria-label':'Stage',onchange:function(){setStage(parseInt(sel.value,10));}}),i,o;
-  for(i=1;i<=mx;i++){o=el('option',{value:String(i)},'Stage '+i);if(i===window.CALLAN_STAGE)o.selected=true;sel.append(o);}
+  if(!OPTS.kinds||!OPTS.kinds.length)return null;
+  if(stageOf(Math.max(mainUpto(),1))<2&&bizUpto()<1)return null;
+  var sel=el('select',{'aria-label':'Stage',onchange:function(){goStage(parseInt(sel.value,10));}});
+  stageOpts(sel,false);
   return sel;
 }
 function stageBox(){
-  var mx=stageOf(Math.max(upto(),1)),cur=curStage(),i,o;
-  var sel=el('select',{id:'g-stage','aria-label':'Stage',onchange:function(){setStage(parseInt(sel.value,10));}});
-  for(i=1;i<=12;i++){o=el('option',{value:String(i)},'Stage '+i);if(i>mx)o.disabled=true;if(i===cur)o.selected=true;sel.append(o);}
+  var sel=el('select',{id:'g-stage','aria-label':'Stage',onchange:function(){goStage(parseInt(sel.value,10));}});
+  stageOpts(sel,true);
   return el('div',{class:'g-stagebox'},el('label',{for:'g-stage'},'Choose the Stage to load'),sel,el('span',{class:'g-hint'},'Only this Stage is downloaded, to save data.'));
 }
 function fetchAttempts(kind){
@@ -304,5 +318,5 @@ function start(opts,cb){
 }
 
 window.Gate={start:start,signOut:signOut,saveAttempt:saveAttempt,audioUrl:audioUrl,el:el,
-  get profile(){return prof;},get user(){return user;},sb:null};
+  get profile(){return prof;},bizUpto:function(){return bizUpto();},mainUpto:function(){return mainUpto();},get user(){return user;},sb:null};
 })();

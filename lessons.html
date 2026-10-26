@@ -296,7 +296,11 @@ STAGES.filter(t=>t.n===CT.n).forEach(t=>stSel.append(el('option',{value:String(t
 /* ---- covers: big cover of this Stage + strip of all 12 ---- */
 (function(){
   const img=document.getElementById('cvbig'),strip=document.getElementById('cvstrip');
-  if(BUS){img.src='img/covers/business.png';img.alt="Callan for Business · Student's Book";img.height=Math.round(150*1.42);strip.hidden=true;document.querySelectorAll('p').forEach(p=>{if(/Choose a Stage and a lesson/.test(p.textContent))p.textContent='Choose a lesson. Listen to the audio and read the lesson, as in the book.';});return;}
+  if(BUS){img.src='img/covers/business.png';img.alt="Callan for Business · Student's Book";img.height=Math.round(150*1.42);document.querySelectorAll('p').forEach(p=>{if(/Choose a Stage and a lesson/.test(p.textContent))p.textContent='Choose a lesson. Listen to the audio and read the lesson, as in the book.';});
+    const S12=[1,13,28,45,64,83,102,121,139,157,175,191],mu=Gate.mainUpto();
+    S12.forEach((f,i)=>{const open=f<=mu;strip.append(el('button',{type:'button','aria-label':'Stage '+(i+1)+(open?'':' (locked)'),title:'Stage '+(i+1),disabled:!open,onclick:()=>{try{localStorage.setItem('callan-stage',String(i+1));}catch(e){}const u=new URL(location.href);u.searchParams.delete('course');u.searchParams.delete('stage');location.href=u.toString();}},el('img',{src:'img/covers/cover-'+(i+1)+'.png',alt:'',width:'60',height:'85'})));});
+    strip.append(el('button',{type:'button','aria-label':'Business',title:'Business','aria-current':'true'},el('img',{src:'img/covers/business.png',alt:'',width:'60',height:'85'})));
+    return;}
   img.src='img/covers/cover-'+CT.n+'.png';img.alt="Student's Book · Stage "+CT.n;img.height=Math.round(150*1.42);
   const full=ALL.find(t=>t.n===CT.n);
   ALL.forEach(t=>{
@@ -309,6 +313,7 @@ STAGES.filter(t=>t.n===CT.n).forEach(t=>stSel.append(el('option',{value:String(t
     }},el('img',{src:'img/covers/cover-'+t.n+'.png',alt:'',width:'60',height:'85'}));
     strip.append(b);
   });
+  if(Gate.bizUpto()>0)strip.append(el('button',{type:'button','aria-label':'Business',title:'Business',onclick:()=>{const u=new URL(location.href);u.searchParams.set('course','business');u.searchParams.delete('stage');location.href=u.toString();}},el('img',{src:'img/covers/business.png',alt:'',width:'60',height:'85'})));
   img.style.opacity='0';requestAnimationFrame(()=>requestAnimationFrame(()=>{img.style.opacity='';}));
 })();
 let cur=LO;
