@@ -190,12 +190,13 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 Gate.start({kinds:['check'],attempts:'check'},function(ctx){
 if(window.Protect)Protect.on((ctx.profile&&ctx.profile.name||'')+' · '+(ctx.user&&ctx.user.email||''));
 'use strict';
+const BUS=!!window.CBUS;const SLAB=n=>BUS?'Business':'Stage '+n;
 /* ---------- data: Lesson Check from the Teacher's Book (Stage 1) ---------- */
 const LESSONS=(window.CHECKS||[]).slice().sort((x,y)=>x.id-y.id);
 const BYID={};LESSONS.forEach(L=>{BYID[L.id]=L;});
-const STAGES=[{n:1,from:1,to:12},{n:2,from:13,to:27},{n:3,from:28,to:44},{n:4,from:45,to:63},{n:5,from:64,to:82},{n:6,from:83,to:101},{n:7,from:102,to:120},{n:8,from:121,to:138},{n:9,from:139,to:156},{n:10,from:157,to:174},{n:11,from:175,to:190},{n:12,from:191,to:206}];
+const STAGES=BUS?[{n:1,from:1,to:17}]:[{n:1,from:1,to:12},{n:2,from:13,to:27},{n:3,from:28,to:44},{n:4,from:45,to:63},{n:5,from:64,to:82},{n:6,from:83,to:101},{n:7,from:102,to:120},{n:8,from:121,to:138},{n:9,from:139,to:156},{n:10,from:157,to:174},{n:11,from:175,to:190},{n:12,from:191,to:206}];
 const LOADED=STAGES.filter(t=>LESSONS.some(L=>L.id>=t.from&&L.id<=t.to));
-const STAGETXT=LOADED.length>1?'Stages '+LOADED[0].n+' to '+LOADED[LOADED.length-1].n:(LOADED.length?'Stage '+LOADED[0].n:'');
+const STAGETXT=LOADED.length>1?(BUS?'Business':'Stages '+LOADED[0].n+' to '+LOADED[LOADED.length-1].n):(LOADED.length?SLAB(LOADED[0].n):'');
 const eb=document.getElementById('eyebrow');if(eb)eb.textContent=(STAGETXT?STAGETXT+' · ':'')+'Third Edition';
 function stageOf(id){return STAGES.find(t=>id>=t.from&&id<=t.to);}
 const MIN_PCT=0;   // minimum % of correct answers to count a lesson as completed (0 = checking the check is enough)
@@ -505,14 +506,14 @@ function cvUpdate(){
 }
 function cvPath(){
   const up=ctx.upto||0,w=document.createElement('div');
-  const hd=document.createElement('h2');hd.className='sep';hd.textContent=window.I18N?I18N.t('Your Stages'):'Your Stages';
+  const hd=document.createElement('h2');hd.className='sep';hd.textContent=window.I18N?I18N.t('Your Stages'):'Your Stages';if(BUS)hd.textContent='Your course';
   w.append(hd,Covers.path({state:i=>{const open=Covers.STG[i-1][0]<=up,s=Covers.stats(me().attempts,CV_KIND,i,up);
     return {cls:!open?'lock':(s.complete?'done':(i===curStage?'cur':'')),pct:s.total?100*s.done/s.total:0,done:s.done,avail:s.avail,acc:s.avg};},txt:true}));
   histPanel.append(w);
 }
 function cvCele(n){
   const s=Covers.stats(me().attempts,CV_KIND,n);if(!s.complete)return;
-  Covers.celebrate({kind:CV_TITLE,n:n,uid:ctx.user.id,avg:s.avg,canNext:n<12&&(ctx.upto||0)>Covers.STG[n-1][1],
+  Covers.celebrate({kind:CV_TITLE,n:n,uid:ctx.user.id,avg:s.avg,canNext:!BUS&&n<12&&(ctx.upto||0)>Covers.STG[n-1][1],
     next:m=>{try{localStorage.setItem('callan-stage',String(m));}catch(e){}location.href=location.pathname;}});
 }
 function renderTabs(){
@@ -522,7 +523,7 @@ function renderTabs(){
     const ls=stageLessons(t);if(!ls.length)return;
     const open=stageUnlocked(t),nDone=ls.filter(L=>lessonStats(L).complete).length;
     tabsEl.append(el('button',{type:'button',class:'tab'+(curStage===t.n&&curTab!=='h'?' on':''),disabled:!open,'aria-current':(curStage===t.n&&curTab!=='h')?'page':null,
-      onclick:()=>showStage(t.n)},'Stage '+t.n+' ',el('span',{class:'tstat'},open?(nDone+'/'+ls.length):'🔒')));
+      onclick:()=>showStage(t.n)},SLAB(t.n)+' ',el('span',{class:'tstat'},open?(nDone+'/'+ls.length):'🔒')));
   });
   tabsEl.append(el('button',{type:'button',class:'tab'+(curTab==='h'?' on':''),'aria-current':curTab==='h'?'page':null,onclick:()=>showTab('h')},'My history'));
   chipsEl.textContent='';
@@ -553,7 +554,7 @@ function showTab(t){
 }
 function reportText(){
   const s=me();const lines=['Callan English · Lesson Checks · '+STAGETXT,'Teacher: Paulo S. Cruz','Student: '+s.name];
-  STAGES.forEach(t=>{const ls=stageLessons(t);if(ls.length)lines.push('Stage '+t.n+': '+ls.filter(L=>lessonStats(L).complete).length+' of '+ls.length+' lessons completed');});
+  STAGES.forEach(t=>{const ls=stageLessons(t);if(ls.length)lines.push(SLAB(t.n)+': '+ls.filter(L=>lessonStats(L).complete).length+' of '+ls.length+' lessons completed');});
   lines.push('');
   LESSONS.forEach(L=>{const st=lessonStats(L);if(st.done)lines.push(L.title+': '+st.pts+' of '+st.tot+' ('+st.pct+'%) · '+(st.complete?'completed':'pending'));});
   lines.push('','History:');
@@ -567,7 +568,7 @@ function renderHistory(){
   const sum=el('div',{class:'hsum'});
   STAGES.forEach(t=>{const ls=stageLessons(t);if(!ls.length)return;const nd=ls.filter(L=>lessonStats(L).complete).length;
     let pts=0,tot=0;ls.forEach(L=>{const st=lessonStats(L);if(st.done){pts+=st.pts;tot+=st.tot;}});
-    sum.append(el('div',{class:'hbox'},el('p',{class:'lab'},'Stage '+t.n),el('p',{class:'big-score'},nd+' / '+ls.length+' lessons'),
+    sum.append(el('div',{class:'hbox'},el('p',{class:'lab'},SLAB(t.n)),el('p',{class:'big-score'},nd+' / '+ls.length+' lessons'),
       el('p',{class:'hint'},tot?(pts+' of '+tot+' points · '+Math.round(pts/tot*100)+'%'):'No scores yet')));});
   const rows=s.attempts.slice().reverse();
   const tbl=el('table',{},el('caption',{class:'hint'},'All attempts, newest first'),

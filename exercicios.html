@@ -177,10 +177,12 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 <script>
 Gate.start({kinds:['ex'],attempts:'ex'},function(ctx){
 'use strict';
+const BUS=!!window.CBUS;const SLAB=n=>BUS?'Business':'Stage '+n;
+if(BUS){const gl=document.querySelector('a[href="gramatica.html"]');if(gl&&gl.closest('p'))gl.closest('p').hidden=true;}
 /* ---------- data ---------- */
 const LESSONS=(window.EXLESSONS||[]).slice().sort((x,y)=>x.id-y.id);
 const BYID={};LESSONS.forEach(L=>{BYID[L.id]=L;});
-const STAGES=[{n:1,from:1,to:12},{n:2,from:13,to:27},{n:3,from:28,to:44},{n:4,from:45,to:63},{n:5,from:64,to:82},{n:6,from:83,to:101},{n:7,from:102,to:120},{n:8,from:121,to:138},{n:9,from:139,to:156},{n:10,from:157,to:174},{n:11,from:175,to:190},{n:12,from:191,to:206}];
+const STAGES=BUS?[{n:1,from:1,to:17}]:[{n:1,from:1,to:12},{n:2,from:13,to:27},{n:3,from:28,to:44},{n:4,from:45,to:63},{n:5,from:64,to:82},{n:6,from:83,to:101},{n:7,from:102,to:120},{n:8,from:121,to:138},{n:9,from:139,to:156},{n:10,from:157,to:174},{n:11,from:175,to:190},{n:12,from:191,to:206}];
 function stageOf(id){return STAGES.find(t=>id>=t.from&&id<=t.to);}
 function stageLessons(t){return LESSONS.filter(L=>L.id>=t.from&&L.id<=t.to);}
 const MIN_PCT=0;   // minimum % of correct answers to count a lesson as completed (0 = checking every exercise is enough)
@@ -469,7 +471,7 @@ function cvUpdate(){
 }
 function cvPath(){
   const up=ctx.upto||0,w=document.createElement('div');
-  const hd=document.createElement('h2');hd.className='sep';hd.textContent=window.I18N?I18N.t('Your Stages'):'Your Stages';
+  const hd=document.createElement('h2');hd.className='sep';hd.textContent=window.I18N?I18N.t('Your Stages'):'Your Stages';if(BUS)hd.textContent='Your course';
   w.append(hd,Covers.path({state:i=>{const open=Covers.STG[i-1][0]<=up,s=Covers.stats(me().attempts,CV_KIND,i,up);
     return {cls:!open?'lock':(s.complete?'done':(i===curStage?'cur':'')),pct:s.total?100*s.done/s.total:0,done:s.done,avail:s.avail,acc:s.avg};},txt:true}));
   histPanel.append(w);
@@ -481,7 +483,7 @@ function renderTabs(){
     const ls=stageLessons(t);if(!ls.length)return;
     const nDone=ls.filter(L=>lessonStats(L).complete).length;
     tabsEl.append(el('button',{type:'button',class:'tab'+(curStage===t.n&&curTab!=='h'?' on':''),'aria-current':(curStage===t.n&&curTab!=='h')?'page':null,
-      onclick:()=>showStage(t.n)},'Stage '+t.n+' ',el('span',{class:'tstat'},nDone+'/'+ls.length)));
+      onclick:()=>showStage(t.n)},SLAB(t.n)+' ',el('span',{class:'tstat'},nDone+'/'+ls.length)));
   });
   tabsEl.append(el('button',{type:'button',class:'tab'+(curTab==='h'?' on':''),'aria-current':curTab==='h'?'page':null,onclick:()=>showTab('h')},'My history'));
   chipsEl.textContent='';
@@ -509,7 +511,7 @@ function showTab(t){
 }
 function reportText(){
   const s=me();const lines=['Callan English · Exercises','Teacher: Paulo S. Cruz','Student: '+s.name];
-  STAGES.forEach(t=>{const ls=stageLessons(t);if(ls.length)lines.push('Stage '+t.n+': '+ls.filter(L=>lessonStats(L).complete).length+' of '+ls.length+' lessons completed');});
+  STAGES.forEach(t=>{const ls=stageLessons(t);if(ls.length)lines.push(SLAB(t.n)+': '+ls.filter(L=>lessonStats(L).complete).length+' of '+ls.length+' lessons completed');});
   LESSONS.forEach(L=>{const st=lessonStats(L);if(!st.done)return;lines.push(L.title+': '+st.pts+' of '+st.tot+' ('+st.pct+'%) · '+(st.complete?'completed':st.done+' of '+st.n+' exercises'));});
   lines.push('','History:');
   s.attempts.filter(a=>BYID[a.l]&&!/^wb/.test(String(a.e))).reverse().forEach(a=>{const L=BYID[a.l];const k=L.ex.findIndex(x=>x.id===a.e)+1;lines.push(fmt(a.at)+' · '+L.title+' · exercise '+k+' · '+a.s+'/'+a.t);});

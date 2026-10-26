@@ -163,18 +163,26 @@ function addBar(){
   kids.push(themeBtn);
   if(window.I18N)kids.push(window.I18N.selector());
   var tabsNav=document.getElementById('tabs');
-  if(OPTS.noStageBox){}
+  if(OPTS.noStageBox||BUS){}
   else if(tabsNav&&OPTS.kinds&&OPTS.kinds.length){var sb2=stageBox();if(sb2)tabsNav.parentNode.insertBefore(sb2,tabsNav);}
-  else{var ss=stageSelect();if(ss)kids.push(ss);}
+  else if(!BUS){var ss=stageSelect();if(ss)kids.push(ss);}
   kids.push(el('a',{href:'index.html'},'Home'));
   if(prof.is_admin)kids.push(el('a',{href:'admin.html'},'Teacher panel'));
   kids.push(el('button',{type:'button',onclick:signOut},'Sign out'));
   bar=el('div',{class:'g-bar'},kids);
   document.body.insertBefore(bar,document.body.firstChild);
+  if(BUS)fixLinks();
+}
+function fixLinks(){
+  Array.prototype.forEach.call(document.querySelectorAll('a[href]'),function(a){
+    var h=a.getAttribute('href')||'';
+    if(/^(lessons|check|exercicios)\.html/.test(h)&&h.indexOf('course=')<0)a.setAttribute('href',h+(h.indexOf('?')<0?'?':'&')+'course=business');
+  });
 }
 
 /* ---------- content ---------- */
-function upto(){return prof.is_admin?206:(prof.status==='approved'?prof.lessons_upto:0);}
+var BUS=/[?&]course=business/.test(location.search);window.CBUS=BUS;
+function upto(){if(BUS)return prof.is_admin?17:(prof.status==='approved'?(prof.business_upto||0):0);return prof.is_admin?206:(prof.status==='approved'?prof.lessons_upto:0);}
 var STG=[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[139,156],[157,174],[175,190],[191,206]];
 function stageOf(n){var i;for(i=0;i<STG.length;i++)if(n>=STG[i][0]&&n<=STG[i][1])return i+1;return 1;}
 function curStage(){
@@ -188,7 +196,7 @@ function loadContent(kinds){
   window.CHECKS=[];window.LESSON_TEXT={};window.EXLESSONS=[];
   window.LESSONS_UPTO=upto();
   if(!kinds||!kinds.length)return Promise.resolve();
-  var st=curStage(),lo=STG[st-1][0],hi=Math.min(STG[st-1][1],Math.max(upto(),1));
+  var st=BUS?1:curStage(),lo=BUS?1001:STG[st-1][0],hi=BUS?1000+Math.max(upto(),1):Math.min(STG[st-1][1],Math.max(upto(),1));
   window.CALLAN_STAGE=st;
   function one(tries){
     return sb.from('content').select('lesson,kind,body').in('kind',kinds).gte('lesson',lo).lte('lesson',hi).order('lesson',{ascending:true}).then(function(r){
@@ -198,7 +206,7 @@ function loadContent(kinds){
   return one(2).then(function(rows){
     rows.forEach(function(row){
       if(row.kind==='check')window.CHECKS.push(row.body);
-      else if(row.kind==='text')window.LESSON_TEXT[row.lesson]=row.body;
+      else if(row.kind==='text')window.LESSON_TEXT[BUS?row.lesson-1000:row.lesson]=row.body;
       else if(row.kind==='ex')window.EXLESSONS.push(row.body);
     });
   });
@@ -216,14 +224,16 @@ function stageBox(){
   return el('div',{class:'g-stagebox'},el('label',{for:'g-stage'},'Choose the Stage to load'),sel,el('span',{class:'g-hint'},'Only this Stage is downloaded, to save data.'));
 }
 function fetchAttempts(kind){
-  return sb.from('attempts').select('lesson,ex,score,total,created_at').eq('kind',kind).eq('user_id',user.id)
+  var q=sb.from('attempts').select('lesson,ex,score,total,created_at').eq('kind',kind).eq('user_id',user.id);
+  q=BUS?q.gte('lesson',1001):q.lte('lesson',206);
+  return q
     .order('created_at',{ascending:true}).limit(5000).then(function(r){
       if(r.error)throw r.error;
-      return (r.data||[]).map(function(a){return {l:a.lesson,e:a.ex,s:a.score,t:a.total,at:Date.parse(a.created_at),k:kind};});
+      return (r.data||[]).map(function(a){return {l:BUS?a.lesson-1000:a.lesson,e:a.ex,s:a.score,t:a.total,at:Date.parse(a.created_at),k:kind};});
     });
 }
 function saveAttempt(kind,a){
-  return sb.from('attempts').insert({kind:kind,lesson:a.l,ex:a.e,score:a.s,total:a.total!==undefined?a.total:a.t}).then(function(r){
+  return sb.from('attempts').insert({kind:kind,lesson:BUS?a.l+1000:a.l,ex:a.e,score:a.s,total:a.total!==undefined?a.total:a.t}).then(function(r){
     if(r.error)throw r.error;
   });
 }
@@ -256,7 +266,7 @@ function route(){
       if(OPTS.admin&&!prof.is_admin){
         message('Teachers only',['This page is for the teacher.'],[el('a',{class:'g-btn',href:'index.html',style:'text-decoration:none;display:inline-flex;align-items:center'},'Home'),btn('Sign out',signOut,true)]);return;
       }
-      if(!OPTS.admin&&upto()<1){
+      if(!OPTS.admin&&upto()<1&&!(!BUS&&(prof.business_upto||0)>0&&(location.pathname.split('/').pop()||'index.html')==='index.html')){
         message('No lessons yet',['Your access is approved, but no lesson has been released to you yet. Talk to your teacher.'],[btn('Check again',route),btn('Sign out',signOut,true)]);return;
       }
       return loadContent(OPTS.kinds).then(function(){

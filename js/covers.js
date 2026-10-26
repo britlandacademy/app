@@ -1,14 +1,15 @@
 /* Britland Academy · Student's Book covers: headers, path, completion celebration */
 (function(){
 'use strict';
-var STG=[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[139,156],[157,174],[175,190],[191,206]];
+var BUS=/[?&]course=business/.test(location.search);
+var STG=BUS?[[1,17]]:[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[139,156],[157,174],[175,190],[191,206]];
 var PER={ex:2,wb:4,check:1},MIN=0.7;
 var COL=['#e31d25','#8a0f2e','#fdb03a','#f15a24','#b4c635','#3b8a41','#69a5d3','#375a96','#c995c4','#945088','#c3bc9c','#8b8195'];
 function T(s){try{return window.I18N&&I18N.t?I18N.t(s):s;}catch(e){return s;}}
 function stageOf(l){for(var i=0;i<STG.length;i++)if(l>=STG[i][0]&&l<=STG[i][1])return i+1;return 1;}
-function src(n,es){return 'img/covers/'+(es?'es-':'cover-')+n+'.png';}
+function src(n,es){if(BUS)return 'img/covers/business.png';return 'img/covers/'+(es?'es-':'cover-')+n+'.png';}
 function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
-function cover(n,w,es){var i=new Image();i.src=src(n,es);i.alt=es?'Libro del Estudiante · Etapa '+n:"Student's Book · Stage "+n;i.width=w||90;i.height=Math.round((w||90)*1.42);i.className='cv-img';i.decoding='async';return i;}
+function cover(n,w,es){var i=new Image();i.src=src(n,es);i.alt=es?'Libro del Estudiante · Etapa '+n:(BUS?"Callan for Business":"Student's Book · Stage "+n);i.width=w||90;i.height=Math.round((w||90)*1.42);i.className='cv-img';i.decoding='async';return i;}
 /* progress of a Stage from the attempts list, independent of loaded content */
 function stats(att,kind,n,upto){
   var lo=STG[n-1][0],hi=STG[n-1][1],best={},cnt={},k,a,e,p,l;
@@ -37,7 +38,7 @@ function head(o){
 /* path of 12 covers */
 function path(o){
   var w=el('div','cv-path'),i,b,s;
-  for(i=1;i<=(o.es?6:12);i++){s=o.state(i);
+  for(i=1;i<=(BUS?1:(o.es?6:12));i++){s=o.state(i);
     b=el('div','cv-p '+s.cls);b.append(cover(i,60,o.es));
     if(s.cls==='done'){b.append(el('span','cv-tick','✔'));}
     if(o.txt&&s.cls!=='lock'&&s.avail!=null){var t=el('div','cv-num'),pc=s.avail?Math.round(100*s.done/s.avail):0;
@@ -67,7 +68,7 @@ function celebrate(o){
   mark(o);
   var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
   var ov=el('div','cv-ov'),card=el('div','cv-card');card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');
-  var kindT=o.kind,h=el('h2','',kindT+' · '+T('Stage '+o.n+' completed!'));h.id='cv-h';card.setAttribute('aria-labelledby','cv-h');
+  var kindT=o.kind,h=el('h2','',kindT+' · '+(BUS?T('Business completed!'):T('Stage '+o.n+' completed!')));h.id='cv-h';card.setAttribute('aria-labelledby','cv-h');
   var row=el('div','cv-row'),sh=el('div','cv-shine');sh.append(cover(o.n,130));row.append(sh);
   if(o.n<12&&o.canNext){row.append(el('span','cv-arrow','→'));var nx=el('div','cv-nx');nx.append(cover(o.n+1,100));row.append(nx);}
   var pct=Math.round(o.avg*100);

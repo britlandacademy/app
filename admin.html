@@ -145,17 +145,19 @@ function renderStu(){
   const t=$('stu');t.textContent='';
   const list=PROFILES.filter(p=>p.status!=='pending'&&!p.is_admin);
   const tb=el('tbody',{});
-  if(!list.length)tb.append(el('tr',{},el('td',{colspan:'5'},'Nenhum aluno ainda.')));
+  if(!list.length)tb.append(el('tr',{},el('td',{colspan:'6'},'Nenhum aluno ainda.')));
   list.forEach(p=>{
     const n=el('input',{type:'number',min:'0',max:'206',value:String(p.lessons_upto),'aria-label':'Liberado até, '+p.name});
+    const bn=el('input',{type:'number',min:'0',max:'17',value:String(p.business_upto||0),'aria-label':'Business liberado até, '+p.name});
     tb.append(el('tr',{},el('td',{},cvThumb(n,p.name||'(sem nome)')),el('td',{},p.email),
       el('td',{},el('span',{class:'st '+p.status},STATUS[p.status])),
       el('td',{},n,' ',stageSel(n),' ',el('button',{type:'button',class:'ghost',onclick:()=>update(p.id,{lessons_upto:clampN(n.value)})},'Salvar')),
+      el('td',{},bn,' ',el('button',{type:'button',class:'ghost',onclick:()=>update(p.id,{business_upto:Math.max(0,Math.min(17,parseInt(bn.value,10)||0))})},'Salvar')),
       el('td',{},p.status==='blocked'
         ?el('button',{type:'button',onclick:()=>update(p.id,{status:'approved'})},'Reativar')
         :el('button',{type:'button',class:'danger',onclick:()=>{if(confirm('Bloquear '+(p.name||p.email)+'?'))update(p.id,{status:'blocked'});}},'Bloquear'))));
   });
-  t.append(th(['Nome','E-mail','Situação','Liberado até a Lesson','']),tb);
+  t.append(th(['Nome','E-mail','Situação','Liberado até a Lesson','Business (0–17)','']),tb);
 }
 $('bulkstage').append(stageSel($('bulk')));
 $('bulkgo').addEventListener('click',()=>{
@@ -184,10 +186,10 @@ function best(uid,kind,lesson){
   const k=Object.keys(per);if(!k.length)return null;
   let s=0,t=0;k.forEach(e=>{s+=per[e].s;t+=per[e].t;});return {s:s,t:t};
 }
-const STG=[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[139,156],[157,174],[175,190],[191,206]];
+const STG=[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[139,156],[157,174],[175,190],[191,206],[1001,1017]];
 function fillStages(){
   const s=$('mst');if(s.options.length)return;
-  STG.forEach((r,k)=>s.append(el('option',{value:String(k)},'Stage '+(k+1)+' (Lessons '+r[0]+' a '+r[1]+')')));
+  STG.forEach((r,k)=>s.append(el('option',{value:String(k)},r[0]>1000?'Business (Lessons 1 a 17)':'Stage '+(k+1)+' (Lessons '+r[0]+' a '+r[1]+')')));
 }
 function renderMat(){
   fillStages();
@@ -197,16 +199,16 @@ function renderMat(){
   let lo=1,hi=12;
   {const r=STG[parseInt($('mst').value,10)||0];lo=r[0];hi=r[1];}
   $('mst').disabled=false;
-  const heads=['Aluno'];for(let i=lo;i<=hi;i++)heads.push(String(i));heads.push('Média');
+  const heads=['Aluno'];for(let i=lo;i<=hi;i++)heads.push(String(i>1000?i-1000:i));heads.push('Média');
   const tb=el('tbody',{});
   if(!studs.length)tb.append(el('tr',{},el('td',{colspan:String(hi-lo+3)},'Nenhum aluno ainda.')));
   studs.forEach(p=>{
     const cells=[el('td',{},p.name||p.email)];let sp=0,st=0;
     for(let i=lo;i<=hi;i++){
       const b=best(p.id,kind,i);
-      if(!b){cells.push(el('td',{class:'c'},i<=p.lessons_upto?'·':'–'));continue;}
+      if(!b){cells.push(el('td',{class:'c'},(i>1000?i-1000<=(p.business_upto||0):i<=p.lessons_upto)?'·':'–'));continue;}
       const pct=Math.round(b.s/b.t*100);sp+=b.s;st+=b.t;
-      cells.push(el('td',{class:'c '+(pct>=80?'g':pct>=50?'m':'r'),title:'Lesson '+i+': '+b.s+'/'+b.t+' ('+pct+'%)'},b.s+'/'+b.t));
+      cells.push(el('td',{class:'c '+(pct>=80?'g':pct>=50?'m':'r'),title:'Lesson '+(i>1000?i-1000:i)+': '+b.s+'/'+b.t+' ('+pct+'%)'},b.s+'/'+b.t));
     }
     cells.push(el('td',{class:'c'},st?Math.round(sp/st*100)+'%':'–'));
     tb.append(el('tr',{},cells));
@@ -269,6 +271,10 @@ $('ctgo').addEventListener('click',async()=>{
 
 /* ----- audio ----- */
 function audioPath(name){
+  let mb=/^Business Lesson (\d+) Dictation (\d+)\.mp3$/i.exec(name);
+  if(mb)return 'Business/Dictations/'+name;
+  mb=/^Business Lesson (\d+)\.mp3$/i.exec(name);
+  if(mb)return 'Business/'+name;
   let m=/^Stage (\d+) Lesson (\d+) Dictation (\d+)\.mp3$/i.exec(name);
   if(m)return 'Stage '+m[1]+'/Dictations/'+name;
   m=/^Workbook Lesson (\d+) J(\d+)\.mp3$/i.exec(name);
