@@ -97,3 +97,13 @@ a.card:hover,.card:hover{border-color:var(--accent)}
 .head .bl-name b,.band .bl-name b{color:#fff!important}
 .head .bl-name i,.band .bl-name i{color:#ec4654!important}
 .head p,.head small,.head .sub,.band p,.band small{color:#cfd7e6!important}
+
+/* Topo: escudo Britland à esquerda e Callan à direita, centralizados na mesma linha */
+.head,.band{display:flex!important;flex-wrap:wrap!important;align-items:center!important;justify-content:space-between!important;gap:12px 18px!important;padding:16px 22px!important}
+.head{border-radius:14px!important}
+.head>p{display:none!important}
+.head .bl-lock,.band .bl-lock{order:0;flex:none}
+.head .logo,.band .logo{width:clamp(104px,24vw,170px)!important;height:auto!important;flex:none!important;margin-left:auto!important;order:1}
+.band>div:not(.bl-lock){order:2;flex:1 1 100%;min-width:0}
+@media(min-width:760px){.band{flex-wrap:nowrap!important}.band .logo{order:3}.band>div:not(.bl-lock){order:2;flex:1 1 auto}}
+@media(max-width:560px){.head,.band{padding:14px 16px!important}}
