@@ -94,8 +94,10 @@ function paintAv(box){
 }
 function mount(box){
   addCss();var t=T(),sb=window.Gate&&Gate.sb;if(!sb||!box)return;
+  var sk0=!!(Gate.skel&&box.hidden);if(sk0){box.hidden=false;Gate.skel(box,2,72);}
+  var undo=function(){if(sk0&&box.querySelector('.bl-sk')){box.textContent='';box.hidden=true;}};
   Promise.all([sb.rpc('my_streak'),sb.rpc('streak_board')]).then(function(r){
-    var s=r[0].data;if(r[0].error||!s)return;var rows=(r[1]&&r[1].data)||[];
+    var s=r[0].data;if(r[0].error||!s){undo();return;}var rows=(r[1]&&r[1].data)||[];
     var cur=s.cur||0,wk=s.week||[];
     var h='<div class="sk-top">'+lion(cur)+'<div class="sk-m"><div class="sk-n">'+cur+'</div><div class="sk-l">'+esc(cur===1?t.d1:t.d)+'</div></div><div class="sk-b">'+esc(t.best)+'<b>'+(s.best||0)+'</b></div></div>';
     h+='<div class="sk-w">'+wk.map(function(d,i){return '<div class="sk-d'+(d.on?' on':'')+(d.fz?' fz':'')+(d.today?' td':'')+'">'+esc(t.w[i])+'<i>'+(d.on?'✓':d.fz?'❄':'')+'</i></div>';}).join('')+'</div>';
@@ -104,16 +106,18 @@ function mount(box){
     box.className='sk';box.innerHTML=h;box.hidden=false;paintAv(box);
     if(s.active_today&&cur>0&&cur<7){var dk='streak-snd-'+lang()+'-'+(wk.filter(function(d){return d.today;})[0]||{}).d;try{if(!localStorage.getItem(dk)){localStorage.setItem(dk,'1');play('crepitar');}}catch(e){}}
     var ms=milestone(cur);if(ms){var st='';try{var ld=new Date((s.last||'')+'T12:00:00');ld.setDate(ld.getDate()-(cur-1));st=ld.toISOString().slice(0,10);}catch(e){}celebrate(ms,st);}
-  }).catch(function(){});
+  }).catch(function(){undo();});
 }
 function admin(box){
   addCss();var t=T(),sb=window.Gate&&Gate.sb;if(!sb||!box)return;
+  var sk0=!!(Gate.skel&&box.hidden);if(sk0){box.hidden=false;Gate.skel(box,2,72);}
+  var undo=function(){if(sk0&&box.querySelector('.bl-sk')){box.textContent='';box.hidden=true;}};
   sb.rpc('admin_streaks').then(function(r){
-    if(r.error)return;var rows=(r.data||[]).slice().sort(function(a,b){return (b.cur||0)-(a.cur||0)||(b.best||0)-(a.best||0);});
+    if(r.error){undo();return;}var rows=(r.data||[]).slice().sort(function(a,b){return (b.cur||0)-(a.cur||0)||(b.best||0)-(a.best||0);});
     box.className='sk';
     box.innerHTML='<h3 style="margin:0 0 10px">🔥 '+esc(t.at)+'</h3>'+(rows.length?'<div style="overflow-x:auto"><table class="sk-at"><tr><th>'+esc(t.an)+'</th><th class="n">'+esc(t.ac)+'</th><th class="n">'+esc(t.ab)+'</th><th>'+esc(t.al)+'</th><th class="n">'+esc(t.ad)+'</th></tr>'+rows.map(function(x){return '<tr><td>'+esc(x.name||x.email)+'</td><td class="n">'+(x.cur||0)+'</td><td class="n">'+(x.best||0)+'</td><td>'+esc(x.last_day||'–')+'</td><td class="n">'+(x.total_days||0)+'</td></tr>';}).join('')+'</table></div>':'<div class="sk-l">'+esc(t.ae)+'</div>');
     box.hidden=false;
-  }).catch(function(){});
+  }).catch(function(){undo();});
 }
 window.Streak={mount:mount,admin:admin};
 })();

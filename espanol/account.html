@@ -105,7 +105,8 @@ function themeUi(){const t=Gate.theme();document.querySelectorAll('#thm button')
 document.querySelectorAll('#thm button').forEach(b=>b.addEventListener('click',()=>{Gate.setTheme(b.dataset.v);themeUi();}));themeUi();
 document.querySelectorAll('#sz button').forEach(b=>b.addEventListener('click',()=>Gate.setSize(Gate.sizeIdx()+(+b.dataset.d))));
 
-async function grades(){
+async function grades(){const b=$('g');Gate.skel(b,3,52);try{await grades0();}finally{Gate.unskel(b);}}
+async function grades0(){
   const box=$('g'),all=[];let from=0;
   for(;;){const r=await sb.from('attempts').select('kind,lesson,ex,score,total,created_at').order('created_at',{ascending:true}).range(from,from+999);
     if(r.error){box.append(el('p',{class:'msg bad'},'Could not load your grades: '+r.error.message));return;}
@@ -136,7 +137,8 @@ async function grades(){
   const lastD=[...box.querySelectorAll('details')].pop();if(lastD)lastD.open=true;
 }
 
-async function pays(){
+async function pays(){const b=$('p');Gate.skel(b,2,60);try{await pays0();}finally{Gate.unskel(b);}}
+async function pays0(){
   const box=$('p');
   const a=await sb.from('subs').select('*').order('created_at');
   if(a.error){box.append(el('p',{class:'hint'},'Payment information is not available yet.'));return;}
