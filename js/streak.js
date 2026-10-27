@@ -6,7 +6,7 @@ var L={
   w:['S','T','Q','Q','S','S','D'],ms:'Ofensiva de {n} dias!',ms2:'Continue assim!',close:'Continuar',none:'Ninguém com ofensiva ainda.',
   at:'Painel de ofensivas',an:'Aluno',ac:'Atual',ab:'Recorde',al:'Último dia',ad:'Dias',ae:'Nenhum aluno ainda.'},
  en:{wk1:'Week complete!',wkN:'{w} weeks in a row!',m30:'A month-long streak!',m100:'100-day streak!',m365:'A whole year!',ndays:'{n} days in a row',ph:['Keep it up!','You are unstoppable!','What consistency!','The lion is proud of you!','Champion habits!','Nothing can stop you!','Another week in the bank!'],t:'Streak',d:'day streak',d1:'day streak',best:'Best',fz:'Freeze available this week',nofz:'Freeze already used this week',
-  go:'Study today to keep your streak!',ok:'Done for today. See you tomorrow!',rank:'Class ranking',me:'you',
+  go:'Study today to keep your streak!',gos:['Hi{c}! Your next exercise is ready. Just 10 minutes today.','Small steps every day build fluent English{c}. Ready for yours?','Your English is waiting for you{c}. Come and practise!','A few minutes now will make tomorrow\u2019s class easier{c}.','You\u2019re closer than you think{c}. Let\u2019s do today\u2019s exercise!'],gok:['Keep your streak alive{c}! One exercise is all it takes.','Don\u2019t break the chain{c}: {d} days in a row so far!'],gom:['We miss you{c}! Come back and pick up where you left off.','No pressure{c}. Just one short exercise to get going again.'],ok:'Done for today. See you tomorrow!',rank:'Class ranking',me:'you',
   w:['M','T','W','T','F','S','S'],ms:'{n}-day streak!',ms2:'Keep it up!',close:'Continue',none:'Nobody has a streak yet.',
   at:'Streak panel',an:'Student',ac:'Current',ab:'Best',al:'Last day',ad:'Days',ae:'No students yet.'},
  es:{wk1:'¡Semana completa!',wkN:'¡{w} semanas seguidas!',m30:'¡Un mes de racha!',m100:'¡100 días de racha!',m365:'¡Un año entero!',ndays:'{n} días seguidos',ph:['¡Sigue así!','¡Imparable!','¡Qué constancia!','¡El león está orgulloso!','¡Hábito de campeón!','¡Nadie te detiene!','¡Otra semana más!'],t:'Racha',d:'días seguidos',d1:'día seguido',best:'Récord',fz:'Congelación disponible esta semana',nofz:'Congelación ya usada esta semana',
@@ -80,6 +80,14 @@ function celebrate(n,start){
   try{window.Covers&&Covers.confetti&&Covers.confetti(0,lang()==='es'?['#AA151B','#F1BF00','#AA151B','#F1BF00','#ffffff']:['#C8102E','#ffffff','#2a5db0','#C8102E','#ffffff','#2a5db0']);}catch(e){}
   play('leao_7dias');
 }
+function nudge(t,s,cur){
+  if(!t.gos)return t.go;
+  var nm=((window.Gate&&window.Gate.profile&&window.Gate.profile())||{}).name||'';nm=String(nm).trim().split(/\s+/)[0];
+  var c=nm?', '+nm:'',gap=0;try{if(s.last)gap=Math.round((Date.now()-new Date(s.last+'T12:00:00'))/864e5);}catch(e){}
+  var set=gap>=3?t.gom:(cur>=2?t.gos.concat(t.gok):t.gos);
+  var d=new Date(),seed=d.getFullYear()*400+d.getMonth()*31+d.getDate();
+  return set[seed%set.length].replace(/\{c\}/g,c).replace('{d}',cur);
+}
 function mount(box){
   addCss();var t=T(),sb=window.Gate&&Gate.sb;if(!sb||!box)return;
   Promise.all([sb.rpc('my_streak'),sb.rpc('streak_board')]).then(function(r){
@@ -87,7 +95,7 @@ function mount(box){
     var cur=s.cur||0,wk=s.week||[];
     var h='<div class="sk-top">'+lion(cur)+'<div class="sk-m"><div class="sk-n">'+cur+'</div><div class="sk-l">'+esc(cur===1?t.d1:t.d)+'</div></div><div class="sk-b">'+esc(t.best)+'<b>'+(s.best||0)+'</b></div></div>';
     h+='<div class="sk-w">'+wk.map(function(d,i){return '<div class="sk-d'+(d.on?' on':'')+(d.fz?' fz':'')+(d.today?' td':'')+'">'+esc(t.w[i])+'<i>'+(d.on?'✓':d.fz?'❄':'')+'</i></div>';}).join('')+'</div>';
-    h+='<div class="sk-i"><span>'+(s.active_today?esc(t.ok):esc(t.go))+'</span><span>'+(s.freeze_left>0?'❄ '+esc(t.fz):esc(t.nofz))+'</span></div>';
+    h+='<div class="sk-i"><span>'+(s.active_today?esc(t.ok):esc(nudge(t,s,cur)))+'</span><span>'+(s.freeze_left>0?'❄ '+esc(t.fz):esc(t.nofz))+'</span></div>';
     if(rows.length)h+='<details class="sk-r"><summary>🏆 '+esc(t.rank)+'</summary><ol>'+rows.map(function(x,i){return '<li'+(x.me?' class="me"':'')+'><span>'+(i+1)+'</span><span>'+esc(x.name)+(x.me?' ('+esc(t.me)+')':'')+'</span><span>🔥 '+x.cur+'</span></li>';}).join('')+'</ol></details>';
     box.className='sk';box.innerHTML=h;box.hidden=false;
     if(s.active_today&&cur>0&&cur<7){var dk='streak-snd-'+lang()+'-'+(wk.filter(function(d){return d.today;})[0]||{}).d;try{if(!localStorage.getItem(dk)){localStorage.setItem(dk,'1');play('crepitar');}}catch(e){}}

@@ -172,6 +172,26 @@ function paintAvatars(){
   Array.prototype.forEach.call(document.querySelectorAll('[data-pf-av]'),function(n){window.Profile.paint(n,prof.avatar,prof.id||user.id);});
 }
 function setAvatar(id){if(prof)prof.avatar=id;paintAvatars();}
+function firstName(){return String((prof&&prof.name)||'').trim().split(/\s+/)[0]||'';}
+function thanksPay(){
+  if(!sb||!prof||prof.is_admin||BUS)return;
+  sb.from('charges').select('id,due_date,paid_on').not('paid_on','is',null).order('paid_on',{ascending:false}).limit(3).then(function(r){
+    var rows=(r&&r.data)||[],lim=new Date();lim.setDate(lim.getDate()-14);var cut=lim.toISOString().slice(0,10),c=null;
+    rows.forEach(function(x){if(c||x.paid_on<cut)return;try{if(!localStorage.getItem('bl-thanks-'+x.id))c=x;}catch(e){}});
+    if(!c)return;
+    try{localStorage.setItem('bl-thanks-'+c.id,'1');}catch(e){}
+    var M=['January','February','March','April','May','June','July','August','September','October','November','December'],mo=M[+String(c.due_date).slice(5,7)-1]||'';
+    var n=firstName(),nn=n?', '+n:'',P=[
+      'Thank you'+nn+'! Your payment has been received. We\u2019re glad to have you at Britland Academy.',
+      'Payment received'+nn+'. Thank you for your trust. See you in class!',
+      'Thank you'+nn+'! Your '+mo+' payment is confirmed. Keep up the great work.',
+      'Obrigado'+nn+'! Recebemos o seu pagamento. Bons estudos!'];
+    var msg=P[Math.floor(Math.random()*P.length)];
+    var ov=el('div',{class:'g-hov'}),close=function(){document.removeEventListener('keydown',kd);ov.remove();},kd=function(e){if(e.key==='Escape')close();};
+    var d=el('div',{class:'g-hdlg',role:'dialog','aria-modal':'true','aria-label':'Thank you'},el('h2',{style:'margin:0 0 10px'},'Thank you! \uD83D\uDC9B'),el('p',{},msg),el('div',{class:'g-row',style:'justify-content:flex-end'},el('button',{type:'button',class:'g-btn',onclick:close},'Close')));
+    ov.append(d);ov.addEventListener('click',function(e){if(e.target===ov)close();});document.addEventListener('keydown',kd);document.body.append(ov);
+  }).catch(function(){});
+}
 function showHelp(){
   var ov=el('div',{class:'g-hov'}),close=function(){document.removeEventListener('keydown',kd);ov.remove();},kd=function(e){if(e.key==='Escape')close();};
   var nm=(prof&&prof.name)||'';
@@ -345,7 +365,7 @@ function route(){
       return loadContent(OPTS.kinds).then(function(){
         return OPTS.attempts?(Array.isArray(OPTS.attempts)?Promise.all(OPTS.attempts.map(fetchAttempts)).then(function(x){return [].concat.apply([],x);}):fetchAttempts(OPTS.attempts)):[];
       }).then(function(att){
-        hideOverlay();applyServerPrefs();if(!OPTS.bare){addBar();loadProfile(paintAvatars);}
+        hideOverlay();applyServerPrefs();if(!OPTS.bare){addBar();loadProfile(paintAvatars);thanksPay();}
         if(!OPTS.admin&&/(lessons|check|dele|exercises|workbook|audio)/.test(location.pathname.split('/').pop()||'')){try{sb.rpc('ping_activity').then(function(){},function(){});}catch(e){}}
         CB({user:user,profile:prof,attempts:att,upto:upto()});
       });
@@ -376,6 +396,6 @@ function start(opts,cb){
   });
 }
 
-window.Gate={start:start,signOut:signOut,setSize:setSize,setTheme:function(t){setTheme(t);},theme:function(){return theme;},shownTheme:shownTheme,setAvatar:setAvatar,loadProfile:loadProfile,sizeIdx:function(){return fsIdx;},sizeMax:function(){return SIZES.length-1;},saveAttempt:saveAttempt,audioUrl:audioUrl,el:el,
+window.Gate={profile:function(){return prof;},start:start,signOut:signOut,setSize:setSize,setTheme:function(t){setTheme(t);},theme:function(){return theme;},shownTheme:shownTheme,setAvatar:setAvatar,loadProfile:loadProfile,sizeIdx:function(){return fsIdx;},sizeMax:function(){return SIZES.length-1;},saveAttempt:saveAttempt,audioUrl:audioUrl,el:el,
   get profile(){return prof;},bizUpto:function(){return bizUpto();},mainUpto:function(){return mainUpto();},get user(){return user;},sb:null};
 })();
