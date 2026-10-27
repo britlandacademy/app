@@ -1,6 +1,6 @@
 /* Britland Academy service worker.
    Change VERSION every time the app is updated, so students always get the new files. */
-const VERSION='1.0.86';
+const VERSION='1.0.87';
 const CACHE = 'bl-' + VERSION;
 const CORE = ['offline.html', 'img/britland-shield.png', 'img/icons/icon-192.png', 'favicon-32.png'];
 
