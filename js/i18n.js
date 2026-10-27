@@ -12,6 +12,8 @@ var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they 
 ["Sign in or create account","Entrar ou criar conta","Inicia sesión o crea una cuenta"],
 ["My account","Minha conta","Mi cuenta"],
 ["Your grades and payments","Suas notas e pagamentos","Tus notas y pagos"],
+["Stage Exam","Prova do Stage","Examen de la Etapa"],
+["Your teacher has opened an exam for you","Seu professor liberou uma prova para você","Tu profesor ha abierto un examen para ti"],
 ["Grades","Notas","Notas"],
 ["Payments","Pagamentos","Pagos"],
 ["My grades","Minhas notas","Mis notas"],
@@ -347,7 +349,7 @@ alias('Painel do professor','Teacher panel');
 
 var lang='en';
 var PG=(location.pathname.split('/').pop()||'index.html').replace(/\.html$/,'');
-var MODE=(PG==='workbook'||PG==='placement')?'free':(PG==='check'||PG==='exercicios')?'why':'lock';
+var MODE=(PG==='workbook'||PG==='placement')?'free':(PG==='check'||PG==='exercises')?'why':'lock';
 var HK='callan-why',hint='en';
 try{var hs=localStorage.getItem(HK);if(hs==='en'||hs==='pt'||hs==='es')hint=hs;}catch(e){}
 function detect(){

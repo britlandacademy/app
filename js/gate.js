@@ -176,7 +176,7 @@ function addBar(){
 function fixLinks(){
   Array.prototype.forEach.call(document.querySelectorAll('a[href]'),function(a){
     var h=a.getAttribute('href')||'';
-    if(/^(lessons|check|exercicios)\.html/.test(h)&&h.indexOf('course=')<0)a.setAttribute('href',h+(h.indexOf('?')<0?'?':'&')+'course=business');
+    if(/^(lessons|check|exercises)\.html/.test(h)&&h.indexOf('course=')<0)a.setAttribute('href',h+(h.indexOf('?')<0?'?':'&')+'course=business');
   });
 }
 
@@ -286,8 +286,8 @@ function route(){
       return loadContent(OPTS.kinds).then(function(){
         return OPTS.attempts?(Array.isArray(OPTS.attempts)?Promise.all(OPTS.attempts.map(fetchAttempts)).then(function(x){return [].concat.apply([],x);}):fetchAttempts(OPTS.attempts)):[];
       }).then(function(att){
-        hideOverlay();addBar();
-        if(!OPTS.admin&&/(lessons|check|dele|exercicios|workbook|audio)/.test(location.pathname.split('/').pop()||'')){try{sb.rpc('ping_activity').then(function(){},function(){});}catch(e){}}
+        hideOverlay();if(!OPTS.bare)addBar();
+        if(!OPTS.admin&&/(lessons|check|dele|exercises|workbook|audio)/.test(location.pathname.split('/').pop()||'')){try{sb.rpc('ping_activity').then(function(){},function(){});}catch(e){}}
         CB({user:user,profile:prof,attempts:att,upto:upto()});
       });
     });
@@ -317,6 +317,6 @@ function start(opts,cb){
   });
 }
 
-window.Gate={start:start,signOut:signOut,saveAttempt:saveAttempt,audioUrl:audioUrl,el:el,
+window.Gate={start:start,signOut:signOut,setSize:setSize,sizeIdx:function(){return fsIdx;},sizeMax:function(){return SIZES.length-1;},saveAttempt:saveAttempt,audioUrl:audioUrl,el:el,
   get profile(){return prof;},bizUpto:function(){return bizUpto();},mainUpto:function(){return mainUpto();},get user(){return user;},sb:null};
 })();

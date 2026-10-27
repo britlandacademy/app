@@ -43,7 +43,7 @@ td.g{background:var(--ok-bg)}td.m{background:var(--warn-bg)}td.r{background:var(
 </head>
 <body>
 <div class="wrap">
-<div class="band"><p>Callan Method · Third Edition</p><h1>Painel do professor</h1><p style="margin-top:10px;text-transform:none;letter-spacing:0"><a href="pagamentos.html" style="color:#fff;font-weight:700">Pagamentos dos alunos →</a></p></div>
+<div class="band"><p>Callan Method · Third Edition</p><h1>Painel do professor</h1><p style="margin-top:10px;text-transform:none;letter-spacing:0"><a href="payments.html" style="color:#fff;font-weight:700">Pagamentos dos alunos →</a></p></div>
 
 <section class="card" id="sec-pend" aria-labelledby="h-pend"><h2 id="h-pend">Pedidos de acesso</h2><div id="pend"></div></section>
 
@@ -62,6 +62,14 @@ td.g{background:var(--ok-bg)}td.m{background:var(--warn-bg)}td.r{background:var(
   <div class="tw"><table id="mat"></table></div>
   <div class="row"><label for="who">Detalhe de um aluno</label><select id="who"></select></div>
   <div class="tw"><table id="det"></table></div>
+</section>
+
+<section class="card" aria-labelledby="h-ex"><h2 id="h-ex">Stage Exams (provas)</h2>
+  <div class="row"><label for="xst">Stage</label><select id="xst"></select><span class="msg" id="xmsg" aria-live="polite"></span></div>
+  <p class="hint">A prova dura 40 minutos, só pode ser feita uma vez e só abre para o aluno depois que você liberar aqui. A coluna Lesson Checks mostra o que falta; se faltar algo, o sistema avisa antes de liberar. Você lê o ditado e as perguntas orais ao vivo.</p>
+  <div class="tw"><table id="xtab"></table></div>
+  <div class="row"><button type="button" class="ghost" id="xall">Liberar a nota de todos os que já enviaram este Stage</button></div>
+  <div id="xdet"></div>
 </section>
 
 <section class="card" aria-labelledby="h-pl"><h2 id="h-pl">Placement test results</h2>
@@ -337,8 +345,125 @@ function loadPlacement(){
     t.append(th(['Date','Name','Contact','Language','Level','Stage','Score','Action']),tb);
   });
 }
+/* ----- Stage Exams ----- */
+const XSTG=[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[139,156],[157,174],[175,190],[191,206]];
+let XREL=[],XRES=[],XDEF={},XKEY={},XOK=false;
+function xnorm(t){return String(t||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9' ]/g,' ').replace(/\s+/g,' ').trim();}
+function xdiff(key,ans){
+  const A=xnorm(key).split(' ').filter(Boolean),B=xnorm(ans).split(' ').filter(Boolean),n=A.length,m=B.length;
+  const D=Array.from({length:n+1},()=>new Array(m+1).fill(0));
+  for(let i=0;i<=n;i++)D[i][0]=i;for(let j=0;j<=m;j++)D[0][j]=j;
+  for(let i=1;i<=n;i++)for(let j=1;j<=m;j++)D[i][j]=Math.min(D[i-1][j]+1,D[i][j-1]+1,D[i-1][j-1]+(A[i-1]===B[j-1]?0:1));
+  const out=[];let i=n,j=m;
+  while(i>0||j>0){
+    if(i>0&&j>0&&D[i][j]===D[i-1][j-1]+(A[i-1]===B[j-1]?0:1)){out.push(A[i-1]===B[j-1]?['ok',B[j-1]]:['sub',B[j-1],A[i-1]]);i--;j--;}
+    else if(j>0&&D[i][j]===D[i][j-1]+1){out.push(['ins',B[j-1]]);j--;}
+    else{out.push(['del',A[i-1]]);i--;}
+  }
+  return {parts:out.reverse(),mistakes:D[n][m]};
+}
+function xChecks(uid,st){
+  const r=XSTG[st-1],done={};
+  ATT.forEach(a=>{if(a.user_id===uid&&a.kind==='check'&&a.lesson>=r[0]&&a.lesson<=r[1]){const p=a.total?a.score/a.total:0;if(done[a.lesson]===undefined||p>done[a.lesson])done[a.lesson]=p;}});
+  const miss=[];for(let l=r[0];l<=r[1];l++)if(done[l]===undefined)miss.push(l-r[0]+1);
+  const vals=Object.values(done);
+  return {total:r[1]-r[0]+1,done:vals.length,miss:miss,avg:vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null};
+}
+async function loadExams(){
+  const a=await sb.from('exam_release').select('*'),b=await sb.from('exam_results').select('*'),c=await sb.from('exam_defs').select('stage,minutes');
+  if(a.error||b.error||c.error){XOK=false;setMsg('xmsg','Tabelas da prova ainda não existem no Supabase. Rode o arquivo exam_setup.sql (e exam_data_stage1-2.sql) no SQL Editor.','bad');$('xtab').textContent='';return;}
+  XOK=true;XREL=a.data||[];XRES=b.data||[];XDEF={};(c.data||[]).forEach(x=>{XDEF[x.stage]=x;});
+  const sel=$('xst');if(!sel.options.length){for(let i=1;i<=12;i++)sel.append(el('option',{value:String(i)},'Stage '+i));sel.addEventListener('change',()=>{$('xdet').textContent='';renderExam();});}
+  if(!$('xall').dataset.on){$('xall').dataset.on='1';$('xall').addEventListener('click',()=>{const st=parseInt($('xst').value,10)||1;
+    if(!confirm('Liberar a nota do Stage '+st+' para todos os alunos que já enviaram?'))return;
+    sb.from('exam_results').update({score_visible:true}).eq('stage',st).not('submitted_at','is',null).then(r=>{if(r.error)setMsg('xmsg','Erro: '+r.error.message,'bad');else{setMsg('xmsg','Notas liberadas.','ok');loadExams();}});});}
+  setMsg('xmsg','');renderExam();
+}
+function xStatus(rel,res,def){
+  if(!def)return el('span',{class:'msg bad'},'Prova deste Stage ainda não cadastrada');
+  if(res&&res.submitted_at){const sc=res.scores||{},mx=res.maxes||{};let t=0,m=0;Object.keys(mx).forEach(k=>{t+=sc[k]||0;m+=mx[k];});
+    const nrev=Object.values(res.review||{}).reduce((s,x)=>s+x.length,0);
+    return el('span',{},'Concluída: ',el('b',{},t+'/'+m),nrev?' ('+nrev+' p/ revisar)':'',res.late?' · enviada após o tempo':'',' · ',el('span',{class:'st '+(res.score_visible?'approved':'pending')},res.score_visible?'nota liberada ao aluno':'nota oculta'));}
+  if(res)return el('span',{class:'st pending'},'Em andamento desde '+fmt(res.started_at));
+  if(rel)return el('span',{class:'st approved'},'Liberada, ainda não iniciada');
+  return el('span',{},'Não liberada');
+}
+function renderExam(){
+  if(!XOK)return;
+  const st=parseInt($('xst').value,10)||1,t=$('xtab');t.textContent='';
+  const studs=PROFILES.filter(p=>p.status!=='pending'&&!p.is_admin),tb=el('tbody',{}),def=XDEF[st];
+  if(!studs.length)tb.append(el('tr',{},el('td',{colspan:'4'},'Nenhum aluno ainda.')));
+  studs.forEach(p=>{
+    const rel=XREL.find(x=>x.user_id===p.id&&x.stage===st),res=XRES.find(x=>x.user_id===p.id&&x.stage===st),c=xChecks(p.id,st);
+    const ck=el('td',{},c.done+'/'+c.total+(c.avg!=null?' · média '+Math.round(c.avg*100)+'%':''),c.miss.length?el('div',{class:'sm',style:'color:var(--bad)'},'Faltam as lessons: '+c.miss.join(', ')):el('div',{class:'sm'},'Todos feitos'));
+    const act=el('td',{});
+    if(!res){
+      if(!rel&&def)act.append(el('button',{type:'button',onclick:()=>{
+        if(c.miss.length&&!confirm(p.name+' ainda não fez os Lesson Checks das lessons: '+c.miss.join(', ')+'.\n\nLiberar a prova mesmo assim?'))return;
+        sb.from('exam_release').insert({user_id:p.id,stage:st}).then(r=>{if(r.error)setMsg('xmsg','Erro: '+r.error.message,'bad');else loadExams();});}},'Liberar prova'));
+      if(rel)act.append(el('button',{type:'button',class:'ghost',onclick:()=>{if(!confirm('Cancelar a liberação para '+p.name+'?'))return;
+        sb.from('exam_release').delete().eq('user_id',p.id).eq('stage',st).then(r=>{if(r.error)setMsg('xmsg','Erro: '+r.error.message,'bad');else loadExams();});}},'Cancelar liberação'));
+    }
+    if(rel&&!(res&&res.submitted_at)){
+      const mi=el('input',{type:'number',min:'1',max:'60',value:'5','aria-label':'Minutos extras para '+p.name,style:'width:4.5em'});
+      act.append(' ',mi,' ',el('button',{type:'button',class:'ghost',onclick:()=>{const v=Math.max(1,Math.min(60,parseInt(mi.value,10)||0));
+        sb.from('exam_release').update({extra_minutes:(rel.extra_minutes||0)+v}).eq('user_id',p.id).eq('stage',st).then(r=>{if(r.error)setMsg('xmsg','Erro: '+r.error.message,'bad');else{setMsg('xmsg','+'+v+' min para '+p.name+' (total extra: '+((rel.extra_minutes||0)+v)+').','ok');loadExams();}});}},'+ min'));
+    }
+    if(res&&!res.submitted_at)act.append(' ',el('button',{type:'button',class:'ghost',onclick:()=>{if(!confirm('Encerrar e corrigir agora a prova de '+p.name+' com as respostas salvas?'))return;
+      sb.rpc('exam_finalize',{p_user:p.id,p_stage:st}).then(r=>{if(r.error)setMsg('xmsg','Erro: '+r.error.message,'bad');else loadExams();});}},'Encerrar e corrigir'));
+    if(res&&res.submitted_at){act.append(el('button',{type:'button',onclick:()=>showExam(p,st)},'Ver resultado'),' ',
+      el('button',{type:'button',class:res.score_visible?'ghost':'',onclick:()=>{
+        const nrev=Object.values(res.review||{}).reduce((s2,x)=>s2+x.length,0);
+        if(!res.score_visible&&nrev&&!confirm('Ainda há '+nrev+' resposta(s) para você revisar. Liberar a nota assim mesmo?'))return;
+        sb.from('exam_results').update({score_visible:!res.score_visible}).eq('user_id',p.id).eq('stage',st).then(r=>{if(r.error)setMsg('xmsg','Erro: '+r.error.message,'bad');else loadExams();});}},res.score_visible?'Ocultar nota':'Liberar nota'));}
+    if(res)act.append(' ',el('button',{type:'button',class:'danger',onclick:()=>{if(!confirm('APAGAR a prova de '+p.name+' (Stage '+st+') para ele poder refazer? Isso não pode ser desfeito.'))return;
+      sb.from('exam_results').delete().eq('user_id',p.id).eq('stage',st).then(r=>{if(r.error)setMsg('xmsg','Erro: '+r.error.message,'bad');else{$('xdet').textContent='';loadExams();}});}},'Zerar'));
+    tb.append(el('tr',{},el('td',{},p.name||p.email),ck,el('td',{},xStatus(rel,res,def)),act));
+  });
+  t.append(th(['Aluno','Lesson Checks do Stage','Prova','Ações']),tb);
+}
+async function showExam(p,st){
+  const box=$('xdet');box.textContent='';
+  if(!XKEY[st]){const k=await sb.from('exam_keys').select('keys').eq('stage',st).maybeSingle();if(k.error||!k.data){box.append(el('p',{class:'msg bad'},'Não foi possível ler o gabarito.'));return;}XKEY[st]=k.data.keys;}
+  const res=XRES.find(x=>x.user_id===p.id&&x.stage===st);if(!res)return;
+  const K={};XKEY[st].parts.forEach(x=>{K[x.id]=x;});const A=res.answers||{};
+  const card=el('div',{class:'card'},el('h3',{},p.name+' · Stage '+st+' · '+fmt(res.submitted_at)));
+  const sc=res.scores||{},mx=res.maxes||{};let T=0,M=0;Object.keys(mx).forEach(k=>{T+=sc[k]||0;M+=mx[k];});
+  card.append(el('p',{},el('b',{},'Total '+T+'/'+M+' ('+Math.round(100*T/(M||1))+'%)'),'  ·  '+Object.keys(mx).map(k=>k+' '+(sc[k]||0)+'/'+mx[k]).join(' · ')));
+  if(K.dictation){const d=xdiff(K.dictation.text,A.dictation||'');const p1=el('p',{style:'line-height:2'});
+    d.parts.forEach(x=>{if(x[0]==='ok')p1.append(x[1]+' ');
+      else if(x[0]==='sub'){p1.append(el('span',{style:'background:var(--bad-bg);color:var(--bad);font-weight:700;padding:0 3px'},x[1]),el('span',{style:'color:var(--ok);font-weight:700'},'['+x[2]+'] '));}
+      else if(x[0]==='ins')p1.append(el('span',{style:'background:var(--bad-bg);color:var(--bad);text-decoration:line-through;padding:0 3px'},x[1]),' ');
+      else p1.append(el('span',{style:'color:var(--ok);font-weight:700'},'['+x[1]+'] '));});
+    card.append(el('h4',{},'Ditado: '+d.mistakes+' erro(s) → '+(sc.dictation||0)+'/'+mx.dictation),el('p',{class:'hint'},'Vermelho: palavra do aluno errada ou a mais; verde entre colchetes: o que faltava ou o certo. Se a mesma palavra foi escrita errada duas vezes, conte só 1 erro e ajuste a nota se quiser.'),p1,
+      el('details',{},el('summary',{},'Texto do ditado e texto do aluno'),el('p',{},K.dictation.text),el('p',{},A.dictation||'(em branco)')));}
+  ['yesno','oral','mc'].forEach(id=>{if(!K[id])return;const rows=[];
+    Object.keys(K[id].keys).sort((a,b)=>a-b).forEach(n=>{const got=(A[id]||{})[n],ok=got&&got.toLowerCase()===K[id].keys[n].toLowerCase();if(ok)return;
+      rows.push(el('tr',{},el('td',{class:'c'},n),id==='yesno'?el('td',{},(K[id].teacher&&K[id].teacher[n])||''):null,el('td',{class:'c'},got||'(em branco)'),el('td',{class:'c'},K[id].keys[n])));});
+    card.append(el('h4',{},({yesno:'Yes/No',oral:'Oral',mc:'Múltipla escolha'})[id]+': '+(sc[id]||0)+'/'+mx[id]));
+    if(rows.length){const tb=el('table');tb.append(th(id==='yesno'?['#','Pergunta','Aluno','Certo']:['#','Aluno','Certo']),el('tbody',{},rows));const w=el('div',{class:'tw'});w.append(tb);card.append(w);}else card.append(el('p',{class:'hint'},'Tudo certo.'));});
+  if(K.err){const pend=(res.review||{}).err||[];card.append(el('h4',{},'Correção de erros: '+(sc.err||0)+'/'+mx.err));
+    const tb=el('tbody',{});
+    Object.keys(K.err.accept).sort((a,b)=>a-b).forEach(n=>{const got=(A.err||{})[n]||'',want=K.err.accept[n][0],isP=pend.includes(parseInt(n,10)),ok=xnorm(got)!==''&&K.err.accept[n].some(x=>xnorm(x)===xnorm(got));
+      const td=el('td',{class:'c'});
+      if(isP){td.append(el('button',{type:'button',onclick:()=>xReview(p.id,st,parseInt(n,10),true)},'Aceitar'),' ',el('button',{type:'button',class:'ghost',onclick:()=>xReview(p.id,st,parseInt(n,10),false)},'Recusar'));}
+      else td.append(ok?'✔':'✘');
+      tb.append(el('tr',{},el('td',{class:'c'},n),el('td',{},got||'(em branco)'),el('td',{},want,el('div',{class:'sm'},(K.err.hint||{})[n]||'')),td));});
+    const t2=el('table');t2.append(th(['#','Aluno escreveu','Esperado','']),tb);const w=el('div',{class:'tw'});w.append(t2);card.append(w);}
+  box.append(card);card.scrollIntoView({behavior:'smooth',block:'start'});
+}
+async function xReview(uid,st,n,accept){
+  const res=XRES.find(x=>x.user_id===uid&&x.stage===st);if(!res)return;
+  const sc=Object.assign({},res.scores),rv=JSON.parse(JSON.stringify(res.review||{}));
+  rv.err=(rv.err||[]).filter(x=>x!==n);if(!rv.err.length)delete rv.err;
+  if(accept)sc.err=(sc.err||0)+1;
+  const r=await sb.from('exam_results').update({scores:sc,review:rv}).eq('user_id',uid).eq('stage',st);
+  if(r.error){setMsg('xmsg','Erro: '+r.error.message,'bad');return;}
+  await loadExams();const p=PROFILES.find(x=>x.id===uid);if(p)showExam(p,st);
+}
+
 loadPlacement();
-loadProfiles().then(loadAttempts).then(()=>{renderMat();renderWho();}).catch(e=>setMsg('scmsg','Erro ao carregar: '+(e.message||e),'bad'));
+loadProfiles().then(loadAttempts).then(()=>{renderMat();renderWho();loadExams();}).catch(e=>setMsg('scmsg','Erro ao carregar: '+(e.message||e),'bad'));
 ctInfo();auInfo();
 });
 </script>
