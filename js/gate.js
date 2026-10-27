@@ -181,7 +181,7 @@ function showHelp(){
     el('p',{},el('b',{},'Grades and payments:'),' open My Profile in the menu on your picture.'),
     el('p',{},el('b',{},'Change picture, theme, language or text size:'),' use the menu on your picture, or Settings in My Profile.'),
     el('p',{},el('b',{},'Need more help?'),' Write to your teacher on WhatsApp.'),
-    el('div',{class:'g-row',style:'justify-content:flex-end'},el('button',{type:'button',class:'g-btn ghost',onclick:close},'Close'),wa));
+    el('p',{class:'g-hint',style:'font-size:.82rem'},'App version '+(window.BL_VERSION||'')),el('div',{class:'g-row',style:'justify-content:flex-end'},el('button',{type:'button',class:'g-btn ghost',onclick:close},'Close'),wa));
   ov.append(d);ov.addEventListener('click',function(e){if(e.target===ov)close();});document.addEventListener('keydown',kd);document.body.append(ov);
 }
 function addBar(){
