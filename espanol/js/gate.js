@@ -225,6 +225,7 @@ function fetchAttempts(kind){
 function saveAttempt(kind,a){
   return sb.from('attempts').insert({kind:kind,lesson:a.l,ex:a.e,score:a.s,total:a.total!==undefined?a.total:a.t}).then(function(r){
     if(r.error)throw r.error;
+    if(!OPTS.admin){try{sb.rpc('ping_activity').then(function(){},function(){});}catch(x){}}
   });
 }
 function audioUrl(path){
@@ -263,7 +264,7 @@ function route(){
         return OPTS.attempts?(Array.isArray(OPTS.attempts)?Promise.all(OPTS.attempts.map(fetchAttempts)).then(function(x){return [].concat.apply([],x);}):fetchAttempts(OPTS.attempts)):[];
       }).then(function(att){
         hideOverlay();addBar();
-        if(!OPTS.admin&&/(lessons|check|dele|exercicios|workbook|audio)/.test(location.pathname.split('/').pop()||'')){try{sb.rpc('ping_activity').then(function(){},function(){});}catch(e){}}
+        if(!OPTS.admin&&/(dele)/.test(location.pathname.split('/').pop()||'')){try{sb.rpc('ping_activity').then(function(){},function(){});}catch(e){}}
         CB({user:user,profile:prof,attempts:att,upto:upto()});
       });
     });

@@ -317,6 +317,7 @@ function fetchAttempts(kind){
 function saveAttempt(kind,a){
   return sb.from('attempts').insert({kind:kind,lesson:BUS?a.l+1000:a.l,ex:a.e,score:a.s,total:a.total!==undefined?a.total:a.t}).then(function(r){
     if(r.error)throw r.error;
+    if(!OPTS.admin){try{sb.rpc('ping_activity').then(function(){},function(){});}catch(e){}}
   });
 }
 function audioUrl(path){
@@ -366,7 +367,7 @@ function route(){
         return OPTS.attempts?(Array.isArray(OPTS.attempts)?Promise.all(OPTS.attempts.map(fetchAttempts)).then(function(x){return [].concat.apply([],x);}):fetchAttempts(OPTS.attempts)):[];
       }).then(function(att){
         hideOverlay();applyServerPrefs();if(!OPTS.bare){addBar();loadProfile(paintAvatars);thanksPay();}
-        if(!OPTS.admin&&/(lessons|check|dele|exercises|workbook|audio)/.test(location.pathname.split('/').pop()||'')){try{sb.rpc('ping_activity').then(function(){},function(){});}catch(e){}}
+        /* the streak counts finished activities only (see saveAttempt) */
         CB({user:user,profile:prof,attempts:att,upto:upto()});
       });
     });
