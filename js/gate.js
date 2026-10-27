@@ -205,7 +205,8 @@ function pushRow(closeMenu){
   var sw=el('button',{type:'button',class:'g-sw',role:'switch','aria-checked':'false','aria-label':'Notifications'},el('u'));
   var set=function(on){sw.setAttribute('aria-checked',on?'true':'false');};
   sw.addEventListener('click',function(){
-    var p=P();if(!p){return;}
+    var p=P();
+    if(!p){if(sw._ld)return;sw._ld=1;var ld=document.createElement('script');ld.src=(window.BL_BASE||'')+'js/push.js?v='+(window.BL_VERSION||'1');ld.onload=function(){sw._ld=0;sw.click();};ld.onerror=function(){sw._ld=0;closeMenu(false);pushInfo('Could not load the notifications module. Check your connection and try again. (push.js)');};document.head.append(ld);return;}
     if(!can){closeMenu(false);pushInfo('To get notifications on iPhone, first add the app to your Home Screen: tap Share, then Add to Home Screen. Open the app from there and turn Notifications on again.');return;}
     if(sw.getAttribute('aria-checked')==='true'){p.disable(sb).then(function(){set(false);},function(){});return;}
     if(Notification.permission==='denied'){closeMenu(false);pushInfo('Notifications are blocked for this app. Open your phone settings, find Britland, and allow notifications.');return;}
