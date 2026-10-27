@@ -79,7 +79,7 @@ var CSS2=
 '.g-mn-h{display:flex;align-items:center;gap:12px;padding:10px 10px 12px;border-bottom:1px solid var(--line,#999);margin-bottom:4px}.g-mn-h b{display:block}.g-mn-h small{display:block;color:var(--muted,#555);overflow:hidden;text-overflow:ellipsis}'+
 '.g-bar .g-mi,.g-bar .g-mr{display:flex;align-items:center;gap:12px;width:100%;min-height:46px;padding:6px 10px;border:0;background:transparent;color:var(--ink,#111);text-align:left;border-radius:10px;font:inherit;font-size:1rem;text-decoration:none;box-sizing:border-box;cursor:pointer}.g-bar .g-mi:hover{background:var(--chip,#eee)}'+
 '.g-mr>span:first-of-type{flex:1}.g-mi svg,.g-mr svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}'+
-'.g-bar .g-mi.out{border-top:1px solid var(--line,#999);border-radius:0 0 10px 10px;margin-top:4px;color:var(--muted,#555)}'+
+'.g-bar .g-mi.out{border-top:1px solid var(--line,#999);border-radius:0 0 10px 10px;margin-top:4px}'+
 '.g-bar .g-sw{width:46px;height:26px;min-height:26px;border-radius:13px;border:0;background:#8a8f99;position:relative;padding:0;flex:none}.g-sw u{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .15s}.g-bar .g-sw.on{background:var(--accent,#c9a13b)}.g-sw.on u{left:23px}'+
 '.g-mn .g-sz button{min-width:40px;min-height:36px;padding:0 8px}.g-mn .lang-sel{gap:6px}'+
 '.g-hov{position:fixed;inset:0;z-index:10000;background:rgba(5,10,25,.65);display:flex;align-items:center;justify-content:center;padding:16px}.g-hdlg{background:var(--card,#fff);color:var(--ink,#111);border-top:6px solid var(--accent,#c9a13b);border-radius:14px;max-width:480px;width:100%;padding:20px;box-sizing:border-box;max-height:90vh;overflow:auto}'+
@@ -161,7 +161,8 @@ function showLogin(mode){
 }
 
 function signOut(){
-  return sb.auth.signOut().then(function(){location.reload();},function(){location.reload();});
+  function wipe(){try{Object.keys(localStorage).forEach(function(k){if(/^sb-.*-auth-token/.test(k))localStorage.removeItem(k);});}catch(e){}location.reload();}
+  return sb.auth.signOut({scope:'local'}).then(wipe,wipe);
 }
 
 /* ---------- top bar ---------- */
