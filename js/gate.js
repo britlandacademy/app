@@ -208,7 +208,7 @@ function pushRow(closeMenu){
     if(!can){closeMenu(false);pushInfo('To get notifications on iPhone, first add the app to your Home Screen: tap Share, then Add to Home Screen. Open the app from there and turn Notifications on again.');return;}
     if(sw.getAttribute('aria-checked')==='true'){p.disable(sb).then(function(){set(false);},function(){});return;}
     if(Notification.permission==='denied'){closeMenu(false);pushInfo('Notifications are blocked for this app. Open your phone settings, find Britland, and allow notifications.');return;}
-    p.enable(sb).then(function(){set(true);},function(e){if(e&&e.message==='denied'){closeMenu(false);pushInfo('Notifications were not allowed. You can allow them later in your phone settings.');}else{closeMenu(false);pushInfo('Could not turn notifications on. Try again in a moment.');}});
+    p.enable(sb).then(function(){set(true);},function(e){if(e&&e.message==='denied'){closeMenu(false);pushInfo('Notifications were not allowed. You can allow them later in your phone settings.');}else{closeMenu(false);pushInfo('Could not turn notifications on. Try again in a moment. ('+String((e&&(e.message||e.details||e.code))||e).slice(0,120)+')');}});
   });
   if(can&&Notification.permission==='granted'){var t=setInterval(function(){var p=P();if(!p)return;clearInterval(t);p.current().then(function(s){set(!!s);if(s)p.sync(sb);}).catch(function(){});},300);setTimeout(function(){clearInterval(t);},6000);}
   return el('div',{class:'g-mr'},ico('bell'),el('span',{},'Notifications'),sw);
