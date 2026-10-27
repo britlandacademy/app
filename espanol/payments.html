@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Pagamentos · Britland Academy</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="theme-color" content="#0b1733"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Britland"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="../js/pwa.js" defer></script>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="../js/fonts.css"><style>
+:root{--bg:#fff;--card:#ececec;--surface:#fff;--ink:#111;--muted:#4d4d4d;--line:#b8b8b8;--accent:#111;--accent-ink:#fff;--band:#000;--band-ink:#fff;--ok:#1d5e2e;--ok-bg:#e3efe5;--bad:#9c2a22;--bad-bg:#f6e4e2;--warn:#6b4a00;--warn-bg:#f3ead0;--font-body:'FreeSet','Helvetica Neue',Arial,sans-serif}
+@media (prefers-color-scheme:dark){:root{--bg:#141414;--card:#242424;--surface:#1a1a1a;--ink:#f2f2f2;--muted:#b5b5b5;--line:#4a4a4a;--accent:#f2f2f2;--accent-ink:#111;--ok:#7fd29a;--ok-bg:#183222;--bad:#ff9e94;--bad-bg:#3a1f1d;--warn:#f0c36a;--warn-bg:#3a2e12;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:17px;line-height:1.5;padding:20px max(16px,env(safe-area-inset-right)) 48px max(16px,env(safe-area-inset-left))}
+.wrap{max-width:1120px;margin:0 auto}
+.band{background:var(--band);color:var(--band-ink);padding:20px;margin:0 0 18px}
+.band p{margin:0;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:#cfcfcf}
+h1{margin:4px 0 0;font-size:clamp(1.5rem,5vw,2.2rem);line-height:1.15}
+h2{font-size:1.25rem;margin:0 0 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:16px;margin:0 0 18px}
+.hint{color:var(--muted);font-size:.92rem;margin:6px 0}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:middle}
+th{background:var(--surface);font-weight:700}
+.tw{overflow-x:auto;margin:8px 0;background:var(--surface)}
+input[type=number],input[type=text],select{min-height:42px;padding:6px 8px;font:inherit;font-size:16px;color:var(--ink);background:var(--surface);border:2px solid var(--line);border-radius:3px}
+input[type=number]{width:5.2em}
+button,a.btn{min-height:42px;padding:8px 14px;font:inherit;font-weight:700;cursor:pointer;border-radius:3px;border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);text-decoration:none;display:inline-flex;align-items:center}
+button.ghost{background:transparent;color:var(--accent)}
+button.danger{border-color:var(--bad);color:var(--bad);background:transparent}
+button[disabled]{opacity:.6;cursor:default}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:8px 0}
+.st{display:inline-block;padding:2px 8px;border-radius:3px;font-weight:700;font-size:.85rem}
+.st.approved{background:var(--ok-bg);color:var(--ok)}.st.pending{background:var(--warn-bg);color:var(--warn)}.st.blocked{background:var(--bad-bg);color:var(--bad)}
+td.c{text-align:center;white-space:nowrap}
+td.g{background:var(--ok-bg)}td.m{background:var(--warn-bg)}td.r{background:var(--bad-bg)}
+.msg{font-weight:700;min-height:1.4em}
+.msg.bad{color:var(--bad)}.msg.ok{color:var(--ok)}
+.sm{font-size:.85rem}
+</style>
+<link rel="stylesheet" href="../js/theme.css"><link rel="stylesheet" href="js/palette.css">
+</head>
+<body>
+<style>
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:10px 0}
+.kp>div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px}
+.kp small{display:block;color:var(--muted);font-size:.82rem;text-transform:uppercase;letter-spacing:.06em}
+.kp b{font-size:1.5rem;display:block}.kp .ok b{color:var(--ok)}.kp .wt b{color:var(--warn)}
+.cur{font-weight:700;margin:14px 0 2px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 12px;align-items:end}
+.grid2 label{display:block;font-size:.85rem;color:var(--muted)}
+.grid2 input,.grid2 select{width:100%}
+td.n{text-align:right;white-space:nowrap}
+.late{background:var(--bad-bg)}
+.ch{display:flex;gap:6px;align-items:flex-end;height:120px;margin:8px 0;padding:0 4px;border-bottom:1px solid var(--line)}
+.ch>div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:stretch;height:100%;min-width:0}
+.ch i{display:block;background:var(--warn)}.ch u{display:block;background:var(--ok);text-decoration:none}
+.cl{display:flex;gap:6px;padding:0 4px;font-size:.78rem;color:var(--muted)}.cl span{flex:1;text-align:center}
+.lg{font-size:.85rem;color:var(--muted)}.lg b{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:middle;margin:0 4px 0 10px}
+td input[type=number]{width:7em}
+</style>
+<div class="wrap">
+<div class="band"><p>Britland Academy</p><h1>Pagamentos dos alunos</h1><p style="margin-top:8px"><a href="admin.html" style="color:#fff">← Painel do professor</a></p></div>
+
+<section class="card"><h2>Resumo do mês</h2>
+  <div class="row"><label for="mes">Mês</label><input type="month" id="mes"><button type="button" id="gen">Gerar mensalidades do mês</button><span class="msg" id="gmsg" aria-live="polite"></span></div>
+  <p class="hint">O mês é o do vencimento. "Recebido" soma o que já foi marcado como pago; "A receber" soma o que ainda está aberto. Cada moeda tem o seu total.</p>
+  <div id="sum"></div>
+</section>
+
+<section class="card"><h2>Mensalidades do mês</h2>
+  <div class="tw"><table id="tb"></table></div>
+  <p class="msg" id="tmsg" aria-live="polite"></p>
+</section>
+
+<section class="card"><h2>Em atraso</h2><div id="late"></div></section>
+
+<section class="card"><h2>Últimos 6 meses</h2><div id="chart"></div></section>
+
+<section class="card"><h2>Alunos e planos</h2>
+  <p class="hint">Cadastre cada aluno uma vez. As mensalidades de cada mês são criadas pelo botão "Gerar mensalidades do mês". Para um valor diferente em um mês, edite o valor na tabela acima. Para um desconto permanente, mude o valor aqui.</p>
+  <div class="grid2">
+    <div><label for="f-st">Aluno com conta</label><select id="f-st"></select></div>
+    <div><label for="f-nm">Nome (se não tem conta)</label><input type="text" id="f-nm"></div>
+    <div><label for="f-pl">Plano</label><select id="f-pl"><option>Grupo</option><option selected>VIP</option><option>Intensivo</option><option>Outro</option></select></div>
+    <div><label for="f-cu">Moeda</label><select id="f-cu"><option value="EUR">Euro (€)</option><option value="BRL">Real (R$)</option></select></div>
+    <div><label for="f-am">Valor mensal</label><input type="number" id="f-am" min="0" step="0.01"></div>
+    <div><label for="f-dd">Dia do vencimento</label><input type="number" id="f-dd" min="1" max="28" value="5"></div>
+    <div><label for="f-sm">Começa em</label><input type="month" id="f-sm"></div>
+    <div><button type="button" id="f-add">Adicionar aluno</button></div>
+  </div>
+  <p class="msg" id="fmsg" aria-live="polite"></p>
+  <div class="tw"><table id="subs"></table></div>
+</section>
+</div>
+<script src="js/config.js" charset="utf-8"></script>
+<script src="js/i18n-es.js" charset="utf-8"></script>
+<script src="../js/i18n.js" charset="utf-8"></script>
+<script src="../js/gate.js" charset="utf-8"></script>
+<script>
+Gate.start({admin:true,kinds:[]},function(ctx){
+'use strict';
+const sb=Gate.sb,el=Gate.el,$=id=>document.getElementById(id);
+const SYM={EUR:'€',BRL:'R$'},PRESET={Grupo:80,VIP:120,Intensivo:200};
+let SUBS=[],CH=[],PROF=[];
+function money(v,c){return (SYM[c]||'')+' '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function today(){return iso(new Date());}
+function br(s){if(!s)return '';const p=s.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
+function msg(id,t,c){const m=$(id);m.textContent=t;m.className='msg'+(c?' '+c:'');}
+function th(l){return el('thead',{},el('tr',{},l.map(h=>el('th',{scope:'col'},h))));}
+function monthRange(m){const [y,mo]=m.split('-').map(Number);const a=m+'-01',b=iso(new Date(y,mo,1));return [a,b];}
+function addM(m,k){const [y,mo]=m.split('-').map(Number);const d=new Date(y,mo-1+k,1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
+function subOf(id){return SUBS.find(s=>s.id===id)||{};}
+$('mes').value=today().slice(0,7);$('f-sm').value=today().slice(0,7);
+
+async function loadAll(){
+  const a=await sb.from('subs').select('*').order('student_name');if(a.error)return fail(a.error);
+  SUBS=a.data||[];
+  const p=await sb.from('profiles').select('id,name,email').order('name');PROF=p.data||[];
+  const c=await sb.from('charges').select('*').order('due_date');if(c.error)return fail(c.error);
+  CH=c.data||[];
+  fillStudents();renderAll();
+}
+function fail(e){const m=/relation .* does not exist|schema cache/i.test(e.message||'');
+  msg('tmsg',m?'As tabelas de pagamento ainda não existem. Rode o arquivo payments_setup.sql no Supabase (SQL Editor) e recarregue a página.':'Erro: '+e.message,'bad');}
+function fillStudents(){
+  const s=$('f-st');s.textContent='';s.append(el('option',{value:''},'— sem conta —'));
+  PROF.filter(p=>!SUBS.some(x=>x.user_id===p.id)).forEach(p=>s.append(el('option',{value:p.id},(p.name||p.email))));
+}
+function renderAll(){renderSum();renderTable();renderLate();renderChart();renderSubs();}
+
+function monthCh(m){const [a,b]=monthRange(m);return CH.filter(c=>c.due_date>=a&&c.due_date<b);}
+function totals(list){const t={};list.forEach(c=>{const o=t[c.currency]||(t[c.currency]={paid:0,open:0});if(c.paid_on)o.paid+=+c.amount;else o.open+=+c.amount;});return t;}
+function renderSum(){
+  const box=$('sum');box.textContent='';const t=totals(monthCh($('mes').value));const ks=Object.keys(t);
+  if(!ks.length){box.append(el('p',{class:'hint'},'Nenhuma mensalidade neste mês. Cadastre os alunos e clique em "Gerar mensalidades do mês".'));return;}
+  ks.sort().forEach(c=>{const o=t[c];
+    box.append(el('div',{class:'cur'},c==='EUR'?'Euro (€)':'Real (R$)'),
+      el('div',{class:'kp'},
+        el('div',{class:'ok'},el('small',{},'Recebido'),el('b',{},money(o.paid,c))),
+        el('div',{class:'wt'},el('small',{},'A receber'),el('b',{},money(o.open,c))),
+        el('div',{},el('small',{},'Total do mês'),el('b',{},money(o.paid+o.open,c)))));});
+}
+function status(c){if(c.paid_on)return el('span',{class:'st approved'},'Pago em '+br(c.paid_on));
+  return c.due_date<today()?el('span',{class:'st blocked'},'Em atraso'):el('span',{class:'st pending'},'Aberto');}
+function rowFor(c,showMonth){
+  const s=subOf(c.sub_id),inp=el('input',{type:'number',min:'0',step:'0.01',value:String(c.amount),'aria-label':'Valor'});
+  const sv=el('button',{type:'button',class:'ghost'},'Salvar valor');
+  sv.addEventListener('click',()=>upd(c.id,{amount:parseFloat(inp.value)||0}));
+  const pay=c.paid_on?el('button',{type:'button',class:'ghost'},'Desfazer'):el('button',{type:'button'},'Marcar como pago');
+  pay.addEventListener('click',()=>upd(c.id,{paid_on:c.paid_on?null:today()}));
+  const del=el('button',{type:'button',class:'danger'},'Excluir');
+  del.addEventListener('click',()=>{if(confirm('Excluir esta mensalidade?'))sb.from('charges').delete().eq('id',c.id).then(loadAll);});
+  return el('tr',{class:(!c.paid_on&&c.due_date<today())?'late':''},
+    el('td',{},s.student_name||'?'),el('td',{},s.plan||''),el('td',{class:'c'},br(c.due_date)),
+    el('td',{},el('span',{},SYM[c.currency]+' '),inp),el('td',{},status(c)),el('td',{},el('div',{class:'row'},pay,sv,del)));
+}
+function renderTable(){
+  const t=$('tb');t.textContent='';t.append(th(['Aluno','Plano','Vencimento','Valor','Situação','Ações']));
+  const b=el('tbody');monthCh($('mes').value).sort((x,y)=>x.due_date<y.due_date?-1:1).forEach(c=>b.append(rowFor(c)));t.append(b);
+}
+function renderLate(){
+  const L=CH.filter(c=>!c.paid_on&&c.due_date<today()),box=$('late');box.textContent='';
+  if(!L.length){box.append(el('p',{class:'hint'},'Ninguém em atraso. 🎉'));return;}
+  const tot={};L.forEach(c=>tot[c.currency]=(tot[c.currency]||0)+ +c.amount);
+  box.append(el('p',{},'Total em atraso: '+Object.keys(tot).map(c=>money(tot[c],c)).join(' + ')));
+  const t=el('table');t.append(th(['Aluno','Vencimento','Valor','Dias de atraso']));const b=el('tbody');
+  L.sort((x,y)=>x.due_date<y.due_date?-1:1).forEach(c=>{const d=Math.floor((new Date(today())-new Date(c.due_date))/864e5);
+    b.append(el('tr',{class:'late'},el('td',{},subOf(c.sub_id).student_name||'?'),el('td',{class:'c'},br(c.due_date)),el('td',{class:'n'},money(c.amount,c.currency)),el('td',{class:'c'},String(d))));});
+  t.append(b);const w=el('div',{class:'tw'});w.append(t);box.append(w);
+}
+function renderChart(){
+  const box=$('chart');box.textContent='';const cur=$('mes').value,ms=[];for(let i=5;i>=0;i--)ms.push(addM(cur,-i));
+  ['EUR','BRL'].forEach(c=>{
+    const data=ms.map(m=>{const o=totals(monthCh(m).filter(x=>x.currency===c))[c]||{paid:0,open:0};return o;});
+    const mx=Math.max(1,...data.map(o=>o.paid+o.open));if(data.every(o=>!o.paid&&!o.open))return;
+    box.append(el('div',{class:'cur'},(c==='EUR'?'Euro (€)':'Real (R$)')+' — maior mês: '+money(mx,c)));
+    const ch=el('div',{class:'ch',role:'img','aria-label':'Gráfico de recebimentos em '+c});
+    data.forEach(o=>{const col=el('div',{title:'Recebido '+money(o.paid,c)+' · A receber '+money(o.open,c)});
+      col.append(el('i',{style:'height:'+(o.open/mx*100)+'%'}),el('u',{style:'height:'+(o.paid/mx*100)+'%'}));ch.append(col);});
+    const cl=el('div',{class:'cl'});ms.forEach(m=>cl.append(el('span',{},m.slice(5)+'/'+m.slice(2,4))));
+    box.append(ch,cl);});
+  if(!box.childNodes.length)box.append(el('p',{class:'hint'},'O gráfico aparece quando houver mensalidades.'));
+  else{const g=el('p',{class:'lg'});g.innerHTML='<b style="background:var(--ok)"></b>Recebido<b style="background:var(--warn)"></b>A receber';box.append(g);}
+}
+function renderSubs(){
+  const t=$('subs');t.textContent='';t.append(th(['Aluno','Plano','Valor mensal','Vence dia','Desde','Ativo','Ações']));const b=el('tbody');
+  SUBS.forEach(s=>{
+    const am=el('input',{type:'number',min:'0',step:'0.01',value:String(s.amount),'aria-label':'Valor mensal'});
+    const dd=el('input',{type:'number',min:'1',max:'28',value:String(s.due_day),'aria-label':'Dia do vencimento'});
+    const sv=el('button',{type:'button',class:'ghost'},'Salvar');
+    sv.addEventListener('click',()=>sb.from('subs').update({amount:parseFloat(am.value)||0,due_day:Math.max(1,Math.min(28,parseInt(dd.value,10)||5))}).eq('id',s.id).then(r=>{msg('fmsg',r.error?r.error.message:'Salvo. Vale para as próximas mensalidades geradas.',r.error?'bad':'ok');loadAll();}));
+    const ac=el('button',{type:'button',class:'ghost'},s.active?'Pausar':'Reativar');
+    ac.addEventListener('click',()=>sb.from('subs').update({active:!s.active}).eq('id',s.id).then(loadAll));
+    const del=el('button',{type:'button',class:'danger'},'Excluir');
+    del.addEventListener('click',()=>{if(confirm('Excluir este aluno e TODAS as mensalidades dele?'))sb.from('subs').delete().eq('id',s.id).then(loadAll);});
+    b.append(el('tr',{},el('td',{},s.student_name+(s.user_id?'':' (sem conta)')),el('td',{},s.plan),
+      el('td',{},el('span',{},SYM[s.currency]+' '),am),el('td',{},dd),el('td',{class:'c'},s.start_month.slice(5,7)+'/'+s.start_month.slice(0,4)),
+      el('td',{class:'c'},s.active?'Sim':'Não'),el('td',{},el('div',{class:'row'},sv,ac,del))));});
+  t.append(b);
+}
+function upd(id,patch){sb.from('charges').update(patch).eq('id',id).then(r=>{if(r.error)msg('tmsg',r.error.message,'bad');else loadAll();});}
+
+$('mes').addEventListener('change',renderAll);
+$('f-pl').addEventListener('change',()=>{const v=PRESET[$('f-pl').value];if(v!==undefined&&$('f-cu').value==='EUR')$('f-am').value=v;});
+$('f-cu').addEventListener('change',()=>{if($('f-cu').value==='BRL'&&PRESET[$('f-pl').value]!==undefined&&+$('f-am').value===PRESET[$('f-pl').value])$('f-am').value='';});
+$('f-pl').dispatchEvent(new Event('change'));
+$('f-st').addEventListener('change',()=>{const p=PROF.find(x=>x.id===$('f-st').value);if(p)$('f-nm').value=p.name||p.email;});
+$('f-add').addEventListener('click',()=>{
+  const nm=$('f-nm').value.trim(),am=parseFloat($('f-am').value);
+  if(!nm){msg('fmsg','Digite o nome do aluno.','bad');return;}
+  if(isNaN(am)||am<0){msg('fmsg','Digite o valor mensal.','bad');return;}
+  sb.from('subs').insert({user_id:$('f-st').value||null,student_name:nm,plan:$('f-pl').value,currency:$('f-cu').value,amount:am,
+    due_day:Math.max(1,Math.min(28,parseInt($('f-dd').value,10)||5)),start_month:$('f-sm').value+'-01'}).then(r=>{
+    if(r.error){msg('fmsg',r.error.message,'bad');return;}msg('fmsg','Aluno adicionado.','ok');$('f-nm').value='';$('f-am').value='';$('f-st').value='';loadAll();});
+});
+$('gen').addEventListener('click',async()=>{
+  const m=$('mes').value,have=new Set(CH.map(c=>c.sub_id+'|'+c.due_date)),rows=[];
+  SUBS.filter(s=>s.active&&s.start_month.slice(0,7)<=m).forEach(s=>{const d=m+'-'+String(s.due_day).padStart(2,'0');
+    if(!have.has(s.id+'|'+d))rows.push({sub_id:s.id,due_date:d,currency:s.currency,amount:s.amount});});
+  if(!rows.length){msg('gmsg','Nada a gerar: todos já têm mensalidade neste mês.','ok');return;}
+  const r=await sb.from('charges').insert(rows);
+  if(r.error){msg('gmsg',r.error.message,'bad');return;}msg('gmsg',rows.length+' mensalidade(s) criada(s).','ok');loadAll();
+});
+loadAll();
+});
+</script>
+</body></html>

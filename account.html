@@ -86,7 +86,8 @@ Gate.start({kinds:[]},function(ctx){
 'use strict';
 const sb=Gate.sb,el=Gate.el,$=id=>document.getElementById(id);
 const SYM={EUR:'€',BRL:'R$'};
-const STG=[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[139,156],[157,174],[175,190],[191,206],[1001,1017]];
+const COURSE=window.BL_COURSE||{};
+const STG=COURSE.stages||[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[139,156],[157,174],[175,190],[191,206],[1001,1017]];
 function money(v,c){return (SYM[c]||'')+' '+Number(v).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function dt(s){if(!s)return '';const d=new Date(s.length<=10?s+'T12:00:00':s);return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});}
 function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
@@ -95,8 +96,8 @@ function pct(s,t){return t?Math.round(s/t*100)+'%':'—';}
 function show(w){['g','p','s'].forEach(k=>{$('p-'+k).hidden=k!==w;$('t-'+k).setAttribute('aria-selected',String(k===w));});}
 $('t-g').addEventListener('click',()=>show('g'));$('t-p').addEventListener('click',()=>show('p'));$('t-s').addEventListener('click',()=>show('s'));
 const me=ctx.profile||{};
-$('hn').textContent=me.name||'';$('hs').textContent='Callan English';
-function openPic(){Gate.loadProfile(()=>Profile.openPicker({sb:sb,uid:me.id||ctx.user.id,current:me.avatar,lang:'en',onSaved:id=>{me.avatar=id;Gate.setAvatar(id);}}));}
+$('hn').textContent=me.name||'';$('hs').textContent=COURSE.name||'Callan English';
+function openPic(){Gate.loadProfile(()=>Profile.openPicker({sb:sb,uid:me.id||ctx.user.id,current:me.avatar,lang:COURSE.uiLang||'en',onSaved:id=>{me.avatar=id;Gate.setAvatar(id);}}));}
 $('edav').addEventListener('click',openPic);$('chg').addEventListener('click',openPic);
 Gate.loadProfile(()=>{Gate.setAvatar(me.avatar||null);if(location.hash==='#picture'){history.replaceState(null,'',location.pathname+location.search);openPic();}});
 function themeUi(){const t=Gate.theme();document.querySelectorAll('#thm button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===t)));}

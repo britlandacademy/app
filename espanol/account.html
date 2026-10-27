@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>My Profile · Britland Academy</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="theme-color" content="#0b1733"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Britland"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="../js/pwa.js" defer></script>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="../js/fonts.css"><style>
+:root{--bg:#fff;--card:#ececec;--surface:#fff;--ink:#111;--muted:#4d4d4d;--line:#b8b8b8;--accent:#111;--accent-ink:#fff;--band:#000;--band-ink:#fff;--ok:#1d5e2e;--ok-bg:#e3efe5;--bad:#9c2a22;--bad-bg:#f6e4e2;--warn:#6b4a00;--warn-bg:#f3ead0;--font-body:'FreeSet','Helvetica Neue',Arial,sans-serif}
+@media (prefers-color-scheme:dark){:root{--bg:#141414;--card:#242424;--surface:#1a1a1a;--ink:#f2f2f2;--muted:#b5b5b5;--line:#4a4a4a;--accent:#f2f2f2;--accent-ink:#111;--ok:#7fd29a;--ok-bg:#183222;--bad:#ff9e94;--bad-bg:#3a1f1d;--warn:#f0c36a;--warn-bg:#3a2e12;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:17px;line-height:1.5;padding:20px max(16px,env(safe-area-inset-right)) 48px max(16px,env(safe-area-inset-left))}
+.wrap{max-width:1120px;margin:0 auto}
+.band{background:var(--band);color:var(--band-ink);padding:20px;margin:0 0 18px}
+.band p{margin:0;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:#cfcfcf}
+h1{margin:4px 0 0;font-size:clamp(1.5rem,5vw,2.2rem);line-height:1.15}
+h2{font-size:1.25rem;margin:0 0 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:16px;margin:0 0 18px}
+.hint{color:var(--muted);font-size:.92rem;margin:6px 0}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:middle}
+th{background:var(--surface);font-weight:700}
+.tw{overflow-x:auto;margin:8px 0;background:var(--surface)}
+input[type=number],input[type=text],select{min-height:42px;padding:6px 8px;font:inherit;font-size:16px;color:var(--ink);background:var(--surface);border:2px solid var(--line);border-radius:3px}
+input[type=number]{width:5.2em}
+button,a.btn{min-height:42px;padding:8px 14px;font:inherit;font-weight:700;cursor:pointer;border-radius:3px;border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);text-decoration:none;display:inline-flex;align-items:center}
+button.ghost{background:transparent;color:var(--accent)}
+button.danger{border-color:var(--bad);color:var(--bad);background:transparent}
+button[disabled]{opacity:.6;cursor:default}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:8px 0}
+.st{display:inline-block;padding:2px 8px;border-radius:3px;font-weight:700;font-size:.85rem}
+.st.approved{background:var(--ok-bg);color:var(--ok)}.st.pending{background:var(--warn-bg);color:var(--warn)}.st.blocked{background:var(--bad-bg);color:var(--bad)}
+td.c{text-align:center;white-space:nowrap}
+td.g{background:var(--ok-bg)}td.m{background:var(--warn-bg)}td.r{background:var(--bad-bg)}
+.msg{font-weight:700;min-height:1.4em}
+.msg.bad{color:var(--bad)}.msg.ok{color:var(--ok)}
+.sm{font-size:.85rem}
+</style>
+<link rel="stylesheet" href="../js/theme.css"><link rel="stylesheet" href="js/palette.css">
+</head>
+<body>
+<style>
+.tabs{display:flex;gap:8px;margin:0 0 14px}
+.tabs button{flex:1;background:var(--card);color:var(--ink);border:2px solid var(--line)}
+.tabs button[aria-selected=true]{border-color:var(--accent);background:var(--chip)}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:10px 0}
+.kp>div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px}
+.kp small{display:block;color:var(--muted);font-size:.82rem;text-transform:uppercase;letter-spacing:.06em}
+.kp b{font-size:1.45rem;display:block}
+td.n{text-align:right;white-space:nowrap}
+details{margin:8px 0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+summary{cursor:pointer;font-weight:700;padding:4px 0}
+.pill{display:inline-block;padding:2px 8px;border-radius:99px;font-weight:700;font-size:.85rem}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}.pill.bad{background:var(--bad-bg);color:var(--bad)}.pill.wt{background:var(--warn-bg);color:var(--warn)}
+.next{border:2px solid var(--accent);border-radius:12px;padding:14px;margin:10px 0;background:var(--surface)}
+.next b{font-size:1.3rem}
+.hero{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.hero .ed{position:relative;border:0;background:none;padding:0;border-radius:50%;cursor:pointer}
+.hero .ed .cam{position:absolute;right:-2px;bottom:-2px;width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--accent-ink);border:3px solid var(--card);display:flex;align-items:center;justify-content:center}
+.hero .ed .cam svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.hero h2{margin:0}.hero p{margin:2px 0 0;color:var(--muted)}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:8px 0}
+.choices button{border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px;font:inherit;font-weight:700;cursor:pointer;min-height:48px}
+.choices button[aria-pressed=true]{border-color:var(--accent);background:var(--chip)}
+.smp{background:var(--surface);border-radius:10px;padding:10px 14px;margin-top:8px}
+</style>
+<div class="wrap">
+<div class="band"><p>Britland Academy</p><h1>My Profile</h1><p style="margin-top:8px"><a href="index.html" style="color:#fff">← Back to the activities</a></p></div>
+<section class="card hero" id="hero"><button type="button" class="ed" id="edav" aria-label="Change picture"><span class="pf-av xl" data-pf-av="1"></span><span class="cam"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></span></button><div><h2 id="hn"></h2><p id="hs"></p><p><button type="button" class="btn" id="chg">Change picture</button></p></div></section>
+<div class="tabs" role="tablist"><button type="button" role="tab" id="t-g" aria-selected="true">Grades</button><button type="button" role="tab" id="t-p" aria-selected="false">Payments</button><button type="button" role="tab" id="t-s" aria-selected="false">Settings</button></div>
+<section class="card" id="p-g"><h2>My grades</h2><div id="g"></div></section>
+<section class="card" id="p-p" hidden><h2>My payments</h2><div id="p"></div></section>
+<section class="card" id="p-s" hidden><h2>Settings</h2>
+<h3>Appearance</h3><p class="hint">Choose how Britland Academy looks on your device.</p>
+<div class="choices" id="thm"><button type="button" data-v="light">Light</button><button type="button" data-v="dark">Dark</button><button type="button" data-v="auto">Automatic</button></div>
+<h3>Text size</h3><p class="hint">Make the text larger or smaller.</p>
+<div class="choices" id="sz"><button type="button" data-d="-1" aria-label="Smaller text">A−</button><button type="button" data-d="1" aria-label="Larger text">A+</button></div>
+<div class="smp">The quick brown fox jumps over the lazy dog.</div>
+<p class="hint" style="margin-top:12px">Your choices are saved in your account and follow you to other devices.</p></section>
+</div>
+<script src="js/config.js" charset="utf-8"></script>
+<script src="js/i18n-es.js" charset="utf-8"></script>
+<script src="../js/i18n.js" charset="utf-8"></script>
+<script src="../js/gate.js" charset="utf-8"></script>
+<script>
+Gate.start({kinds:[]},function(ctx){
+'use strict';
+const sb=Gate.sb,el=Gate.el,$=id=>document.getElementById(id);
+const SYM={EUR:'€',BRL:'R$'};
+const COURSE=window.BL_COURSE||{};
+const STG=COURSE.stages||[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[139,156],[157,174],[175,190],[191,206],[1001,1017]];
+function money(v,c){return (SYM[c]||'')+' '+Number(v).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function dt(s){if(!s)return '';const d=new Date(s.length<=10?s+'T12:00:00':s);return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});}
+function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function th(l){return el('thead',{},el('tr',{},l.map(h=>el('th',{scope:'col'},h))));}
+function pct(s,t){return t?Math.round(s/t*100)+'%':'—';}
+function show(w){['g','p','s'].forEach(k=>{$('p-'+k).hidden=k!==w;$('t-'+k).setAttribute('aria-selected',String(k===w));});}
+$('t-g').addEventListener('click',()=>show('g'));$('t-p').addEventListener('click',()=>show('p'));$('t-s').addEventListener('click',()=>show('s'));
+const me=ctx.profile||{};
+$('hn').textContent=me.name||'';$('hs').textContent=COURSE.name||'Callan English';
+function openPic(){Gate.loadProfile(()=>Profile.openPicker({sb:sb,uid:me.id||ctx.user.id,current:me.avatar,lang:COURSE.uiLang||'en',onSaved:id=>{me.avatar=id;Gate.setAvatar(id);}}));}
+$('edav').addEventListener('click',openPic);$('chg').addEventListener('click',openPic);
+Gate.loadProfile(()=>{Gate.setAvatar(me.avatar||null);if(location.hash==='#picture'){history.replaceState(null,'',location.pathname+location.search);openPic();}});
+function themeUi(){const t=Gate.theme();document.querySelectorAll('#thm button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===t)));}
+document.querySelectorAll('#thm button').forEach(b=>b.addEventListener('click',()=>{Gate.setTheme(b.dataset.v);themeUi();}));themeUi();
+document.querySelectorAll('#sz button').forEach(b=>b.addEventListener('click',()=>Gate.setSize(Gate.sizeIdx()+(+b.dataset.d))));
+
+async function grades(){
+  const box=$('g'),all=[];let from=0;
+  for(;;){const r=await sb.from('attempts').select('kind,lesson,ex,score,total,created_at').order('created_at',{ascending:true}).range(from,from+999);
+    if(r.error){box.append(el('p',{class:'msg bad'},'Could not load your grades: '+r.error.message));return;}
+    all.push(...(r.data||[]));if((r.data||[]).length<1000)break;from+=1000;}
+  if(!all.length){box.append(el('p',{class:'hint'},'Your grades will appear here after your first Lesson Check or exercise.'));return;}
+  const best={};all.forEach(a=>{const k=(a.kind==='ex'&&/^wb/.test(String(a.ex))?'wb':a.kind)+'|'+a.lesson+'|'+a.ex;
+    const o=best[k]||(best[k]={kind:a.kind==='ex'&&/^wb/.test(String(a.ex))?'wb':a.kind,lesson:a.lesson,s:0,t:a.total,last:a.created_at,n:0});
+    if(a.score>o.s||(a.score===o.s&&a.total>o.t)){o.s=a.score;o.t=a.total;}o.n++;if(a.created_at>o.last)o.last=a.created_at;});
+  const per={};Object.values(best).forEach(o=>{const l=per[o.lesson]||(per[o.lesson]={lesson:o.lesson,check:null,ex:{s:0,t:0},wb:{s:0,t:0},last:''});
+    if(o.kind==='check')l.check={s:o.s,t:o.t};else if(o.kind==='wb'){l.wb.s+=o.s;l.wb.t+=o.t;}else{l.ex.s+=o.s;l.ex.t+=o.t;}
+    if(o.last>l.last)l.last=o.last;});
+  const L=Object.values(per);let cs=0,ct=0;L.forEach(l=>{if(l.check){cs+=l.check.s;ct+=l.check.t;}});
+  const done=L.filter(l=>l.check).length;
+  box.append(el('div',{class:'kp'},
+    el('div',{},el('small',{},'Lesson Check average'),el('b',{},pct(cs,ct))),
+    el('div',{},el('small',{},'Lesson Checks done'),el('b',{},String(done))),
+    el('div',{},el('small',{},'Last activity'),el('b',{style:'font-size:1.1rem'},dt(all[all.length-1].created_at)))));
+  STG.forEach((r,i)=>{const ls=L.filter(l=>l.lesson>=r[0]&&l.lesson<=r[1]).sort((a,b)=>a.lesson-b.lesson);if(!ls.length)return;
+    let s=0,t=0,n=0;ls.forEach(l=>{if(l.check){s+=l.check.s;t+=l.check.t;n++;}});
+    const d=el('details');if(i===STG.length-1||ls.some(l=>l.last===[...ls].map(x=>x.last).sort().pop()))d.open=false;
+    d.append(el('summary',{},(r[0]>1000?'Business':'Stage '+(i+1))+' · Checks average '+pct(s,t)+' · '+n+' done'));
+    const tb=el('table');tb.append(th(['Lesson','Lesson Check','Exercises','Workbook','Last activity']));const b=el('tbody');
+    ls.forEach(l=>b.append(el('tr',{},el('td',{class:'c'},String(l.lesson>1000?l.lesson-1000:l.lesson)),
+      el('td',{class:'c'},l.check?l.check.s+'/'+l.check.t+' ('+pct(l.check.s,l.check.t)+')':'—'),
+      el('td',{class:'c'},l.ex.t?pct(l.ex.s,l.ex.t):'—'),el('td',{class:'c'},l.wb.t?pct(l.wb.s,l.wb.t):'—'),
+      el('td',{class:'c'},dt(l.last)))));
+    tb.append(b);const w=el('div',{class:'tw'});w.append(tb);d.append(w);box.append(d);});
+  const lastD=[...box.querySelectorAll('details')].pop();if(lastD)lastD.open=true;
+}
+
+async function pays(){
+  const box=$('p');
+  const a=await sb.from('subs').select('*').order('created_at');
+  if(a.error){box.append(el('p',{class:'hint'},'Payment information is not available yet.'));return;}
+  const subs=a.data||[];
+  if(!subs.length){box.append(el('p',{class:'hint'},'No plan registered yet. If you think this is a mistake, contact the school.'));}
+  const c=await sb.from('charges').select('*').order('due_date',{ascending:false});const ch=c.data||[];
+  const today=iso(new Date());
+  subs.forEach(s=>{box.append(el('div',{class:'kp'},
+    el('div',{},el('small',{},'Plan'),el('b',{},s.plan)),
+    el('div',{},el('small',{},'Monthly amount'),el('b',{},money(s.amount,s.currency))),
+    el('div',{},el('small',{},'Due day'),el('b',{},'Day '+s.due_day)),
+    el('div',{},el('small',{},'Status'),el('b',{style:'font-size:1.1rem'},s.active?'Active':'Paused'))));});
+  const open=ch.filter(x=>!x.paid_on).sort((x,y)=>x.due_date<y.due_date?-1:1);
+  if(open.length){const n=open[0],late=n.due_date<today;
+    box.append(el('div',{class:'next'},el('small',{},late?'Overdue payment':'Next payment'),el('br'),el('b',{},money(n.amount,n.currency)),
+      el('span',{},' · due '+dt(n.due_date)+' '),el('span',{class:'pill '+(late?'bad':'wt')},late?'Overdue':'Open')));}
+  else if(ch.length)box.append(el('div',{class:'next'},el('b',{},'All paid. Thank you!')));
+  if(ch.length){const paid={};ch.forEach(x=>{if(x.paid_on)paid[x.currency]=(paid[x.currency]||0)+ +x.amount;});
+    box.append(el('p',{class:'hint'},'Total paid so far: '+(Object.keys(paid).map(k=>money(paid[k],k)).join(' + ')||'—')));
+    const tb=el('table');tb.append(th(['Due date','Amount','Status','Paid on']));const b=el('tbody');
+    ch.forEach(x=>{const st=x.paid_on?el('span',{class:'pill ok'},'Paid'):(x.due_date<today?el('span',{class:'pill bad'},'Overdue'):el('span',{class:'pill wt'},'Open'));
+      b.append(el('tr',{},el('td',{class:'c'},dt(x.due_date)),el('td',{class:'n'},money(x.amount,x.currency)),el('td',{class:'c'},st),el('td',{class:'c'},dt(x.paid_on))));});
+    tb.append(b);const w=el('div',{class:'tw'});w.append(tb);box.append(w);}
+  const nm=(ctx.profile&&ctx.profile.name)||'';
+  box.append(el('p',{},el('a',{class:'btn',href:'https://wa.me/5511914881274?text='+encodeURIComponent('Hello! This is '+nm+', a Britland Academy student. I have a question about my payments.'),target:'_blank',rel:'noopener'},'Talk to the school')));
+}
+grades();pays();
+});
+</script>
+</body></html>

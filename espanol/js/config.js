@@ -7,13 +7,13 @@ window.CALLAN_CFG={
 /* ---- course settings read by the shared files in ../js (gate.js, i18n.js, covers.js, streak.js) ---- */
 window.BL_BASE='../';
 window.BL_COURSE={
-  id:'es',uiLang:'es',loginLang:'es',langKey:'callan-lang-es',whyKey:'callan-why-es',i18nMode:'lock',
+  id:'es',name:'Callan Español',uiLang:'es',loginLang:'es',langKey:'callan-lang-es',whyKey:'callan-why-es',i18nMode:'lock',
   stageKey:'callan-stage-es',maxLesson:112,
   stages:[[1,16],[17,32],[33,52],[53,72],[73,92],[93,112]],
   checkLessons:[7,10,12,15,20,24,28,31,34,37,40,43,46,48,51,53,56,58,61,63,66,69,71,73,76,79,81,84,87,90,92,95,97,100,102,105,108,110,112],
   colors:['#b3262b','#381215','#e8b84a','#8f1f27','#c9a85a','#862f36'],
   coverEs:true,
-  profile:false,push:false, /* switched on when the Spanish database and pages get them */
+  profile:true,push:false, /* push is switched on when the Spanish notification service exists */
   css:'.g-ov{--bg:#250B0D;--card:#361215;--surface:#46161a;--ink:#FAF2F3;--muted:#C9AAAD;--mut:#C9AAAD;--line:#612C31;--chip:#541C21;--accent:#F5C542;--accent-ink:#310D10;--acc:#F5C542;--hl:#F5C542;--hli:#310D10;--link:#F0828B;--band1:#67161C;--band2:#310C0F}'+'html[data-theme="light"] .g-ov{--bg:#FAF4F5;--card:#FFFFFF;--surface:#FFFFFF;--ink:#310D10;--muted:#6f494c;--mut:#6f494c;--line:#E5D4D5;--chip:#F4E7E8;--accent:#F5C542;--accent-ink:#310D10;--acc:#F5C542;--hl:#F5C542;--hli:#310D10;--link:#94242D;--band1:#67161C;--band2:#310C0F}'+
   'html[data-theme="light"] .g-btn.g-cta,html[data-theme="light"] a.g-btn.g-cta:not(.ghost){border:2px solid #4d1217!important}'+
   '.g-btn.g-cta,a.g-btn.g-cta:not(.ghost){background:#fff;border-color:#fff;color:#4d1217;font-weight:700;flex:1 1 100%;font-size:1.05rem;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;text-align:center;box-shadow:0 2px 0 rgba(0,0,0,.25)}.g-btn.g-cta:hover{filter:brightness(1.08)}',
