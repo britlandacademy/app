@@ -118,7 +118,7 @@ function openPicker(o){
           if(oldPhoto)try{o.sb.storage.from('avatars').remove([o.uid+'/'+oldPhoto.slice(6)]);}catch(e){}
           return pick.id;});
       }
-      p.then(function(id){close();if(o.onSaved)o.onSaved(id);},function(){save.disabled=false;err.textContent=T('Could not save. Try again.');});
+      p.then(function(id){close();if(o.onSaved)o.onSaved(id);},function(e){save.disabled=false;var m=e&&(e.message||e.error_description||e.error)||'';err.textContent=T('Could not save. Try again.')+(m?' ('+String(m).slice(0,120)+')':'');try{console.error('avatar save',e);}catch(x){}});
     };
     document.body.append(ov);showFact(pick);draw();save.focus({preventScroll:true});
     window.addEventListener('langchange',function f(){if(!ov.isConnected){window.removeEventListener('langchange',f);return;}showFact(pick);});
