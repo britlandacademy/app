@@ -4,7 +4,8 @@
 (function(){
 'use strict';
 var LANGS=[['en','English'],['pt','Português'],['es','Español']];
-var KEY='callan-lang';
+var COURSE=window.BL_COURSE||{},UI=COURSE.uiLang||'en';
+var KEY=COURSE.langKey||'callan-lang';
 var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they are */
 /* ---- sign in ---- */
 ['Sign in','Entrar','Iniciar sesión'],
@@ -333,6 +334,7 @@ function add(entry){
     }else if(!MAP.hasOwnProperty(s))MAP[s]=entry;
   }
 }
+(window.I18N_EXTRA||[]).forEach(add); /* course-specific wording first, so it wins */
 D.forEach(add);
 TPL.sort(function(a,b){return b.re.source.length-a.re.source.length;});
 /* Portuguese wording already present in the admin page */
@@ -348,13 +350,13 @@ alias('Importar de novo substitui o conteúdo existente com o mesmo número de l
 alias('Escolha vários arquivos de uma vez (Ctrl+A na pasta). Os nomes devem ser como já estão:','Choose several files at once (Ctrl+A in the folder). The names must stay as they are:');
 alias('Painel do professor','Teacher panel');
 
-var lang='en';
+var lang=UI;
 var PG=(location.pathname.split('/').pop()||'index.html').replace(/\.html$/,'');
-var MODE=(PG==='workbook'||PG==='placement')?'free':(PG==='check'||PG==='exercises')?'why':'lock';
-var HK='callan-why',hint='en';
+var MODE=COURSE.i18nMode||((PG==='workbook'||PG==='placement')?'free':(PG==='check'||PG==='exercises')?'why':'lock');
+var HK=COURSE.whyKey||'callan-why',hint='en';
 try{var hs=localStorage.getItem(HK);if(hs==='en'||hs==='pt'||hs==='es')hint=hs;}catch(e){}
 function detect(){
-  if(MODE!=='free'){try{localStorage.removeItem(KEY);}catch(e){}return 'en';}
+  if(MODE!=='free'){try{localStorage.removeItem(KEY);}catch(e){}return UI;}
   var s=null;try{s=localStorage.getItem(KEY);}catch(e){}
   if(s==='en'||s==='pt'||s==='es')return s;
   return 'en';
@@ -362,14 +364,14 @@ function detect(){
 function refresh(){
   var bs=document.querySelectorAll('.lang-sel .lang-btn');
   for(var i=0;i<bs.length;i++){
-    var b=bs[i],fr=b.parentNode.getAttribute('data-free')==='1',cur=fr||MODE==='free'?lang:(MODE==='why'?hint:'en');
+    var b=bs[i],fr=b.parentNode.getAttribute('data-free')==='1',cur=fr||MODE==='free'?lang:(MODE==='why'?hint:UI);
     b.setAttribute('aria-pressed',b.getAttribute('data-l')===cur?'true':'false');
   }
 }
 function after(){
   if(MODE==='free'){defLang('en');return;}
   try{localStorage.removeItem(KEY);}catch(e){}
-  if(lang!=='en'){lang='en';apply();try{window.dispatchEvent(new CustomEvent('langchange',{detail:'en'}));}catch(e){}}
+  if(lang!==UI){lang=UI;apply();try{window.dispatchEvent(new CustomEvent('langchange',{detail:UI}));}catch(e){}}
   refresh();
 }
 var IDX={en:0,pt:1,es:2};
@@ -471,7 +473,7 @@ function selector(free){
   LANGS.forEach(function(x){
     var b=document.createElement('button');b.type='button';b.className='lang-btn';b.setAttribute('data-l',x[0]);
     b.setAttribute('aria-label',x[1]);b.title=x[1];
-    if(!free&&MODE==='lock'&&x[0]!=='en'){b.disabled=true;b.setAttribute('aria-disabled','true');}
+    if(!free&&MODE==='lock'&&x[0]!==UI){b.disabled=true;b.setAttribute('aria-disabled','true');}
     b.innerHTML=flagSVG(x[0],++FLAGN);
     b.addEventListener('click',function(){setLang(x[0],!!free);});
     g.appendChild(b);

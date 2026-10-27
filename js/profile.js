@@ -7,7 +7,7 @@ var loaded=null;
 function loadScript(src){return new Promise(function(ok){var s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=ok;document.head.append(s);});}
 function ready(){
   if(loaded)return loaded;
-  loaded=loadScript('js/avatars.js').then(function(){return loadScript('js/facts.js');}).then(function(){return loadScript('js/facts_i18n.js');});
+  loaded=loadScript((window.BL_BASE||'')+'js/avatars.js').then(function(){return loadScript((window.BL_BASE||'')+'js/facts.js');}).then(function(){return loadScript((window.BL_BASE||'')+'js/facts_i18n.js');});
   return loaded;
 }
 function find(id){var A=window.BL_AVATARS||[],i;for(i=0;i<A.length;i++)if(A[i].id===id)return A[i];return null;}

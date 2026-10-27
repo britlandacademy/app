@@ -1,0 +1,3 @@
+/* Callan Español brand colours (burgundy + gold) for the pages that load ../js/brand.css */
+:root:root:root:root,:root[data-theme="dark"]:root:root:root{--bg:#1F0C0D;--card:#311114;--surface:#3D1619;--ink:#F6F1E7;--muted:#C8B6B7;--mut:#C8B6B7;--line:#562F32;--chip:#4E1C20;--accent:#E8B84A;--accent-ink:#381215;--acc:#E8B84A;--hl:#E8B84A;--hli:#381215;--link:#F0C766;--band1:#8F1F27;--band2:#381215;--gold2:#F0C766}
+:root[data-theme="light"]:root:root:root{--bg:#F7F3EA;--card:#FFFFFF;--surface:#FFFFFF;--ink:#381215;--muted:#6A5052;--mut:#6A5052;--line:#DDD3BF;--chip:#EFE6D2;--accent:#E8B84A;--accent-ink:#381215;--acc:#E8B84A;--hl:#E8B84A;--hli:#381215;--link:#9B1C24;--band1:#8F1F27;--band2:#381215;--gold2:#F0C766}

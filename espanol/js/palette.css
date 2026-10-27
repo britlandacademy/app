@@ -1,0 +1,13 @@
+/* Callan Español palette (burgundy). Loaded after ../js/theme.css; the shared files hold the layout. */
+:root:root:root:root{
+  --bg:#150f10;--card:#221819;--surface:#291e1f;--ink:#f6f3f3;--muted:#b6a4a5;--line:#402f30;
+  --accent:#f5c542;--accent-ink:#111111;--chip:#362728;--band:#221819;--band-ink:#ffffff;--band-muted:#b6a4a5;
+  color-scheme:dark}
+:root[data-theme="light"]:root:root:root{
+  --bg:#f7f3f3;--card:#ffffff;--surface:#ffffff;--ink:#1f1415;--muted:#4f5663;--line:#dfd4d5;
+  --accent:#1f1415;--accent-ink:#ffffff;--chip:#eee7e8;--band:#221819;--band-ink:#ffffff;--band-muted:#b6a4a5;
+  color-scheme:light}
+.band{background:linear-gradient(135deg,#322425,#221819)!important;border:1px solid var(--line)!important;border-radius:14px!important}
+:root[data-theme="light"] a:not(.btn):not(.card){color:#1f1415}
+html[data-theme="light"] .g-ov .bl-name b{color:#4d1217}
+.head .bl-name b{color:var(--ink)}

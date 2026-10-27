@@ -135,6 +135,7 @@ A.push({id:'flag-australia',cat:'flags',name:'Australia',svg:'<svg xmlns="http:/
 A.push({id:'angelou',cat:'people',name:"Maya Angelou",svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><image href="img/people/angelou.jpg" width="100" height="100" preserveAspectRatio="xMidYMid slice"/></svg>'});
 A.push({id:'christie',cat:'people',name:"Agatha Christie",svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><image href="img/people/christie.jpg" width="100" height="100" preserveAspectRatio="xMidYMid slice"/></svg>'});
 A.push({id:'austen',cat:'people',name:"Jane Austen",svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><image href="img/people/austen.jpg" width="100" height="100" preserveAspectRatio="xMidYMid slice"/></svg>'});
+var B=window.BL_BASE||'';if(B)A.forEach(function(a){a.svg=a.svg.replace(/href="img\//g,'href="'+B+'img/');}); /* Spanish pages live in a sub-folder */
 window.BL_AVATARS=A;
 window.BL_AVATAR_CATS=[['school','School'],['britain','Britain'],['people','Famous people'],['fiction','Characters'],['flags','Flags'],['world','Symbols']];
 })();

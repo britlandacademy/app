@@ -1,8 +1,1 @@
-/* Marca Español: azul-marinho + vermelho + dourado de ação (index, teste de nível, login) */
-:root:root,:root[data-theme="dark"]:root{--bg:#1F0C0D;--card:#311114;--surface:#3D1619;--ink:#F6F1E7;--muted:#C8B6B7;--mut:#C8B6B7;--line:#562F32;--chip:#4E1C20;--accent:#E8B84A;--accent-ink:#381215;--acc:#E8B84A;--hl:#E8B84A;--hli:#381215;--link:#F0C766;--band1:#8F1F27;--band2:#381215}
-:root[data-theme="light"]:root{--bg:#F7F3EA;--card:#FFFFFF;--surface:#FFFFFF;--ink:#381215;--muted:#6A5052;--mut:#6A5052;--line:#DDD3BF;--chip:#EFE6D2;--accent:#E8B84A;--accent-ink:#381215;--acc:#E8B84A;--hl:#E8B84A;--hli:#381215;--link:#9B1C24;--band1:#8F1F27;--band2:#381215}
-.band{background:linear-gradient(135deg,var(--band1),var(--band2))!important;border:0!important;color:#fff}
-.band *{color:inherit}
-a:not(.btn):not(.card):not(.g-btn){color:var(--link)}
-.btn.primary,.g-btn:not(.ghost):not(.g-cta){background:#E8B84A!important;border-color:#E8B84A!important;color:#381215!important}
-.lang-btn[aria-pressed="true"]{border-color:var(--link)!important;box-shadow:0 0 0 2px var(--link)!important}
+/* Obsolete: the Spanish pages now use ../js/brand.css. Safe to delete. */

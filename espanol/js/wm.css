@@ -1,3 +1,1 @@
-/* Marca d'água da Britland ao fundo (atrás do conteúdo, bem clara) */
-:root:root body,:root:root[data-theme="dark"] body{background:url(../img/wm-dark.png) 0 0/360px 240px repeat fixed,var(--bg)}
-:root[data-theme="light"]:root body{background:url(../img/wm-light.png) 0 0/360px 240px repeat fixed,var(--bg)}
+/* Obsolete: the Spanish pages now use ../js/wm.css. Safe to delete. */
