@@ -203,7 +203,7 @@ function pushRow(closeMenu){
   var ios=/iPhone|iPad|iPod/.test(navigator.userAgent),can='serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
   if(!can&&!ios)return document.createComment('');
   var sw=el('button',{type:'button',class:'g-sw',role:'switch','aria-checked':'false','aria-label':'Notifications'},el('u'));
-  var set=function(on){sw.setAttribute('aria-checked',on?'true':'false');};
+  var set=function(on){sw.setAttribute('aria-checked',on?'true':'false');sw.classList.toggle('on',!!on);};
   sw.addEventListener('click',function(){
     var p=P();
     if(!p){if(sw._ld)return;sw._ld=1;var ld=document.createElement('script');ld.src=(window.BL_BASE||'')+'js/push.js?v='+(window.BL_VERSION||'1');ld.onload=function(){sw._ld=0;sw.click();};ld.onerror=function(){sw._ld=0;closeMenu(false);pushInfo('Could not load the notifications module. Check your connection and try again. (push.js)');};document.head.append(ld);return;}
