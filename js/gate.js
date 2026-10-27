@@ -165,7 +165,7 @@ function signOut(){
 }
 
 /* ---------- top bar ---------- */
-var SVG={user:'<path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',moon:'<path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/>',help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 1-1 1.7M12 17.3v.2"/>',out:'<path d="M10 4H5v16h5M15 8l4 4-4 4M19 12H9"/>',panel:'<rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8"/>'};
+var SVG={bell:'<path d="M6 9a6 6 0 0 1 12 0c0 6 2 7 2 7H4s2-1 2-7"/><path d="M10 20a2 2 0 0 0 4 0"/>',user:'<path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',moon:'<path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/>',help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 1-1 1.7M12 17.3v.2"/>',out:'<path d="M10 4H5v16h5M15 8l4 4-4 4M19 12H9"/>',panel:'<rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8"/>'};
 function ico(k){var s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('aria-hidden','true');s.innerHTML=SVG[k];return s;}
 function paintAvatars(){
   if(!window.Profile||!prof)return;
@@ -191,6 +191,27 @@ function thanksPay(){
     var d=el('div',{class:'g-hdlg',role:'dialog','aria-modal':'true','aria-label':'Thank you'},el('h2',{style:'margin:0 0 10px'},'Thank you! \uD83D\uDC9B'),el('p',{},msg),el('div',{class:'g-row',style:'justify-content:flex-end'},el('button',{type:'button',class:'g-btn',onclick:close},'Close')));
     ov.append(d);ov.addEventListener('click',function(e){if(e.target===ov)close();});document.addEventListener('keydown',kd);document.body.append(ov);
   }).catch(function(){});
+}
+function pushInfo(text){
+  var ov=el('div',{class:'g-hov'}),close=function(){document.removeEventListener('keydown',kd);ov.remove();},kd=function(e){if(e.key==='Escape')close();};
+  var d=el('div',{class:'g-hdlg',role:'dialog','aria-modal':'true','aria-label':'Notifications'},el('h2',{style:'margin:0 0 10px'},'Notifications'),el('p',{},text),el('div',{class:'g-row',style:'justify-content:flex-end'},el('button',{type:'button',class:'g-btn',onclick:close},'Close')));
+  ov.append(d);ov.addEventListener('click',function(e){if(e.target===ov)close();});document.addEventListener('keydown',kd);document.body.append(ov);
+}
+function pushRow(closeMenu){
+  var P=function(){return window.BLPush;};
+  var ios=/iPhone|iPad|iPod/.test(navigator.userAgent),can='serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
+  if(!can&&!ios)return document.createComment('');
+  var sw=el('button',{type:'button',class:'g-sw',role:'switch','aria-checked':'false','aria-label':'Notifications'},el('u'));
+  var set=function(on){sw.setAttribute('aria-checked',on?'true':'false');};
+  sw.addEventListener('click',function(){
+    var p=P();if(!p){return;}
+    if(!can){closeMenu(false);pushInfo('To get notifications on iPhone, first add the app to your Home Screen: tap Share, then Add to Home Screen. Open the app from there and turn Notifications on again.');return;}
+    if(sw.getAttribute('aria-checked')==='true'){p.disable(sb).then(function(){set(false);},function(){});return;}
+    if(Notification.permission==='denied'){closeMenu(false);pushInfo('Notifications are blocked for this app. Open your phone settings, find Britland, and allow notifications.');return;}
+    p.enable(sb).then(function(){set(true);},function(e){if(e&&e.message==='denied'){closeMenu(false);pushInfo('Notifications were not allowed. You can allow them later in your phone settings.');}else{closeMenu(false);pushInfo('Could not turn notifications on. Try again in a moment.');}});
+  });
+  if(can&&Notification.permission==='granted'){var t=setInterval(function(){var p=P();if(!p)return;clearInterval(t);p.current().then(function(s){set(!!s);if(s)p.sync(sb);}).catch(function(){});},300);setTimeout(function(){clearInterval(t);},6000);}
+  return el('div',{class:'g-mr'},ico('bell'),el('span',{},'Notifications'),sw);
 }
 function showHelp(){
   var ov=el('div',{class:'g-hov'}),close=function(){document.removeEventListener('keydown',kd);ov.remove();},kd=function(e){if(e.key==='Escape')close();};
@@ -228,6 +249,7 @@ function addBar(){
     mi('user','My Profile',{href:'account.html'}),
     mi('edit','Change picture',{href:'account.html#picture'}),
     el('div',{class:'g-mr'},ico('moon'),el('span',{},'Dark mode'),themeSw),
+    pushRow(open),
     el('div',{class:'g-mr'},el('b',{style:'width:20px;text-align:center'},'Aa'),el('span',{},'Text size'),el('span',{class:'g-sz',role:'group','aria-label':'Text size'},minus,plus,lab)));
   if(window.I18N&&I18N.mode==='free')mn.append(el('div',{class:'g-mr'},el('span',{},'Language'),window.I18N.selector()));
   if(prof.is_admin)mn.append(mi('panel','Teacher panel',{href:'admin.html'}));
@@ -336,7 +358,7 @@ function applyServerPrefs(){
 function loadProfile(cb){
   function go(){window.Profile.css();window.Profile.ready().then(cb||function(){});}
   if(window.Profile){go();return;}
-  var sc=document.createElement('script');sc.src='js/profile.js';sc.onload=go;document.head.append(sc);
+  var sc=document.createElement('script');sc.src='js/profile.js';sc.onload=go;document.head.append(sc);var sp=document.createElement('script');sp.src='js/push.js';document.head.append(sp);
 }
 /* ---------- routing ---------- */
 var OPTS={kinds:[],attempts:null,admin:false},CB=null;
@@ -366,7 +388,7 @@ function route(){
       return loadContent(OPTS.kinds).then(function(){
         return OPTS.attempts?(Array.isArray(OPTS.attempts)?Promise.all(OPTS.attempts.map(fetchAttempts)).then(function(x){return [].concat.apply([],x);}):fetchAttempts(OPTS.attempts)):[];
       }).then(function(att){
-        hideOverlay();applyServerPrefs();if(!OPTS.bare){addBar();loadProfile(paintAvatars);thanksPay();}
+        hideOverlay();applyServerPrefs();if(!OPTS.bare){addBar();loadProfile(paintAvatars);try{thanksPay();}catch(e){}}
         /* the streak counts finished activities only (see saveAttempt) */
         CB({user:user,profile:prof,attempts:att,upto:upto()});
       });

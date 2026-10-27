@@ -1,6 +1,6 @@
 /* Britland Academy service worker.
    Change VERSION every time the app is updated, so students always get the new files. */
-const VERSION = '1.0.69';
+const VERSION = '1.0.70';
 const CACHE = 'bl-' + VERSION;
 const CORE = ['offline.html', 'img/britland-shield.png', 'img/icons/icon-192.png', 'favicon-32.png'];
 
@@ -28,4 +28,23 @@ self.addEventListener('fetch', e => {
     if (r.ok) { const c = r.clone(); caches.open(CACHE).then(x => x.put(req, c)); }
     return r;
   }).catch(() => caches.match(req).then(hit => hit || (req.mode === 'navigate' ? caches.match('offline.html') : Response.error()))));
+});
+
+/* ---- push notifications ---- */
+self.addEventListener('push', e => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (x) { d = { body: e.data ? e.data.text() : '' }; }
+  const title = d.title || 'Britland Academy';
+  e.waitUntil(self.registration.showNotification(title, {
+    body: d.body || '', icon: 'img/icons/icon-192.png', badge: 'img/icons/icon-192.png',
+    tag: d.tag || undefined, data: { url: d.url || './' }
+  }));
+});
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const target = new URL((e.notification.data && e.notification.data.url) || './', self.registration.scope).href;
+  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+    for (const c of list) { if (c.url.startsWith(self.registration.scope) && 'focus' in c) { c.navigate(target); return c.focus(); } }
+    return self.clients.openWindow(target);
+  }));
 });
