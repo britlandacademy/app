@@ -12,12 +12,14 @@ var P={
   save:function(sb,sub){var j=sub.toJSON(),k=j.keys||{};return sb.rpc('save_push_sub',{p_endpoint:sub.endpoint,p_p256dh:k.p256dh,p_auth:k.auth}).then(function(r){if(r.error)throw r.error;});},
   /* turn on: ask permission, subscribe, store */
   enable:function(sb){
-    return Notification.requestPermission().then(function(perm){
+    function lim(pr,ms,step){return new Promise(function(res,rej){var t=setTimeout(function(){rej(new Error('timeout at '+step));},ms);pr.then(function(v){clearTimeout(t);res(v);},function(e){clearTimeout(t);rej(e);});});}
+    function ask(){return new Promise(function(res,rej){try{var r=Notification.requestPermission(function(v){res(v);});if(r&&r.then)r.then(res,rej);}catch(e){rej(e);}});}
+    return lim(ask(),40000,'step 1 (permission)').then(function(perm){
       if(perm!=='granted')throw new Error('denied');
-      return navigator.serviceWorker.ready;
+      return lim(navigator.serviceWorker.getRegistration().then(function(r){return r||navigator.serviceWorker.register('sw.js');}).then(function(){return navigator.serviceWorker.ready;}),8000,'step 1b (service worker)');
     }).then(function(reg){
-      return reg.pushManager.getSubscription().then(function(s){return s||reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:toBytes(KEY)}).catch(function(e){throw new Error('step 2 (phone registration): '+(e&&e.name?e.name+' - ':'')+(e&&e.message||e));});});
-    }).then(function(sub){return P.save(sb,sub).catch(function(e){throw new Error('step 3 (saving): '+((e&&(e.message||e.details||e.code))||e));});});
+      return reg.pushManager.getSubscription().then(function(s){return s||lim(reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:toBytes(KEY)}),20000,'step 2 (phone registration)');});
+    }).then(function(sub){return lim(P.save(sb,sub),15000,'step 3 (saving)');});
   },
   disable:function(sb){
     return P.current().then(function(sub){
