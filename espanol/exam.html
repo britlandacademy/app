@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>Stage Exam · Britland Academy</title>
+<title>Examen de etapa · Britland Academy</title>
 <link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="theme-color" content="#0b1733"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Britland"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="../js/pwa.js" defer></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
@@ -133,7 +133,7 @@ const sb=Gate.sb,el=Gate.el,app=document.getElementById('app');
 const NAME=(ctx.profile&&ctx.profile.name)||'';
 const STAGE_PARAM=parseInt(new URLSearchParams(location.search).get('stage'),10)||0;
 let stage=0,items=null,answers={},part=0,t0=0,endIn=0,tick=null,dirty=false,saving=false,sent=false,lastSave=0;
-const PART_NAME={dictation:'Dictation',yesno:'Yes / No quiz',oral:'Listening',gap:'Gap fill',mc:'Multiple choice',err:'Error correction'};
+const PART_NAME={dictation:'Dictado',yesno:'Sí / No',oral:'Comprensión oral',gap:'Test de vocabulario',mc:'Opción múltiple',err:'Corrección de errores'};
 function clear(){app.textContent='';}
 function mmss(s){s=Math.max(0,s);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
 function left(){return Math.max(0,Math.round(endIn-(performance.now()-t0)/1000));}
@@ -141,49 +141,49 @@ function left(){return Math.max(0,Math.round(endIn-(performance.now()-t0)/1000))
 /* ---------- plain screens ---------- */
 function screen(children){clear();app.append(el('main',{style:'padding-bottom:30px'},...children));window.scrollTo(0,0);}
 function logo(){return el('div',{class:'lock',role:'img','aria-label':'Britland Academy'},el('img',{src:'img/britland-shield.png',alt:''}),el('span',{class:'nm'},el('b',{},'BRITLAND'),el('i',{},'ACADEMY')));}
-function leave(){return el('a',{class:'btnl',href:'index.html'},'Back to the activities');}
+function leave(){return el('a',{class:'btnl',href:'index.html'},'Volver a las actividades');}
 
 async function home(){
   const r=await sb.from('exam_release').select('stage').order('stage');
   const rel=(r.data||[]).map(x=>x.stage);
-  if(!rel.length){screen([el('div',{class:'scr center'},logo(),el('h1',{},'No exam is open yet'),el('p',{},'Your teacher will open the Stage Exam for you when you have finished the Lesson Checks of your Stage.'),el('p',{},leave()))]);return;}
+  if(!rel.length){screen([el('div',{class:'scr center'},logo(),el('h1',{},'Todavía no hay ningún examen abierto'),el('p',{},'Tu profesor abrirá el examen de etapa cuando hayas terminado los ejercicios de repaso de tu etapa.'),el('p',{},leave()))]);return;}
   if(STAGE_PARAM&&rel.includes(STAGE_PARAM))return openStage(STAGE_PARAM);
   if(rel.length===1)return openStage(rel[0]);
   const box=el('div',{});
   for(const n of rel){const st=(await sb.rpc('exam_state',{p_stage:n})).data||{};
-    box.append(el('p',{style:'display:flex;justify-content:space-between;align-items:center;gap:10px'},el('b',{},'Stage '+n+' Exam'),el('span',{},st.state==='done'?'Submitted':(st.state==='running'?'In progress':'Ready')),el('a',{class:'btnl',href:'exam.html?stage='+n},st.state==='done'?'Open':'Start')));}
-  screen([el('div',{class:'scr'},logo(),el('h1',{},'Your exams'),box,el('p',{},leave()))]);
+    box.append(el('p',{style:'display:flex;justify-content:space-between;align-items:center;gap:10px'},el('b',{},'Examen de la Etapa '+n),el('span',{},st.state==='done'?'Enviado':(st.state==='running'?'En curso':'Listo')),el('a',{class:'btnl',href:'exam.html?stage='+n},st.state==='done'?'Abrir':'Empezar')));}
+  screen([el('div',{class:'scr'},logo(),el('h1',{},'Tus exámenes'),box,el('p',{},leave()))]);
 }
 async function openStage(n){
   stage=n;
   const r=await sb.rpc('exam_state',{p_stage:n});
-  if(r.error){screen([el('div',{class:'scr'},el('h1',{},'Could not load the exam'),el('p',{class:'msg-bad'},r.error.message))]);return;}
+  if(r.error){screen([el('div',{class:'scr'},el('h1',{},'No se pudo cargar el examen'),el('p',{class:'msg-bad'},r.error.message))]);return;}
   const st=r.data||{};
   if(st.state==='done')return finished(st);
   if(st.state==='running')return begin();
   if(st.state==='ready')return intro(st);
-  screen([el('div',{class:'scr center'},logo(),el('h1',{},'This exam is not open'),el('p',{},'Please ask your teacher.'),el('p',{},leave()))]);
+  screen([el('div',{class:'scr center'},logo(),el('h1',{},'Este examen no está abierto'),el('p',{},'Pregunta a tu profesor.'),el('p',{},leave()))]);
 }
 function intro(st){
   const ok=el('input',{type:'checkbox',id:'ok',style:'width:22px;height:22px'});
-  const go=el('button',{type:'button',class:'xnext',disabled:true},'Start the exam');
+  const go=el('button',{type:'button',class:'xnext',disabled:true},'Empezar el examen');
   ok.addEventListener('change',()=>{go.disabled=!ok.checked;});
   go.addEventListener('click',()=>{go.disabled=true;begin();});
-  screen([el('div',{class:'scr'},logo(),el('h1',{class:'center'},'Stage '+stage+' Exam'),
+  screen([el('div',{class:'scr'},logo(),el('h1',{class:'center'},'Examen de la Etapa '+stage),
     el('ul',{},
-      el('li',{},el('b',{},st.minutes+' minutes'),' in total. The timer starts when you press the button.'),
-      el('li',{},'The exam has parts. You go from one part to the next and ',el('b',{},'you cannot go back'),' to a finished part.'),
-      el('li',{},'Your teacher reads the dictation and the listening questions aloud, so stay with your teacher.'),
-      el('li',{},'You can do the exam only once. Your answers are saved automatically. When you reach the last part, the ',el('b',{},'End exam'),' button appears. Press it when you finish.'),
-      el('li',{},'Do not close this page, press Back or reload.')),
-    el('p',{},el('label',{style:'display:flex;gap:10px;align-items:center;font-weight:700'},ok,'I am with my teacher and ready to start.')),
+      el('li',{},el('b',{},st.minutes+' minutos'),' en total. El tiempo empieza a contar cuando pulsas el botón.'),
+      el('li',{},'El examen tiene varias partes. Pasas de una parte a la siguiente y ',el('b',{},'no puedes volver'),' a una parte terminada.'),
+      el('li',{},'Tu profesor lee en voz alta el dictado y las preguntas, así que quédate con tu profesor.'),
+      el('li',{},'Solo puedes hacer el examen una vez. Tus respuestas se guardan automáticamente. Cuando llegues a la última parte, aparecerá el botón ',el('b',{},'Terminar examen'),'. Púlsalo cuando termines.'),
+      el('li',{},'No cierres esta página, no pulses Atrás ni la recargues.')),
+    el('p',{},el('label',{style:'display:flex;gap:10px;align-items:center;font-weight:700'},ok,'Estoy con mi profesor y listo para empezar.')),
     el('p',{class:'center'},go))]);
 }
 
 /* ---------- exam ---------- */
 async function begin(){
   const r=await sb.rpc('exam_begin',{p_stage:stage});
-  if(r.error){screen([el('div',{class:'scr'},el('h1',{},'Could not start the exam'),el('p',{class:'msg-bad'},r.error.message))]);return;}
+  if(r.error){screen([el('div',{class:'scr'},el('h1',{},'No se pudo empezar el examen'),el('p',{class:'msg-bad'},r.error.message))]);return;}
   items=r.data.items;answers=r.data.answers||{};part=Math.min(r.data.part_idx||0,items.parts.length-1);
   t0=performance.now();endIn=r.data.seconds_left;
   window.addEventListener('beforeunload',e=>{if(!sent){e.preventDefault();e.returnValue='';}});
@@ -194,28 +194,28 @@ function onTick(){
   const s=left(),t=document.getElementById('tm'),box=document.getElementById('tbox');
   if(t){t.textContent=mmss(s);}if(box)box.classList.toggle('low',s<=300);
   if(dirty&&performance.now()-lastSave>10000){lastSave=performance.now();save();}
-  const tl=document.getElementById('tlab');if(tl)tl.textContent=s<=0?'Time is up':'Time left';
+  const tl=document.getElementById('tlab');if(tl)tl.textContent=s<=0?'Se acabó el tiempo':'Tiempo restante';
 
 }
 async function save(p){
   if(saving||sent)return;saving=true;dirty=false;
   const r=await sb.rpc('exam_save',{p_stage:stage,p_answers:answers,p_part:p==null?part:p});
-  const sv=document.getElementById('sv');if(sv)sv.textContent=r.error?'Not saved: check your connection':'Saved';
+  const sv=document.getElementById('sv');if(sv)sv.textContent=r.error?'No guardado: revisa tu conexión':'Guardado';
   if(r.error)dirty=true;saving=false;
 }
 function shell(){
   clear();
-  const minus=el('button',{type:'button','aria-label':'Smaller text',id:'fsm'},'A−'),plus=el('button',{type:'button','aria-label':'Larger text',id:'fsp'},'A+'),norm=el('button',{type:'button','aria-label':'Normal text size'},'A');
+  const minus=el('button',{type:'button','aria-label':'Texto más pequeño',id:'fsm'},'A−'),plus=el('button',{type:'button','aria-label':'Texto más grande',id:'fsp'},'A+'),norm=el('button',{type:'button','aria-label':'Tamaño de texto normal'},'A');
   function upd(){minus.disabled=Gate.sizeIdx()===0;plus.disabled=Gate.sizeIdx()===Gate.sizeMax();}
   minus.addEventListener('click',()=>{Gate.setSize(Gate.sizeIdx()-1);upd();});plus.addEventListener('click',()=>{Gate.setSize(Gate.sizeIdx()+1);upd();});norm.addEventListener('click',()=>{Gate.setSize(1);upd();});upd();
   app.append(
     el('header',{class:'xh'},el('div',{class:'xh-in'},
-      el('div',{class:'brand'},el('img',{src:'img/britland-shield.png',alt:''}),el('span',{class:'hl'},el('b',{},'BRITLAND'),el('i',{},'ACADEMY')),el('div',{},el('b',{},'Stage '+stage+' Exam'),el('small',{id:'sub'},''))),
-      el('span',{class:'who'},NAME),el('span',{class:'sv',id:'sv','aria-live':'polite'},'Saved'),
-      el('div',{class:'fs',role:'group','aria-label':'Text size'},minus,norm,plus),
-      el('div',{class:'timer',id:'tbox',role:'timer','aria-label':'Time left'},el('div',{},el('small',{id:'tlab'},'Time left'),el('b',{id:'tm'},'--:--'))))),
-    el('button',{type:'button',class:'endb',id:'endb',hidden:true},'End exam'),
-    el('nav',{class:'steps','aria-label':'Parts'},el('ol',{id:'steps'})),
+      el('div',{class:'brand'},el('img',{src:'img/britland-shield.png',alt:''}),el('span',{class:'hl'},el('b',{},'BRITLAND'),el('i',{},'ACADEMY')),el('div',{},el('b',{},'Examen de la Etapa '+stage),el('small',{id:'sub'},''))),
+      el('span',{class:'who'},NAME),el('span',{class:'sv',id:'sv','aria-live':'polite'},'Guardado'),
+      el('div',{class:'fs',role:'group','aria-label':'Tamaño del texto'},minus,norm,plus),
+      el('div',{class:'timer',id:'tbox',role:'timer','aria-label':'Tiempo restante'},el('div',{},el('small',{id:'tlab'},'Tiempo restante'),el('b',{id:'tm'},'--:--'))))),
+    el('button',{type:'button',class:'endb',id:'endb',hidden:true},'Terminar examen'),
+    el('nav',{class:'steps','aria-label':'Partes'},el('ol',{id:'steps'})),
     el('main',{id:'main'}),
     el('footer',{class:'xf'},el('div',{class:'xf-in',id:'xf'})));
   document.getElementById('endb').addEventListener('click',()=>confirmEnd());
@@ -237,29 +237,29 @@ function isAns(p,n){
 }
 function unsure(p){return qlist(p).filter(n=>(answers[p.id]||{})[n]==='?');}
 function stat(p){
-  if(p.id==='dictation'){const a=isAns(p,1);return {done:a?1:0,total:1,blank:a?[]:['the text box']};}
+  if(p.id==='dictation'){const a=isAns(p,1);return {done:a?1:0,total:1,blank:a?[]:['el cuadro de texto']};}
   const ns=qlist(p),b=ns.filter(n=>!isAns(p,n));return {done:ns.length-b.length,total:ns.length,blank:b,unsure:unsure(p)};
 }
 function setA(p,n,v){
   if(p.id==='dictation')answers.dictation=v;
   else{answers[p.id]=answers[p.id]||{};if(v===''||v==null)delete answers[p.id][n];else answers[p.id][n]=v;}
-  dirty=true;const sv=document.getElementById('sv');if(sv)sv.textContent='Saving…';
+  dirty=true;const sv=document.getElementById('sv');if(sv)sv.textContent='Guardando…';
   refreshChips(p);
 }
 function draw(){
   const p=items.parts[part];
-  document.getElementById('sub').textContent='Part '+(part+1)+' of '+items.parts.length+' · '+(PART_NAME[p.id]||p.id);
+  document.getElementById('sub').textContent='Parte '+(part+1)+' de '+items.parts.length+' · '+(PART_NAME[p.id]||p.id);
   const st=document.getElementById('steps');st.textContent='';
   items.parts.forEach((x,i)=>st.append(el('li',{class:i<part?'done':(i===part?'cur':''),'aria-current':i===part?'step':null},el('i',{},i<part?'✓':String(i+1)),el('span',{},PART_NAME[x.id]||x.id))));
   const m=document.getElementById('main');m.textContent='';
   m.append(el('div',{class:'instr'},el('h1',{},p.title),el('p',{},p.instr)));
   if(p.id==='dictation'){
-    const ta=el('textarea',{class:'dic','aria-label':'Dictation: write what your teacher reads',spellcheck:'false',autocomplete:'off',autocapitalize:'sentences',autocorrect:'off'});
-    const wc=el('span',{},'0 words');
+    const ta=el('textarea',{class:'dic','aria-label':'Dictado: escribe lo que lee tu profesor',spellcheck:'false',autocomplete:'off',autocapitalize:'sentences',autocorrect:'off'});
+    const wc=el('span',{},'0 palabras');
     function words(){const t=ta.value.trim();return t?t.split(/\s+/).length:0;}
-    ta.value=answers.dictation||'';wc.textContent=words()+' words';
-    ta.addEventListener('input',()=>{setA(p,1,ta.value);wc.textContent=words()+' words';});
-    m.append(ta,el('div',{class:'cnt'},wc,el('span',{},'Write everything you hear.')));
+    ta.value=answers.dictation||'';wc.textContent=words()+' palabras';
+    ta.addEventListener('input',()=>{setA(p,1,ta.value);wc.textContent=words()+' palabras';});
+    m.append(ta,el('div',{class:'cnt'},wc,el('span',{},'Escribe todo lo que oigas.')));
     setTimeout(()=>ta.focus({preventScroll:true}),50);
   }else{
     qlist(p).forEach(n=>m.append(question(p,n)));
@@ -267,39 +267,39 @@ function draw(){
   footer(p);window.scrollTo(0,0);
 }
 function question(p,n){
-  const card=el('section',{class:'q',id:'q'+n,'aria-label':'Question '+n});
+  const card=el('section',{class:'q',id:'q'+n,'aria-label':'Pregunta '+n});
   const top=el('div',{class:'top'},el('span',{class:'no'},String(n)));
   const cur=(answers[p.id]||{})[n];
   function pick(v){setA(p,n,v);card.classList.add('ans');card.querySelectorAll('.opt').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.v===v)));}
   if(p.id==='yesno'){
     card.classList.add('yn');
-    const o=el('div',{class:'opts row yn',role:'radiogroup','aria-label':'Question '+n});
-    [['Yes','Yes'],['No','No'],['?','?']].forEach(([v,txt])=>{
-      const b=el('button',{type:'button',class:'opt'+(v==='?'?' unsure':''),role:'radio','data-v':v,'aria-checked':String(cur===v),'aria-label':v==='?'?'I did not understand the question':null,title:v==='?'?'I did not understand the question':null},txt);
+    const o=el('div',{class:'opts row yn',role:'radiogroup','aria-label':'Pregunta '+n});
+    [['Yes','Sí'],['No','No'],['?','?']].forEach(([v,txt])=>{
+      const b=el('button',{type:'button',class:'opt'+(v==='?'?' unsure':''),role:'radio','data-v':v,'aria-checked':String(cur===v),'aria-label':v==='?'?'No entendí la pregunta':null,title:v==='?'?'No entendí la pregunta':null},txt);
       b.addEventListener('click',()=>{const now=(answers.yesno||{})[n];if(now===v){setA(p,n,'');card.classList.remove('ans');o.querySelectorAll('.opt').forEach(x=>x.setAttribute('aria-checked','false'));}else pick(v);});o.append(b);});
     top.append(o);card.append(top);
   }else if(p.id==='oral'||p.id==='mc'){
     const it=p.items.find(i=>i.n===n);
-    if(p.id==='oral')top.append(el('span',{class:'stem'},'Listen to question '+n+' and choose the answer.'));
+    if(p.id==='oral')top.append(el('span',{class:'stem'},'Escucha la pregunta '+n+' y elige la respuesta.'));
     else{const sp=el('span',{class:'stem'});String(it.q).split(/_{2,}/).forEach((t,i,a)=>{sp.append(t);if(i<a.length-1)sp.append(el('span',{class:'blank'}));});top.append(sp);}
     card.append(top);
-    const o=el('div',{class:'opts',role:'radiogroup','aria-label':'Question '+n});
+    const o=el('div',{class:'opts',role:'radiogroup','aria-label':'Pregunta '+n});
     Object.keys(it.opts).forEach(k=>{const b=el('button',{type:'button',class:'opt',role:'radio','data-v':k,'aria-checked':String(cur===k)},el('b',{},k.toUpperCase()),el('span',{},it.opts[k]));b.addEventListener('click',()=>pick(k));o.append(b);});
     card.append(o);
   }else if(p.id==='gap'){
     const it=p.items.find(i=>i.n===n);
     const sp=el('span',{class:'stem'});String(it.q).split(/_{2,}/).forEach((t,i,a)=>{sp.append(t);if(i<a.length-1)sp.append(el('span',{class:'blank'}));});top.append(sp);card.append(top);
-    const i=el('input',{type:'text',class:'inp','aria-label':'Answer for question '+n,autocomplete:'off',autocapitalize:'off',spellcheck:'false'});
+    const i=el('input',{type:'text',class:'inp','aria-label':'Respuesta a la pregunta '+n,autocomplete:'off',autocapitalize:'off',spellcheck:'false'});
     i.value=cur||'';i.addEventListener('input',()=>{setA(p,n,i.value.trim());card.classList.toggle('ans',!!i.value.trim());});
-    card.append(el('div',{class:'inwrap'},i,el('div',{class:'cnt'},el('span',{},'One word only.'))));
+    card.append(el('div',{class:'inwrap'},i,el('div',{class:'cnt'},el('span',{},'Solo una palabra.'))));
   }else if(p.id==='err'){
     const it=p.items.find(i=>i.n===n);
-    top.append(el('span',{class:'stem'},'Find the mistake and correct the sentence.'));card.append(top);
+    top.append(el('span',{class:'stem'},'Busca el error y corrige la frase.'));card.append(top);
     card.append(el('div',{class:'src'},it.text));
-    const i=el('input',{type:'text',class:'inp','aria-label':'Corrected sentence '+n,autocomplete:'off',autocapitalize:'off',spellcheck:'false'});
+    const i=el('input',{type:'text',class:'inp','aria-label':'Frase corregida '+n,autocomplete:'off',autocapitalize:'off',spellcheck:'false'});
     i.value=cur!=null?cur:it.text;
     i.addEventListener('input',()=>{setA(p,n,i.value);card.classList.toggle('ans',isAns(p,n));});
-    const r=el('button',{type:'button',class:'clr',style:'margin-left:0'},'Start again with the original sentence');r.addEventListener('click',()=>{i.value=it.text;setA(p,n,'');card.classList.remove('ans');});
+    const r=el('button',{type:'button',class:'clr',style:'margin-left:0'},'Empezar de nuevo con la frase original');r.addEventListener('click',()=>{i.value=it.text;setA(p,n,'');card.classList.remove('ans');});
     card.append(el('div',{class:'inwrap'},i,r));
   }
   if(isAns(p,n))card.classList.add('ans');
@@ -311,12 +311,12 @@ function refreshChips(p){
 function footer(p){
   const f=document.getElementById('xf');f.textContent='';
   const ns=qlist(p),chips=el('div',{class:'chips'});
-  if(ns.length){chips.append(el('span',{class:'lab'},'Questions'));
-    ns.forEach(n=>{const c=el('button',{type:'button',class:'chip'+(((answers[p.id]||{})[n]==='?')?' uns':(isAns(p,n)?' ans':'')),'data-n':String(n),'aria-label':'Go to question '+n},String(n));
+  if(ns.length){chips.append(el('span',{class:'lab'},'Preguntas'));
+    ns.forEach(n=>{const c=el('button',{type:'button',class:'chip'+(((answers[p.id]||{})[n]==='?')?' uns':(isAns(p,n)?' ans':'')),'data-n':String(n),'aria-label':'Ir a la pregunta '+n},String(n));
       c.addEventListener('click',()=>{const q=document.getElementById('q'+n);if(q){q.scrollIntoView({behavior:'smooth',block:'center'});q.classList.add('flash');setTimeout(()=>q.classList.remove('flash'),900);const f1=q.querySelector('input,.opt');if(f1)f1.focus({preventScroll:true});}});chips.append(c);});}
-  else chips.append(el('span',{class:'lab'},'Write the whole dictation in the box.'));
+  else chips.append(el('span',{class:'lab'},'Escribe todo el dictado en el cuadro.'));
   const last=part===items.parts.length-1;
-  const nx=el('button',{type:'button',class:'xnext'},last?'End exam':'Next part →');
+  const nx=el('button',{type:'button',class:'xnext'},last?'Terminar examen':'Siguiente parte →');
   nx.addEventListener('click',()=>confirmNext(last));
   f.append(chips,nx);
   const eb=document.getElementById('endb');if(eb){eb.hidden=!last;placeEnd();}
@@ -326,35 +326,35 @@ function footer(p){
 let modal=null;
 function closeModal(){if(modal){modal.remove();modal=null;}}
 function openModal(content){closeModal();modal=el('div',{class:'mo',role:'dialog','aria-modal':'true'},el('div',{class:'mb'},...content));document.body.append(modal);const b=modal.querySelector('button');if(b)b.focus();}
-function blankText(s){return (s.blank.length?'Blank: '+s.blank.join(', '):'All answered')+(s.unsure&&s.unsure.length?' · Marked ?: '+s.unsure.join(', '):'');}
+function blankText(s){return (s.blank.length?'Sin responder: '+s.blank.join(', '):'Todo respondido')+(s.unsure&&s.unsure.length?' · Marcadas con ?: '+s.unsure.join(', '):'');}
 function confirmNext(last){
   const p=items.parts[part],s=stat(p);
   if(!last&&p.id==='yesno'&&s.blank.length){
-    const ok=el('button',{type:'button',class:'xnext'},'Go back to the questions');ok.addEventListener('click',()=>{closeModal();const q=document.getElementById('q'+s.blank[0]);if(q)q.scrollIntoView({behavior:'smooth',block:'center'});});
-    openModal([el('h2',{},'Answer every question'),el('p',{},'In this part you must choose Yes, No or ? for every question. Missing: ',el('b',{},s.blank.join(', ')),'.'),el('p',{},'Press ? if you did not understand the question.'),el('div',{class:'btns'},ok)]);return;
+    const ok=el('button',{type:'button',class:'xnext'},'Volver a las preguntas');ok.addEventListener('click',()=>{closeModal();const q=document.getElementById('q'+s.blank[0]);if(q)q.scrollIntoView({behavior:'smooth',block:'center'});});
+    openModal([el('h2',{},'Responde todas las preguntas'),el('p',{},'En esta parte debes elegir Sí, No o ? en cada pregunta. Faltan: ',el('b',{},s.blank.join(', ')),'.'),el('p',{},'Pulsa ? si no entendiste la pregunta.'),el('div',{class:'btns'},ok)]);return;
   }
   if(!last){
     const nextP=items.parts[part+1];
-    const stay=el('button',{type:'button',class:'xnext ghost'},'Stay in this part'),go=el('button',{type:'button',class:'xnext'},'Go to Part '+(part+2));
+    const stay=el('button',{type:'button',class:'xnext ghost'},'Quedarme en esta parte'),go=el('button',{type:'button',class:'xnext'},'Ir a la Parte '+(part+2));
     stay.addEventListener('click',closeModal);
     go.addEventListener('click',async()=>{go.disabled=true;closeModal();part+=1;await save(part);draw();});
-    openModal([el('h2',{},'Finish Part '+(part+1)+'?'),
-      el('p',{},el('b',{},s.done+' of '+s.total),' answered. ',s.blank.length?blankText(s)+'.':el('span',{class:'good'},'All answered.')),
-      el('div',{class:'warn'},'You cannot come back to this part.'),
-      el('p',{},'Next: ',el('b',{},nextP.title)),
+    openModal([el('h2',{},'¿Terminar la Parte '+(part+1)+'?'),
+      el('p',{},el('b',{},s.done+' de '+s.total),' respondidas. ',s.blank.length?blankText(s)+'.':el('span',{class:'good'},'Todo respondido.')),
+      el('div',{class:'warn'},'No podrás volver a esta parte.'),
+      el('p',{},'Siguiente: ',el('b',{},nextP.title)),
       el('div',{class:'btns'},stay,go)]);
   }else confirmEnd();
 }
 function confirmEnd(){
   const rows=items.parts.map((x,i)=>{const t=stat(x);
-    return el('tr',{},el('td',{},x.title),el('td',{class:'r'},t.done+' / '+t.total),el('td',{},i<part?el('span',{class:'good'},'Finished'):(i>part?'Not started':blankText(t))));});
-  const stay=el('button',{type:'button',class:'xnext ghost'},'Keep working'),go=el('button',{type:'button',class:'xnext'},'End and send the exam');
+    return el('tr',{},el('td',{},x.title),el('td',{class:'r'},t.done+' / '+t.total),el('td',{},i<part?el('span',{class:'good'},'Terminada'):(i>part?'Sin empezar':blankText(t))));});
+  const stay=el('button',{type:'button',class:'xnext ghost'},'Seguir trabajando'),go=el('button',{type:'button',class:'xnext'},'Terminar y enviar el examen');
   stay.addEventListener('click',closeModal);
   go.addEventListener('click',()=>{go.disabled=true;send();});
   const late=left()<=0;
-  openModal([el('h2',{},'End the exam?'),late?el('p',{class:'msg-bad'},'The time is up.'):null,
-    el('table',{},el('thead',{},el('tr',{},el('th',{},'Part'),el('th',{class:'r'},'Answered'),el('th',{},'Status'))),el('tbody',{},rows)),
-    el('div',{class:'warn'},'After you send, you cannot change anything.'),
+  openModal([el('h2',{},'¿Terminar el examen?'),late?el('p',{class:'msg-bad'},'Se acabó el tiempo.'):null,
+    el('table',{},el('thead',{},el('tr',{},el('th',{},'Parte'),el('th',{class:'r'},'Respondidas'),el('th',{},'Estado'))),el('tbody',{},rows)),
+    el('div',{class:'warn'},'Después de enviar, no podrás cambiar nada.'),
     el('div',{class:'btns'},stay,go)]);
 }
 async function send(){
@@ -363,17 +363,17 @@ async function send(){
   const r=await sb.rpc('exam_submit',{p_stage:stage,p_answers:answers});
   if(r.error&&!/already submitted/i.test(r.error.message)){
     sent=false;document.querySelectorAll('button,input,textarea').forEach(x=>x.disabled=false);
-    alert('Could not send the exam: '+r.error.message+'\nCheck your connection and try again.');tick=setInterval(onTick,500);return;}
+    alert('No se pudo enviar el examen: '+r.error.message+'\nRevisa tu conexión e inténtalo de nuevo.');tick=setInterval(onTick,500);return;}
   const s=await sb.rpc('exam_state',{p_stage:stage});finished(s.data||{state:'done'});
 }
 function finished(st){
   sent=true;
-  const kids=[logo(),el('h1',{class:'center'},'Exam submitted')];
+  const kids=[logo(),el('h1',{class:'center'},'Examen enviado')];
   if(st.visible){
     const sc=st.scores||{},mx=st.maxes||{};let t=0,m=0;Object.keys(mx).forEach(k=>{t+=sc[k]||0;m+=mx[k];});
     const kp=el('div',{class:'kp'});Object.keys(mx).forEach(k=>kp.append(el('div',{},el('small',{},PART_NAME[k]||k),el('b',{},(sc[k]||0)+' / '+mx[k]))));
-    kids.push(el('p',{class:'center big'},t+' / '+m+' ('+Math.round(100*t/(m||1))+'%)'),kp,el('p',{class:'center'},'Your teacher will talk to you about the result.'));
-  }else kids.push(el('p',{class:'center'},'Thank you! Your answers were sent. Your teacher will check the exam and give you the result.'));
+    kids.push(el('p',{class:'center big'},t+' / '+m+' ('+Math.round(100*t/(m||1))+'%)'),kp,el('p',{class:'center'},'Tu profesor hablará contigo sobre el resultado.'));
+  }else kids.push(el('p',{class:'center'},'¡Gracias! Tus respuestas fueron enviadas. Tu profesor corregirá el examen y te dará el resultado.'));
   kids.push(el('p',{class:'center'},leave()));
   screen([el('div',{class:'scr'},...kids)]);
 }
