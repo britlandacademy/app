@@ -16,7 +16,7 @@ var P={
     function ask(){return new Promise(function(res,rej){try{var r=Notification.requestPermission(function(v){res(v);});if(r&&r.then)r.then(res,rej);}catch(e){rej(e);}});}
     return lim(ask(),40000,'step 1 (permission)').then(function(perm){
       if(perm!=='granted')throw new Error('denied');
-      return lim(navigator.serviceWorker.getRegistration().then(function(r){return r||navigator.serviceWorker.register('sw.js');}).then(function(){return navigator.serviceWorker.ready;}),8000,'step 1b (service worker)');
+      return lim(navigator.serviceWorker.getRegistration().then(function(r){return r||navigator.serviceWorker.register((window.BL_BASE||'')+'sw.js');}).then(function(){return navigator.serviceWorker.ready;}),8000,'step 1b (service worker)');
     }).then(function(reg){
       return reg.pushManager.getSubscription().then(function(s){return s||lim(reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:toBytes(KEY)}),20000,'step 2 (phone registration)');});
     }).then(function(sub){return lim(P.save(sb,sub),15000,'step 3 (saving)');});
