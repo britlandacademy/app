@@ -1,7 +1,7 @@
 /* Britland Academy: registers the service worker and tells the student when a new version is ready. */
 (function(){
 'use strict';
-window.BL_VERSION='1.0.77'; /* keep equal to VERSION in sw.js */
+window.BL_VERSION='1.0.78'; /* keep equal to VERSION in sw.js */
 if(!('serviceWorker' in navigator))return;
 var had=!!navigator.serviceWorker.controller,shown=false;
 function banner(){
@@ -14,6 +14,7 @@ function banner(){
   b.append(t,r);document.body.append(b);
 }
 navigator.serviceWorker.addEventListener('controllerchange',banner);
+navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='bl-roar'){try{var a=new Audio('js/sfx/leao_7dias.mp3');a.volume=.8;a.play().catch(function(){});}catch(x){}}});
 window.addEventListener('load',function(){
   navigator.serviceWorker.register('sw.js').then(function(reg){
     try{reg.update();}catch(e){}
