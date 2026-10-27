@@ -16,8 +16,8 @@ var P={
       if(perm!=='granted')throw new Error('denied');
       return navigator.serviceWorker.ready;
     }).then(function(reg){
-      return reg.pushManager.getSubscription().then(function(s){return s||reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:toBytes(KEY)});});
-    }).then(function(sub){return P.save(sb,sub);});
+      return reg.pushManager.getSubscription().then(function(s){return s||reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:toBytes(KEY)}).catch(function(e){throw new Error('step 2 (phone registration): '+(e&&e.name?e.name+' - ':'')+(e&&e.message||e));});});
+    }).then(function(sub){return P.save(sb,sub).catch(function(e){throw new Error('step 3 (saving): '+((e&&(e.message||e.details||e.code))||e));});});
   },
   disable:function(sb){
     return P.current().then(function(sub){
