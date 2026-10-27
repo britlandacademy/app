@@ -1,7 +1,7 @@
 /* Britland Academy: registers the service worker and tells the student when a new version is ready. */
 (function(){
 'use strict';
-window.BL_VERSION='1.0.65'; /* keep equal to VERSION in sw.js */
+window.BL_VERSION='1.0.66'; /* keep equal to VERSION in sw.js */
 if(!('serviceWorker' in navigator))return;
 var had=!!navigator.serviceWorker.controller,shown=false;
 function banner(){

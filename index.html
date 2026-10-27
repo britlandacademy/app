@@ -130,8 +130,20 @@ a.card:hover .i-tg .r2,a.card:focus-visible .i-tg .r2{animation:rp 1.8s ease inf
 var STAGES=[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[139,156],[157,174],[175,190],[191,206]];
 Gate.start({kinds:[],attempts:['check','ex']},function(ctx){
   var name=(ctx.profile&&ctx.profile.name||'').split(' ')[0];
-  document.getElementById('hi').textContent=name?'Welcome back, '+name:'Welcome back';
-  document.getElementById('sub').textContent='Callan English · Third Edition';
+  (function(){
+    var c=name?', '+name:'',h=new Date().getHours(),d=new Date(),seed=d.getFullYear()*400+d.getMonth()*31+d.getDate(),first=false;
+    try{first=!localStorage.getItem('bl-welcomed');localStorage.setItem('bl-welcomed','1');}catch(e){}
+    var tod=h<12?'Good morning':(h<18?'Good afternoon':'Good evening');
+    var hi=document.getElementById('hi'),sub=document.getElementById('sub');
+    var SUB=['Every lesson brings you closer to fluency.','Small steps every day build fluent English.','Practice a little today. Your future self will thank you.','Choose an activity.'];
+    hi.textContent=tod+c+'!';sub.textContent=SUB[seed%SUB.length];
+    if(first&&!(ctx.attempts||[]).length){hi.textContent='Welcome to Britland Academy'+c+'!';sub.textContent='We\u2019re glad you\u2019re here. Choose an activity.';return;}
+    try{Gate.sb.rpc('my_streak').then(function(r){var s=r&&r.data;if(!s)return;var cur=s.cur||0,gap=0;
+      try{if(s.last)gap=Math.round((Date.now()-new Date(s.last+'T12:00:00'))/864e5);}catch(e){}
+      if(gap>=3){hi.textContent='Welcome back'+c+'!';sub.textContent='Let\u2019s pick up where you left off.';}
+      else if(cur>=3){hi.textContent='Day '+cur+' in a row'+c+'!';sub.textContent='Keep it going.';}
+    }).catch(function(){});}catch(e){}
+  })();
   try{Gate.sb.from('exam_release').select('stage').then(function(r){if(r&&!r.error&&r.data&&r.data.length)document.getElementById("examCard").style.display="";});}catch(e){}
   var bz=(ctx.profile&&ctx.profile.is_admin)?17:((ctx.profile&&ctx.profile.business_upto)||0);
   if((ctx.upto||0)<1&&bz>0){Array.prototype.forEach.call(document.querySelectorAll('a.card'),function(a){var hh=a.getAttribute('href')||'';if(/^(lessons|check|exercises)\.html$/.test(hh))a.setAttribute('href',hh+'?course=business');});}
