@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<title>My account · Britland Academy</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>My Profile · Britland Academy</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
 <style>
@@ -57,12 +57,28 @@ summary{cursor:pointer;font-weight:700;padding:4px 0}
 .pill.ok{background:var(--ok-bg);color:var(--ok)}.pill.bad{background:var(--bad-bg);color:var(--bad)}.pill.wt{background:var(--warn-bg);color:var(--warn)}
 .next{border:2px solid var(--accent);border-radius:12px;padding:14px;margin:10px 0;background:var(--surface)}
 .next b{font-size:1.3rem}
+.hero{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.hero .ed{position:relative;border:0;background:none;padding:0;border-radius:50%;cursor:pointer}
+.hero .ed .cam{position:absolute;right:-2px;bottom:-2px;width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--accent-ink);border:3px solid var(--card);display:flex;align-items:center;justify-content:center}
+.hero .ed .cam svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.hero h2{margin:0}.hero p{margin:2px 0 0;color:var(--muted)}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:8px 0}
+.choices button{border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px;font:inherit;font-weight:700;cursor:pointer;min-height:48px}
+.choices button[aria-pressed=true]{border-color:var(--accent);background:var(--chip)}
+.smp{background:var(--surface);border-radius:10px;padding:10px 14px;margin-top:8px}
 </style>
 <div class="wrap">
-<div class="band"><p>Britland Academy</p><h1>My account</h1><p style="margin-top:8px"><a href="index.html" style="color:#fff">← Back to the activities</a></p></div>
-<div class="tabs" role="tablist"><button type="button" role="tab" id="t-g" aria-selected="true">Grades</button><button type="button" role="tab" id="t-p" aria-selected="false">Payments</button></div>
+<div class="band"><p>Britland Academy</p><h1>My Profile</h1><p style="margin-top:8px"><a href="index.html" style="color:#fff">← Back to the activities</a></p></div>
+<section class="card hero" id="hero"><button type="button" class="ed" id="edav" aria-label="Change picture"><span class="pf-av xl" data-pf-av="1"></span><span class="cam"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></span></button><div><h2 id="hn"></h2><p id="hs"></p><p><button type="button" class="btn" id="chg">Change picture</button></p></div></section>
+<div class="tabs" role="tablist"><button type="button" role="tab" id="t-g" aria-selected="true">Grades</button><button type="button" role="tab" id="t-p" aria-selected="false">Payments</button><button type="button" role="tab" id="t-s" aria-selected="false">Settings</button></div>
 <section class="card" id="p-g"><h2>My grades</h2><div id="g"></div></section>
 <section class="card" id="p-p" hidden><h2>My payments</h2><div id="p"></div></section>
+<section class="card" id="p-s" hidden><h2>Settings</h2>
+<h3>Appearance</h3><p class="hint">Choose how Britland Academy looks on your device.</p>
+<div class="choices" id="thm"><button type="button" data-v="light">Light</button><button type="button" data-v="dark">Dark</button><button type="button" data-v="auto">Automatic</button></div>
+<h3>Text size</h3><p class="hint">Make the text larger or smaller.</p>
+<div class="choices" id="sz"><button type="button" data-d="-1" aria-label="Smaller text">A−</button><button type="button" data-d="1" aria-label="Larger text">A+</button></div>
+<div class="smp">The quick brown fox jumps over the lazy dog.</div>
+<p class="hint" style="margin-top:12px">Your choices are saved in your account and follow you to other devices.</p></section>
 </div>
 <script src="js/i18n.js" charset="utf-8"></script>
 <script src="js/config.js" charset="utf-8"></script>
@@ -78,8 +94,16 @@ function dt(s){if(!s)return '';const d=new Date(s.length<=10?s+'T12:00:00':s);re
 function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function th(l){return el('thead',{},el('tr',{},l.map(h=>el('th',{scope:'col'},h))));}
 function pct(s,t){return t?Math.round(s/t*100)+'%':'—';}
-function show(w){const g=w==='g';$('p-g').hidden=!g;$('p-p').hidden=g;$('t-g').setAttribute('aria-selected',String(g));$('t-p').setAttribute('aria-selected',String(!g));}
-$('t-g').addEventListener('click',()=>show('g'));$('t-p').addEventListener('click',()=>show('p'));
+function show(w){['g','p','s'].forEach(k=>{$('p-'+k).hidden=k!==w;$('t-'+k).setAttribute('aria-selected',String(k===w));});}
+$('t-g').addEventListener('click',()=>show('g'));$('t-p').addEventListener('click',()=>show('p'));$('t-s').addEventListener('click',()=>show('s'));
+const me=ctx.profile||{};
+$('hn').textContent=me.name||'';$('hs').textContent='Callan English';
+function openPic(){Gate.loadProfile(()=>Profile.openPicker({sb:sb,uid:me.id||ctx.user.id,current:me.avatar,lang:'en',onSaved:id=>{me.avatar=id;Gate.setAvatar(id);}}));}
+$('edav').addEventListener('click',openPic);$('chg').addEventListener('click',openPic);
+Gate.loadProfile(()=>{Gate.setAvatar(me.avatar||null);if(location.hash==='#picture'){history.replaceState(null,'',location.pathname+location.search);openPic();}});
+function themeUi(){const t=Gate.theme();document.querySelectorAll('#thm button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===t)));}
+document.querySelectorAll('#thm button').forEach(b=>b.addEventListener('click',()=>{Gate.setTheme(b.dataset.v);themeUi();}));themeUi();
+document.querySelectorAll('#sz button').forEach(b=>b.addEventListener('click',()=>Gate.setSize(Gate.sizeIdx()+(+b.dataset.d))));
 
 async function grades(){
   const box=$('g'),all=[];let from=0;
