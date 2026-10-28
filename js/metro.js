@@ -147,7 +147,7 @@ function mount(c,o){
   var main=D.querySelector('main')||D.body,root=h('div');root.id='bl-metro';main.append(root);
   root.style.setProperty('--lc',C.color);
   var cur=0;for(var l=1;l<=Math.min(upto,max);l++){if(!o.done(l)){cur=l;break;}}
-  var N=7,start=cur?Math.floor((cur-1)/N)*N+1:Math.max(1,Math.floor((Math.min(upto,max)-1)/N)*N+1);
+  var N=7,ref=cur||Math.min(upto,max)||1,start=Math.max(1,Math.min(ref-3,max-N+1));
   var cnt=Math.max(2,Math.min(N,max-start+1)),streak={cur:0,best:0,last:''};
   var tab='home',busy=false,route=null,mapEl,pathEl,fillEl,trainEl,Ltot=0,lens=[],signEl,toastEl;
   var lessonsDone=o.doneCount||0;
@@ -218,6 +218,7 @@ function mount(c,o){
     var svg=el('svg',{'class':'map',viewBox:'0 0 340 '+VH,role:'group','aria-label':C.city});mapEl=svg;box.append(svg);
     route=route||newRoute(cnt);build(true);
     var prev=0;try{prev=parseInt(localStorage.getItem('bl-metro-pos'),10)||0;localStorage.setItem('bl-metro-pos',String(cur||upto));}catch(e){}
+    setTimeout(function(){try{var r=svg.getBoundingClientRect(),cy=r.top+scrollY+r.height*(cur?(cur-start)/Math.max(1,cnt-1):1);scrollTo({top:Math.max(0,cy-innerHeight*.45),behavior:'auto'});}catch(e){}},60);
     setTimeout(function(){
       var ci=cur?cur-start:cnt-1;
       if(cur&&prev&&prev<cur&&prev>=start&&!reduced()){busy=true;fillTo(prev-start,10);whistle();setTimeout(function(){chug(6);},120);trainEl.setAttribute('opacity',1);
