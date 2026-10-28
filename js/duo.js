@@ -53,6 +53,7 @@
    scotland:[150,'G4 1,C5 1.5,C5 .5,C5 1,E5 1,D5 1.5,C5 .5,D5 1,E5 1,C5 1.5,C5 .5,E5 1,G5 1,A5 3'],
    usa:[150,'G4 .75,E4 .25,C4 1,E4 1,G4 1,C5 2,E5 .75,D5 .25,C5 1,E4 1,Fs4 1,G4 2'],
    uk:[176,'G4 1,G4 1,A4 1,Fs4 1.5,G4 .5,A4 1,B4 1,B4 1,C5 1,B4 1.5,A4 .5,G4 2'],
+   ireland:[170,'G4 1,G4 1,B4 1,D5 2,D5 1,C5 1,B4 1,A4 2,G4 1,G4 1,B4 1,D5 2,E5 1,D5 1,B4 2'],
    mx:[200,'C4 .5,C4 .5,C4 .5,F4 1.5,A4 1,C4 .5,C4 .5,C4 .5,F4 1.5,A4 1,F4 .5,F4 .5,E4 .5,E4 .5,D4 .5,D4 .5,C4 2']
   };
   function playTune(key){
@@ -65,7 +66,7 @@
         o.connect(g);g.connect(out);o.start(t);o.stop(t+dec+.1);});
       t+=d;});
   }
-  function tuneKey(flag){var m=/flags\/(england|scotland|usa|uk)\.svg$/.exec(flag);if(m)return m[1];return /flag-mx\.png$/.test(flag)?'mx':'';}
+  function tuneKey(flag){var m=/flags\/(england|scotland|usa|uk|ireland)\.svg$/.exec(flag);if(m)return m[1];return /flag-mx\.png$/.test(flag)?'mx':'';}
   function bell(){if(!sndOn())return;tone(1318.5,0,1.1,'sine',.2);tone(2637,0,.5,'sine',.06);tone(1760,.13,1.3,'sine',.2);tone(3520,.13,.5,'sine',.05);}
   function buzz(){if(!sndOn())return;tone(233,0,.26,'triangle',.16);tone(175,.13,.34,'triangle',.15);}
   function tick(){if(!sndOn())return;tone(523,0,.11,'sine',.035);tone(784,0,.07,'sine',.01);}
@@ -247,6 +248,9 @@
    ['sherlock','england','Elementary! A perfect score needs no deduction.','Elementar! Nota perfeita dispensa dedução.','I deduce you are close. One more clue!','Deduzo que você está perto. Mais uma pista!','A good detective checks the evidence again. Try again!','Um bom detetive revê as provas. Tente de novo!'],
    ['peter','scotland','You flew straight to Neverland with full marks!','Você voou direto para a Terra do Nunca com nota máxima!','Think happy thoughts and you will fly even higher!','Pense em coisas boas e você voa ainda mais alto!','Even Peter Pan needed a few tries to fly. Again!','Até Peter Pan precisou de algumas tentativas para voar. De novo!'],
    ['arthur','wales','A true knight of English! Take your seat at the Round Table.','Um verdadeiro cavaleiro do inglês! Sente-se à Távola Redonda.','The sword is almost out of the stone. Pull a little more!','A espada quase saiu da pedra. Puxe só mais um pouco!','Every knight trains before the quest. Try again!','Todo cavaleiro treina antes da missão. Tente de novo!'],
+   ['wilde','ireland','Wonderfully witty! Even I could not have said it better.','Maravilhosamente espirituoso! Nem eu diria melhor.','Quite charming! A little more practice and you will sparkle.','Encantador! Mais um pouco de prática e você brilha.','Even a great wit rewrites a line or two. Try again!','Até um grande espírito reescreve uma frase ou duas. Tente de novo!'],
+   ['joyce','ireland','Yes! Full marks, and not a word out of place.','Sim! Nota máxima e nenhuma palavra fora do lugar.','A fine chapter. The next one will flow even better.','Um ótimo capítulo. O próximo vai fluir ainda melhor.','Every long novel has many drafts. Try again!','Todo romance longo tem muitos rascunhos. Tente de novo!'],
+   ['yeats','ireland','A poet of grammar! Your English shines like a golden apple.','Poeta da gramática! Seu inglês brilha como uma maçã dourada.','Lovely verses! A few more and the poem will be complete.','Belos versos! Mais alguns e o poema estará completo.','Every poem needs a few revisions. Try again!','Todo poema precisa de algumas revisões. Tente de novo!'],
    ['elizabeth2','uk','By royal decree: excellent work!','Por decreto real: excelente trabalho!','Very good indeed. A touch more practice and you will be a champion!','Muito bem! Um pouco mais de prática e você será campeão!','Keep calm and try again. You will get there!','Mantenha a calma e tente de novo. Você vai chegar lá!']
   ].map(function(c){return {img:'img/people/'+c[0]+'.jpg',flag:'img/flags/'+c[1]+'.svg',say:[[c[2],c[3]],[c[4],c[5]],[c[6],c[7]]]};});
   var lastCh=-1;
