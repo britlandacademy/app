@@ -505,7 +505,7 @@
       var lg=el('div','dz-logo'),li=el('img');li.src='img/britland-shield.png';li.alt='';lg.appendChild(li);lg.appendChild(el('b','','BRITLAND'));lg.appendChild(el('i','','ACADEMY'));lg.appendChild(el('u',''));card.appendChild(lg);
       var ch=pickCh();card.appendChild(flagRow(ch));setTimeout(function(){if(root.parentNode)playTune(tuneKey(ch.flag));},300);
       var hero=el('div','dz-hero');hero.appendChild(famBox(ch));hero.appendChild(medal(stars));card.appendChild(hero);
-      var say=ch.say[3-stars],sy=el('p','dz-say',say[ix()===1?1:0]);card.appendChild(sy);
+      var say=ch.say[3-stars],sy=el('p','dz-say',say[1]);card.appendChild(sy);
       var st=el('div','dz-stars');st.setAttribute('aria-label',stars+' / 3');
       for(var i=0;i<3;i++){var sp=el('span',i<stars?'on':'off','★');sp.style.animationDelay=(.5+i*.25)+'s';st.appendChild(sp);}
       card.appendChild(st);
