@@ -4,7 +4,8 @@
 (function(){
 'use strict';
 var CFG=window.CALLAN_CFG||{};
-var COURSE=window.BL_COURSE||{}; /* per-course settings (Spanish sets its own in espanol/js/config.js) */
+var COURSE=window.BL_COURSE||{};
+try{var _u=document.createElement('link');_u.rel='stylesheet';_u.href=(window.BL_BASE||'')+'js/ui.css?v='+(window.BL_VERSION||'1');document.head.appendChild(_u);}catch(e){} /* per-course settings (Spanish sets its own in espanol/js/config.js) */
 var LIB=['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js',
          'https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js'];
 var sb=null,prof=null,user=null,overlay=null,bar=null;
@@ -426,6 +427,7 @@ function addBar(){
   document.addEventListener('keydown',function(e){if(e.key==='Escape')open(false);});
   kids.push(el('span',{class:'g-um'},av,mn));
   bar=el('div',{class:'g-bar'},kids);
+  bar.appendChild(el('span',{class:'g-logoc','aria-label':'Britland Academy'},el('img',{src:(window.BL_BASE||'')+'img/britland-shield.png',alt:''}),el('span',{},el('b',{},'BRITLAND'),el('i',{},'ACADEMY'))));
   document.body.insertBefore(bar,document.body.firstChild);
   if(gameIsOn()){bar.style.display='none';if(!/(^|\/)(index\.html)?$/.test(location.pathname))gameNav();}
   paintAvatars();
@@ -493,7 +495,7 @@ function prefetch(lo,hi){
       try{localStorage.setItem(tag,String(now));}catch(e){}
     },function(){});
     var b=window.BL_BASE||'',own=window.BL_COURSE?['dele.html']:['exercises.html','workbook.html'];
-    ['index.html','lessons.html','check.html'].concat(own,['js/gate.js','js/config.js','js/i18n.js','js/theme.css','js/wm.css','js/fonts.css','js/brand.css','js/protect.js','js/covers.js','js/profile.js','js/push.js','js/streak.js','js/avatars.js','js/facts.js','js/facts_i18n.js','js/pwa.js']).forEach(function(u){try{fetch(b+u,{credentials:'same-origin'}).catch(function(){});}catch(e){}});
+    ['index.html','lessons.html','check.html'].concat(own,['js/gate.js','js/config.js','js/i18n.js','js/theme.css','js/wm.css','js/fonts.css','js/brand.css','js/ui.css','js/protect.js','js/covers.js','js/profile.js','js/push.js','js/streak.js','js/avatars.js','js/facts.js','js/facts_i18n.js','js/pwa.js']).forEach(function(u){try{fetch(b+u,{credentials:'same-origin'}).catch(function(){});}catch(e){}});
   },2500);
 }
 function loadContent(kinds){

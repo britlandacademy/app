@@ -1,0 +1,61 @@
+/* Britland UI 1.5.21: pill buttons, pill inputs, floating header, caps titles, hover/press/shine/busy */
+:root{--ui-gold:#c9a13b;--ui-gold2:#e4c06a;--ui-gold-dk:#8a6a14;--ui-navy:#0b1733}
+/* ---- buttons: pill ---- */
+.btn,.g-btn,.ag-btn,.gbtn,.dz-btn,.ag-chip,button.chip,.btnl,.g-tab,.tb,.g-hdlg button,.cv-btn,.cv-sec,.sk-ov button{border-radius:999px!important;transition:transform .12s ease,box-shadow .12s ease,background-color .15s,border-color .15s,color .15s}
+.btn:not(.ghost):not(.danger),.g-btn:not(.ghost),.ag-btn:not(.alt),.gbtn:not(.ghost){box-shadow:0 4px 0 var(--ui-gold-dk);border-bottom-width:2px}
+.btn:not(.ghost):not(.danger):hover,.g-btn:not(.ghost):hover,.ag-btn:not(.alt):hover,.gbtn:not(.ghost):hover{transform:translateY(-2px);box-shadow:0 6px 0 var(--ui-gold-dk),0 10px 16px rgba(0,0,0,.35)}
+.btn.ghost,.g-btn.ghost,.ag-btn.alt,.gbtn.ghost,.btn.danger,.ag-chip{box-shadow:none}
+.btn.ghost:hover,.g-btn.ghost:hover,.ag-btn.alt:hover,.gbtn.ghost:hover,.ag-chip:hover{transform:translateY(-2px);border-color:var(--ui-gold)!important}
+/* press: sink like a key */
+.btn:active,.g-btn:active,.ag-btn:active,.gbtn:active,.ag-chip:active,button.chip:active{transform:translateY(4px)!important;box-shadow:0 0 0 var(--ui-gold-dk)!important;transition-duration:.05s}
+/* shine on important actions */
+.btn.primary,.g-btn:not(.ghost),.ag-btn:not(.alt),.ag-go,.gbtn:not(.ghost){position:relative;overflow:hidden}
+.btn.primary::after,.g-btn:not(.ghost)::after,.ag-btn:not(.alt)::after,.gbtn:not(.ghost)::after{content:"";position:absolute;top:0;left:-70%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.6),transparent);transform:skewX(-20deg);pointer-events:none;opacity:0}
+.btn.primary:hover::after,.g-btn:not(.ghost):hover::after,.ag-btn:not(.alt):hover::after,.gbtn:not(.ghost):hover::after{opacity:1;animation:ui-shine .9s ease}
+@keyframes ui-shine{from{left:-70%}to{left:140%}}
+/* disabled: faded, no effects */
+.btn:disabled,.g-btn:disabled,.ag-btn:disabled,.gbtn:disabled,.dz-btn:disabled,button.chip:disabled{opacity:.6;transform:none!important;pointer-events:none;box-shadow:none!important}
+.btn:disabled::after,.g-btn:disabled::after,.ag-btn:disabled::after{display:none}
+/* busy spinner */
+.busy{position:relative;color:transparent!important;pointer-events:none}
+.busy::before{content:"";position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-10px;border-radius:50%;border:3px solid rgba(26,20,5,.25);border-top-color:#1a1405;animation:ui-spin .7s linear infinite}
+@keyframes ui-spin{to{transform:rotate(360deg)}}
+/* game mode keeps its colours, only the shape is a pill */
+.dz-btn{border-radius:999px!important}
+/* ---- inputs: pill, textarea 20px ---- */
+input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]):not([type=color]),select,.inp{border-radius:999px!important;padding-left:18px;padding-right:18px}
+select{padding-right:34px}
+textarea,textarea.rep,.dic{border-radius:20px!important;padding:14px 20px}
+input:not([type=checkbox]):not([type=radio]):hover,select:hover,textarea:hover{border-color:var(--ui-gold)}
+input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus,.inp:focus,.dic:focus{outline:none!important;border-color:var(--ui-gold)!important;box-shadow:0 0 0 4px rgba(201,161,59,.3)!important}
+/* ---- floating header ---- */
+.g-bar:not(.gp){position:sticky;top:10px;z-index:60;max-width:calc(100% - 24px)!important;margin:10px auto 12px!important;padding:6px 10px!important;border-radius:999px;background:rgba(11,23,51,.93);border:1px solid #27407a;box-shadow:0 8px 24px rgba(0,0,0,.35);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);justify-content:space-between!important;color:#d6def0!important}
+.g-bar:not(.gp) b,.g-bar:not(.gp) .g-name{color:#fff!important}
+.g-bar:not(.gp) a{color:#e4c06a!important}
+.g-logoc{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:8px;text-decoration:none;pointer-events:none}
+.g-logoc img{height:34px;width:auto}
+.g-logoc span{display:flex;flex-direction:column;line-height:1}
+.g-logoc b{font:700 18px/1 BLSerif,Georgia,serif;color:#fff!important;letter-spacing:.01em}
+.g-logoc i{font:500 9.5px/1 BLSans,Arial,sans-serif;font-style:normal;letter-spacing:.12em;margin-top:4px;color:#ec4654}
+@media(max-width:560px){.g-bar:not(.gp) .g-name{display:none}}
+@media(max-width:380px){.g-logoc span{display:none}}
+/* only one logo per screen: the big one in the page header goes away */
+.head .bl-lock,.band .bl-lock{display:none!important}
+/* ---- titles in capitals; long phrases stay normal ---- */
+.head h1:not(#hi),.band h1,h1#ttl,#ttl{text-transform:uppercase;letter-spacing:.03em}
+/* ---- cards: lift on hover only ---- */
+a.card,.card.tap{transition:transform .15s ease,box-shadow .15s ease,border-color .15s}
+a.card:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(0,0,0,.4)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001s!important;transition-duration:.001s!important}.btn:hover,.g-btn:hover,.ag-btn:hover,a.card:hover{transform:none!important}}
+@media(hover:none){.btn:hover,.g-btn:hover,.ag-btn:hover,.gbtn:hover,a.card:hover,.ag-chip:hover{transform:none}}
+
+.tr .tb{padding:8px 22px}.tr .tb.gh{border-color:#0B1B33!important}
+.g-hdlg button{min-height:44px;padding:0 22px;font-weight:700;cursor:pointer}
+.ag-chip.on{background:#c9a13b!important;border-color:#c9a13b!important;color:#1a1405!important;box-shadow:0 0 0 3px rgba(201,161,59,.35)}
+.g-bar:not(.gp){flex-wrap:nowrap!important;gap:10px!important}
+.g-bar:not(.gp) select{max-width:104px;min-height:38px!important;padding:0 26px 0 14px!important;font-size:.9rem!important}
+.g-bar:not(.gp):has(select) .g-logoc span{display:none}
+.g-bar:not(.gp):has(select) .g-logoc{position:static;transform:none;order:-1}
+#prev,#next,#prev2,#next2{border-radius:999px!important}
+#next:not(:disabled),#next2:not(:disabled){box-shadow:0 4px 0 var(--ui-gold-dk)}
+#prev:active,#next:active,#prev2:active,#next2:active{transform:translateY(4px)}
