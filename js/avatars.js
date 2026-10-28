@@ -151,7 +151,7 @@ if(window.BL_COURSE&&window.BL_COURSE.id==='es'){(function(){
   OLD.forEach(function(a){if(a.id==='book'||a.id==='quill')addE(a.id,'school',a.id==='book'?'Libro abierto':'Pluma',a.svg.replace(/#10224a/g,'#3a0f14').replace(/#1b3470/g,'#5a1a20'));});
   /* famous people (colour paintings) */
   ph('cervantes','people','Miguel de Cervantes','cervantes.jpg');ph('velazquez','people','Diego Velázquez','velazquez.jpg');ph('goya','people','Francisco de Goya','goya.jpg');
-  ph('bolivar','people','Simón Bolívar','bolivar.jpg');ph('sanmartin','people','José de San Martín','sanmartin.jpg');ph('isabel','people','Isabel la Católica','isabel.jpg');
+  ph('frida','people','Frida Kahlo','frida.jpg');ph('picasso','people','Pablo Picasso','picasso.jpg');ph('bolivar','people','Simón Bolívar','bolivar.jpg');ph('sanmartin','people','José de San Martín','sanmartin.jpg');ph('isabel','people','Isabel la Católica','isabel.jpg');
   /* characters */
   ph('quijote','fiction','Don Quijote','quijote.jpg','xMidYMid slice');ph('quijote2','fiction','Don Quijote y Sancho','quijote2.jpg','xMidYMid slice');
   /* monuments */
