@@ -408,6 +408,145 @@ var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they 
 ['Only this Stage is downloaded, to save data.','Só esta etapa é baixada, para economizar dados.','Solo se descarga esta etapa, para ahorrar datos.'],
 ['Complete Lesson {0} Check to unlock Lesson {1} Check.','Complete o Lesson Check da Lição {0} para liberar o da Lição {1}.','Completa el Lesson Check de la Lección {0} para desbloquear el de la Lección {1}.']
 ];
+var X=[ /* forced Portuguese in the English course: [English, Português, Español] */
+["No answer.","Sem resposta.","No answer."],
+["Choose an option.","Escolha uma opção.","Choose an option."],
+["Check the model answer.","Confira a resposta certa.","Check the model answer."],
+["Choose Right or Wrong.","Escolha Certo ou Errado.","Choose Right or Wrong."],
+["This answer is right.","Esta resposta está certa.","This answer is right."],
+["This answer is wrong.","Esta resposta está errada.","This answer is wrong."],
+["Choose an answer.","Escolha uma resposta.","Choose an answer."],
+["Choose Yes or No.","Escolha Sim ou Não.","Choose Yes or No."],
+["This sentence is right.","Esta frase está certa.","This sentence is right."],
+["This sentence is wrong.","Esta frase está errada.","This sentence is wrong."],
+["Write the correct word.","Escreva a palavra correta.","Write the correct word."],
+["In the Callan Method, the answer must be a full sentence.","No Método Callan, a resposta deve ser uma frase completa.","In the Callan Method, the answer must be a full sentence."],
+["Check the punctuation: it is part of the model answer (comma, semicolon, full stop or question mark).","Confira a pontuação: ela faz parte da resposta certa (vírgula, ponto e vírgula, ponto final ou interrogação).","Check the punctuation: it is part of the model answer (comma, semicolon, full stop or question mark)."],
+["✔ Correct","✔ Correto","✔ Correct"],
+["✖ Wrong","✖ Errado","✖ Wrong"],
+["Model answer:","Resposta certa:","Model answer:"],
+["Wrong answer shown:","Resposta errada mostrada:","Wrong answer shown:"],
+["Situation:","Situação:","Situation:"],
+["Your answer","Sua resposta","Your answer"],
+["Available words","Palavras disponíveis","Available words"],
+["Tap the words below.","Toque nas palavras abaixo.","Tap the words below."],
+["If it is wrong, write the correct word:","Se estiver errada, escreva a palavra correta:","If it is wrong, write the correct word:"],
+["Check","Verificar","Check"],
+["Redo","Refazer","Redo"],
+["Start over","Recomeçar","Start over"],
+["Missing word","Palavra que falta","Missing word"],
+["Choose…","Escolha…","Choose…"],
+["Answer the five questions and press Check.","Responda às cinco perguntas e toque em Verificar.","Answer the five questions and press Check."],
+["The score does not unlock the next check yet. Press Redo and try again.","A nota ainda não libera o próximo check. Toque em Refazer e tente de novo.","The score does not unlock the next check yet. Press Redo and try again."],
+["Keep going! {0} still has to be checked.","Continue! {0} ainda precisa ser verificada.","Keep going! {0} still has to be checked."],
+["{0} completed! {1} is now unlocked.","{0} concluída! {1} foi liberada.","{0} completed! {1} is now unlocked."],
+["Excellent! You have completed all the Lesson Checks available.","Excelente! Você concluiu todos os Lesson Checks disponíveis.","Excellent! You have completed all the Lesson Checks available."],
+["Do the exercises and press Check. Remember: always a full sentence.","Faça os exercícios e toque em Verificar. Lembre-se: sempre uma frase completa.","Do the exercises and press Check. Remember: always a full sentence."],
+["Well done, keep going! {0} exercises left to complete {1}.","Muito bem, continue! Faltam {0} exercícios para concluir {1}.","Well done, keep going! {0} exercises left to complete {1}."],
+["Well done, keep going! {0} exercise left to complete {1}.","Muito bem, continue! Falta {0} exercício para concluir {1}.","Well done, keep going! {0} exercise left to complete {1}."],
+["{0} completed! Well done.","{0} concluída! Muito bem.","{0} completed! Well done."],
+["Exercise {0} of {1}","Exercício {0} de {1}","Exercise {0} of {1}"],
+["Select and copy the text above.","Selecione e copie o texto acima.","Select and copy the text above."],
+["Report copied. Paste it into your chat with the teacher.","Relatório copiado. Cole na sua conversa com o professor.","Report copied. Paste it into your chat with the teacher."],
+["Copy report","Copiar relatório","Copy report"],
+["Send via WhatsApp","Enviar pelo WhatsApp","Send via WhatsApp"],
+["Report to send to the teacher","Relatório para enviar ao professor","Report to send to the teacher"],
+["Your scores are saved on the server and your teacher can see them.","Suas notas ficam salvas no servidor e seu professor pode vê-las.","Your scores are saved on the server and your teacher can see them."],
+["Complete the sentence.","Complete a frase.","Complete the sentence."],
+["Answer the question","Responda à pergunta","Answer the question"],
+["Build the answer","Monte a resposta","Build the answer"],
+["Read the text. Tick True or False.","Leia o texto. Marque Verdadeiro ou Falso.","Read the text. Tick True or False."],
+["Type the answer as a full sentence, repeating the words of the question.","Digite a resposta em uma frase completa, repetindo as palavras da pergunta.","Type the answer as a full sentence, repeating the words of the question."],
+["Tap the words in the right order to build the full answer. Tap a word you have placed to take it back.","Toque nas palavras na ordem certa para montar a resposta completa. Toque em uma palavra já colocada para tirá-la.","Tap the words in the right order to build the full answer. Tap a word you have placed to take it back."],
+["Complete the sentences with words from the box.","Complete as frases com palavras do quadro.","Complete the sentences with words from the box."],
+["Put the words in the correct order.","Coloque as palavras na ordem correta.","Put the words in the correct order."],
+["Choose the correct word.","Escolha a palavra correta.","Choose the correct word."],
+["Choose the correct word (A, B or C).","Escolha a palavra correta (A, B ou C).","Choose the correct word (A, B or C)."],
+["Find the mistake. Circle it and write the correct word.","Encontre o erro. Circule-o e escreva a palavra correta.","Find the mistake. Circle it and write the correct word."],
+["Dictation. Listen and write.","Ditado. Ouça e escreva.","Dictation. Listen and write."],
+["Match the pictures with the words. Draw a line.","Ligue as figuras às palavras. Trace uma linha.","Match the pictures with the words. Draw a line."],
+["Match the beginnings (1–6) with the endings (A–F). Write the letter.","Una os começos (1–6) aos finais (A–F). Escreva a letra.","Match the beginnings (1–6) with the endings (A–F). Write the letter."],
+["Write ONE word in each gap.","Escreva UMA palavra em cada lacuna.","Write ONE word in each gap."],
+["Word formation.","Formação de palavras.","Word formation."],
+["Matching headings.","Associe os títulos.","Matching headings."],
+["Key word transformation.","Transformação com a palavra-chave.","Key word transformation."],
+["Look at the picture. Choose the correct words.","Olhe a figura. Escolha as palavras corretas.","Look at the picture. Choose the correct words."],
+["Look at the picture. Choose the correct word.","Olhe a figura. Escolha a palavra correta.","Look at the picture. Choose the correct word."],
+["Look at the picture in B. Tick True or False.","Olhe a figura em B. Marque Verdadeiro ou Falso.","Look at the picture in B. Tick True or False."],
+["Make questions to the answers.","Faça perguntas para as respostas.","Make questions to the answers."],
+["Writing","Escrita","Writing"],
+["Write.","Escreva.","Write."],
+["Match the words in column A with column B. Write the letter.","Una as palavras da coluna A às da coluna B. Escreva a letra.","Match the words in column A with column B. Write the letter."],
+["Match the opposites. Write the letter.","Una os opostos. Escreva a letra.","Match the opposites. Write the letter."],
+["Match the words. Write the letter.","Una as palavras. Escreva a letra.","Match the words. Write the letter."],
+["Write “the same as” or “different from”.","Escreva “the same as” ou “different from”.","Write “the same as” or “different from”."],
+["Write “Why” or “Because”.","Escreva “Why” ou “Because”.","Write “Why” or “Because”."],
+["Write “a.m.” or “p.m.”.","Escreva “a.m.” ou “p.m.”.","Write “a.m.” or “p.m.”."],
+["Answer as each question asks: choose A, B or C.","Responda como cada pergunta pede: escolha A, B ou C.","Answer as each question asks: choose A, B or C."],
+["Answer as each question asks: choose one word.","Responda como cada pergunta pede: escolha uma palavra.","Answer as each question asks: choose one word."],
+["Answer as each question asks: choose Yes or No.","Responda como cada pergunta pede: escolha Sim ou Não.","Answer as each question asks: choose Yes or No."],
+["Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word).","Responda como cada pergunta pede: diga se a frase está certa ou errada (se errada, escreva a palavra correta).","Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word)."],
+["Answer as each question asks: choose A, B or C; or choose one word.","Responda como cada pergunta pede: escolha A, B ou C; ou escolha uma palavra.","Answer as each question asks: choose A, B or C; or choose one word."],
+["Answer as each question asks: choose A, B or C; or choose Yes or No.","Responda como cada pergunta pede: escolha A, B ou C; ou escolha Sim ou Não.","Answer as each question asks: choose A, B or C; or choose Yes or No."],
+["Answer as each question asks: choose A, B or C; or say if the sentence is right or wrong (if wrong, write the correct word).","Responda como cada pergunta pede: escolha A, B ou C; ou diga se a frase está certa ou errada (se errada, escreva a palavra correta).","Answer as each question asks: choose A, B or C; or say if the sentence is right or wrong (if wrong, write the correct word)."],
+["Answer as each question asks: choose one word; or choose A, B or C.","Responda como cada pergunta pede: escolha uma palavra; ou escolha A, B ou C.","Answer as each question asks: choose one word; or choose A, B or C."],
+["Answer as each question asks: choose one word; or choose Yes or No.","Responda como cada pergunta pede: escolha uma palavra; ou escolha Sim ou Não.","Answer as each question asks: choose one word; or choose Yes or No."],
+["Answer as each question asks: choose one word; or say if the sentence is right or wrong (if wrong, write the correct word).","Responda como cada pergunta pede: escolha uma palavra; ou diga se a frase está certa ou errada (se errada, escreva a palavra correta).","Answer as each question asks: choose one word; or say if the sentence is right or wrong (if wrong, write the correct word)."],
+["Answer as each question asks: choose Yes or No; or choose A, B or C.","Responda como cada pergunta pede: escolha Sim ou Não; ou escolha A, B ou C.","Answer as each question asks: choose Yes or No; or choose A, B or C."],
+["Answer as each question asks: choose Yes or No; or choose one word.","Responda como cada pergunta pede: escolha Sim ou Não; ou escolha uma palavra.","Answer as each question asks: choose Yes or No; or choose one word."],
+["Answer as each question asks: choose Yes or No; or say if the sentence is right or wrong (if wrong, write the correct word).","Responda como cada pergunta pede: escolha Sim ou Não; ou diga se a frase está certa ou errada (se errada, escreva a palavra correta).","Answer as each question asks: choose Yes or No; or say if the sentence is right or wrong (if wrong, write the correct word)."],
+["Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); or choose A, B or C.","Responda como cada pergunta pede: diga se a frase está certa ou errada (se errada, escreva a palavra correta); ou escolha A, B ou C.","Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); or choose A, B or C."],
+["Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); or choose one word.","Responda como cada pergunta pede: diga se a frase está certa ou errada (se errada, escreva a palavra correta); ou escolha uma palavra.","Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); or choose one word."],
+["Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); or choose Yes or No.","Responda como cada pergunta pede: diga se a frase está certa ou errada (se errada, escreva a palavra correta); ou escolha Sim ou Não.","Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); or choose Yes or No."],
+["Answer as each question asks: choose A, B or C; choose one word; or choose Yes or No.","Responda como cada pergunta pede: escolha A, B ou C; escolha uma palavra; ou escolha Sim ou Não.","Answer as each question asks: choose A, B or C; choose one word; or choose Yes or No."],
+["Answer as each question asks: choose A, B or C; choose one word; or say if the sentence is right or wrong (if wrong, write the correct word).","Responda como cada pergunta pede: escolha A, B ou C; escolha uma palavra; ou diga se a frase está certa ou errada (se errada, escreva a palavra correta).","Answer as each question asks: choose A, B or C; choose one word; or say if the sentence is right or wrong (if wrong, write the correct word)."],
+["Answer as each question asks: choose A, B or C; choose Yes or No; or choose one word.","Responda como cada pergunta pede: escolha A, B ou C; escolha Sim ou Não; ou escolha uma palavra.","Answer as each question asks: choose A, B or C; choose Yes or No; or choose one word."],
+["Answer as each question asks: choose A, B or C; choose Yes or No; or say if the sentence is right or wrong (if wrong, write the correct word).","Responda como cada pergunta pede: escolha A, B ou C; escolha Sim ou Não; ou diga se a frase está certa ou errada (se errada, escreva a palavra correta).","Answer as each question asks: choose A, B or C; choose Yes or No; or say if the sentence is right or wrong (if wrong, write the correct word)."],
+["Answer as each question asks: choose A, B or C; say if the sentence is right or wrong (if wrong, write the correct word); or choose one word.","Responda como cada pergunta pede: escolha A, B ou C; diga se a frase está certa ou errada (se errada, escreva a palavra correta); ou escolha uma palavra.","Answer as each question asks: choose A, B or C; say if the sentence is right or wrong (if wrong, write the correct word); or choose one word."],
+["Answer as each question asks: choose A, B or C; say if the sentence is right or wrong (if wrong, write the correct word); or choose Yes or No.","Responda como cada pergunta pede: escolha A, B ou C; diga se a frase está certa ou errada (se errada, escreva a palavra correta); ou escolha Sim ou Não.","Answer as each question asks: choose A, B or C; say if the sentence is right or wrong (if wrong, write the correct word); or choose Yes or No."],
+["Answer as each question asks: choose one word; choose A, B or C; or choose Yes or No.","Responda como cada pergunta pede: escolha uma palavra; escolha A, B ou C; ou escolha Sim ou Não.","Answer as each question asks: choose one word; choose A, B or C; or choose Yes or No."],
+["Answer as each question asks: choose one word; choose A, B or C; or say if the sentence is right or wrong (if wrong, write the correct word).","Responda como cada pergunta pede: escolha uma palavra; escolha A, B ou C; ou diga se a frase está certa ou errada (se errada, escreva a palavra correta).","Answer as each question asks: choose one word; choose A, B or C; or say if the sentence is right or wrong (if wrong, write the correct word)."],
+["Answer as each question asks: choose one word; choose Yes or No; or choose A, B or C.","Responda como cada pergunta pede: escolha uma palavra; escolha Sim ou Não; ou escolha A, B ou C.","Answer as each question asks: choose one word; choose Yes or No; or choose A, B or C."],
+["Answer as each question asks: choose one word; choose Yes or No; or say if the sentence is right or wrong (if wrong, write the correct word).","Responda como cada pergunta pede: escolha uma palavra; escolha Sim ou Não; ou diga se a frase está certa ou errada (se errada, escreva a palavra correta).","Answer as each question asks: choose one word; choose Yes or No; or say if the sentence is right or wrong (if wrong, write the correct word)."],
+["Answer as each question asks: choose one word; say if the sentence is right or wrong (if wrong, write the correct word); or choose A, B or C.","Responda como cada pergunta pede: escolha uma palavra; diga se a frase está certa ou errada (se errada, escreva a palavra correta); ou escolha A, B ou C.","Answer as each question asks: choose one word; say if the sentence is right or wrong (if wrong, write the correct word); or choose A, B or C."],
+["Answer as each question asks: choose one word; say if the sentence is right or wrong (if wrong, write the correct word); or choose Yes or No.","Responda como cada pergunta pede: escolha uma palavra; diga se a frase está certa ou errada (se errada, escreva a palavra correta); ou escolha Sim ou Não.","Answer as each question asks: choose one word; say if the sentence is right or wrong (if wrong, write the correct word); or choose Yes or No."],
+["Answer as each question asks: choose Yes or No; choose A, B or C; or choose one word.","Responda como cada pergunta pede: escolha Sim ou Não; escolha A, B ou C; ou escolha uma palavra.","Answer as each question asks: choose Yes or No; choose A, B or C; or choose one word."],
+["Answer as each question asks: choose Yes or No; choose A, B or C; or say if the sentence is right or wrong (if wrong, write the correct word).","Responda como cada pergunta pede: escolha Sim ou Não; escolha A, B ou C; ou diga se a frase está certa ou errada (se errada, escreva a palavra correta).","Answer as each question asks: choose Yes or No; choose A, B or C; or say if the sentence is right or wrong (if wrong, write the correct word)."],
+["Answer as each question asks: choose Yes or No; choose one word; or choose A, B or C.","Responda como cada pergunta pede: escolha Sim ou Não; escolha uma palavra; ou escolha A, B ou C.","Answer as each question asks: choose Yes or No; choose one word; or choose A, B or C."],
+["Answer as each question asks: choose Yes or No; choose one word; or say if the sentence is right or wrong (if wrong, write the correct word).","Responda como cada pergunta pede: escolha Sim ou Não; escolha uma palavra; ou diga se a frase está certa ou errada (se errada, escreva a palavra correta).","Answer as each question asks: choose Yes or No; choose one word; or say if the sentence is right or wrong (if wrong, write the correct word)."],
+["Answer as each question asks: choose Yes or No; say if the sentence is right or wrong (if wrong, write the correct word); or choose A, B or C.","Responda como cada pergunta pede: escolha Sim ou Não; diga se a frase está certa ou errada (se errada, escreva a palavra correta); ou escolha A, B ou C.","Answer as each question asks: choose Yes or No; say if the sentence is right or wrong (if wrong, write the correct word); or choose A, B or C."],
+["Answer as each question asks: choose Yes or No; say if the sentence is right or wrong (if wrong, write the correct word); or choose one word.","Responda como cada pergunta pede: escolha Sim ou Não; diga se a frase está certa ou errada (se errada, escreva a palavra correta); ou escolha uma palavra.","Answer as each question asks: choose Yes or No; say if the sentence is right or wrong (if wrong, write the correct word); or choose one word."],
+["Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); choose A, B or C; or choose one word.","Responda como cada pergunta pede: diga se a frase está certa ou errada (se errada, escreva a palavra correta); escolha A, B ou C; ou escolha uma palavra.","Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); choose A, B or C; or choose one word."],
+["Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); choose A, B or C; or choose Yes or No.","Responda como cada pergunta pede: diga se a frase está certa ou errada (se errada, escreva a palavra correta); escolha A, B ou C; ou escolha Sim ou Não.","Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); choose A, B or C; or choose Yes or No."],
+["Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); choose one word; or choose A, B or C.","Responda como cada pergunta pede: diga se a frase está certa ou errada (se errada, escreva a palavra correta); escolha uma palavra; ou escolha A, B ou C.","Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); choose one word; or choose A, B or C."],
+["Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); choose one word; or choose Yes or No.","Responda como cada pergunta pede: diga se a frase está certa ou errada (se errada, escreva a palavra correta); escolha uma palavra; ou escolha Sim ou Não.","Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); choose one word; or choose Yes or No."],
+["Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); choose Yes or No; or choose A, B or C.","Responda como cada pergunta pede: diga se a frase está certa ou errada (se errada, escreva a palavra correta); escolha Sim ou Não; ou escolha A, B ou C.","Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); choose Yes or No; or choose A, B or C."],
+["Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); choose Yes or No; or choose one word.","Responda como cada pergunta pede: diga se a frase está certa ou errada (se errada, escreva a palavra correta); escolha Sim ou Não; ou escolha uma palavra.","Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); choose Yes or No; or choose one word."],
+["Answer as each question asks: choose A, B or C; choose one word; choose Yes or No; or say if the sentence is right or wrong (if wrong, write the correct word).","Responda como cada pergunta pede: escolha A, B ou C; escolha uma palavra; escolha Sim ou Não; ou diga se a frase está certa ou errada (se errada, escreva a palavra correta).","Answer as each question asks: choose A, B or C; choose one word; choose Yes or No; or say if the sentence is right or wrong (if wrong, write the correct word)."],
+["Answer as each question asks: choose A, B or C; choose one word; say if the sentence is right or wrong (if wrong, write the correct word); or choose Yes or No.","Responda como cada pergunta pede: escolha A, B ou C; escolha uma palavra; diga se a frase está certa ou errada (se errada, escreva a palavra correta); ou escolha Sim ou Não.","Answer as each question asks: choose A, B or C; choose one word; say if the sentence is right or wrong (if wrong, write the correct word); or choose Yes or No."],
+["Answer as each question asks: choose A, B or C; choose Yes or No; choose one word; or say if the sentence is right or wrong (if wrong, write the correct word).","Responda como cada pergunta pede: escolha A, B ou C; escolha Sim ou Não; escolha uma palavra; ou diga se a frase está certa ou errada (se errada, escreva a palavra correta).","Answer as each question asks: choose A, B or C; choose Yes or No; choose one word; or say if the sentence is right or wrong (if wrong, write the correct word)."],
+["Answer as each question asks: choose A, B or C; choose Yes or No; say if the sentence is right or wrong (if wrong, write the correct word); or choose one word.","Responda como cada pergunta pede: escolha A, B ou C; escolha Sim ou Não; diga se a frase está certa ou errada (se errada, escreva a palavra correta); ou escolha uma palavra.","Answer as each question asks: choose A, B or C; choose Yes or No; say if the sentence is right or wrong (if wrong, write the correct word); or choose one word."],
+["Answer as each question asks: choose A, B or C; say if the sentence is right or wrong (if wrong, write the correct word); choose one word; or choose Yes or No.","Responda como cada pergunta pede: escolha A, B ou C; diga se a frase está certa ou errada (se errada, escreva a palavra correta); escolha uma palavra; ou escolha Sim ou Não.","Answer as each question asks: choose A, B or C; say if the sentence is right or wrong (if wrong, write the correct word); choose one word; or choose Yes or No."],
+["Answer as each question asks: choose A, B or C; say if the sentence is right or wrong (if wrong, write the correct word); choose Yes or No; or choose one word.","Responda como cada pergunta pede: escolha A, B ou C; diga se a frase está certa ou errada (se errada, escreva a palavra correta); escolha Sim ou Não; ou escolha uma palavra.","Answer as each question asks: choose A, B or C; say if the sentence is right or wrong (if wrong, write the correct word); choose Yes or No; or choose one word."],
+["Answer as each question asks: choose one word; choose A, B or C; choose Yes or No; or say if the sentence is right or wrong (if wrong, write the correct word).","Responda como cada pergunta pede: escolha uma palavra; escolha A, B ou C; escolha Sim ou Não; ou diga se a frase está certa ou errada (se errada, escreva a palavra correta).","Answer as each question asks: choose one word; choose A, B or C; choose Yes or No; or say if the sentence is right or wrong (if wrong, write the correct word)."],
+["Answer as each question asks: choose one word; choose A, B or C; say if the sentence is right or wrong (if wrong, write the correct word); or choose Yes or No.","Responda como cada pergunta pede: escolha uma palavra; escolha A, B ou C; diga se a frase está certa ou errada (se errada, escreva a palavra correta); ou escolha Sim ou Não.","Answer as each question asks: choose one word; choose A, B or C; say if the sentence is right or wrong (if wrong, write the correct word); or choose Yes or No."],
+["Answer as each question asks: choose one word; choose Yes or No; choose A, B or C; or say if the sentence is right or wrong (if wrong, write the correct word).","Responda como cada pergunta pede: escolha uma palavra; escolha Sim ou Não; escolha A, B ou C; ou diga se a frase está certa ou errada (se errada, escreva a palavra correta).","Answer as each question asks: choose one word; choose Yes or No; choose A, B or C; or say if the sentence is right or wrong (if wrong, write the correct word)."],
+["Answer as each question asks: choose one word; choose Yes or No; say if the sentence is right or wrong (if wrong, write the correct word); or choose A, B or C.","Responda como cada pergunta pede: escolha uma palavra; escolha Sim ou Não; diga se a frase está certa ou errada (se errada, escreva a palavra correta); ou escolha A, B ou C.","Answer as each question asks: choose one word; choose Yes or No; say if the sentence is right or wrong (if wrong, write the correct word); or choose A, B or C."],
+["Answer as each question asks: choose one word; say if the sentence is right or wrong (if wrong, write the correct word); choose A, B or C; or choose Yes or No.","Responda como cada pergunta pede: escolha uma palavra; diga se a frase está certa ou errada (se errada, escreva a palavra correta); escolha A, B ou C; ou escolha Sim ou Não.","Answer as each question asks: choose one word; say if the sentence is right or wrong (if wrong, write the correct word); choose A, B or C; or choose Yes or No."],
+["Answer as each question asks: choose one word; say if the sentence is right or wrong (if wrong, write the correct word); choose Yes or No; or choose A, B or C.","Responda como cada pergunta pede: escolha uma palavra; diga se a frase está certa ou errada (se errada, escreva a palavra correta); escolha Sim ou Não; ou escolha A, B ou C.","Answer as each question asks: choose one word; say if the sentence is right or wrong (if wrong, write the correct word); choose Yes or No; or choose A, B or C."],
+["Answer as each question asks: choose Yes or No; choose A, B or C; choose one word; or say if the sentence is right or wrong (if wrong, write the correct word).","Responda como cada pergunta pede: escolha Sim ou Não; escolha A, B ou C; escolha uma palavra; ou diga se a frase está certa ou errada (se errada, escreva a palavra correta).","Answer as each question asks: choose Yes or No; choose A, B or C; choose one word; or say if the sentence is right or wrong (if wrong, write the correct word)."],
+["Answer as each question asks: choose Yes or No; choose A, B or C; say if the sentence is right or wrong (if wrong, write the correct word); or choose one word.","Responda como cada pergunta pede: escolha Sim ou Não; escolha A, B ou C; diga se a frase está certa ou errada (se errada, escreva a palavra correta); ou escolha uma palavra.","Answer as each question asks: choose Yes or No; choose A, B or C; say if the sentence is right or wrong (if wrong, write the correct word); or choose one word."],
+["Answer as each question asks: choose Yes or No; choose one word; choose A, B or C; or say if the sentence is right or wrong (if wrong, write the correct word).","Responda como cada pergunta pede: escolha Sim ou Não; escolha uma palavra; escolha A, B ou C; ou diga se a frase está certa ou errada (se errada, escreva a palavra correta).","Answer as each question asks: choose Yes or No; choose one word; choose A, B or C; or say if the sentence is right or wrong (if wrong, write the correct word)."],
+["Answer as each question asks: choose Yes or No; choose one word; say if the sentence is right or wrong (if wrong, write the correct word); or choose A, B or C.","Responda como cada pergunta pede: escolha Sim ou Não; escolha uma palavra; diga se a frase está certa ou errada (se errada, escreva a palavra correta); ou escolha A, B ou C.","Answer as each question asks: choose Yes or No; choose one word; say if the sentence is right or wrong (if wrong, write the correct word); or choose A, B or C."],
+["Answer as each question asks: choose Yes or No; say if the sentence is right or wrong (if wrong, write the correct word); choose A, B or C; or choose one word.","Responda como cada pergunta pede: escolha Sim ou Não; diga se a frase está certa ou errada (se errada, escreva a palavra correta); escolha A, B ou C; ou escolha uma palavra.","Answer as each question asks: choose Yes or No; say if the sentence is right or wrong (if wrong, write the correct word); choose A, B or C; or choose one word."],
+["Answer as each question asks: choose Yes or No; say if the sentence is right or wrong (if wrong, write the correct word); choose one word; or choose A, B or C.","Responda como cada pergunta pede: escolha Sim ou Não; diga se a frase está certa ou errada (se errada, escreva a palavra correta); escolha uma palavra; ou escolha A, B ou C.","Answer as each question asks: choose Yes or No; say if the sentence is right or wrong (if wrong, write the correct word); choose one word; or choose A, B or C."],
+["Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); choose A, B or C; choose one word; or choose Yes or No.","Responda como cada pergunta pede: diga se a frase está certa ou errada (se errada, escreva a palavra correta); escolha A, B ou C; escolha uma palavra; ou escolha Sim ou Não.","Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); choose A, B or C; choose one word; or choose Yes or No."],
+["Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); choose A, B or C; choose Yes or No; or choose one word.","Responda como cada pergunta pede: diga se a frase está certa ou errada (se errada, escreva a palavra correta); escolha A, B ou C; escolha Sim ou Não; ou escolha uma palavra.","Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); choose A, B or C; choose Yes or No; or choose one word."],
+["Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); choose one word; choose A, B or C; or choose Yes or No.","Responda como cada pergunta pede: diga se a frase está certa ou errada (se errada, escreva a palavra correta); escolha uma palavra; escolha A, B ou C; ou escolha Sim ou Não.","Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); choose one word; choose A, B or C; or choose Yes or No."],
+["Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); choose one word; choose Yes or No; or choose A, B or C.","Responda como cada pergunta pede: diga se a frase está certa ou errada (se errada, escreva a palavra correta); escolha uma palavra; escolha Sim ou Não; ou escolha A, B ou C.","Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); choose one word; choose Yes or No; or choose A, B or C."],
+["Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); choose Yes or No; choose A, B or C; or choose one word.","Responda como cada pergunta pede: diga se a frase está certa ou errada (se errada, escreva a palavra correta); escolha Sim ou Não; escolha A, B ou C; ou escolha uma palavra.","Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); choose Yes or No; choose A, B or C; or choose one word."],
+["Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); choose Yes or No; choose one word; or choose A, B or C.","Responda como cada pergunta pede: diga se a frase está certa ou errada (se errada, escreva a palavra correta); escolha Sim ou Não; escolha uma palavra; ou escolha A, B ou C.","Answer as each question asks: say if the sentence is right or wrong (if wrong, write the correct word); choose Yes or No; choose one word; or choose A, B or C."]
+];
 function esc(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
 var MAP={},TPL=[];
 function add(entry){
@@ -421,7 +560,10 @@ function add(entry){
   }
 }
 (window.I18N_EXTRA||[]).forEach(add); /* course-specific wording first, so it wins */
-D.forEach(add);
+var FP=false,F1=0,F2=0;
+D.forEach(function(e,i){if(e[0]==='Request access'&&!F1)F1=i;if(e[0]==='Wrong e-mail or password.')F2=i;});
+D.forEach(function(e,i){if(i<F1||(i>=F2&&i<D.findIndex(function(z){return z[0]==='Signed in:';})))e.f=1;add(e);});
+X.forEach(function(e){e.f=1;add(e);});
 TPL.sort(function(a,b){return b.re.source.length-a.re.source.length;});
 /* Portuguese wording already present in the admin page */
 function alias(pt,en){var e=MAP[en];if(e&&!MAP.hasOwnProperty(pt))MAP[pt]=e;}
@@ -439,7 +581,8 @@ alias('Painel do professor','Teacher panel');
 var lang=UI;
 var PG=(location.pathname.split('/').pop()||'index.html').replace(/\.html$/,'');
 var MODE=COURSE.i18nMode||((PG==='workbook'||PG==='placement')?'free':(PG==='check'||PG==='exercises')?'why':'lock');
-var HK=COURSE.whyKey||'callan-why',hint='en';
+FP=(UI==='en'&&MODE!=='free'); /* English course: student warnings, tutorials and exercise instructions always in Portuguese */
+var HK=COURSE.whyKey||'callan-why',hint=(UI==='en')?'pt':'en';
 try{var hs=localStorage.getItem(HK);if(hs==='en'||hs==='pt'||hs==='es')hint=hs;}catch(e){}
 function detect(){
   if(MODE!=='free'){try{localStorage.removeItem(KEY);}catch(e){}return UI;}
@@ -466,11 +609,11 @@ function tr(s){
   var m=/^(\s*)([\s\S]*?)(\s*)$/.exec(s),core=m[2];
   if(!core)return s;
   var e=MAP.hasOwnProperty(core)?MAP[core]:null,out=null;
-  if(e)out=e[IDX[lang]];
+  if(e)out=e[(FP&&e.f&&lang==='en')?1:IDX[lang]];
   else{
     for(var i=0;i<TPL.length;i++){
       var r=TPL[i].re.exec(core);
-      if(r){out=TPL[i].entry[IDX[lang]].replace(/\{(\d)\}/g,function(_,n){return r[+n+1]!==undefined?r[+n+1]:'';});break;}
+      if(r){out=TPL[i].entry[(FP&&TPL[i].entry.f&&lang==='en')?1:IDX[lang]].replace(/\{(\d)\}/g,function(_,n){return r[+n+1]!==undefined?r[+n+1]:'';});break;}
     }
   }
   return out===null?s:m[1]+out+m[3];
@@ -479,7 +622,7 @@ function skip(n){
   var p=n.nodeType===1?n:n.parentNode;
   while(p&&p.nodeType===1){
     var t=p.tagName;
-    if(t==='SCRIPT'||t==='STYLE'||t==='SVG'||t==='svg'||t==='TEXTAREA'||p.id==='panels'||p.id==='out'||p.hasAttribute('data-noi18n'))return true;
+    if(t==='SCRIPT'||t==='STYLE'||t==='SVG'||t==='svg'||t==='TEXTAREA'||(p.id==='panels'&&!FP)||p.id==='out'||p.hasAttribute('data-noi18n'))return true;
     p=p.parentNode;
   }
   return false;
