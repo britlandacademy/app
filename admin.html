@@ -63,6 +63,7 @@ td.g{background:var(--ok-bg)}td.m{background:var(--warn-bg)}td.r{background:var(
   <div class="tp-attn" id="tpAttn" data-noi18n="1"><h2>Precisa de atenção hoje</h2><ul id="tpAttnList"><li style="list-style:none"><span class="bl-sk" style="height:22px;width:70%"></span></li><li style="list-style:none;margin-top:8px"><span class="bl-sk" style="height:22px;width:50%"></span></li></ul></div>
   <div class="tp-grid" id="tpCards" data-noi18n="1"></div>
 </section>
+<div class="sc" id="s-today"><section class="card" aria-labelledby="h-today"><h2 id="h-today">Hoje</h2><div id="todayBox"></div></section></div>
 <div class="sc" id="s-students"><section class="card" id="sec-pend" aria-labelledby="h-pend"><h2 id="h-pend">Pedidos de acesso</h2><div id="pend"></div></section>
 <section class="card" aria-labelledby="h-stu"><h2 id="h-stu">Alunos e liberação das lessons</h2>
   <p class="hint">"Liberado até" é o número da última Lesson que o aluno pode abrir (0 a 206). Vale para texto, áudio, Lesson Checks e exercícios.</p>
@@ -483,7 +484,7 @@ async function xReview(uid,st,n,accept){
 }
 
 /* ----- tabs and home ----- */
-const TABS=[['home','Início'],['students','Alunos'],['grades','Notas'],['exams','Exames'],['pay','Pagamentos','payments.html'],['content','Conteúdo'],['place','Placement']];
+const TABS=[['home','Início'],['today','Hoje'],['students','Alunos'],['grades','Notas'],['exams','Exames'],['pay','Pagamentos','payments.html'],['content','Conteúdo'],['place','Placement']];
 let OVERDUE=null,PLN=null;
 function go(k){
   if(!TABS.some(t=>t[0]===k&&!t[2]))k='home';
@@ -504,9 +505,33 @@ function homeStats(){
   const lim=Date.now()-7*864e5,idle=stu.filter(p=>!last[p.id]||new Date(last[p.id]).getTime()<lim).length;
   return {stu:stu.length,pend,rev,done,idle,over:OVERDUE};
 }
+function renderToday(){
+  const box=$('todayBox');if(!box)return;
+  const pad=n=>String(n).padStart(2,'0'),d0=new Date();d0.setHours(0,0,0,0);const t0=d0.getTime();
+  const stu=PROFILES.filter(p=>!p.is_admin&&p.status==='approved'),by={};
+  ATT.forEach(a=>{if(new Date(a.created_at).getTime()>=t0){(by[a.user_id]=by[a.user_id]||[]).push(a);}});
+  const act=stu.filter(p=>by[p.id]),none=stu.filter(p=>!by[p.id]);
+  const last={};ATT.forEach(a=>{if(!last[a.user_id]||a.created_at>last[a.user_id])last[a.user_id]=a.created_at;});
+  box.textContent='';
+  const nEx=act.reduce((n,p)=>n+by[p.id].length,0);
+  box.append(el('p',{class:'hint'},act.length?act.length+' aluno(s) estudaram hoje, '+nEx+' exercício(s) feito(s).':'Ninguém estudou hoje ainda.'));
+  if(act.length){
+    const tb=el('table',{});tb.append(el('tr',{},...['Aluno','Exercícios','Nota média','Último'].map(x=>el('th',{},x))));
+    act.sort((a,b)=>by[b.id].length-by[a.id].length).forEach(p=>{const L=by[p.id];const sc=L.reduce((n,a)=>n+(a.score||0),0),tt=L.reduce((n,a)=>n+(a.total||0),0);const lt=new Date(L[L.length-1].created_at);
+      tb.append(el('tr',{},el('td',{},p.name||p.email||''),el('td',{},String(L.length)),el('td',{},tt?Math.round(100*sc/tt)+'%':'–'),el('td',{},pad(lt.getHours())+':'+pad(lt.getMinutes()))));});
+    box.append(el('div',{class:'tw'},tb));
+  }
+  if(none.length){
+    box.append(el('h3',{style:'margin:18px 0 6px'},'Ainda não estudaram hoje'));
+    const tb=el('table',{});tb.append(el('tr',{},...['Aluno','Última atividade'].map(x=>el('th',{},x))));
+    none.sort((a,b)=>String(last[a.id]||'').localeCompare(String(last[b.id]||''))).forEach(p=>{const l=last[p.id];const days=l?Math.floor((Date.now()-new Date(l).getTime())/864e5):null;
+      tb.append(el('tr',{},el('td',{},p.name||p.email||''),el('td',{},days==null?'nunca':days===0?'hoje mais cedo':days===1?'ontem':'há '+days+' dias')));});
+    box.append(el('div',{class:'tw'},tb));
+  }
+}
 function renderHome(){
   const h=homeStats(),ul=$('tpAttnList'),cards=$('tpCards');if(!ul)return;
-  TABS[1][3]=()=>h.pend;TABS[3][3]=()=>h.rev;TABS[4][3]=()=>h.over||0;
+  const TI=k=>TABS.findIndex(t=>t[0]===k);TABS[TI('students')][3]=()=>h.pend;TABS[TI('exams')][3]=()=>h.rev;TABS[TI('pay')][3]=()=>h.over||0;renderToday();
   const on=document.querySelector('.tp-tab.on');buildTabs();
   const k=(location.hash||'#home').slice(1);document.querySelectorAll('.tp-tab').forEach(x=>x.classList.toggle('on',x.dataset.k===(on?on.dataset.k:k)));
   const rows=[];

@@ -63,10 +63,11 @@ td.g{background:var(--ok-bg)}td.m{background:var(--warn-bg)}td.r{background:var(
   <div class="tp-attn" id="tpAttn" data-noi18n="1"><h2>Precisa de atenção hoje</h2><ul id="tpAttnList"><li style="list-style:none"><span class="bl-sk" style="height:22px;width:70%"></span></li><li style="list-style:none;margin-top:8px"><span class="bl-sk" style="height:22px;width:50%"></span></li></ul></div>
   <div class="tp-grid" id="tpCards" data-noi18n="1"></div>
 </section>
+<div class="sc" id="s-today"><section class="card" aria-labelledby="h-today"><h2 id="h-today">Hoje</h2><div id="todayBox"></div></section></div>
 <div class="sc" id="s-students"><section class="card" id="sec-pend" aria-labelledby="h-pend"><h2 id="h-pend">Pedidos de acesso</h2><div id="pend"></div></section>
-<section class="card" aria-labelledby="h-stu"><h2 id="h-stu">Alunos e liberação das lessons</h2>
-  <p class="hint">"Liberado até" é o número da última Lesson que o aluno pode abrir (0 a 112). Vale para texto, áudio, e Ejercicios de repaso.</p>
-  <div class="row"><label for="bulk">Liberar até a Lesson</label><input type="number" id="bulk" min="0" max="112" value="16"><span id="bulkstage"></span><button type="button" id="bulkgo">Aplicar a todos os alunos aprovados</button><span class="msg" id="bulkmsg" aria-live="polite"></span></div>
+<section class="card" aria-labelledby="h-stu"><h2 id="h-stu">Alunos e liberação das lecciones</h2>
+  <p class="hint">"Liberado até" é o número da última Lección que o aluno pode abrir (0 a 112). Vale para texto, áudio, e Ejercicios de repaso.</p>
+  <div class="row"><label for="bulk">Liberar até a Lección</label><input type="number" id="bulk" min="0" max="112" value="16"><span id="bulkstage"></span><button type="button" id="bulkgo">Aplicar a todos os alunos aprovados</button><span class="msg" id="bulkmsg" aria-live="polite"></span></div>
   <div class="tw"><table id="stu"></table></div>
   <p class="hint">Bloquear fecha o acesso na hora (o áudio já aberto pode tocar por até 2 horas). Para apagar uma conta de vez: Supabase, Authentication, Users, Delete.</p>
 </section>
@@ -75,16 +76,16 @@ td.g{background:var(--ok-bg)}td.m{background:var(--warn-bg)}td.r{background:var(
   <div class="row"><label for="kind">Mostrar</label><select id="kind"><option value="check">Ejercicios de repaso (nº = repaso)</option><option value="dele">DELE (nº 1–6 = A1…C2)</option></select>
   <label for="mst">Stage</label><select id="mst"></select>
   <button type="button" id="csv" class="ghost">Exportar todas as tentativas (CSV)</button><span class="msg" id="scmsg" aria-live="polite"></span></div>
-  <p class="hint">Escolha o Stage para ver as lessons dele. Cada célula mostra a melhor nota do aluno na lesson (pontos / total). Verde: 80% ou mais. Amarelo: 50% a 79%. Vermelho: abaixo de 50%.</p>
+  <p class="hint">Escolha a Etapa para ver as lecciones dele. Cada célula mostra a melhor nota do aluno na lesson (pontos / total). Verde: 80% ou mais. Amarelo: 50% a 79%. Vermelho: abaixo de 50%.</p>
   <div class="tw"><table id="mat"></table></div>
   <div class="row"><label for="who">Detalhe de um aluno</label><select id="who"></select></div>
   <div class="tw"><table id="det"></table></div>
 </section></div>
-<div class="sc" id="s-exams"><section class="card" aria-labelledby="h-ex"><h2 id="h-ex">Stage Exams (provas)</h2>
+<div class="sc" id="s-exams"><section class="card" aria-labelledby="h-ex"><h2 id="h-ex">Etapa Exams (provas)</h2>
   <div class="row"><label for="xst">Stage</label><select id="xst"></select><span class="msg" id="xmsg" aria-live="polite"></span></div>
-  <p class="hint">A prova dura 40 minutos, só pode ser feita uma vez e só abre para o aluno depois que você liberar aqui. A coluna Lesson Checks mostra o que falta; se faltar algo, o sistema avisa antes de liberar. Você lê o ditado e as perguntas orais ao vivo.</p>
+  <p class="hint">A prova dura 40 minutos, só pode ser feita uma vez e só abre para o aluno depois que você liberar aqui. A coluna Ejercicios de repaso mostra o que falta; se faltar algo, o sistema avisa antes de liberar. Você lê o ditado e as perguntas orais ao vivo.</p>
   <div class="tw"><table id="xtab"></table></div>
-  <div class="row"><button type="button" class="ghost" id="xall">Liberar a nota de todos os que já enviaram este Stage</button></div>
+  <div class="row"><button type="button" class="ghost" id="xall">Liberar a nota de todos os que já enviaram esta Etapa</button></div>
   <div id="xdet"></div>
 </section></div>
 <div class="sc" id="s-content"><section class="card" aria-labelledby="h-ct"><h2 id="h-ct">Conteúdo (texto, checks e exercícios)</h2>
@@ -125,8 +126,8 @@ const STATUS={pending:'Pendente',approved:'Aprovado',blocked:'Bloqueado'};
 const C=window.BL_COURSE||{},MAXL=C.maxLesson||206,BIZ=C.business!==false,DELE=!!C.dele;
 const STG_END=C.stages?C.stages.map(x=>x[1]):[12,27,44,63,82,101,120,138,156,174,190,206];
 function stageSel(inp){
-  const sel=el('select',{'aria-label':'Escolher o Stage'},el('option',{value:''},'ou escolha o Stage…'));
-  STG_END.forEach((e,i)=>sel.append(el('option',{value:String(e)},'Stage '+(i+1)+' (até a Lesson '+e+')')));
+  const sel=el('select',{'aria-label':'Escolher a Etapa'},el('option',{value:''},'ou escolha a Etapa…'));
+  STG_END.forEach((e,i)=>sel.append(el('option',{value:String(e)},'Etapa '+(i+1)+' (até a Lección '+e+')')));
   sel.addEventListener('change',()=>{if(sel.value){inp.value=sel.value;sel.value='';inp.dispatchEvent(new Event('input'));}});
   return sel;
 }
@@ -157,9 +158,9 @@ function renderPend(){
   if(!list.length){box.append(el('p',{class:'hint'},'Nenhum pedido pendente.'));return;}
   const tb=el('tbody',{});
   list.forEach(p=>{
-    const n=el('input',{type:'number',min:'0',max:String(MAXL),value:'12','aria-label':'Liberar até a Lesson, '+p.name});
+    const n=el('input',{type:'number',min:'0',max:String(MAXL),value:'12','aria-label':'Liberar até a Lección, '+p.name});
     tb.append(el('tr',{},el('td',{},cvThumb(n,p.name||'(sem nome)')),el('td',{},p.email),el('td',{},fmt(p.created_at)),
-      el('td',{},el('div',{class:'row',style:'margin:0'},'Liberar até a Lesson ',n,' ',stageSel(n),' ',
+      el('td',{},el('div',{class:'row',style:'margin:0'},'Liberar até a Lección ',n,' ',stageSel(n),' ',
         el('button',{type:'button',onclick:()=>update(p.id,{status:'approved',lessons_upto:clampN(n.value)})},'Aprovar'),
         el('button',{type:'button',class:'danger',onclick:()=>update(p.id,{status:'blocked'})},'Recusar')))));
   });
@@ -181,14 +182,14 @@ function renderStu(){
         ?el('button',{type:'button',onclick:()=>update(p.id,{status:'approved'})},'Reativar')
         :el('button',{type:'button',class:'danger',onclick:()=>{if(confirm('Bloquear '+(p.name||p.email)+'?'))update(p.id,{status:'blocked'});}},'Bloquear'))));
   });
-  t.append(th(['Nome','E-mail','Situação','Liberado até a Lesson'].concat(BIZ?['Business (0–17)']:[],[''])),tb);
+  t.append(th(['Nome','E-mail','Situação','Liberado até a Lección'].concat(BIZ?['Business (0–17)']:[],[''])),tb);
 }
 $('bulkstage').append(stageSel($('bulk')));
 $('bulkgo').addEventListener('click',()=>{
   const n=clampN($('bulk').value);
   sb.from('profiles').update({lessons_upto:n}).eq('status','approved').eq('is_admin',false).then(r=>{
     if(r.error){setMsg('bulkmsg','Erro: '+r.error.message,'bad');return;}
-    setMsg('bulkmsg','Pronto: alunos aprovados liberados até a Lesson '+n+'.','ok');loadProfiles();
+    setMsg('bulkmsg','Pronto: alunos aprovados liberados até a Lección '+n+'.','ok');loadProfiles();
   });
 });
 
@@ -211,12 +212,12 @@ function best(uid,kind,lesson){
   let s=0,t=0;k.forEach(e=>{s+=per[e].s;t+=per[e].t;});return {s:s,t:t};
 }
 const STG=C.stages||[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[139,156],[157,174],[175,190],[191,206],[1001,1017]];
-function fillStages(){
+function fillEtapas(){
   const s=$('mst');if(s.options.length)return;
-  STG.forEach((r,k)=>s.append(el('option',{value:String(k)},r[0]>1000?'Business (Lessons 1 a 17)':'Stage '+(k+1)+' (Lessons '+r[0]+' a '+r[1]+')')));
+  STG.forEach((r,k)=>s.append(el('option',{value:String(k)},r[0]>1000?'Business (Lecciones 1 a 17)':'Etapa '+(k+1)+' (Lecciones '+r[0]+' a '+r[1]+')')));
 }
 function renderMat(){
-  fillStages();
+  fillEtapas();
   const t=$('mat');t.textContent='';
   const kind=$('kind').value;
   const studs=PROFILES.filter(p=>p.status!=='pending'&&!p.is_admin);
@@ -232,7 +233,7 @@ function renderMat(){
       const b=best(p.id,kind,i);
       if(!b){cells.push(el('td',{class:'c'},(i>1000?i-1000<=(p.business_upto||0):i<=p.lessons_upto)?'·':'–'));continue;}
       const pct=Math.round(b.s/b.t*100);sp+=b.s;st+=b.t;
-      cells.push(el('td',{class:'c '+(pct>=80?'g':pct>=50?'m':'r'),title:'Lesson '+(i>1000?i-1000:i)+': '+b.s+'/'+b.t+' ('+pct+'%)'},b.s+'/'+b.t));
+      cells.push(el('td',{class:'c '+(pct>=80?'g':pct>=50?'m':'r'),title:'Lección '+(i>1000?i-1000:i)+': '+b.s+'/'+b.t+' ('+pct+'%)'},b.s+'/'+b.t));
     }
     cells.push(el('td',{class:'c'},st?Math.round(sp/st*100)+'%':'–'));
     tb.append(el('tr',{},cells));
@@ -248,7 +249,7 @@ function renderWho(){
 function typeLbl(a,full){
   const x=String(a.ex);
   if(DELE)return a.kind==='check'?'Ejercicio de repaso':(/^dele:/.test(x)?(full?'DELE '+x.split(':')[1]+' '+x.split(':')[2]:'DELE'):'Ejercicio');
-  return a.kind==='check'?'Lesson Check':(/^wb/.test(x)?(full?'Workbook '+x.slice(-1):'Workbook'):'Exercise');
+  return a.kind==='check'?'Ejercicio de repaso':(/^wb/.test(x)?(full?'Workbook '+x.slice(-1):'Workbook'):'Exercise');
 }
 function renderDet(){
   const t=$('det');t.textContent='';
@@ -256,8 +257,8 @@ function renderDet(){
   const rows=ATT.filter(a=>a.user_id===uid).reverse();
   const tb=el('tbody',{});
   if(!rows.length)tb.append(el('tr',{},el('td',{colspan:'5'},'Sem tentativas ainda.')));
-  rows.forEach(a=>tb.append(el('tr',{},el('td',{},fmt(a.created_at)),el('td',{},typeLbl(a,1)),el('td',{},DELE&&/^dele:/.test(String(a.ex))?'Nivel '+a.lesson:(DELE?'Repaso ':'Lesson ')+a.lesson),el('td',{},a.score+' / '+a.total),el('td',{},Math.round(a.score/a.total*100)+'%'))));
-  t.append(th(['Data','Tipo','Lesson','Nota','%']),tb);
+  rows.forEach(a=>tb.append(el('tr',{},el('td',{},fmt(a.created_at)),el('td',{},typeLbl(a,1)),el('td',{},DELE&&/^dele:/.test(String(a.ex))?'Nivel '+a.lesson:(DELE?'Repaso ':'Lección ')+a.lesson),el('td',{},a.score+' / '+a.total),el('td',{},Math.round(a.score/a.total*100)+'%'))));
+  t.append(th(['Data','Tipo','Lección','Nota','%']),tb);
 }
 $('kind').addEventListener('change',renderMat);
 $('mst').addEventListener('change',renderMat);
@@ -265,7 +266,7 @@ $('who').addEventListener('change',renderDet);
 $('csv').addEventListener('click',()=>{
   const by={};PROFILES.forEach(p=>{by[p.id]=p;});
   const q=v=>'"'+String(v).replace(/"/g,'""')+'"';
-  const lines=[['Aluno','E-mail','Tipo','Lesson','Exercicio','Pontos','Total','Percentual','Data'].map(q).join(';')];
+  const lines=[['Aluno','E-mail','Tipo','Lección','Ejercicio','Pontos','Total','Percentual','Data'].map(q).join(';')];
   ATT.forEach(a=>{const p=by[a.user_id]||{};lines.push([p.name||'',p.email||'',typeLbl(a,0),a.lesson,a.ex,a.score,a.total,Math.round(a.score/a.total*100)+'%',fmt(a.created_at)].map(q).join(';'));});
   const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
   const u=URL.createObjectURL(blob),a=el('a',{href:u,download:'notas_callan.csv'});document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);
@@ -277,7 +278,7 @@ function ctInfo(){
   return sb.from('content').select('lesson,kind').limit(1000).then(r=>{
     if(r.error){$('ctinfo').textContent='Não foi possível ler o conteúdo: '+r.error.message;return;}
     const c={text:0,check:0,ex:0};(r.data||[]).forEach(x=>{c[x.kind]=(c[x.kind]||0)+1;});
-    $('ctinfo').textContent='No servidor agora: '+c.text+' lessons (texto), '+c.check+' Lesson Checks, '+c.ex+' conjuntos de exercícios.';
+    $('ctinfo').textContent='No servidor agora: '+c.text+' lecciones (texto), '+c.check+' Ejercicios de repaso, '+c.ex+' conjuntos de exercícios.';
   });
 }
 $('ctgo').addEventListener('click',async()=>{
@@ -300,30 +301,30 @@ $('ctgo').addEventListener('click',async()=>{
 
 /* ----- audio ----- */
 function audioPath(name){
-  let mb=/^Business Lesson (\d+) Dictation (\d+)\.mp3$/i.exec(name);
+  let mb=/^Business Lección (\d+) Dictation (\d+)\.mp3$/i.exec(name);
   if(mb)return 'Business/Dictations/'+name;
-  mb=/^Business Lesson (\d+)\.mp3$/i.exec(name);
+  mb=/^Business Lección (\d+)\.mp3$/i.exec(name);
   if(mb)return 'Business/'+name;
-  let m=/^Stage (\d+) Lesson (\d+) Dictation (\d+)\.mp3$/i.exec(name);
-  if(m)return 'Stage '+m[1]+'/Dictations/'+name;
-  m=/^Workbook Lesson (\d+) J(\d+)\.mp3$/i.exec(name);
-  if(m){const l=+m[1],S=STG_END;let n=1;while(n<S.length&&l>S[n-1])n++;return 'Stage '+n+'/Workbook/'+name;}
-  m=/^Stage (\d+) Lesson (\d+)\.mp3$/i.exec(name);
-  if(m)return 'Stage '+m[1]+'/'+name;
+  let m=/^Etapa (\d+) Lección (\d+) Dictation (\d+)\.mp3$/i.exec(name);
+  if(m)return 'Etapa '+m[1]+'/Dictations/'+name;
+  m=/^Workbook Lección (\d+) J(\d+)\.mp3$/i.exec(name);
+  if(m){const l=+m[1],S=STG_END;let n=1;while(n<S.length&&l>S[n-1])n++;return 'Etapa '+n+'/Workbook/'+name;}
+  m=/^Etapa (\d+) Lección (\d+)\.mp3$/i.exec(name);
+  if(m)return 'Etapa '+m[1]+'/'+name;
   return null;
 }
 async function auInfo(){
   const t=$('aulist');t.textContent='';
   const tb=el('tbody',{});let total=0;
   for(const n of STG_END.map((_,i)=>i+1)){
-    const a=await sb.storage.from('audio').list('Stage '+n,{limit:1000});
-    const d=await sb.storage.from('audio').list('Stage '+n+'/Dictations',{limit:1000});
-    const w=await sb.storage.from('audio').list('Stage '+n+'/Workbook',{limit:1000});
+    const a=await sb.storage.from('audio').list('Etapa '+n,{limit:1000});
+    const d=await sb.storage.from('audio').list('Etapa '+n+'/Dictations',{limit:1000});
+    const w=await sb.storage.from('audio').list('Etapa '+n+'/Workbook',{limit:1000});
     const na=(a.data||[]).filter(x=>/\.mp3$/i.test(x.name)).length,nd=(d.data||[]).filter(x=>/\.mp3$/i.test(x.name)).length,nw=(w.data||[]).filter(x=>/\.mp3$/i.test(x.name)).length;
     total+=na+nd+nw;
-    tb.append(el('tr',{},el('td',{},'Stage '+n),el('td',{},String(na)),el('td',{},String(nd)),el('td',{},String(nw))));
+    tb.append(el('tr',{},el('td',{},'Etapa '+n),el('td',{},String(na)),el('td',{},String(nd)),el('td',{},String(nw))));
   }
-  t.append(th(['','Áudios das lessons','Ditados','Ditados do Workbook']),tb);t.hidden=false;
+  t.append(th(['','Áudios das lecciones','Ditados','Ditados do Workbook']),tb);t.hidden=false;
   $('auinfo').textContent='No servidor agora: '+total+' arquivos de áudio.';
 }
 $('augo').addEventListener('click',async()=>{
@@ -361,12 +362,12 @@ function loadPlacement(){
         if(!del.dataset.sure){del.dataset.sure='1';del.textContent='Confirm?';return;}
         sb.from('placement').delete().eq('id',p.id).then(x=>{if(x.error)setMsg('plmsg','Error: '+x.error.message,'bad');else loadPlacement();});
       }},'Delete');
-      tb.append(el('tr',{},el('td',{},fmt(p.created_at)),el('td',{},p.name),el('td',{},p.contact),el('td',{},({en:'English',es:'Spanish',pt:'Portuguese'})[tl(p)]),el('td',{},p.cefr||'–'),el('td',{},tl(p)==='en'?'Stage '+p.level:tl(p)==='es'?'Stage '+Math.min(6,Math.ceil(p.level/2)):'–'),el('td',{},p.score+' / '+p.total),el('td',{},del)));
+      tb.append(el('tr',{},el('td',{},fmt(p.created_at)),el('td',{},p.name),el('td',{},p.contact),el('td',{},({en:'English',es:'Spanish',pt:'Portuguese'})[tl(p)]),el('td',{},p.cefr||'–'),el('td',{},tl(p)==='en'?'Etapa '+p.level:tl(p)==='es'?'Etapa '+Math.min(6,Math.ceil(p.level/2)):'–'),el('td',{},p.score+' / '+p.total),el('td',{},del)));
     });
     t.append(th(['Date','Name','Contact','Language','Level','Stage','Score','Action']),tb);
   });
 }
-/* ----- Stage Exams ----- */
+/* ----- Etapa Exams ----- */
 const XSTG=C.stages||[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[139,156],[157,174],[175,190],[191,206]];
 let XREL=[],XRES=[],XDEF={},XKEY={},XOK=false;
 function xnorm(t){return String(t||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9' ]/g,' ').replace(/\s+/g,' ').trim();}
@@ -394,14 +395,14 @@ async function loadExams(){
   const a=await sb.from('exam_release').select('*'),b=await sb.from('exam_results').select('*'),c=await sb.from('exam_defs').select('stage,minutes');
   if(a.error||b.error||c.error){XOK=false;setMsg('xmsg','Tabelas da prova ainda não existem no Supabase. Rode o arquivo exam_setup.sql (e exam_data_stage1-2.sql) no SQL Editor.','bad');$('xtab').textContent='';return;}
   XOK=true;XREL=a.data||[];XRES=b.data||[];XDEF={};(c.data||[]).forEach(x=>{XDEF[x.stage]=x;});
-  const sel=$('xst');if(!sel.options.length){for(let i=1;i<=XSTG.length;i++)sel.append(el('option',{value:String(i)},'Stage '+i));sel.addEventListener('change',()=>{$('xdet').textContent='';renderExam();});}
+  const sel=$('xst');if(!sel.options.length){for(let i=1;i<=XSTG.length;i++)sel.append(el('option',{value:String(i)},'Etapa '+i));sel.addEventListener('change',()=>{$('xdet').textContent='';renderExam();});}
   if(!$('xall').dataset.on){$('xall').dataset.on='1';$('xall').addEventListener('click',()=>{const st=parseInt($('xst').value,10)||1;
-    if(!confirm('Liberar a nota do Stage '+st+' para todos os alunos que já enviaram?'))return;
+    if(!confirm('Liberar a nota da Etapa '+st+' para todos os alunos que já enviaram?'))return;
     sb.from('exam_results').update({score_visible:true}).eq('stage',st).not('submitted_at','is',null).then(r=>{if(r.error)setMsg('xmsg','Erro: '+r.error.message,'bad');else{setMsg('xmsg','Notas liberadas.','ok');loadExams();}});});}
   setMsg('xmsg','');renderExam();if(typeof renderHome==='function')renderHome();
 }
 function xStatus(rel,res,def){
-  if(!def)return el('span',{class:'msg bad'},'Prova deste Stage ainda não cadastrada');
+  if(!def)return el('span',{class:'msg bad'},'Prova desta Etapa ainda não cadastrada');
   if(res&&res.submitted_at){const sc=res.scores||{},mx=res.maxes||{};let t=0,m=0;Object.keys(mx).forEach(k=>{t+=sc[k]||0;m+=mx[k];});
     const nrev=Object.values(res.review||{}).reduce((s,x)=>s+x.length,0);
     return el('span',{},'Concluída: ',el('b',{},t+'/'+m),nrev?' ('+nrev+' p/ revisar)':'',res.late?' · enviada após o tempo':'',' · ',el('span',{class:'st '+(res.score_visible?'approved':'pending')},res.score_visible?'nota liberada ao aluno':'nota oculta'));}
@@ -416,11 +417,11 @@ function renderExam(){
   if(!studs.length)tb.append(el('tr',{},el('td',{colspan:'4'},'Nenhum aluno ainda.')));
   studs.forEach(p=>{
     const rel=XREL.find(x=>x.user_id===p.id&&x.stage===st),res=XRES.find(x=>x.user_id===p.id&&x.stage===st),c=xChecks(p.id,st);
-    const ck=el('td',{},c.done+'/'+c.total+(c.avg!=null?' · média '+Math.round(c.avg*100)+'%':''),c.miss.length?el('div',{class:'sm',style:'color:var(--bad)'},'Faltam as lessons: '+c.miss.join(', ')):el('div',{class:'sm'},'Todos feitos'));
+    const ck=el('td',{},c.done+'/'+c.total+(c.avg!=null?' · média '+Math.round(c.avg*100)+'%':''),c.miss.length?el('div',{class:'sm',style:'color:var(--bad)'},'Faltam as lecciones: '+c.miss.join(', ')):el('div',{class:'sm'},'Todos feitos'));
     const act=el('td',{});
     if(!res){
       if(!rel&&def)act.append(el('button',{type:'button',onclick:()=>{
-        if(c.miss.length&&!confirm(p.name+' ainda não fez os Lesson Checks das lessons: '+c.miss.join(', ')+'.\n\nLiberar a prova mesmo assim?'))return;
+        if(c.miss.length&&!confirm(p.name+' ainda não fez os Ejercicios de repaso das lecciones: '+c.miss.join(', ')+'.\n\nLiberar a prova mesmo assim?'))return;
         sb.from('exam_release').insert({user_id:p.id,stage:st}).then(r=>{if(r.error)setMsg('xmsg','Erro: '+r.error.message,'bad');else loadExams();});}},'Liberar prova'));
       if(rel)act.append(el('button',{type:'button',class:'ghost',onclick:()=>{if(!confirm('Cancelar a liberação para '+p.name+'?'))return;
         sb.from('exam_release').delete().eq('user_id',p.id).eq('stage',st).then(r=>{if(r.error)setMsg('xmsg','Erro: '+r.error.message,'bad');else loadExams();});}},'Cancelar liberação'));
@@ -437,18 +438,18 @@ function renderExam(){
         const nrev=Object.values(res.review||{}).reduce((s2,x)=>s2+x.length,0);
         if(!res.score_visible&&nrev&&!confirm('Ainda há '+nrev+' resposta(s) para você revisar. Liberar a nota assim mesmo?'))return;
         sb.from('exam_results').update({score_visible:!res.score_visible}).eq('user_id',p.id).eq('stage',st).then(r=>{if(r.error)setMsg('xmsg','Erro: '+r.error.message,'bad');else loadExams();});}},res.score_visible?'Ocultar nota':'Liberar nota'));}
-    if(res)act.append(' ',el('button',{type:'button',class:'danger',onclick:()=>{if(!confirm('APAGAR a prova de '+p.name+' (Stage '+st+') para ele poder refazer? Isso não pode ser desfeito.'))return;
+    if(res)act.append(' ',el('button',{type:'button',class:'danger',onclick:()=>{if(!confirm('APAGAR a prova de '+p.name+' (Etapa '+st+') para ele poder refazer? Isso não pode ser desfeito.'))return;
       sb.from('exam_results').delete().eq('user_id',p.id).eq('stage',st).then(r=>{if(r.error)setMsg('xmsg','Erro: '+r.error.message,'bad');else{$('xdet').textContent='';loadExams();}});}},'Zerar'));
     tb.append(el('tr',{},el('td',{},p.name||p.email),ck,el('td',{},xStatus(rel,res,def)),act));
   });
-  t.append(th(['Aluno','Lesson Checks do Stage','Prova','Ações']),tb);
+  t.append(th(['Aluno','Ejercicios de repaso da Etapa','Prova','Ações']),tb);
 }
 async function showExam(p,st){
   const box=$('xdet');box.textContent='';
   if(!XKEY[st]){const k=await sb.from('exam_keys').select('keys').eq('stage',st).maybeSingle();if(k.error||!k.data){box.append(el('p',{class:'msg bad'},'Não foi possível ler o gabarito.'));return;}XKEY[st]=k.data.keys;}
   const res=XRES.find(x=>x.user_id===p.id&&x.stage===st);if(!res)return;
   const K={};XKEY[st].parts.forEach(x=>{K[x.id]=x;});const A=res.answers||{};
-  const card=el('div',{class:'card'},el('h3',{},p.name+' · Stage '+st+' · '+fmt(res.submitted_at)));
+  const card=el('div',{class:'card'},el('h3',{},p.name+' · Etapa '+st+' · '+fmt(res.submitted_at)));
   const sc=res.scores||{},mx=res.maxes||{};let T=0,M=0;Object.keys(mx).forEach(k=>{T+=sc[k]||0;M+=mx[k];});
   card.append(el('p',{},el('b',{},'Total '+T+'/'+M+' ('+Math.round(100*T/(M||1))+'%)'),'  ·  '+Object.keys(mx).map(k=>k+' '+(sc[k]||0)+'/'+mx[k]).join(' · ')));
   if(K.dictation){const d=xdiff(K.dictation.text,A.dictation||'');const p1=el('p',{style:'line-height:2'});
@@ -484,7 +485,7 @@ async function xReview(uid,st,n,accept){
 }
 
 /* ----- tabs and home ----- */
-const TABS=[['home','Início'],['students','Alunos'],['grades','Notas'],['exams','Exames'],['pay','Pagamentos','payments.html'],['content','Conteúdo'],['place','Placement']];
+const TABS=[['home','Início'],['today','Hoje'],['students','Alunos'],['grades','Notas'],['exams','Exames'],['pay','Pagamentos','payments.html'],['content','Conteúdo'],['place','Placement']];
 let OVERDUE=null,PLN=null;
 function go(k){
   if(!TABS.some(t=>t[0]===k&&!t[2]))k='home';
@@ -505,9 +506,33 @@ function homeStats(){
   const lim=Date.now()-7*864e5,idle=stu.filter(p=>!last[p.id]||new Date(last[p.id]).getTime()<lim).length;
   return {stu:stu.length,pend,rev,done,idle,over:OVERDUE};
 }
+function renderToday(){
+  const box=$('todayBox');if(!box)return;
+  const pad=n=>String(n).padStart(2,'0'),d0=new Date();d0.setHours(0,0,0,0);const t0=d0.getTime();
+  const stu=PROFILES.filter(p=>!p.is_admin&&p.status==='approved'),by={};
+  ATT.forEach(a=>{if(new Date(a.created_at).getTime()>=t0){(by[a.user_id]=by[a.user_id]||[]).push(a);}});
+  const act=stu.filter(p=>by[p.id]),none=stu.filter(p=>!by[p.id]);
+  const last={};ATT.forEach(a=>{if(!last[a.user_id]||a.created_at>last[a.user_id])last[a.user_id]=a.created_at;});
+  box.textContent='';
+  const nEx=act.reduce((n,p)=>n+by[p.id].length,0);
+  box.append(el('p',{class:'hint'},act.length?act.length+' aluno(s) estudaram hoje, '+nEx+' exercício(s) feito(s).':'Ninguém estudou hoje ainda.'));
+  if(act.length){
+    const tb=el('table',{});tb.append(el('tr',{},...['Aluno','Exercícios','Nota média','Último'].map(x=>el('th',{},x))));
+    act.sort((a,b)=>by[b.id].length-by[a.id].length).forEach(p=>{const L=by[p.id];const sc=L.reduce((n,a)=>n+(a.score||0),0),tt=L.reduce((n,a)=>n+(a.total||0),0);const lt=new Date(L[L.length-1].created_at);
+      tb.append(el('tr',{},el('td',{},p.name||p.email||''),el('td',{},String(L.length)),el('td',{},tt?Math.round(100*sc/tt)+'%':'–'),el('td',{},pad(lt.getHours())+':'+pad(lt.getMinutes()))));});
+    box.append(el('div',{class:'tw'},tb));
+  }
+  if(none.length){
+    box.append(el('h3',{style:'margin:18px 0 6px'},'Ainda não estudaram hoje'));
+    const tb=el('table',{});tb.append(el('tr',{},...['Aluno','Última atividade'].map(x=>el('th',{},x))));
+    none.sort((a,b)=>String(last[a.id]||'').localeCompare(String(last[b.id]||''))).forEach(p=>{const l=last[p.id];const days=l?Math.floor((Date.now()-new Date(l).getTime())/864e5):null;
+      tb.append(el('tr',{},el('td',{},p.name||p.email||''),el('td',{},days==null?'nunca':days===0?'hoje mais cedo':days===1?'ontem':'há '+days+' dias')));});
+    box.append(el('div',{class:'tw'},tb));
+  }
+}
 function renderHome(){
   const h=homeStats(),ul=$('tpAttnList'),cards=$('tpCards');if(!ul)return;
-  TABS[1][3]=()=>h.pend;TABS[3][3]=()=>h.rev;TABS[4][3]=()=>h.over||0;
+  const TI=k=>TABS.findIndex(t=>t[0]===k);TABS[TI('students')][3]=()=>h.pend;TABS[TI('exams')][3]=()=>h.rev;TABS[TI('pay')][3]=()=>h.over||0;renderToday();
   const on=document.querySelector('.tp-tab.on');buildTabs();
   const k=(location.hash||'#home').slice(1);document.querySelectorAll('.tp-tab').forEach(x=>x.classList.toggle('on',x.dataset.k===(on?on.dataset.k:k)));
   const rows=[];
@@ -518,12 +543,12 @@ function renderHome(){
   ul.textContent='';
   if(!rows.length)ul.append(el('li',{},el('span',{},'Nada pendente. Tudo em dia!')));
   rows.forEach(r=>ul.append(el('li',{},el('span',{},r[0]),el('button',{type:'button',onclick:()=>{if(/\.html$/.test(r[1]))location.href=r[1];else go(r[1]);}},'Ver'))));
-  const C=[['students',String(h.stu),'Alunos','Aprovar, liberar lessons, ver progresso',h.pend?h.pend+' pedido(s)':''],
-    ['grades','','Notas','Lesson Checks, exercises e workbook',''],
+  const C=[['students',String(h.stu),'Alunos','Aprovar, liberar lecciones, ver progresso',h.pend?h.pend+' pedido(s)':''],
+    ['grades','','Notas','Ejercicios de repaso, exercises e workbook',''],
     ['exams',String(h.done),'Exames','Liberar provas, notas e correções',h.rev?h.rev+' para revisar':''],
     ['payments.html','','Pagamentos','Parcelas e cobranças',h.over?h.over+' vencida(s)':''],
     ['content','','Conteúdo','Textos, checks, exercícios e áudios',''],
-    ['place',PLN==null?'':String(PLN),'Placement tests','Resultados de novos interessados','']];
+    ['place',PLN==null?'':String(PLN),'Pruebas de nivel','Resultados de novos interessados','']];
   cards.textContent='';
   C.forEach(c=>{const kids=[];if(c[1])kids.push(el('span',{class:'big'},c[1]));kids.push(el('span',{class:'t'},c[2]),el('span',{class:'d'},c[3]));if(c[4])kids.push(el('span',{class:'tp-flag'},c[4]));
     cards.append(el('button',{type:'button',class:'tp-card',onclick:()=>{if(/\.html$/.test(c[0]))location.href=c[0];else go(c[0]);}},...kids));});

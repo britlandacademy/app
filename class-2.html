@@ -27,8 +27,18 @@ a{color:#f5c542;font-weight:700}img{width:96px;height:auto;margin-bottom:12px}</
 <main>
 <img src="img/britland-shield.png" alt="">
 <h1 style="font-size:1.4rem;margin:0 0 8px">Opening your lesson on Zoom…</h1>
-<p>If it does not open, <a id="z" href="https://us04web.zoom.us/j/2447679341?pwd=U0xuSmU0ek15MGlEd0phWHdoMllUUT09">tap here to join</a>.</p>
+<p id="zm">Checking your sign-in…</p>
 </main>
-<script>setTimeout(function(){location.replace("https://us04web.zoom.us/j/2447679341?pwd=U0xuSmU0ek15MGlEd0phWHdoMllUUT09");},300);</script>
+<script src="js/config.js" charset="utf-8"></script>
+<script src="js/gate.js" charset="utf-8"></script>
+<script>
+Gate.start({kinds:[],bare:true},function(){
+  var m=document.getElementById("zm");
+  Gate.sb.rpc("get_class_link",{p_slug:"class-2"}).then(function(r){
+    if(r.data){m.textContent="";var a=document.createElement("a");a.href=r.data;a.textContent="Tap here to join";m.append("If it does not open, ",a,".");location.replace(r.data);}
+    else m.textContent="The class link is not available right now. Please ask your teacher.";
+  },function(){m.textContent="Could not load the class link. Check your internet and try again.";});
+});
+</script>
 </body>
 </html>

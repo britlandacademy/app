@@ -8,6 +8,20 @@ var COURSE=window.BL_COURSE||{},UI=COURSE.uiLang||'en';
 var KEY=COURSE.langKey||'callan-lang';
 var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they are */
 /* ---- sign in ---- */
+["Welcome to Britland Academy!","Bem-vindo à Britland Academy!","¡Bienvenido a Britland Academy!"],
+["Your lessons are here: read the lesson text, listen to the audio and practise.","Suas lições estão aqui: leia o texto da lição, ouça o áudio e pratique.","Tus lecciones están aquí: lee el texto de la lección, escucha el audio y practica."],
+["It takes only a few minutes a day.","Bastam poucos minutos por dia.","Solo necesitas unos minutos al día."],
+["How to study","Como estudar","Cómo estudiar"],
+["1. Read the lesson and listen to the audio.","1. Leia a lição e ouça o áudio.","1. Lee la lección y escucha el audio."],
+["2. Do the Lesson Check and the exercises.","2. Faça o Lesson Check e os exercícios.","2. Haz el Lesson Check y los ejercicios."],
+["3. Your teacher sees your progress and opens new lessons.","3. Seu professor vê seu progresso e libera novas lições.","3. Tu profesor ve tu progreso y abre nuevas lecciones."],
+["Keep it close","Deixe à mão","Tenlo a mano"],
+["Add Britland Academy to your home screen and turn on Notifications to get class reminders.","Adicione a Britland Academy à tela inicial e ative as Notificações para receber lembretes das aulas.","Añade Britland Academy a tu pantalla de inicio y activa las Notificaciones para recibir recordatorios de clase."],
+["You can change this later in the menu on your picture.","Você pode mudar isso depois no menu da sua foto.","Puedes cambiarlo después en el menú de tu foto."],
+["Let’s start","Vamos começar","Empecemos"],
+["Next","Próximo","Siguiente"],
+["Skip","Pular","Omitir"],
+['Offline mode · your results will be sent when you are back online.','Modo offline · seus resultados serão enviados quando você voltar a ficar online.','Modo sin conexión · tus resultados se enviarán cuando vuelvas a tener conexión.'],
 ['Sign in','Entrar','Iniciar sesión'],
 ["Create account","Criar conta","Crear cuenta"],
 ["Sign in or create account","Entrar ou criar conta","Inicia sesión o crea una cuenta"],

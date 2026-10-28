@@ -81,6 +81,19 @@ EXAM_ES=[
 ("'Your teacher will talk to you about the result.'","'Tu profesor hablará contigo sobre el resultado.'"),
 ("'Thank you! Your answers were sent. Your teacher will check the exam and give you the result.'","'¡Gracias! Tus respuestas fueron enviadas. Tu profesor corregirá el examen y te dará el resultado.'"),
 ]
+
+ADMIN_TERMS=[('Stage 1 Lesson 1.mp3','@@A1'),('Stage 1 Lesson 6 Dictation 1.mp3','@@A2'),('Workbook Lesson 005 J1.mp3','@@A3'),('Escolha o Stage','Escolha a Etapa'),('Escolher o Stage','Escolher a Etapa'),('ou escolha o Stage','ou escolha a Etapa'),
+ ('Prova deste Stage','Prova desta Etapa'),('Liberar a nota de todos os que já enviaram este Stage','Liberar a nota de todos os que já enviaram esta Etapa'),
+ ('Liberar a nota do Stage','Liberar a nota da Etapa'),('Lesson Checks do Stage','Ejercicios de repaso da Etapa'),
+ ('Lesson Checks das lessons','Ejercicios de repaso das lecciones'),('os Lesson Checks','os Ejercicios de repaso'),('Lesson Checks','Ejercicios de repaso'),
+ ('Lesson Check','Ejercicio de repaso'),('Liberar até a Lesson','Liberar até a Lección'),('Liberado até a Lesson','Liberado até a Lección'),
+ ('último Lesson','última Lección'),('a última Lesson','a última Lección'),('da última Lesson','da última Lección'),
+ ('Business (Lessons 1 a 17)','Business (Lecciones 1 a 17)'),(' (Lessons ',' (Lecciones '),
+ ("'Lesson '+","'Lección '+"),("'Lesson ':","'Lección ':"),('Lesson ','Lección '),
+ ('Áudios das lessons','Áudios das lecciones'),('as lessons','as lecciones'),('das lessons','das lecciones'),('ver as lessons','ver as lecciones'),
+ ('lessons dele','lecciones dela'),('liberar lessons','liberar lecciones'),('lessons (texto)','lecciones (texto)'),('Faltam as lessons','Faltam as lecciones'),
+ ("'Stage '+","'Etapa '+"),('Stages','Etapas'),('Stage ','Etapa '),('Placement tests','Pruebas de nivel'),
+ ("'Lesson'","'Lección'"),("'Exercicio'","'Ejercicio'"),("'Nivel '+","'Nivel '+")]
 PAGES=['account.html','payments.html','exam.html','admin.html']
 for f in PAGES:
     s=open(f,encoding='utf-8').read()
@@ -108,5 +121,7 @@ for f in PAGES:
             ('<option value="check">Lesson Checks</option><option value="ex">Exercises</option><option value="wb">Workbook</option>','<option value="check">Ejercicios de repaso (nº = repaso)</option><option value="dele">DELE (nº 1–6 = A1…C2)</option>')]:
             assert a in s,a
             s=s.replace(a,b)
+        for a,b in ADMIN_TERMS: s=s.replace(a,b)
+        s=s.replace('@@A1','Stage 1 Lesson 1.mp3').replace('@@A2','Stage 1 Lesson 6 Dictation 1.mp3').replace('@@A3','Workbook Lesson 005 J1.mp3')
     open('espanol/'+f,'w',encoding='utf-8').write(s)
     print('espanol/'+f,len(s))

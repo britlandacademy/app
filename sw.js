@@ -1,6 +1,6 @@
 /* Britland Academy service worker.
    Change VERSION every time the app is updated, so students always get the new files. */
-const VERSION='1.0.87';
+const VERSION='1.0.88';
 const CACHE = 'bl-' + VERSION;
 const CORE = ['offline.html', 'img/britland-shield.png', 'img/icons/icon-192.png', 'favicon-32.png'];
 
@@ -14,6 +14,13 @@ self.addEventListener('message', e => { if (e.data === 'version' && e.source) e.
 
 self.addEventListener('fetch', e => {
   const req = e.request, url = new URL(req.url);
+  if (req.method === 'GET' && /\/@supabase\/supabase-js@[\d.]+\/dist\/umd\/supabase\.js$/.test(url.href)) {   // sign-in library: kept for offline use
+    e.respondWith(caches.match(req).then(hit => hit || fetch(req).then(r => {
+      if (r.status === 200 || r.type === 'opaque') { const c = r.clone(); caches.open(CACHE).then(x => x.put(req, c)); }
+      return r;
+    })));
+    return;
+  }
   if (req.method !== 'GET' || url.origin !== location.origin) return;           // Supabase, CDN: always the network
   if (/\/audio\//.test(url.pathname) || /\/exam\.html$/.test(url.pathname)) return; // audio and exams: never stored
   const isAsset = /\.(png|jpe?g|svg|webp|woff2?|ico)$/i.test(url.pathname);

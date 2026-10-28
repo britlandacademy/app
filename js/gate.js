@@ -175,7 +175,7 @@ function showLogin(mode){
 }
 
 function signOut(){
-  function wipe(){try{Object.keys(localStorage).forEach(function(k){if(/^sb-.*-auth-token/.test(k))localStorage.removeItem(k);});}catch(e){}location.reload();}
+  function wipe(){try{Object.keys(localStorage).forEach(function(k){if(/^sb-.*-auth-token/.test(k)||/^bl-off-/.test(k))localStorage.removeItem(k);});}catch(e){}location.reload();}
   return sb.auth.signOut({scope:'local'}).then(wipe,wipe);
 }
 
@@ -299,6 +299,48 @@ function curStage(){
 }
 function setStage(n){try{localStorage.setItem(SKEYST,String(n));}catch(e){}
   try{var u=new URL(location.href);u.searchParams.delete('stage');location.href=u.toString();}catch(e){location.reload();}}
+
+/* ---------- offline support: lessons keep working without internet ---------- */
+var OFF=false;
+function okey(){return 'bl-off-'+String(CFG.url||'').replace(/[^a-z0-9]/gi,'').slice(-16);}
+function isNet(e){var m=String((e&&e.message)||e||'');return navigator.onLine===false||/failed to fetch|networkerror|network request|load failed|timeout|offline/i.test(m);}
+function idb(){return new Promise(function(res,rej){try{var q=indexedDB.open('bl-offline',1);q.onupgradeneeded=function(){q.result.createObjectStore('c',{keyPath:'k'});};q.onsuccess=function(){res(q.result);};q.onerror=function(){rej(q.error);};}catch(e){rej(e);}});}
+function idbPut(rows){return idb().then(function(d){return new Promise(function(res){var t=d.transaction('c','readwrite'),st=t.objectStore('c');rows.forEach(function(r){st.put(r);});t.oncomplete=function(){res();};t.onerror=function(){res();};});}).catch(function(){});}
+function idbAll(pre){return idb().then(function(d){return new Promise(function(res){var out=[],q=d.transaction('c').objectStore('c').openCursor();q.onsuccess=function(){var c=q.result;if(c){if(String(c.key).indexOf(pre)===0)out.push(c.value);c.continue();}else res(out);};q.onerror=function(){res([]);};});}).catch(function(){return [];});}
+function offBanner(on){
+  var b=document.getElementById('bl-off');
+  if(!on){if(b)b.remove();return;}
+  if(b)return;
+  b=el('div',{id:'bl-off',role:'status',style:'position:fixed;left:0;right:0;bottom:0;z-index:99998;background:#7a4b00;color:#fff;padding:8px 14px;text-align:center;font:600 .92rem system-ui,sans-serif'},window.I18N?I18N.t('Offline mode · your results will be sent when you are back online.'):'Offline mode · your results will be sent when you are back online.');
+  document.body.append(b);
+  if(window.I18N&&I18N.after)try{I18N.after();}catch(e){}
+}
+function pq(){try{return JSON.parse(localStorage.getItem(okey()+'-q')||'[]');}catch(e){return [];}}
+function pqSet(a){try{localStorage.setItem(okey()+'-q',JSON.stringify(a));}catch(e){}}
+function flushQ(){
+  var q=pq();if(!q.length||!sb||!user||navigator.onLine===false)return Promise.resolve();
+  var left=[],chain=Promise.resolve();
+  q.forEach(function(a){chain=chain.then(function(){return sb.from('attempts').insert(a).then(function(r){if(r.error&&isNet(r.error))left.push(a);},function(){left.push(a);});});});
+  return chain.then(function(){pqSet(left);if(!left.length&&!OFF)offBanner(false);});
+}
+window.addEventListener('online',function(){flushQ();});
+function cacheAcct(){try{localStorage.setItem(okey()+'-acct',JSON.stringify({user:{id:user.id,email:user.email},prof:prof}));}catch(e){}}
+function cachedAcct(){try{var c=JSON.parse(localStorage.getItem(okey()+'-acct'));return c&&c.user&&c.prof?c:null;}catch(e){return null;}}
+function prefetch(lo,hi){
+  /* while online, quietly store the whole released stage (text, checks, exercises) and the shared files for offline use */
+  var tag=okey()+'-pf-'+lo+'-'+hi,now=Date.now(),last=0;
+  try{last=parseInt(localStorage.getItem(tag),10)||0;}catch(e){}
+  if(now-last<864e5||navigator.onLine===false)return;
+  setTimeout(function(){
+    sb.from('content').select('lesson,kind,body').in('kind',['text','check','ex']).gte('lesson',lo).lte('lesson',hi).then(function(r){
+      if(r.error||!r.data)return;
+      idbPut(r.data.map(function(x){return {k:okey()+':'+x.kind+':'+x.lesson,lesson:x.lesson,kind:x.kind,body:x.body};}));
+      try{localStorage.setItem(tag,String(now));}catch(e){}
+    },function(){});
+    var b=window.BL_BASE||'',own=window.BL_COURSE?['dele.html']:['exercises.html','workbook.html'];
+    ['index.html','lessons.html','check.html'].concat(own,['js/gate.js','js/config.js','js/i18n.js','js/theme.css','js/wm.css','js/fonts.css','js/brand.css','js/protect.js','js/covers.js','js/profile.js','js/push.js','js/streak.js','js/avatars.js','js/facts.js','js/facts_i18n.js','js/pwa.js']).forEach(function(u){try{fetch(b+u,{credentials:'same-origin'}).catch(function(){});}catch(e){}});
+  },2500);
+}
 function loadContent(kinds){
   window.CHECKS=[];window.LESSON_TEXT={};window.EXLESSONS=[];
   window.LESSONS_UPTO=upto();
@@ -310,7 +352,18 @@ function loadContent(kinds){
       if(r.error)throw r.error;return r.data||[];
     }).catch(function(e){if(tries>0)return one(tries-1);throw e;});
   }
+  var pre=okey()+':';
   return one(2).then(function(rows){
+    idbPut(rows.map(function(x){return {k:pre+x.kind+':'+x.lesson,lesson:x.lesson,kind:x.kind,body:x.body};}));
+    prefetch(lo,hi);
+    return rows;
+  },function(e){
+    return idbAll(pre).then(function(all){
+      var rows=all.filter(function(x){return kinds.indexOf(x.kind)>=0&&x.lesson>=lo&&x.lesson<=hi;}).sort(function(a,b){return a.lesson-b.lesson;});
+      if(!rows.length||!isNet(e))throw e;
+      OFF=true;return rows;
+    });
+  }).then(function(rows){
     rows.forEach(function(row){
       if(row.kind==='check')window.CHECKS.push(row.body);
       else if(row.kind==='text')window.LESSON_TEXT[BUS?row.lesson-1000:row.lesson]=row.body;
@@ -347,17 +400,27 @@ function stageBox(){
 function fetchAttempts(kind){
   var q=sb.from('attempts').select('lesson,ex,score,total,created_at').eq('kind',kind).eq('user_id',user.id);
   q=BUS?q.gte('lesson',1001):q.lte('lesson',MAXL);
+  var key=okey()+':att:'+kind+(BUS?':b':'');
+  function pend(){return pq().filter(function(a){return a.kind===kind;}).map(function(a){return {l:BUS?a.lesson-1000:a.lesson,e:a.ex,s:a.score,t:a.total,at:Date.parse(a.created_at),k:kind};});}
   return q
     .order('created_at',{ascending:true}).limit(5000).then(function(r){
       if(r.error)throw r.error;
-      return (r.data||[]).map(function(a){return {l:BUS?a.lesson-1000:a.lesson,e:a.ex,s:a.score,t:a.total,at:Date.parse(a.created_at),k:kind};});
+      var rows=(r.data||[]).map(function(a){return {l:BUS?a.lesson-1000:a.lesson,e:a.ex,s:a.score,t:a.total,at:Date.parse(a.created_at),k:kind};});
+      idbPut([{k:key,rows:rows}]);
+      return rows.concat(pend());
+    }).catch(function(e){
+      if(!isNet(e))throw e;
+      return idbAll(key).then(function(all){OFF=true;return ((all[0]&&all[0].rows)||[]).concat(pend());});
     });
 }
 function saveAttempt(kind,a){
-  return sb.from('attempts').insert({kind:kind,lesson:BUS?a.l+1000:a.l,ex:a.e,score:a.s,total:a.total!==undefined?a.total:a.t}).then(function(r){
-    if(r.error)throw r.error;
+  var row={kind:kind,lesson:BUS?a.l+1000:a.l,ex:a.e,score:a.s,total:a.total!==undefined?a.total:a.t};
+  function later(){var q=pq();q.push({kind:row.kind,lesson:row.lesson,ex:row.ex,score:row.score,total:row.total,created_at:new Date().toISOString()});pqSet(q);offBanner(true);}
+  if(navigator.onLine===false){later();return Promise.resolve();}
+  return sb.from('attempts').insert(row).then(function(r){
+    if(r.error){if(isNet(r.error)){later();return;}throw r.error;}
     if(!OPTS.admin){try{sb.rpc('ping_activity').then(function(){},function(){});}catch(e){}}
-  });
+  },function(e){if(isNet(e)){later();return;}throw e;});
 }
 function audioUrl(path){
   return sb.storage.from('audio').createSignedUrl(path,7200).then(function(r){
@@ -379,38 +442,64 @@ function loadProfile(cb){
 }
 /* ---------- routing ---------- */
 var OPTS={kinds:[],attempts:null,admin:false},CB=null;
+/* ---------- welcome: three short screens for a brand-new student ---------- */
+function welcome(done){
+  var k='bl-welcome-'+user.id;
+  try{if(localStorage.getItem(k))return done();}catch(e){return done();}
+  function mark(){try{localStorage.setItem(k,'1');}catch(e){}}
+  sb.from('attempts').select('id',{count:'exact',head:true}).eq('user_id',user.id).then(function(r){
+    if(r.error||(r.count||0)>0){mark();return done();}
+    var S=[['Welcome to Britland Academy!',['Your lessons are here: read the lesson text, listen to the audio and practise.','It takes only a few minutes a day.']],
+      ['How to study',['1. Read the lesson and listen to the audio.','2. Do the Lesson Check and the exercises.','3. Your teacher sees your progress and opens new lessons.']],
+      ['Keep it close',['Add Britland Academy to your home screen and turn on Notifications to get class reminders.','You can change this later in the menu on your picture.']]];
+    (function show(i){
+      var last=i===S.length-1;
+      message(S[i][0],S[i][1],[btn(last?'Let’s start':'Next',function(){if(last){mark();hideOverlay();done();}else show(i+1);}),btn('Skip',function(){mark();hideOverlay();done();},true)]);
+      if(window.I18N&&I18N.after)try{I18N.after();}catch(e){}
+    })(0);
+  },function(){done();});
+}
+function enter(){
+    if(prof.status==='pending'){
+      message('Waiting for approval',['Your request was sent, '+(prof.name||prof.email||'student')+'. Your teacher needs to approve your access.','Come back later and press "Check again".'],
+        [btn('Check again',route),btn('Sign out',signOut,true)]);return;
+    }
+    if(prof.status==='blocked'){
+      message('Access closed',['Your access is not active. Talk to your teacher.'],[btn('Sign out',signOut,true)]);return;
+    }
+    if(OPTS.admin&&!prof.is_admin){
+      message('Teachers only',['This page is for the teacher.'],[el('a',{class:'g-btn',href:'index.html',style:'text-decoration:none;display:inline-flex;align-items:center'},'Home'),btn('Sign out',signOut,true)]);return;
+    }
+    if(!OPTS.admin&&upto()<1&&!(!BUS&&(prof.business_upto||0)>0&&(location.pathname.split('/').pop()||'index.html')==='index.html')){
+      message('No lessons yet',['Your access is approved, but no lesson has been released to you yet. Talk to your teacher.'],[btn('Check again',route),btn('Sign out',signOut,true)]);return;
+    }
+    return loadContent(OPTS.kinds).then(function(){
+      return OPTS.attempts?(Array.isArray(OPTS.attempts)?Promise.all(OPTS.attempts.map(fetchAttempts)).then(function(x){return [].concat.apply([],x);}):fetchAttempts(OPTS.attempts)):[];
+    }).then(function(att){
+      function fin(){
+        hideOverlay();applyServerPrefs();if(OFF)offBanner(true);else flushQ();if(!OPTS.bare){addBar();loadProfile(paintAvatars);try{thanksPay();}catch(e){}}
+        /* the streak counts finished activities only (see saveAttempt) */
+        CB({user:user,profile:prof,attempts:att,upto:upto()});
+      }
+      if(OPTS.admin||OPTS.bare||OFF||prof.is_admin)fin();else welcome(fin);
+    });
+}
 function route(){
+  if(navigator.onLine===false){var c0=cachedAcct();if(c0){user=c0.user;prof=c0.prof;OFF=true;Promise.resolve().then(enter).catch(function(e){message('Could not load',[niceError(e)],[btn('Try again',route)]);});return;}}
   sb.auth.getSession().then(function(r){
     var s=r.data&&r.data.session;
     if(!s){showLogin('in');return;}
     user=s.user;
     return sb.from('profiles').select('*').eq('id',user.id).maybeSingle().then(function(pr){
+      if(pr.error&&isNet(pr.error)){var c1=cachedAcct();if(c1&&c1.user.id===user.id){prof=c1.prof;OFF=true;return enter();}}
       if(pr.error||!pr.data){
         message('Account not ready',['We could not read your account. Try again in a moment.'],[btn('Try again',route),btn('Sign out',signOut,true)]);return;
       }
-      prof=pr.data;
-      if(prof.status==='pending'){
-        message('Waiting for approval',['Your request was sent, '+(prof.name||prof.email||'student')+'. Your teacher needs to approve your access.','Come back later and press "Check again".'],
-          [btn('Check again',route),btn('Sign out',signOut,true)]);return;
-      }
-      if(prof.status==='blocked'){
-        message('Access closed',['Your access is not active. Talk to your teacher.'],[btn('Sign out',signOut,true)]);return;
-      }
-      if(OPTS.admin&&!prof.is_admin){
-        message('Teachers only',['This page is for the teacher.'],[el('a',{class:'g-btn',href:'index.html',style:'text-decoration:none;display:inline-flex;align-items:center'},'Home'),btn('Sign out',signOut,true)]);return;
-      }
-      if(!OPTS.admin&&upto()<1&&!(!BUS&&(prof.business_upto||0)>0&&(location.pathname.split('/').pop()||'index.html')==='index.html')){
-        message('No lessons yet',['Your access is approved, but no lesson has been released to you yet. Talk to your teacher.'],[btn('Check again',route),btn('Sign out',signOut,true)]);return;
-      }
-      return loadContent(OPTS.kinds).then(function(){
-        return OPTS.attempts?(Array.isArray(OPTS.attempts)?Promise.all(OPTS.attempts.map(fetchAttempts)).then(function(x){return [].concat.apply([],x);}):fetchAttempts(OPTS.attempts)):[];
-      }).then(function(att){
-        hideOverlay();applyServerPrefs();if(!OPTS.bare){addBar();loadProfile(paintAvatars);try{thanksPay();}catch(e){}}
-        /* the streak counts finished activities only (see saveAttempt) */
-        CB({user:user,profile:prof,attempts:att,upto:upto()});
-      });
+      prof=pr.data;cacheAcct();
+      return enter();
     });
   }).catch(function(e){
+    if(isNet(e)){var c2=cachedAcct();if(c2){user=c2.user;prof=c2.prof;OFF=true;return Promise.resolve().then(enter).catch(function(e2){message('Could not load',[niceError(e2)],[btn('Try again',route)]);});}}
     message('Could not load',[niceError(e)],[btn('Try again',route),btn('Sign out',signOut,true)]);
   });
 }
