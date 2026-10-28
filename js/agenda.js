@@ -23,7 +23,7 @@ var S={
  err:{en:'Last error: {0}',pt:'Último erro: {0}',es:'Último error: {0}'},
  ok:{en:'Google Calendar connected.',pt:'Google Agenda conectada.',es:'Google Calendar conectado.'},
  nm:{en:'no student matched',pt:'nenhum aluno identificado',es:'ningún alumno identificado'},
- rs:{en:'Reschedule',pt:'Remarcar',es:'Reprogramar'},rsT:{en:'Reschedule lesson',pt:'Remarcar aula',es:'Reprogramar clase'},rsSoon:{en:'Rescheduling inside the app is coming soon. For now, message your teacher.',pt:'Remarcar pelo app chega em breve. Por enquanto, fale com o professor.',es:'Reprogramar desde la app llegará pronto. Por ahora, habla con tu profesor.'},
+ rs:{en:'Reschedule',pt:'Remarcar',es:'Reprogramar'},cal:{en:'Add to calendar',pt:'Adicionar à agenda',es:'Añadir al calendario'},calH:{en:'Choose where to save this lesson. Your phone will ask you to confirm.',pt:'Escolha onde salvar esta aula. O celular vai pedir para você confirmar.',es:'Elige dónde guardar esta clase. El teléfono te pedirá confirmar.'},calI:{en:'Phone calendar (.ics file)',pt:'Agenda do celular (arquivo .ics)',es:'Calendario del teléfono (archivo .ics)'},calG:{en:'Google Calendar',pt:'Google Agenda',es:'Google Calendar'},calOk:{en:'File created. Open it to add the lesson.',pt:'Arquivo criado. Abra-o para adicionar a aula.',es:'Archivo creado. Ábrelo para añadir la clase.'},rsT:{en:'Reschedule lesson',pt:'Remarcar aula',es:'Reprogramar clase'},rsSoon:{en:'Rescheduling inside the app is coming soon. For now, message your teacher.',pt:'Remarcar pelo app chega em breve. Por enquanto, fale com o professor.',es:'Reprogramar desde la app llegará pronto. Por ahora, habla con tu profesor.'},
 
  bNew:{en:'Book a new lesson',pt:'Marcar nova aula',es:'Reservar una clase nueva'},
  bCur:{en:'Current lesson',pt:'Aula atual',es:'Clase actual'},
@@ -73,7 +73,7 @@ function el(t,c,x){var n=document.createElement(t);if(c)n.className=c;if(x!==und
 var CSS='.ag{margin:14px 0;font:inherit}.ag h2{font-size:1.05rem;margin:0 0 4px}.ag .ag-s{font-size:.82rem;opacity:.75;margin:0 0 10px}'+
 '.ag-ban{background:#10224a;color:#fff;border-radius:14px;padding:14px;margin:0 0 10px;border-bottom:4px solid #c9a23a;display:flex;flex-direction:column;gap:8px}'+
 '.ag-ban b{font-size:1.05rem}.ag-ban span{font-size:.9rem;opacity:.9}'+
-'.ag a.ag-btn,.ag .ag-btn{color:#1b1400!important}.ag .ag-btn.alt{color:inherit!important}.ag-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;line-height:1.1;padding:0 18px;border:0;border-radius:12px;background:#c9a23a;color:#1b1400;font:inherit;font-weight:700;letter-spacing:.5px;text-decoration:none;text-align:center;cursor:pointer;border-bottom:3px solid #8a6a14}'+
+'.ag a.ag-btn,.ag .ag-btn{color:#1b1400!important}.ag .ag-btn.alt{color:inherit!important}.ag-btn{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;min-height:44px;line-height:1.1;padding:0 18px;border:0;border-radius:12px;background:#c9a23a;color:#1b1400;font:inherit;font-weight:700;letter-spacing:.5px;text-decoration:none;text-align:center;cursor:pointer;border-bottom:3px solid #8a6a14}'+
 '.ag-btn.alt{background:transparent;color:inherit;border:2px solid #c9a23a;line-height:40px}.ag-btn:disabled{opacity:.6}'+
 '.ag-row{display:flex;align-items:center;gap:12px;padding:14px;margin:0 0 8px;border-radius:14px;background:var(--card,rgba(127,127,127,.1));border:1px solid var(--line,rgba(127,127,127,.25));border-left:5px solid #c9a23a}.ag-date{width:52px;text-align:center;display:flex;flex-direction:column;flex:none}.ag-wd{font-size:.7rem;letter-spacing:1px;text-transform:uppercase;font-weight:700;opacity:.75}.ag-dn{font:700 1.6rem Georgia,serif;line-height:1.1}.ag h2{letter-spacing:2px;text-transform:uppercase;font-size:.8rem;opacity:.85}.ag-soon{padding:10px 12px;border-radius:10px;background:rgba(201,162,58,.18)}'+
 '.ag-row b{display:block}.ag-row small{opacity:.75}.ag-acts{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}'+
@@ -96,6 +96,11 @@ function fmtS(iso){try{var w=new Intl.DateTimeFormat(loc(),{weekday:'short'}).fo
 function fmtFull(iso){return fmtDay(iso)+' · '+fmtT(iso);}
 function tzName(){var z='';try{z=Intl.DateTimeFormat().resolvedOptions().timeZone||'';}catch(e){}return z.replace(/_/g,' ');}
 function errText(c){return {slot_taken:T('eTaken'),too_late:T('eLate'),already_pending:T('ePend'),too_many:T('eMany'),group:T('eGroup')}[c]||T('fail');}
+function icsT(iso){return new Date(iso).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');}
+function icsE(t){return String(t||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n');}
+function icsOf(x){var L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Britland Academy//Aulas//PT','CALSCALE:GREGORIAN','METHOD:PUBLISH','BEGIN:VEVENT','UID:'+String(x.id).replace(/[^A-Za-z0-9:_-]/g,'')+'@britlandacademy','DTSTAMP:'+icsT(new Date().toISOString()),'DTSTART:'+icsT(x.start_at),'DTEND:'+icsT(x.end_at),'SUMMARY:'+icsE(x.title||'Britland Academy'),'DESCRIPTION:'+icsE('Britland Academy'+(x.meet_url?'\n'+x.meet_url:'')),'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+icsE(x.title||'Aula'),'TRIGGER:-PT15M','END:VALARM'];
+  if(x.meet_url)L.splice(L.indexOf('BEGIN:VALARM'),0,'LOCATION:'+icsE(x.meet_url),'URL:'+x.meet_url);L.push('END:VEVENT','END:VCALENDAR');return L.join('\r\n')+'\r\n';}
+function gcalLink(x){return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(x.title||'Britland Academy')+'&dates='+icsT(x.start_at)+'/'+icsT(x.end_at)+'&details='+encodeURIComponent('Britland Academy'+(x.meet_url?'\n'+x.meet_url:''))+(x.meet_url?'&location='+encodeURIComponent(x.meet_url):'');}
 function mount(box,ctx){
   if(!box||!window.Gate||!Gate.sb||!ctx||!ctx.user)return;
   css();var tm=null,sb=Gate.sb,uid=ctx.user.id,HOUR=3600000,ov=null;
@@ -124,6 +129,7 @@ function mount(box,ctx){
       d.style.flex='1';d.style.minWidth='0';d.appendChild(el('b','',fmtT(x.start_at)+' – '+fmtT(x.end_at)));if(x.title)d.appendChild(el('small','',x.title));r.appendChild(d);
       var q=pend.filter(function(p){return p.lesson_id===x.id;})[0];
       var acts=el('div','ag-racts');
+      var kb=el('button','ag-btn alt',T('cal'));kb.type='button';kb.onclick=function(){calAsk(x);};acts.appendChild(kb);
       if(q){acts.appendChild(el('span','ag-pill',T('pend')));}
       else if(!x.is_group&&new Date(x.start_at)-now>HOUR){
         var rb=el('button','ag-btn alt',T('rs'));rb.type='button';rb.onclick=function(){book('reschedule',x);};
@@ -188,6 +194,14 @@ function mount(box,ctx){
     var ok=el('button','ag-btn ag-go',T('sBackL'));ok.type='button';ok.onclick=close;body.appendChild(ok);
     var sp2=el('div','ag-sp');body.insertBefore(sp2,ok);var wd=el('button','ag-btn ag-alt2',T('sWith'));wd.type='button';wd.onclick=function(){wd.disabled=true;sb.functions.invoke('gcal-book',{body:{action:'withdraw',id:id}}).then(close,close);};body.appendChild(wd);
     sheet(kind==='new'?T('bNew'):T('rsT'),body,true);
+  }
+  function calAsk(x){
+    var body=el('div','ag-ovb');body.appendChild(info(fmtFull(x.start_at)+' – '+fmtT(x.end_at),x.title||'Britland Academy'));body.appendChild(el('p','ag-s',T('calH')));
+    var m=el('p','ag-s ag-m','');m.setAttribute('role','status');
+    var b1=el('button','ag-btn ag-go',T('calI'));b1.type='button';
+    b1.onclick=function(){try{var bl=new Blob([icsOf(x)],{type:'text/calendar;charset=utf-8'}),u=URL.createObjectURL(bl),a=document.createElement('a');a.href=u;a.download='aula.ics';document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(u);},4000);m.textContent=T('calOk');}catch(e){m.textContent=T('fail');}};
+    var b2=el('a','ag-btn alt ag-go',T('calG'));b2.href=gcalLink(x);b2.target='_blank';b2.rel='noopener';
+    body.appendChild(b1);body.appendChild(b2);body.appendChild(m);sheet(T('cal'),body);
   }
   function cancelAsk(x){
     var body=el('div','ag-ovb ag-center');body.appendChild(el('h1','',T('cxQ',fmtFull(x.start_at))));body.appendChild(el('p','ag-lead',T('cxN')));
