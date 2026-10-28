@@ -21,6 +21,7 @@
     nosave:['Your score could not be saved. Check your connection.','Não foi possível salvar. Verifique sua conexão.','No se pudo guardar. Revisa tu conexión.'],
     quit:['Leave this practice? Finished exercises are already saved.','Sair desta prática? Os exercícios concluídos já estão salvos.','¿Salir de esta práctica? Los ejercicios terminados ya están guardados.'],
     close:['Close','Fechar','Cerrar'],
+    map:['Back to the map','Voltar ao mapa','Volver al mapa'],
     snd:['Sound on/off','Som ligado/desligado','Sonido activado/desactivado'],
     gdone:['Activity complete!','Atividade concluída!','¡Actividad completada!'],
     gnext:['Next activity','Próxima atividade','Siguiente actividad'],
@@ -515,11 +516,14 @@
       var sv=el('p','sv',T('saved'));card.appendChild(sv);
       var row=el('div','dz-row');
       if(nx){var nb=el('button','dz-btn',T('gnext'));nb.type='button';nb.addEventListener('click',function(){close();setTimeout(nx,60);});row.appendChild(nb);}
-      var cb=el('button',nx?'dz-btn dz-ghost':'dz-btn',T('close'));cb.type='button';cb.addEventListener('click',close);row.appendChild(cb);
+      var home=game&&!/(^|\/)index\.html$|\/$/.test(W.location.pathname);
+      var mb=null;
+      if(home){mb=el('button','dz-btn',T('map'));mb.type='button';mb.addEventListener('click',function(){mb.disabled=true;Promise.all(pending).then(function(){},function(){}).then(function(){W.location.href='index.html';});});row.insertBefore(mb,row.firstChild);if(nb)nb.className='dz-btn dz-ghost';}
+      var cb=el('button',nx||mb?'dz-btn dz-ghost':'dz-btn',T('close'));cb.type='button';cb.addEventListener('click',close);row.appendChild(cb);
       card.appendChild(row);pop.appendChild(card);root.appendChild(pop);
       if(right===total&&total>0)fireworks(root);
       Promise.all(pending).then(function(){if(failed)sv.textContent=T('nosave');});
-      try{(nb||cb).focus();}catch(e){}
+      try{(mb||nb||cb).focus();}catch(e){}
     }
     function end(){
       setBar(total);
