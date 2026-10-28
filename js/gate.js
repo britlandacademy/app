@@ -85,6 +85,7 @@ var CSS2=
 '.g-bar .g-mi.out{border-top:1px solid var(--line,#999);border-radius:0 0 10px 10px;margin-top:4px}'+
 '.g-bar .g-sw{width:46px;height:26px;min-height:26px;border-radius:13px;border:0;background:#8a8f99;position:relative;padding:0;flex:none}.g-sw u{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .15s}.g-bar .g-sw.on{background:var(--accent,#c9a13b)}.g-sw.on u{left:23px}'+
 '.g-mn .g-sz button{min-width:40px;min-height:36px;padding:0 8px}.g-mn .lang-sel{gap:6px}'+
+'.g-nav{position:fixed;left:0;right:0;bottom:0;z-index:5000;display:flex;background:var(--card,#fff);border-top:1px solid var(--line,#999);padding-bottom:env(safe-area-inset-bottom,0px)}.g-nav .gn-i{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;min-height:56px;box-sizing:border-box;color:var(--muted,#666);text-decoration:none;font-size:.8rem;font-weight:700}.g-nav .gn-i.on{color:var(--accent,#c9a13b)}.g-nav .gn-e{font-size:1.4rem;line-height:1}.gp{display:block!important;max-width:none!important;margin:8px 0 0!important;padding:0!important}.g-gamebody{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}'+
 '.g-hov{position:fixed;inset:0;z-index:10000;background:rgba(5,10,25,.65);display:flex;align-items:center;justify-content:center;padding:16px}.g-hdlg{background:var(--card,#fff);color:var(--ink,#111);border-top:6px solid var(--accent,#c9a13b);border-radius:14px;max-width:480px;width:100%;padding:20px;box-sizing:border-box;max-height:90vh;overflow:auto}'+
 '@media(max-width:560px){.g-mn{position:fixed;left:8px;right:8px;top:auto;bottom:8px;width:auto;max-width:none;border-radius:18px;max-height:85vh;overflow:auto}.g-name{max-width:34vw}}';
 var LDCSS='.g-ld{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh}'+
@@ -243,6 +244,46 @@ function showHelp(){
     el('p',{class:'g-hint',style:'font-size:.82rem'},'App version '+(window.BL_VERSION||'')),el('div',{class:'g-row',style:'justify-content:flex-end'},el('button',{type:'button',class:'g-btn ghost',onclick:close},'Close'),el('button',{type:'button',class:'g-btn ghost',onclick:function(){close();if(document.getElementById('today'))startTour(true);else location.href='index.html#tour';}},'See the tour'),wa));
   ov.append(d);ov.addEventListener('click',function(e){if(e.target===ov)close();});document.addEventListener('keydown',kd);document.body.append(ov);
 }
+
+function gLang(){var h=window.I18N&&window.I18N.hint;return h==='pt'?1:h==='es'?2:0;}
+function gT(a){return a[gLang()];}
+function gameIsOn(){try{return localStorage.getItem('bl-game')==='1';}catch(e){return false;}}
+function gameConfirm(turnOn){
+  var tt=turnOn?['Turn Game Mode on','Ativar o Modo Jogo','Activar el Modo Juego']:['Turn Game Mode off','Desativar o Modo Jogo','Desactivar el Modo Juego'];
+  var no=['Cancel','Cancelar','Cancelar'],yes=['OK','OK','OK'];
+  var ov=el('div',{class:'g-hov',role:'dialog','aria-modal':'true'});
+  var close=function(){ov.remove();};
+  var okb=el('button',{type:'button',class:'btn primary',onclick:function(){try{localStorage.setItem('bl-game',turnOn?'1':'0');}catch(e){}location.reload();}},gT(yes));
+  var nob=el('button',{type:'button',class:'btn',onclick:close},gT(no));
+  ov.append(el('div',{class:'g-hdlg','data-noi18n':'1'},el('h2',{style:'margin:0 0 16px'},gT(tt)),el('div',{style:'display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap'},nob,okb)));
+  ov.addEventListener('click',function(e){if(e.target===ov)close();});
+  document.body.append(ov);okb.focus();
+}
+function gameSwitch(){
+  var on=gameIsOn();
+  var sw=el('button',{type:'button',class:'g-sw'+(on?' on':''),role:'switch','aria-checked':String(on),'aria-label':'Game mode',onclick:function(){gameConfirm(!gameIsOn());}},el('u'));
+  return sw;
+}
+function settingsBlock(){
+  var w=el('div',{class:'g-bar gp'});
+  var row=function(ic,lab,ctl){return el('div',{class:'g-mr'},el('b',{style:'width:20px;text-align:center;white-space:nowrap'},ic),el('span',{},lab),ctl);};
+  var ds=el('button',{type:'button',class:'g-sw'+(shownTheme()==='dark'?' on':''),role:'switch','aria-checked':String(shownTheme()==='dark'),'aria-label':'Dark mode',onclick:function(){setTheme(shownTheme()==='dark'?'light':'dark');var d=shownTheme()==='dark';ds.classList.toggle('on',d);ds.setAttribute('aria-checked',String(d));}},el('u'));
+  var mn=el('button',{type:'button','aria-label':'Smaller text',onclick:function(){setSize(fsIdx-1);}},'A\u2212'),pl=el('button',{type:'button','aria-label':'Larger text',onclick:function(){setSize(fsIdx+1);}},'A+');
+  w.append(row('\uD83C\uDF19','Dark mode',ds),row('Aa','Text size',el('span',{class:'g-sz',role:'group'},mn,pl)),row('\uD83C\uDFAE','Game mode',gameSwitch()));
+  if(COURSE.push!==false){var pr=pushRow(function(){});if(pr&&pr.nodeType===1)w.append(pr);}
+  if(window.I18N&&I18N.mode==='free')w.append(el('div',{class:'g-mr'},el('span',{},'Language'),I18N.selector()));
+  var hb=el('button',{type:'button',class:'g-mi'},el('b',{style:'width:20px;text-align:center'},'\u2753'),el('span',{},'Help'));hb.addEventListener('click',function(){showHelp();});w.append(hb);
+  if(prof&&prof.is_admin)w.append(el('a',{class:'g-mi',href:'admin.html'},el('b',{style:'width:20px;text-align:center'},'\uD83D\uDEE0\uFE0F'),el('span',{},'Teacher panel')));
+  var ob=el('button',{type:'button',class:'g-mi out'},el('b',{style:'width:20px;text-align:center'},'\u21AA'),el('span',{},'Sign out'));ob.addEventListener('click',signOut);w.append(ob);
+  return w;
+}
+function gameNav(){
+  var L=gLang(),onProf=false;
+  var a=function(href,ico,lab,act){return el('a',{href:href,class:'gn-i'+(act?' on':''),'data-noi18n':'1'},el('span',{class:'gn-e'},ico),el('span',{},lab));};
+  var nav=el('nav',{class:'g-nav','aria-label':'Game'},a('index.html','🗺️',['Map','Mapa','Mapa'][L],!onProf));
+  if(COURSE.profile!==false)nav.append(a('account.html','👤',['Profile','Perfil','Perfil'][L],onProf));
+  document.body.append(nav);document.body.classList.add('g-gamebody');
+}
 function addBar(){
   if(bar)bar.remove();
   var kids=[];
@@ -261,8 +302,7 @@ function addBar(){
   themeSw=el('button',{type:'button',class:'g-sw',role:'switch','aria-checked':'false','aria-label':'Dark mode',onclick:function(){setTheme(shownTheme()==='dark'?'light':'dark');}},el('u'));applyTheme();
   var minus=el('button',{type:'button','aria-label':'Smaller text',onclick:function(){setSize(fsIdx-1);}},'A−');
   var plus=el('button',{type:'button','aria-label':'Larger text',onclick:function(){setSize(fsIdx+1);}},'A+');
-  var gameOn=function(){try{return localStorage.getItem('bl-game')==='1';}catch(e){return false;}};
-  var gameSw=el('button',{type:'button',class:'g-sw'+(gameOn()?' on':''),role:'switch','aria-checked':String(gameOn()),'aria-label':'Game mode',onclick:function(){var n=!gameOn();try{localStorage.setItem('bl-game',n?'1':'0');}catch(e){}gameSw.setAttribute('aria-checked',String(n));gameSw.classList.toggle('on',n);}},el('u'));
+  var gameSw=gameSwitch();
   var lab=el('span',{style:'display:none','aria-live':'polite'});
   sizeUi={minus:minus,plus:plus,lab:lab};updateSizeUi();
   mn.append(head,
@@ -281,6 +321,7 @@ function addBar(){
   kids.push(el('span',{class:'g-um'},av,mn));
   bar=el('div',{class:'g-bar'},kids);
   document.body.insertBefore(bar,document.body.firstChild);
+  if(gameIsOn()){bar.style.display='none';if(!/(^|\/)(index\.html)?$/.test(location.pathname))gameNav();}
   paintAvatars();
   if(BUS)fixLinks();
 }
@@ -675,6 +716,6 @@ function start(opts,cb){
 
 function skel(box,n,h){if(!box)return;box.setAttribute('aria-busy','true');for(var i=0;i<(n||3);i++){var d=document.createElement('span');d.className='bl-sk';d.style.height=(h||52)+'px';d.style.marginBottom='10px';box.append(d);}}
 function unskel(box){if(!box)return;box.removeAttribute('aria-busy');Array.prototype.slice.call(box.querySelectorAll(':scope>.bl-sk')).forEach(function(n){n.remove();});}
-window.Gate={skel:skel,unskel:unskel,profile:function(){return prof;},start:start,signOut:signOut,setSize:setSize,setTheme:function(t){setTheme(t);},theme:function(){return theme;},shownTheme:shownTheme,setAvatar:setAvatar,loadProfile:loadProfile,sizeIdx:function(){return fsIdx;},sizeMax:function(){return SIZES.length-1;},saveAttempt:saveAttempt,audioUrl:audioUrl,el:el,
+window.Gate={settingsBlock:settingsBlock,gameSwitch:gameSwitch,gameOn:gameIsOn,pushRow:pushRow,help:function(){showHelp();},skel:skel,unskel:unskel,profile:function(){return prof;},start:start,signOut:signOut,setSize:setSize,setTheme:function(t){setTheme(t);},theme:function(){return theme;},shownTheme:shownTheme,setAvatar:setAvatar,loadProfile:loadProfile,sizeIdx:function(){return fsIdx;},sizeMax:function(){return SIZES.length-1;},saveAttempt:saveAttempt,audioUrl:audioUrl,el:el,
   get profile(){return prof;},bizUpto:function(){return bizUpto();},mainUpto:function(){return mainUpto();},get user(){return user;},sb:null};
 })();

@@ -11,10 +11,10 @@ function lang(){try{var l=localStorage.getItem(KEY);return l==='en'||l==='es'||l
 
 /* ---------- text ---------- */
 var TX={en:{home:'Home',tro:'Trophies',pro:'Profile',lesson:'Lesson',here:'YOU ARE HERE',stars:'stars',welcome:'Welcome to',next:'NEXT STOP',locked:'Complete the current lesson first',tap:'Tap the lesson to open it',
- open:'Open lesson',medals:'Medals',streak:'Streak',stages:'My stages',days:'days in a row',lessons:'lessons',stars:'stars',pay:'Grades and payments',all:'All done! Ask your teacher for the next lessons.',
+ open:'Open lesson',medals:'Medals',streak:'Streak',stages:'My stages',days:'days in a row',lessons:'lessons',stars:'stars',pay:'Grades and payments',grades:'My grades',avg:'average',all:'All done! Ask your teacher for the next lessons.',
  m:['First lesson','3 lessons','10 lessons','7-day streak','Perfect score','30-day streak'],week:'SMTWTFS',stage:'Stage'},
  es:{home:'Inicio',tro:'Trofeos',pro:'Perfil',lesson:'Lección',here:'ESTÁS AQUÍ',stars:'estrellas',welcome:'Bienvenido a',next:'PRÓXIMA PARADA',locked:'Primero completa la lección actual',tap:'Toca la lección para abrirla',
- open:'Abrir lección',medals:'Medallas',streak:'Racha',stages:'Mis etapas',days:'días seguidos',lessons:'lecciones',stars:'estrellas',pay:'Notas y pagos',all:'¡Todo listo! Pide a tu profesor las próximas lecciones.',
+ open:'Abrir lección',medals:'Medallas',streak:'Racha',stages:'Mis etapas',days:'días seguidos',lessons:'lecciones',stars:'estrellas',pay:'Notas y pagos',grades:'Mis notas',avg:'promedio',all:'¡Todo listo! Pide a tu profesor las próximas lecciones.',
  m:['Primera lección','3 lecciones','10 lecciones','Racha de 7 días','Nota perfecta','Racha de 30 días'],week:'LMXJVSD',stage:'Etapa'}};
 function T(){return ES?TX.es:TX.en;}
 
@@ -127,6 +127,7 @@ var CSS=
 '#bl-metro .mapscroll{height:min(64vh,560px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;border-radius:18px;scrollbar-width:none}#bl-metro .mapscroll::-webkit-scrollbar{display:none}#bl-metro .mapscroll svg{display:block}'+
 '#bl-metro .ph0{text-align:center;margin-top:8px}#bl-metro .big{width:116px;height:116px;border-radius:50%;margin:0 auto;border:6px solid var(--lc);box-shadow:0 0 0 4px #fff,0 0 28px color-mix(in srgb,var(--lc) 55%,transparent);overflow:hidden;background:#fff;padding:0;display:block}#bl-metro .big svg,#bl-metro .big img{width:100%;height:100%;display:block;object-fit:cover}'+
 '#bl-metro h2.nm{margin:12px 0 0;font:700 21px Georgia,serif}#bl-metro .sub{font:700 10px sans-serif;letter-spacing:.14em;color:var(--go);margin-top:4px;text-transform:uppercase}'+
+'#bl-metro .gr{margin-top:10px}#bl-metro .gh{display:flex;justify-content:space-between;font:700 13px sans-serif;margin-bottom:4px}#bl-metro .gt{height:10px;border-radius:5px;background:var(--n2);overflow:hidden}#bl-metro .gt i{display:block;height:100%;background:#ffd54a}#bl-metro .gc{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:6px;margin-top:8px}#bl-metro .gc .c{text-align:center;border-radius:8px;padding:6px 0;font:800 13px sans-serif;border:2px solid var(--n2);background:var(--n1)}#bl-metro .gc .s3{border-color:#46c37b;color:#7fe3a4}#bl-metro .gc .s2{border-color:#f0c36a;color:#f0c36a}#bl-metro .gc .s1{border-color:#ff9e94;color:#ff9e94}#bl-metro .gp{margin-top:6px!important}'+
 '#bl-metro .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}#bl-metro .stats div{background:var(--n1);border:2px solid var(--n2);border-radius:12px;padding:8px 4px;text-align:center}#bl-metro .stats b{display:block;font:800 20px sans-serif}#bl-metro .stats small{font:600 10px sans-serif;color:var(--mu)}'+
 '#bl-metro .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}#bl-metro .md{text-align:center;animation:mt-casc .5s both}#bl-metro .md .c{width:54px;height:54px;border-radius:50%;margin:0 auto 4px;background:radial-gradient(circle at 35% 30%,#ffe68a,#e8b923);display:flex;align-items:center;justify-content:center;font-size:25px;box-shadow:0 3px 0 #9a7a10;position:relative;overflow:hidden}'+
 '#bl-metro .md:not(.off) .c::after{content:"";position:absolute;top:-30%;left:-60%;width:40%;height:160%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.7),transparent);transform:rotate(20deg);animation:mt-shine 3.2s ease-in-out infinite}@keyframes mt-shine{0%,60%{left:-60%}100%{left:130%}}'+
@@ -208,7 +209,7 @@ function mount(c,o){
   var s0=0;try{var sa=localStorage.getItem('bl-metro-act');for(var q=0;q<acts.length;q++)if(acts[q].key===sa)s0=q;}catch(e){}
   useAct(s0);
   var streak={cur:0,best:0,last:''};
-  var tab='home',busy=false,quick=false,routes={},mapEl,pathEl,fillEl,trainEl,Ltot=0,lens=[],signEl,toastEl,scEl,scale=1,VHL=0;
+  var tab=(W.location&&W.location.hash==='#profile')?'pro':'home',busy=false,quick=false,routes={},mapEl,pathEl,fillEl,trainEl,Ltot=0,lens=[],signEl,toastEl,scEl,scale=1,VHL=0;
   var lessonsDone=A.doneCount||o.doneCount||0;
   function posKey(){return A.key==='main'?'bl-metro-pos':'bl-metro-pos-'+A.key;}
   function stn(i){return C.stn[i%C.stn.length];}
@@ -349,7 +350,18 @@ function mount(c,o){
     var stars=0;for(var k in best){var r=best[k];stars+=r>=.9?3:r>=.7?2:1;}
     var sts=h('div','stats','<div><b>'+streak.cur+'</b><small>'+tx.days+'</small></div><div><b>'+lessonsDone+'</b><small>'+tx.lessons+'</small></div><div><b>'+stars+'</b><small>'+tx.stars+'</small></div>');box.append(sts);
     var h3=h('h3');h3.textContent=tx.medals;box.append(h3,h('div','grid',medalsHTML(medals())));
-    var a=h('a','mb alt');a.href='account.html';a.textContent=tx.pay;a.addEventListener('click',tick);box.append(a);
+    var gh=h('h3');gh.textContent=tx.grades;box.append(gh);
+    acts.forEach(function(a){
+      var cells=[],sum=0,n=0;
+      for(var l=1;l<=Math.min(upto,max);l++){if(!a.done(l))continue;var q=a.pct?a.pct(l):null,st=a.stars?a.stars(l):1;cells.push([l,st]);if(q!=null){sum+=(q<=1?q*100:q);n++;}}
+      if(!cells.length)return;
+      var av=n?Math.round(sum/n):0,blk=h('div','gr');
+      blk.innerHTML='<div class="gh"><b></b><span>'+av+'% '+tx.avg+'</span></div><div class="gt"><i style="width:'+av+'%"></i></div><div class="gc"></div>';
+      blk.querySelector('b').textContent=a.label||C.city;
+      var gc=blk.querySelector('.gc');
+      cells.forEach(function(c){var d=h('div','c s'+c[1]);d.textContent=c[0];gc.append(d);});
+      box.append(blk);});
+    if(W.Gate&&Gate.settingsBlock){var sh=h('h3');sh.textContent=tx.set||'Settings';box.append(sh,Gate.settingsBlock());}
   }
   function view(){
     var box=D.getElementById('mt-view');box.textContent='';

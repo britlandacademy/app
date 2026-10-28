@@ -564,7 +564,7 @@ function mountLesson(L){
   const msg=el('p',{class:'msgtotal','aria-live':'polite'});
   const actions=el('div',{class:'btnrow'});
   const card=el('section',{class:'card total','aria-label':'Workbook result'},el('p',{class:'lab'},'Result'),el('h2',{},'Workbook score · Lesson '+L.id),big,bar,msg,actions);
-  panel.append(el('h2',{class:'sep'},'Workbook · Lesson '+L.id),el('p',{class:'sub'},'Focus: '+L.wb.focus),Duo.cta(()=>duoLesson(L)),gridEl,card);
+  panel.append(el('h2',{class:'sep'},'Workbook · Lesson '+L.id),el('p',{class:'sub'},'Focus: '+L.wb.focus),gridEl,card);
   lessonUI[L.id]={panel:panel,barFill:barFill,bar:bar,big:big,msg:msg,actions:actions};
   updateLesson(L);return panel;
 }

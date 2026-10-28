@@ -83,6 +83,7 @@ summary{cursor:pointer;font-weight:700;padding:4px 0}
 <script src="js/gate.js" charset="utf-8"></script>
 <script>
 Gate.start({kinds:[]},function(ctx){
+if(Gate.gameOn()){location.replace('index.html#profile');return;}
 'use strict';
 const sb=Gate.sb,el=Gate.el,$=id=>document.getElementById(id);
 const SYM={EUR:'€',BRL:'R$'};

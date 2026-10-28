@@ -432,7 +432,7 @@ function mountLesson(L){
   const actions=el('div',{class:'btnrow'});
   const card=el('section',{class:'card total','aria-label':'Result for '+L.title},
     el('p',{class:'lab'},'Result'),el('h2',{},'Score for '+L.title),big,bar,msg,actions);
-  panel.append(el('h2',{class:'sep'},L.title),el('p',{class:'sub'},L.sub));const gb=gramBox(L.gram);if(gb)panel.append(gb);panel.append(Duo.cta(()=>duoLesson(L)),gridEl,card);
+  panel.append(el('h2',{class:'sep'},L.title),el('p',{class:'sub'},L.sub));const gb=gramBox(L.gram);if(gb)panel.append(gb);panel.append(gridEl,card);
   lessonUI[L.id]={panel:panel,barFill:barFill,bar:bar,big:big,msg:msg,actions:actions};
   updateLesson(L);
   return panel;
