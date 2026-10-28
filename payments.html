@@ -115,7 +115,7 @@ $('mes').value=today().slice(0,7);$('f-sm').value=today().slice(0,7);
 async function loadAll(){
   const a=await sb.from('subs').select('*').order('student_name');if(a.error)return fail(a.error);
   SUBS=a.data||[];
-  const p=await sb.from('profiles').select('id,name,email').order('name');PROF=p.data||[];
+  const p=await sb.from('profiles').select('id,name,email,status,is_admin').order('name');PROF=p.data||[];
   const c=await sb.from('charges').select('*').order('due_date');if(c.error)return fail(c.error);
   CH=c.data||[];
   fillStudents();renderAll();
@@ -182,19 +182,37 @@ function renderChart(){
   if(!box.childNodes.length)box.append(el('p',{class:'hint'},'O gráfico aparece quando houver mensalidades.'));
   else{const g=el('p',{class:'lg'});g.innerHTML='<b style="background:var(--ok)"></b>Recebido<b style="background:var(--warn)"></b>A receber';box.append(g);}
 }
+const PMS=['Pix','Cartão','Transferência','PayPal','Dinheiro','Outro'];
+function pmSel(v){const s=el('select',{'aria-label':'Forma de pagamento'},el('option',{value:''},'—'));
+  const l=PMS.slice();if(v&&!l.includes(v))l.push(v);l.forEach(x=>s.append(el('option',{value:x,selected:x===v?'selected':null},x)));return s;}
 function renderSubs(){
-  const t=$('subs');t.textContent='';t.append(th(['Aluno','Plano','Valor mensal','Vence dia','Desde','Ativo','Ações']));const b=el('tbody');
+  const t=$('subs');t.textContent='';t.append(th(['Aluno','Plano','Valor mensal','Vence dia','Forma de pagamento','Observações','Desde','Ativo','Ações']));const b=el('tbody');
+  const pend=PROF.filter(p=>p.status==='approved'&&!p.is_admin&&!SUBS.some(x=>x.user_id===p.id));
+  pend.forEach(p=>{
+    const pl=el('select',{'aria-label':'Plano'}),cu=el('select',{'aria-label':'Moeda'},el('option',{value:'EUR'},'€'),el('option',{value:'BRL'},'R$'));
+    ['Grupo','VIP','Intensivo','Outro'].forEach(x=>pl.append(el('option',{value:x,selected:x==='VIP'?'selected':null},x)));
+    const am=el('input',{type:'number',min:'0',step:'0.01',placeholder:'0,00','aria-label':'Valor mensal'});
+    const dd=el('input',{type:'number',min:'1',max:'28',value:'5','aria-label':'Dia do vencimento'});
+    const pm=pmSel(''),ob=el('input',{type:'text','aria-label':'Observações'});
+    const sv=el('button',{type:'button'},'Salvar');
+    sv.addEventListener('click',()=>{const v=parseFloat(am.value);if(isNaN(v)||v<0){msg('fmsg','Digite o valor mensal de '+(p.name||p.email)+'.','bad');am.focus();return;}
+      sb.from('subs').insert({user_id:p.id,student_name:p.name||p.email,plan:pl.value,currency:cu.value,amount:v,due_day:Math.max(1,Math.min(28,parseInt(dd.value,10)||5)),
+        start_month:today().slice(0,7)+'-01',pay_method:pm.value||null,notes:ob.value.trim()||null}).then(r=>{msg('fmsg',r.error?r.error.message:'Dados de '+(p.name||p.email)+' salvos.',r.error?'bad':'ok');if(!r.error)loadAll();});});
+    b.append(el('tr',{},el('td',{},el('b',{},p.name||p.email),' ',el('span',{class:'hint'},'(preencher)')),el('td',{},pl),el('td',{},cu,am),el('td',{},dd),el('td',{},pm),el('td',{},ob),
+      el('td',{class:'c'},'—'),el('td',{class:'c'},'—'),el('td',{},sv)));});
+  if(pend.length)msg('fmsg',pend.length+' aluno(s) aprovado(s) ainda sem dados de cobrança. Preencha as linhas marcadas "(preencher)" abaixo.','ok');
   SUBS.forEach(s=>{
     const am=el('input',{type:'number',min:'0',step:'0.01',value:String(s.amount),'aria-label':'Valor mensal'});
     const dd=el('input',{type:'number',min:'1',max:'28',value:String(s.due_day),'aria-label':'Dia do vencimento'});
+    const pm=pmSel(s.pay_method||''),ob=el('input',{type:'text',value:s.notes||'','aria-label':'Observações'});
     const sv=el('button',{type:'button',class:'ghost'},'Salvar');
-    sv.addEventListener('click',()=>sb.from('subs').update({amount:parseFloat(am.value)||0,due_day:Math.max(1,Math.min(28,parseInt(dd.value,10)||5))}).eq('id',s.id).then(r=>{msg('fmsg',r.error?r.error.message:'Salvo. Vale para as próximas mensalidades geradas.',r.error?'bad':'ok');loadAll();}));
+    sv.addEventListener('click',()=>sb.from('subs').update({amount:parseFloat(am.value)||0,due_day:Math.max(1,Math.min(28,parseInt(dd.value,10)||5)),pay_method:pm.value||null,notes:ob.value.trim()||null}).eq('id',s.id).then(r=>{msg('fmsg',r.error?r.error.message:'Salvo. Vale para as próximas mensalidades geradas.',r.error?'bad':'ok');loadAll();}));
     const ac=el('button',{type:'button',class:'ghost'},s.active?'Pausar':'Reativar');
     ac.addEventListener('click',()=>sb.from('subs').update({active:!s.active}).eq('id',s.id).then(loadAll));
     const del=el('button',{type:'button',class:'danger'},'Excluir');
     del.addEventListener('click',()=>{if(confirm('Excluir este aluno e TODAS as mensalidades dele?'))sb.from('subs').delete().eq('id',s.id).then(loadAll);});
     b.append(el('tr',{},el('td',{},s.student_name+(s.user_id?'':' (sem conta)')),el('td',{},s.plan),
-      el('td',{},el('span',{},SYM[s.currency]+' '),am),el('td',{},dd),el('td',{class:'c'},s.start_month.slice(5,7)+'/'+s.start_month.slice(0,4)),
+      el('td',{},el('span',{},SYM[s.currency]+' '),am),el('td',{},dd),el('td',{},pm),el('td',{},ob),el('td',{class:'c'},s.start_month.slice(5,7)+'/'+s.start_month.slice(0,4)),
       el('td',{class:'c'},s.active?'Sim':'Não'),el('td',{},el('div',{class:'row'},sv,ac,del))));});
   t.append(b);
 }

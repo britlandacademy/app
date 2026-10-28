@@ -240,7 +240,7 @@ function showHelp(){
     el('p',{},el('b',{},'Grades and payments:'),' open My Profile in the menu on your picture.'),
     el('p',{},el('b',{},'Change picture, theme, language or text size:'),' use the menu on your picture, or Settings in My Profile.'),
     el('p',{},el('b',{},'Need more help?'),' Write to your teacher on WhatsApp.'),
-    el('p',{class:'g-hint',style:'font-size:.82rem'},'App version '+(window.BL_VERSION||'')),el('div',{class:'g-row',style:'justify-content:flex-end'},el('button',{type:'button',class:'g-btn ghost',onclick:close},'Close'),wa));
+    el('p',{class:'g-hint',style:'font-size:.82rem'},'App version '+(window.BL_VERSION||'')),el('div',{class:'g-row',style:'justify-content:flex-end'},el('button',{type:'button',class:'g-btn ghost',onclick:close},'Close'),el('button',{type:'button',class:'g-btn ghost',onclick:function(){close();if(document.getElementById('today'))startTour(true);else location.href='index.html#tour';}},'See the tour'),wa));
   ov.append(d);ov.addEventListener('click',function(e){if(e.target===ov)close();});document.addEventListener('keydown',kd);document.body.append(ov);
 }
 function addBar(){
@@ -474,52 +474,134 @@ function pushNudge(){
     if(window.I18N&&I18N.after)try{I18N.after();}catch(e){}
   }catch(e){}
 }
-/* ---------- welcome: three short screens for a brand-new student ---------- */
-function welcome(done){
-  var k='bl-welcome-'+user.id;
-  try{if(localStorage.getItem(k))return done();}catch(e){return done();}
-  function mark(){try{localStorage.setItem(k,'1');}catch(e){}}
-  sb.from('attempts').select('id',{count:'exact',head:true}).eq('user_id',user.id).then(function(r){
-    if(r.error||(r.count||0)>0){mark();return done();}
-    var SP=!!window.BL_COURSE;
-    var S=[['Welcome to Britland Academy!',['Your lessons are here: read the lesson text, listen to the audio and practise.','It takes only a few minutes a day.']],
-      ['How to study',['1. Read the lesson and listen to the audio.','2. Do the Lesson Check and the exercises.','3. Your teacher sees your progress and opens new lessons.']],
-      ['Keep it close',['Add Britland Academy to your home screen and turn on Notifications to get class reminders.','You can change this later in the menu on your picture.']],
-      ['Try your first question',[SP?'Choose the correct word: Yo ___ estudiante.':'Choose the correct word: I ___ a student.']]];
-    var Q=SP?['soy','eres','es']:['am','is','are'],QA=SP?0:0;
-    function finish(go){mark();hideOverlay();if(go)location.href='lessons.html';else done();}
-    function push(box){
-      var P=window.BLPush;
-      function ready(cb){if(window.BLPush)return cb();var sc=document.createElement('script');sc.src=(window.BL_BASE||'')+'js/push.js';sc.onload=cb;document.head.append(sc);}
-      var row=el('div',{class:'g-row'});var note=el('p',{},'');
-      var b=btn('Turn on notifications',function(){
-        b.disabled=true;
-        ready(function(){var P=window.BLPush;
-          if(!P||!P.supported()){note.textContent='This device cannot receive notifications here. Install the app first.';b.disabled=false;return;}
-          if(P.ios()&&!P.standalone()){note.textContent='On iPhone: tap Share, then “Add to Home Screen”, open the app from there and turn on notifications.';b.disabled=false;return;}
-          P.enable(sb).then(function(){b.textContent='Notifications on ✓';},function(){note.textContent='Notifications are off. You can turn them on later in My Profile.';b.disabled=false;});
-        });
-      });
-      row.append(b);box.append(row,note);
+/* ---------- guided tour: spotlight on the real home page, shown once to every student; "See the tour" in Help runs it again ---------- */
+/* the tour is always shown in Portuguese */
+function tourPt(root){
+  if(!root||!window.I18N||!I18N.pt)return;
+  var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null),n,l=[];while(n=w.nextNode())l.push(n);
+  l.forEach(function(x){var s=x.nodeValue,c=s.trim();if(!c)return;var r=I18N.pt(c);if(r!==c)x.nodeValue=s.replace(c,r);});
+}
+function tourSeenKey(){return 'bl-tour1-'+user.id;}
+function tourMaybe(){
+  var force=location.hash==='#tour';
+  if(!force){try{if(localStorage.getItem(tourSeenKey()))return;}catch(e){return;}}
+  var n=0;(function wait(){
+    var t=document.getElementById('today');
+    if(document.querySelector('.sk-ov,.g-hov')&&n<200){n++;setTimeout(wait,500);return;}
+    if(t&&(!t.hidden||n>12)||n>16){if(force)try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}startTour(force);return;}
+    n++;setTimeout(wait,350);})();
+}
+function startTour(force){
+  if(!document.getElementById('today')||document.getElementById('bl-tour'))return;
+  var SP=!!window.BL_COURSE,base=(window.BL_BASE||'');
+  function seen(){try{localStorage.setItem(tourSeenKey(),'1');}catch(e){}}
+  function $(s){return document.querySelector(s);}
+  function vis(e){return e&&e.getClientRects().length>0;}
+  var S=[];
+  S.push({h:'Let’s get to know the app in 1 minute',p:['I will show where each feature is and what it does. Tap Next to start.']});
+  S.push({h:'Your study streak',p:['Studied today? The Lion lights up and your streak goes up. The more days in a row, the better.','Try it: tap the button below.'],sel:['#streak'],lion:1});
+  S.push({h:'7 days in a row: the golden Lion',p:['After a full week the Lion turns gold, glows and roars to celebrate. Then come more weeks, the month and the year.','You have 1 freeze per week, so a missed day does not break your streak.'],sel:['#streak'],lion:7});
+  S.push({h:'Class ranking',p:['See who is studying every day. Tap “Class ranking” to open the list. Your name appears highlighted.'],sel:['#streak .sk-r','#streak']});
+  S.push({h:'What to do today',p:['This is your path for the day. The bar shows your progress and the Continue button goes straight to what is most behind.'].concat(SP?[]:['If you only do one kind of activity, the app warns you.']),sel:['#today']});
+  S.push({h:'Lessons',p:['Read each lesson and listen to the audio. It also works offline after you open a lesson once.'],sel:['a.card[href="lessons.html"]']});
+  if(SP){
+    S.push({h:'Review exercises',p:['Do the review exercises from the book. When you get one wrong, the app explains why.'],sel:['a.card[href="check.html"]']});
+    S.push({h:'DELE',p:['Prepare for the DELE exam, levels A1 to C2.'],sel:['a.card[href="dele.html"]']});
+  }else{
+    S.push({h:'The three activities',p:['Always do all three: Lesson Checks (the questions from the book), Grammar Exercises and Workbook (pictures, matching, reading and dictation). When you get one wrong, the app explains why.'],sel:['a.card[href="exercises.html"]','a.card[href="workbook.html"]','a.card[href="check.html"]']});
+    S.push({h:'Stage Exam',p:['When your teacher opens it, the exam appears here. It is only visible while it is open.'],sel:['#examCard']});
+  }
+  S.push({h:'My Profile',p:['Your grades, exam history and payments are here. This is also where you turn on reminder notifications.'],sel:['a.card[href="account.html"]']});
+  S.push({h:'The menu on your picture',p:['Tap your picture to change it, use dark mode, change the language, make the text larger, get help or sign out. To see this tour again, open Help.'],sel:['.g-avbtn']});
+  S.push({h:'All set!',p:['Turn on notifications to get class reminders.'],last:1});
+  S=S.filter(function(s){return !s.sel||document.querySelector(s.sel[s.sel.length-1])||s.sel.some(function(q){return document.querySelector(q);});});
+  var i=0,ov=el('div',{id:'bl-tour',class:'tr','data-noi18n':'1'}),blk=el('div',{class:'tr-b'}),spot=el('div',{class:'tr-s'}),sheet=el('div',{class:'tr-sh',role:'dialog','aria-modal':'true','aria-label':'Tour','aria-live':'polite'}),conf=el('div',{class:'tr-c'});
+  ov.append(blk,spot,conf,sheet);
+  if(!document.getElementById('bl-tour-css')){var st=el('style',{id:'bl-tour-css'});st.textContent=
+   '.tr{position:fixed;inset:0;z-index:9990;font-family:inherit}.tr-b{position:absolute;inset:0}'+
+   '.tr-s{position:absolute;left:50%;top:50%;width:0;height:0;border-radius:8px;box-shadow:0 0 0 2px #F5C542,0 0 0 9999px rgba(3,8,16,.82);pointer-events:none;transition:left .3s,top .3s,width .3s,height .3s}.tr-s.off{box-shadow:0 0 0 9999px rgba(3,8,16,.82)}'+
+   '.tr-sh{position:absolute;left:0;right:0;bottom:0;max-height:62vh;overflow:auto;background:#fff;color:#0B1B33;padding:16px max(18px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));border-top:4px solid #F5C542;border-radius:14px 14px 0 0;box-sizing:border-box;max-width:560px;margin:0 auto}'+
+   '.tr-sh h2{margin:0 0 6px;font-size:1.15rem;line-height:1.25}.tr-sh p{margin:0 0 8px;color:#475671;font-size:.95rem}'+
+   '.tr-d{display:flex;gap:5px;margin:0 0 10px}.tr-d i{height:4px;flex:1;border-radius:2px;background:#D3DAE6}.tr-d i.on{background:#0B1B33}'+
+   '.tr-f{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}.tr-f .sp{margin-left:auto}'+
+   '.tr .tb{min-height:44px;padding:8px 16px;font:inherit;font-weight:700;cursor:pointer;border-radius:3px;border:2px solid #0B1B33;background:#0B1B33;color:#fff}.tr .tb.gh{background:transparent;color:#0B1B33;border-color:transparent}.tr .tb.dm{background:#F5C542;border-color:#F5C542;color:#0B1B33}.tr .tb.out{background:transparent;color:#0B1B33}'+
+   '.tr .tb:focus-visible{outline:3px solid #1F4FA0;outline-offset:2px}.tr .tb[disabled]{opacity:.7;cursor:default}'+
+   '.tr-m{font-weight:700;color:#14733a;min-height:1.3em}.tr-l{display:flex;gap:12px;align-items:center;margin:6px 0}.tr-lw{position:relative;width:54px;height:64px;flex:none}.tr-lw img{position:relative;width:100%;height:100%;object-fit:contain}.tr-lw i{position:absolute;inset:-14%;border-radius:50%;background:radial-gradient(circle,rgba(255,215,110,.7),transparent 68%);opacity:0}.tr-lw.g i{opacity:1;animation:trp 2s ease-in-out infinite}.tr-lw.pop img{animation:trpop .7s}'+
+   '@keyframes trp{50%{transform:scale(1.15);opacity:.7}}@keyframes trpop{30%{transform:scale(1.25) rotate(-4deg)}}'+
+   '.tr-c{position:absolute;inset:0;pointer-events:none;overflow:hidden}.tr-c i{position:absolute;top:-10px;width:7px;height:12px;animation:trf 2.2s linear forwards}@keyframes trf{to{transform:translateY(110vh) rotate(540deg)}}'+
+   '@media (prefers-reduced-motion:reduce){.tr-s{transition:none}.tr-c i,.tr-lw.g i{animation:none}}';document.head.append(st);}
+  function fx(n){if(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches)return;var cs=['#F5C542','#fff','#d33','#3b5bdb'];for(var k=0;k<46;k++){var c=el('i',{style:'left:'+Math.random()*100+'%;background:'+cs[k%4]+';animation-delay:'+(Math.random()*.6)+'s'});conf.append(c);}setTimeout(function(){conf.textContent='';},3200);}
+  function snd(n){try{if(localStorage.getItem('callan-mute')==='1')return;}catch(e){}try{var a=new Audio('js/sfx/'+n+'.mp3');a.volume=n==='crepitar'?.3:.4;var p=a.play();if(p&&p.catch)p.catch(function(){});}catch(e){}}
+  function targets(s){return (s.sel||[]).map(function(q){return $(q);}).filter(vis);}
+  function place(s){
+    var t=s.menu?[$('.g-avbtn'),$('.g-mn')].filter(vis):targets(s);
+    if(!t.length){spot.className='tr-s off';spot.style.cssText='left:50%;top:50%;width:0;height:0';return;}
+    spot.className='tr-s';
+    var r=t[0].getBoundingClientRect(),L=r.left,T=r.top,R=r.right,B=r.bottom;
+    t.forEach(function(e){var q=e.getBoundingClientRect();L=Math.min(L,q.left);T=Math.min(T,q.top);R=Math.max(R,q.right);B=Math.max(B,q.bottom);});
+    spot.style.cssText='left:'+(L-5)+'px;top:'+(T-5)+'px;width:'+(R-L+10)+'px;height:'+(B-T+10)+'px';
+  }
+  function show(){
+    var s=S[i],mn=$('.g-mn');
+    sheet.textContent='';
+    var dots=el('div',{class:'tr-d'});S.forEach(function(x,k){dots.append(el('i',{class:k<=i?'on':''}));});
+    sheet.append(dots,el('h2',{},s.h));
+    s.p.forEach(function(t){sheet.append(el('p',{},t));});
+    function TB(l,c,fn){return el('button',{type:'button',class:'tb '+c,onclick:fn},l);}
+    var msg=el('div',{class:'tr-m',role:'status'},'');
+    if(s.lion){
+      var lw=el('div',{class:'tr-lw'},el('i'),el('img',{alt:'',src:'img/lion-off.png'})),im=lw.querySelector('img');
+      function setL(n){im.src='img/lion-'+(n>=7?'gold':n>0?'on':'off')+'.png';lw.className='tr-lw'+(n>=7?' g':'');void lw.offsetWidth;lw.classList.add('pop');}
+      var b=TB(s.lion===1?'Study today':'Reach 7 days','dm',function(){
+        if(s.lion===1){setL(1);snd('crepitar');msg.textContent='The Lion lit up! 1 day in a row.';}
+        else{setL(7);snd('leao_7dias');fx();msg.textContent='Week complete! 7 days in a row.';}
+        tourPt(document.getElementById('bl-tour'));});
+      sheet.append(el('div',{class:'tr-l'},lw,b),msg);
     }
-    (function show(i){
-      var last=i===S.length-1,box;
-      if(i===3){
-        box=message(S[i][0],S[i][1],[]);
-        var fb=el('p',{role:'status'},''),row=el('div',{class:'g-row'});
-        Q.forEach(function(w,k){row.append(btn(w,function(){
-          if(k===QA){fb.textContent=SP?'¡Correcto! Todos los ejercicios funcionan así.':'Correct! Every Lesson Check works like this.';row.remove();
-            var r2=el('div',{class:'g-row'});r2.append(btn(SP?'Ir a la Lección 1':'Go to Lesson 1',function(){finish(true);}),btn(SP?'Más tarde':'Later',function(){finish(false);},true));box.append(r2);}
-          else fb.textContent=SP?'Todavía no. Inténtalo otra vez.':'Not yet. Try again.';
-        }));});
-        box.append(row,fb);
-      }else{
-        box=message(S[i][0],S[i][1],[btn('Next',function(){show(i+1);}),btn('Skip',function(){finish(false);},true)]);
-        if(i===2)push(box);
-      }
-      if(window.I18N&&I18N.after)try{I18N.after();}catch(e){}
-    })(0);
-  },function(){done();});
+    if(s.last){
+      var box=el('div',{});sheet.append(box);tourPush(box,TB);
+      sb.from('attempts').select('id',{count:'exact',head:true}).eq('user_id',user.id).then(function(r){
+        if(r.error||(r.count||0)>0)return;
+        box.append(el('h2',{style:'margin-top:12px'},'Try your first question'),el('p',{},SP?'Choose the correct word: Yo ___ estudiante.':'Choose the correct word: I ___ a student.'));
+        var row=el('div',{class:'tr-f'}),fb=el('p',{role:'status',class:'tr-m'},'');
+        (SP?['soy','eres','es']:['am','is','are']).forEach(function(w,k){row.append(TB(w,'dm',function(){
+          if(k===0){fb.textContent='Correct! Every Lesson Check works like this.';row.remove();}
+          else fb.textContent='Not yet. Try again.';
+          tourPt(document.getElementById('bl-tour'));}));});
+        box.append(row,fb);tourPt(document.getElementById('bl-tour'));});
+    }
+    var f=el('div',{class:'tr-f'});
+    if(s.last){f.append(TB('Back','gh',function(){i--;show();}),TB('Done','sp dm',function(){close(true);}));}
+    else{if(i>0)f.append(TB('Back','gh',function(){i--;show();}));if(i===0)f.append(TB('Skip','gh',function(){close(false);}));f.append(TB('Next','sp',function(){i++;show();}));}
+    f.querySelectorAll('.sp').forEach(function(x){x.style.marginLeft='auto';});
+    sheet.append(f);
+    var t=s.menu?[$('.g-avbtn')].filter(vis):targets(s);
+    if(t.length){var tp=t[0].getBoundingClientRect().top+window.pageYOffset;window.scrollTo(0,Math.max(0,tp-14));}
+    else if(s.menu||i===0)window.scrollTo(0,0);
+    tourPt(document.getElementById('bl-tour'));
+    setTimeout(function(){place(s);},60);setTimeout(function(){if(S[i]===s)place(s);},450);
+    var fb0=sheet.querySelector('.tb');if(fb0)fb0.focus({preventScroll:true});
+  }
+  function close(done){seen();var mn=$('.g-mn');if(mn)mn.classList.remove('on');document.removeEventListener('keydown',kd);window.removeEventListener('resize',rs);ov.remove();}
+  function kd(e){if(e.key==='Escape')close(false);}
+  function rs(){place(S[i]);}
+  document.addEventListener('keydown',kd);window.addEventListener('resize',rs);
+  document.body.append(ov);show();
+}
+function tourPush(box,TB){
+  function Pp(s){return window.I18N&&I18N.pt?I18N.pt(s):s;}
+  function ready(cb){if(window.BLPush)return cb();var sc=document.createElement('script');sc.src=(window.BL_BASE||'')+'js/push.js';sc.onload=cb;document.head.append(sc);}
+  var note=el('p',{},'');
+  var b=TB('Turn on notifications','dm',function(){
+    b.disabled=true;
+    ready(function(){var P=window.BLPush;
+      if(!P||!P.supported()){note.textContent=Pp('This device cannot receive notifications here. Install the app first.');b.disabled=false;return;}
+      if(P.ios()&&!P.standalone()){note.textContent=Pp('On iPhone: tap Share, then “Add to Home Screen”, open the app from there and turn on notifications.');b.disabled=false;return;}
+      P.enable(sb).then(function(){b.textContent=Pp('Notifications on ✓');},function(){note.textContent=Pp('Notifications are off. You can turn them on later in My Profile.');b.disabled=false;});
+      tourPt(document.getElementById('bl-tour'));
+    });
+  });
+  box.append(el('div',{class:'tr-f'},b),note);
 }
 function enter(){
     if(prof.status==='pending'){
@@ -542,9 +624,9 @@ function enter(){
         hideOverlay();applyServerPrefs();if(OFF)offBanner(true);else flushQ();if(!OPTS.bare){addBar();loadProfile(paintAvatars);try{thanksPay();}catch(e){}}
         /* the streak counts finished activities only (see saveAttempt) */
         CB({user:user,profile:prof,attempts:att,upto:upto()});
-        setTimeout(function(){a11yPass();pushNudge();},600);
+        setTimeout(function(){a11yPass();if(!(OPTS.admin||OPTS.bare||OFF||prof.is_admin)&&document.getElementById('today'))tourMaybe();pushNudge();},600);
       }
-      if(OPTS.admin||OPTS.bare||OFF||prof.is_admin)fin();else welcome(fin);
+      fin();
     });
 }
 function route(){

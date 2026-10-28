@@ -8,6 +8,40 @@ var COURSE=window.BL_COURSE||{},UI=COURSE.uiLang||'en';
 var KEY=COURSE.langKey||'callan-lang';
 var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they are */
 /* ---- sign in ---- */
+["Let’s get to know the app in 1 minute", "Vamos conhecer o app em 1 minuto", "Vamos a conocer la app en 1 minuto"],
+["I will show where each feature is and what it does. Tap Next to start.", "Vou mostrar onde fica cada recurso e para que ele serve. Toque em Próximo para começar.", "Te mostraré dónde está cada función y para qué sirve. Toca Siguiente para empezar."],
+["Your study streak", "Sua sequência de estudo", "Tu racha de estudio"],
+["Studied today? The Lion lights up and your streak goes up. The more days in a row, the better.", "Estudou hoje? O Leão acende e a sequência sobe. Quanto mais dias seguidos, melhor.", "¿Estudiaste hoy? El León se enciende y tu racha sube. Cuantos más días seguidos, mejor."],
+["Try it: tap the button below.", "Experimente: toque no botão abaixo.", "Pruébalo: toca el botón de abajo."],
+["Study today", "Estudar hoje", "Estudiar hoy"],
+["The Lion lit up! 1 day in a row.", "O Leão acendeu! 1 dia seguido.", "¡El León se encendió! 1 día seguido."],
+["7 days in a row: the golden Lion", "7 dias seguidos: o Leão dourado", "7 días seguidos: el León dorado"],
+["After a full week the Lion turns gold, glows and roars to celebrate. Then come more weeks, the month and the year.", "Ao completar uma semana, o Leão fica dourado, ganha um brilho e ruge para comemorar. Depois vêm as semanas seguintes, o mês e o ano.", "Al completar una semana, el León se vuelve dorado, brilla y ruge para celebrar. Después vienen más semanas, el mes y el año."],
+["You have 1 freeze per week, so a missed day does not break your streak.", "Você tem 1 congelamento por semana para não perder a sequência se faltar um dia.", "Tienes 1 congelación por semana para no perder tu racha si faltas un día."],
+["Reach 7 days", "Chegar a 7 dias", "Llegar a 7 días"],
+["Week complete! 7 days in a row.", "Semana completa! 7 dias seguidos.", "¡Semana completa! 7 días seguidos."],
+["Class ranking", "Ranking da turma", "Ranking de la clase"],
+["See who is studying every day. Tap “Class ranking” to open the list. Your name appears highlighted.", "Veja quem está estudando todos os dias. Toque em “Ranking da turma” para abrir a lista. Seu nome aparece em destaque.", "Mira quién estudia todos los días. Toca “Ranking de la clase” para abrir la lista. Tu nombre aparece destacado."],
+["This is your path for the day. The bar shows your progress and the Continue button goes straight to what is most behind.", "Aqui está o seu caminho do dia: a barra mostra o progresso e o botão Continuar leva direto ao que está mais atrasado.", "Este es tu camino del día: la barra muestra tu progreso y el botón Continuar va directo a lo más atrasado."],
+["If you only do one kind of activity, the app warns you.", "Se você fizer só um tipo de atividade, o app avisa.", "Si haces solo un tipo de actividad, la app te avisa."],
+["Read each lesson and listen to the audio. It also works offline after you open a lesson once.", "Leia o texto de cada lição e ouça o áudio. Funciona também sem internet depois que a lição foi aberta uma vez.", "Lee cada lección y escucha el audio. También funciona sin internet después de abrir la lección una vez."],
+["Review exercises", "Exercícios de revisão", "Ejercicios de repaso"],
+["Do the review exercises from the book. When you get one wrong, the app explains why.", "Faça os exercícios de revisão do livro. Quando errar, o app explica o porquê.", "Haz los ejercicios de repaso del libro. Cuando te equivocas, la app explica el porqué."],
+["DELE", "DELE", "DELE"],
+["Prepare for the DELE exam, levels A1 to C2.", "Prepare-se para o exame DELE, níveis A1 a C2.", "Prepárate para el examen DELE, niveles A1 a C2."],
+["The three activities", "As três atividades", "Las tres actividades"],
+["Always do all three: Lesson Checks (the questions from the book), Grammar Exercises and Workbook (pictures, matching, reading and dictation). When you get one wrong, the app explains why.", "Faça sempre as três: Lesson Checks (as perguntas do livro), Exercícios de Gramática e Workbook (figuras, ligar, leitura e ditado). Quando errar, o app explica o porquê.", "Haz siempre las tres: Lesson Checks (las preguntas del libro), Ejercicios de Gramática y Workbook (figuras, unir, lectura y dictado). Cuando te equivocas, la app explica el porqué."],
+["When your teacher opens it, the exam appears here. It is only visible while it is open.", "Quando seu professor liberar, a prova aparece aqui. Ela só fica visível enquanto estiver aberta.", "Cuando tu profesor lo abra, el examen aparece aquí. Solo se ve mientras está abierto."],
+["Your grades, exam history and payments are here. This is also where you turn on reminder notifications.", "Suas notas, o histórico de provas e os pagamentos ficam aqui. É também onde você ativa as notificações de lembrete.", "Tus notas, el historial de exámenes y los pagos están aquí. Aquí también activas las notificaciones de recordatorio."],
+["The menu on your picture", "O menu da sua foto", "El menú de tu foto"],
+["Tap your picture to change it, use dark mode, change the language, make the text larger, get help or sign out. To see this tour again, open Help.", "Toque na sua foto para trocar a foto, usar o modo escuro, mudar o idioma, aumentar o texto, pedir ajuda ou sair. Para rever este tour, abra Ajuda.", "Toca tu foto para cambiarla, usar el modo oscuro, cambiar el idioma, agrandar el texto, pedir ayuda o salir. Para ver este tour otra vez, abre Ayuda."],
+["All set!", "Tudo pronto!", "¡Todo listo!"],
+["Turn on notifications to get class reminders.", "Ative as notificações para receber lembretes das aulas.", "Activa las notificaciones para recibir recordatorios de clase."],
+["Back", "Voltar", "Atrás"],
+["Done", "Concluir", "Terminar"],
+["See the tour", "Ver tour", "Ver tour"],
+["Choose the correct word: Yo ___ estudiante.", "Escolha a palavra correta: Yo ___ estudiante.", "Elige la palabra correcta: Yo ___ estudiante."],
+
 ["Skip to content","Ir para o conteúdo","Ir al contenido"],
 ["Turn on notifications to get your class reminders.","Ative as notificações para receber os lembretes das aulas.","Activa las notificaciones para recibir los recordatorios de tus clases."],
 ["Turn on","Ativar","Activar"],
@@ -542,5 +576,5 @@ function start(){
   obs.observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:ATTRS});
 }
 if(document.body)start();else document.addEventListener('DOMContentLoaded',start);
-window.I18N={flag:function(l){return flagSVG(l,++FLAGN);},def:defLang,t:tr,selector:selector,set:setLang,after:after,mode:MODE,get lang(){return lang;},get hint(){return MODE==='why'?hint:lang;}};
+window.I18N={pt:function(s){var c=String(s||'').trim();return MAP.hasOwnProperty(c)?MAP[c][1]:s;},flag:function(l){return flagSVG(l,++FLAGN);},def:defLang,t:tr,selector:selector,set:setLang,after:after,mode:MODE,get lang(){return lang;},get hint(){return MODE==='why'?hint:lang;}};
 })();
