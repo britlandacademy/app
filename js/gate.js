@@ -440,7 +440,10 @@ function fixLinks(){
 
 /* ---------- content ---------- */
 var BUS=/[?&]course=business/.test(location.search);window.CBUS=BUS;
-function upto(){if(BUS)return prof.is_admin?17:(prof.status==='approved'?(prof.business_upto||0):0);return prof.is_admin?MAXL:(prof.status==='approved'?prof.lessons_upto:0);}
+var GATES=null;
+function gateCap(){return (GATES&&GATES.cap)||99999;}
+function loadGates(){if(BUS||prof.is_admin||OPTS.admin||OFF)return Promise.resolve();return sb.rpc('my_stage_gates').then(function(r){if(r&&!r.error&&r.data&&r.data.cap)GATES=r.data;},function(){});}
+function upto(){if(BUS)return prof.is_admin?17:(prof.status==='approved'?(prof.business_upto||0):0);return prof.is_admin?MAXL:(prof.status==='approved'?Math.min(prof.lessons_upto||0,gateCap()):0);}
 var STG=COURSE.stages||[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[139,156],[157,174],[175,190],[191,206]];
 var MAXL=COURSE.maxLesson||206,SKEYST=COURSE.stageKey||'callan-stage';
 function stageOf(n){var i;for(i=0;i<STG.length;i++)if(n>=STG[i][0]&&n<=STG[i][1])return i+1;return 1;}
@@ -523,7 +526,7 @@ function loadContent(kinds){
     });
   });
 }
-function mainUpto(){return prof.is_admin?MAXL:(prof.status==='approved'?(prof.lessons_upto||0):0);}
+function mainUpto(){return prof.is_admin?MAXL:(prof.status==='approved'?Math.min(prof.lessons_upto||0,gateCap()):0);}
 function bizUpto(){return prof.is_admin?17:(prof.status==='approved'?(prof.business_upto||0):0);}
 function goStage(v){
   try{
@@ -767,7 +770,7 @@ function enter(){
     if(!OPTS.admin&&upto()<1&&!(!BUS&&(prof.business_upto||0)>0&&(location.pathname.split('/').pop()||'index.html')==='index.html')){
       message('No lessons yet',['Your access is approved, but no lesson has been released to you yet. Talk to your teacher.'],[btn('Check again',route),btn('Sign out',signOut,true)]);return;
     }
-    return loadContent(OPTS.kinds).then(function(){
+    return loadGates().then(function(){return loadContent(OPTS.kinds);}).then(function(){
       return OPTS.attempts?(Array.isArray(OPTS.attempts)?Promise.all(OPTS.attempts.map(fetchAttempts)).then(function(x){return [].concat.apply([],x);}):fetchAttempts(OPTS.attempts)):[];
     }).then(function(att){
       function fin(){
@@ -822,6 +825,6 @@ function start(opts,cb){
 
 function skel(box,n,h){if(!box)return;box.setAttribute('aria-busy','true');for(var i=0;i<(n||3);i++){var d=document.createElement('span');d.className='bl-sk';d.style.height=(h||52)+'px';d.style.marginBottom='10px';box.append(d);}}
 function unskel(box){if(!box)return;box.removeAttribute('aria-busy');Array.prototype.slice.call(box.querySelectorAll(':scope>.bl-sk')).forEach(function(n){n.remove();});}
-window.Gate={birthdayField:birthdayField,birthdayToday:birthdayToday,settingsBlock:settingsBlock,gameSwitch:gameSwitch,gameOn:gameIsOn,pushRow:pushRow,help:function(){showHelp();},skel:skel,unskel:unskel,profile:function(){return prof;},start:start,signOut:signOut,setSize:setSize,setTheme:function(t){setTheme(t);},theme:function(){return theme;},shownTheme:shownTheme,setAvatar:setAvatar,loadProfile:loadProfile,sizeIdx:function(){return fsIdx;},sizeMax:function(){return SIZES.length-1;},saveAttempt:saveAttempt,audioUrl:audioUrl,el:el,
+window.Gate={gates:function(){return GATES;},rawUpto:function(){return prof.lessons_upto||0;},birthdayField:birthdayField,birthdayToday:birthdayToday,settingsBlock:settingsBlock,gameSwitch:gameSwitch,gameOn:gameIsOn,pushRow:pushRow,help:function(){showHelp();},skel:skel,unskel:unskel,profile:function(){return prof;},start:start,signOut:signOut,setSize:setSize,setTheme:function(t){setTheme(t);},theme:function(){return theme;},shownTheme:shownTheme,setAvatar:setAvatar,loadProfile:loadProfile,sizeIdx:function(){return fsIdx;},sizeMax:function(){return SIZES.length-1;},saveAttempt:saveAttempt,audioUrl:audioUrl,el:el,
   get profile(){return prof;},bizUpto:function(){return bizUpto();},mainUpto:function(){return mainUpto();},get user(){return user;},sb:null};
 })();

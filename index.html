@@ -163,7 +163,7 @@ Gate.start({kinds:[],attempts:['check','ex']},function(ctx){
       return {key:d[0],label:d[1],short:d[2],city:d[3],doneCount:n,done:function(l){return l<c0;},pct:function(l){return st[l]===undefined?null:st[l];},stars:function(l){return st[l]===undefined?0:STR(st[l]);},links:[{t:'Start '+d[1],href:d[4]}],
         rdone:function(id){return rv[id]!==undefined&&rv[id]>=.7;},rpct:function(id){return rv[id]===undefined?null:rv[id];},rstars:function(id){return rv[id]===undefined||rv[id]<.7?0:STR(rv[id]);},
         rlink:function(r){return d[4]+(d[4].indexOf('?')<0?'?':'&')+'rev='+r.from+'-'+r.to+'&rid='+r.id;}};});
-    var mounted=false,go=function(){if(mounted)return;mounted=true;Metro.mount(ctx,{upto:upto,max:206,best:best,acts:acts,stages:STAGES});};
+    var mounted=false,go=function(){if(mounted)return;mounted=true;Metro.mount(ctx,{upto:upto,max:206,best:best,acts:acts,stages:STAGES,gate:Gate.gates(),raw:Gate.rawUpto()});};
     try{Gate.sb.from('review_results').select('tab,rid,score,total').then(function(r){((r&&r.data)||[]).forEach(function(x){var q=x.total?x.score/x.total:0,t=RV[x.tab];if(t&&(t[x.rid]===undefined||q>t[x.rid]))t[x.rid]=q;});go();},go);}catch(e){go();}}
   document.getElementById('stats').hidden=false;
   if(window.Streak)Streak.mount(document.getElementById('streak'));

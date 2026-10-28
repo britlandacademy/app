@@ -12,10 +12,10 @@ function lang(){try{var l=localStorage.getItem(KEY);return l==='en'||l==='es'||l
 /* ---------- text ---------- */
 var TX={en:{home:'Home',tro:'Trophies',pro:'Profile',lesson:'Lesson',here:'YOU ARE HERE',stars:'stars',welcome:'Welcome to',next:'NEXT STOP',locked:'Complete the current lesson first',tap:'Tap the lesson to open it',
  open:'Open lesson',medals:'Medals',streak:'Streak',stages:'My stages',days:'days in a row',lessons:'lessons',stars:'stars',pay:'Grades and payments',grades:'My grades',avg:'average',all:'All done! Ask your teacher for the next lessons.',
- m:['First lesson','3 lessons','10 lessons','7-day streak','Perfect score','30-day streak'],week:'SMTWTFS',stage:'Stage',review:'Review',rvGo:'Start Review',rvNeed:'Score 70% or more to open the next station.',photo:'Photo: Wikimedia Commons, public domain',rvPass:'Review passed: %',rvFail:'Not yet: %. You need 70%. Try the Review again.',rvGen:'Four lessons are behind you. A short quiz makes them stick.',rvGenPt:'Quatro lições ficaram para trás. Um quiz rápido ajuda a fixá-las.',rvPlate:'Time to review the last 4 lessons.',lessonsR:'Lessons'},
+ m:['First lesson','3 lessons','10 lessons','7-day streak','Perfect score','30-day streak'],week:'SMTWTFS',stage:'Stage',gTitle:'next Stage is locked',review:'Review',rvGo:'Start Review',rvNeed:'Score 70% or more to open the next station.',photo:'Photo: Wikimedia Commons, public domain',rvPass:'Review passed: %',rvFail:'Not yet: %. You need 70%. Try the Review again.',rvGen:'Four lessons are behind you. A short quiz makes them stick.',rvGenPt:'Quatro lições ficaram para trás. Um quiz rápido ajuda a fixá-las.',rvPlate:'Time to review the last 4 lessons.',lessonsR:'Lessons'},
  es:{home:'Inicio',tro:'Trofeos',pro:'Perfil',lesson:'Lección',here:'ESTÁS AQUÍ',stars:'estrellas',welcome:'Bienvenido a',next:'PRÓXIMA PARADA',locked:'Primero completa la lección actual',tap:'Toca la lección para abrirla',
  open:'Abrir lección',medals:'Medallas',streak:'Racha',stages:'Mis etapas',days:'días seguidos',lessons:'lecciones',stars:'estrellas',pay:'Notas y pagos',grades:'Mis notas',avg:'promedio',all:'¡Todo listo! Pide a tu profesor las próximas lecciones.',
- m:['Primera lección','3 lecciones','10 lecciones','Racha de 7 días','Nota perfecta','Racha de 30 días'],week:'LMXJVSD',stage:'Etapa',review:'Repaso',rvGo:'Empezar el repaso',rvNeed:'Saca un 70 % o más para abrir la próxima estación.',photo:'Foto: Wikimedia Commons, dominio público',rvPass:'Repaso aprobado: %',rvFail:'Todavía no: %. Necesitas un 70 %. Vuelve a intentar el repaso.',rvGen:'Cuatro lecciones quedan atrás. Un breve test ayuda a fijarlas.',rvGenPt:'',rvPlate:'Hora de repasar las últimas 4 lecciones.',lessonsR:'Lecciones'}};
+ m:['Primera lección','3 lecciones','10 lecciones','Racha de 7 días','Nota perfecta','Racha de 30 días'],week:'LMXJVSD',stage:'Etapa',gTitle:'la próxima Etapa está cerrada',review:'Repaso',rvGo:'Empezar el repaso',rvNeed:'Saca un 70 % o más para abrir la próxima estación.',photo:'Foto: Wikimedia Commons, dominio público',rvPass:'Repaso aprobado: %',rvFail:'Todavía no: %. Necesitas un 70 %. Vuelve a intentar el repaso.',rvGen:'Cuatro lecciones quedan atrás. Un breve test ayuda a fijarlas.',rvGenPt:'',rvPlate:'Hora de repasar las últimas 4 lecciones.',lessonsR:'Lecciones'}};
 function T(){return ES?TX.es:TX.en;}
 
 /* ---------- flags (own simple drawings) ---------- */
@@ -137,7 +137,7 @@ var CSS=
 '#bl-metro .row{display:flex;align-items:center;gap:10px;background:var(--n1);border:2px solid var(--n2);border-radius:12px;padding:9px 12px;margin-bottom:6px}#bl-metro .row i{width:8px;height:30px;border-radius:4px;background:var(--lc);flex:none}#bl-metro .row div{flex:1;min-width:0}#bl-metro .row b{display:block;font:700 13px sans-serif}#bl-metro .row small{font:500 10px sans-serif;color:var(--mu)}#bl-metro .row span{font:700 12px sans-serif;color:var(--go)}'+
 '#bl-metro a.mb,#bl-metro button.mb{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;width:100%;border:0;border-radius:14px;background:var(--go);color:#2a2000;font:700 15px sans-serif;text-decoration:none;box-shadow:0 4px 0 #9a7a10;cursor:pointer;margin-top:10px;transition:transform .1s,box-shadow .1s}#bl-metro a.mb:active,#bl-metro button.mb:active{transform:translateY(4px);box-shadow:0 0 0 #9a7a10}#bl-metro a.mb.alt{background:var(--n1);color:#fff;border:2px solid var(--n2);box-shadow:0 4px 0 #050b1c}'+
 '#bl-metro .sheet{position:fixed;inset:0;z-index:70;display:flex;align-items:flex-end;justify-content:center;background:rgba(5,11,28,.6)}#bl-metro .sheet>div{width:min(100%,440px);background:var(--n0);border:2px solid var(--n2);border-bottom:0;border-radius:22px 22px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom,0px));animation:mt-up .3s cubic-bezier(.3,1.2,.5,1)}@keyframes mt-up{from{transform:translateY(100%)}to{transform:none}}'+
-'#bl-metro .sheet .rvi{display:block;width:100%;aspect-ratio:8/5;object-fit:cover;border-radius:14px;margin:0 0 12px;background:var(--n1)}#bl-metro .sheet p.rvt{font:500 13px/1.5 sans-serif;letter-spacing:0;text-transform:none;color:var(--ink);margin:6px 0 0}#bl-metro .sheet p.rvp{color:var(--mu);font-style:italic}#bl-metro .sheet p.rvn{color:var(--go);font-weight:700}#bl-metro .sheet p.rvc{font-size:10px;color:var(--mu);margin-top:8px}#bl-metro .sheet h4{margin:0 0 2px;font:700 18px sans-serif}#bl-metro .sheet p{margin:0 0 6px;font:600 11px sans-serif;letter-spacing:.1em;color:var(--go);text-transform:uppercase}'+
+'#bl-metro .gate{margin:8px 2px;padding:10px 12px;border:2px solid var(--go);border-radius:14px;background:var(--n1);font:600 12.5px/1.45 sans-serif;color:var(--ink)}#bl-metro .gate b{display:block;font:700 13px sans-serif;color:var(--go);margin-bottom:4px}#bl-metro .gate ul{margin:0;padding-left:18px}#bl-metro .gate li{margin:3px 0}#bl-metro .gate em{display:block;color:var(--mu);font-weight:500}#bl-metro .sheet .rvi{display:block;width:100%;aspect-ratio:8/5;object-fit:cover;border-radius:14px;margin:0 0 12px;background:var(--n1)}#bl-metro .sheet p.rvt{font:500 13px/1.5 sans-serif;letter-spacing:0;text-transform:none;color:var(--ink);margin:6px 0 0}#bl-metro .sheet p.rvp{color:var(--mu);font-style:italic}#bl-metro .sheet p.rvn{color:var(--go);font-weight:700}#bl-metro .sheet p.rvc{font-size:10px;color:var(--mu);margin-top:8px}#bl-metro .sheet h4{margin:0 0 2px;font:700 18px sans-serif}#bl-metro .sheet p{margin:0 0 6px;font:600 11px sans-serif;letter-spacing:.1em;color:var(--go);text-transform:uppercase}'+
 '@media (prefers-reduced-motion:reduce){#bl-metro *{animation:none!important;transition:none!important}}';
 
 /* ---------- helpers ---------- */
@@ -220,6 +220,19 @@ function mount(c,o){
   function posKey(){return A.key==='main'?'bl-metro-pos2':'bl-metro-pos2-'+A.key;}
   function stn(i){return C.stn[i%C.stn.length];}
   function lmOf(sq){var arr=(W.BL_LM&&W.BL_LM[C.city])||[],e=arr[sq.ord-1];return e||{n:C.city+' · '+tx.review};}
+  function gateBox(){
+    var g=o.gate,raw=o.raw||0;if(!g||!g.stages||g.cap>=raw)return null;
+    var st=null;g.stages.forEach(function(x){if(!st&&!x.ok)st=x;});if(!st)return null;
+    var b=h('div','gate'),hd=h('b'),ul=h('ul');hd.textContent='🔒 '+tx.stage+' '+st.stage+' · '+tx.gTitle;b.append(hd);
+    function li(en,pt,es){var l=h('li');l.textContent=ES?es:en;if(!ES&&pt){var e=h('em');e.textContent=pt;l.append(e);}ul.append(l);}
+    var lst=function(a){return a.slice(0,14).join(', ')+(a.length>14?'…':'');};
+    if(st.exreq&&!st.exok)li('Pass the Stage exam with 70% or more.','Passe na prova do Stage com 70% ou mais.','Aprueba el examen de la Etapa con un 70 % o más.');
+    if(st.avg<0.7)li('Lesson Check average: '+Math.round(st.avg*100)+'% (minimum 70%). Redo lessons: '+lst(st.redo||[]),'Média dos Lesson Checks: '+Math.round(st.avg*100)+'% (mínimo 70%). Refaça as lições: '+lst(st.redo||[]),'Promedio de los repasos: '+Math.round(st.avg*100)+' % (mínimo 70 %). Repite las lecciones: '+lst(st.redo||[]));
+    if((st.gram||[]).length)li((ES?'Check':'Grammar')+' exercises missing in lessons: '+lst(st.gram),'Faltam exercícios nas lições: '+lst(st.gram),'Faltan ejercicios en las lecciones: '+lst(st.gram));
+    if((st.wb||[]).length)li('Workbook sections missing in lessons: '+lst(st.wb),'Faltam seções do Workbook nas lições: '+lst(st.wb),'');
+    li('If you did not pass, wait for your teacher to release the next Stage.','Se não passou, aguarde o professor liberar o próximo Stage.','Si no aprobaste, espera a que tu profesor abra la próxima Etapa.');
+    b.append(ul);return b;
+  }
   function revMsg(){var m=null;try{m=JSON.parse(sessionStorage.getItem('bl-rev-msg')||'null');sessionStorage.removeItem('bl-rev-msg');}catch(e){}if(m)say((m.pass?tx.rvPass:tx.rvFail).replace('%',m.pct+'%'));}
 
   function say(t){toastEl.textContent=t;toastEl.classList.add('on');clearTimeout(say.t);say.t=setTimeout(function(){toastEl.classList.remove('on');},1900);}
@@ -324,6 +337,7 @@ function mount(c,o){
       if(A.stars){var got=0,pos=0;for(var z=1;z<=max;z++){var zz=A.stars(z);if(zz>0){got+=zz;pos+=3;}}
         if(pos){var sm=h('div','sum');sm.innerHTML='<b>★ '+got+'</b> / '+pos+' '+tx.stars;box.append(sm);}}
     }
+    var gb=gateBox();if(gb)box.append(gb);
     if(!cur&&upto>0){var m=h('p');m.style.cssText='margin:6px 2px;font:600 13px sans-serif;color:#cdd6ea';m.textContent=tx.all;box.append(m);}
     var sc=h('div','mapscroll');scEl=sc;box.append(sc);
     var svg=el('svg',{'class':'map',width:'100%',viewBox:'0 0 340 '+(N*S+120),role:'group','aria-label':C.city});mapEl=svg;sc.append(svg);
