@@ -57,18 +57,39 @@ td.n{text-align:right;white-space:nowrap}
 .cl{display:flex;gap:6px;padding:0 4px;font-size:.78rem;color:var(--muted)}.cl span{flex:1;text-align:center}
 .lg{font-size:.85rem;color:var(--muted)}.lg b{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:middle;margin:0 4px 0 10px}
 td input[type=number]{width:7em}
+.kp.big b{font-size:1.7rem}
+@media (max-width:700px){.kp.big{grid-template-columns:1fr 1fr 1fr;gap:6px}.kp.big>div{padding:8px}.kp.big b{font-size:1rem}.kp.big small{font-size:.66rem}}.kp .rc b{color:var(--ok)}
+.rate{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:10px 14px;margin:10px 0}
+.rate .sm{color:var(--muted)}.rate button{margin-left:auto}
+#tb input[type=checkbox]{width:24px;height:24px;accent-color:var(--ok);cursor:pointer}
+#tb tr.pd{background:rgba(63,120,220,.14)}#tb tr.pd td{color:var(--muted)}#tb tr.pd td.nm,#tb tr.pd td.n,#tb tr.pd td.c{text-decoration:line-through}
+#tb tr.late td.nm,#tb tr.late td.n{color:var(--bad)}
+#tb td.nm small{display:block;color:var(--muted);font-size:.8rem;text-decoration:none}
+#avl{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px 12px;align-items:end;margin:10px 0}
+#avl label{display:block;font-size:.85rem;color:var(--muted)}#avl input,#avl select{width:100%}
+@media (max-width:700px){
+ #tb{display:block}#tb thead{display:none}#tb tbody{display:block}
+ #tb tr{display:grid;grid-template-columns:34px 1fr auto;gap:2px 10px;align-items:center;border:1px solid var(--line);border-radius:16px;margin:0 0 8px;padding:10px 12px;background:var(--surface)}
+ #tb td{display:block;border:0;padding:0;text-align:left}
+ #tb td.ck{grid-row:1/3}#tb td.nm{grid-column:2}#tb td.vl{grid-column:3;text-align:right}
+ #tb td.dd{grid-column:2;font-size:.85rem;color:var(--muted)}#tb td.dd::before{content:'vence dia '}
+ #tb td.n{grid-column:3;font-size:.85rem;color:var(--muted);text-align:right}
+ #tb td.ac{grid-column:1/-1;text-align:right}
+}
 </style>
 <div class="wrap">
 <div class="band"><p>Britland Academy</p><h1>Pagamentos dos alunos</h1><p style="margin-top:8px"><a href="admin.html" style="color:#fff">← Painel do professor</a></p></div>
 
 <section class="card"><h2>Resumo do mês</h2>
   <div class="row"><label for="mes">Mês</label><input type="month" id="mes"><button type="button" id="gen">Gerar mensalidades do mês</button><span class="msg" id="gmsg" aria-live="polite"></span></div>
-  <p class="hint">O mês é o do vencimento. "Recebido" soma o que já foi marcado como pago; "A receber" soma o que ainda está aberto. Cada moeda tem o seu total.</p>
-  <div id="sum"></div>
+  <p class="hint">O mês é o do vencimento. Tudo aparece em reais: os valores em euro são convertidos pela cotação do dia. Marque a caixinha quando o aluno pagar.</p>
+  <div id="sum" data-noi18n="1"></div>
 </section>
 
 <section class="card"><h2>Mensalidades do mês</h2>
-  <div class="tw"><table id="tb"></table></div>
+  <div class="tw" data-noi18n="1"><table id="tb"></table></div>
+  <div class="row"><button type="button" class="ghost" id="avbtn">+ Cobrança avulsa</button></div>
+  <div id="avl" hidden></div>
   <p class="msg" id="tmsg" aria-live="polite"></p>
 </section>
 
@@ -131,7 +152,7 @@ function renderAll(){renderSum();renderTable();renderLate();renderChart();render
 
 function monthCh(m){const [a,b]=monthRange(m);return CH.filter(c=>c.due_date>=a&&c.due_date<b);}
 function totals(list){const t={};list.forEach(c=>{const o=t[c.currency]||(t[c.currency]={paid:0,open:0});if(c.paid_on)o.paid+=+c.amount;else o.open+=+c.amount;});return t;}
-function renderSum(){
+function renderSumOld(){
   const box=$('sum');box.textContent='';const t=totals(monthCh($('mes').value));const ks=Object.keys(t);
   if(!ks.length){box.append(el('p',{class:'hint'},'Nenhuma mensalidade neste mês. Cadastre os alunos e clique em "Gerar mensalidades do mês".'));return;}
   ks.sort().forEach(c=>{const o=t[c];
@@ -143,7 +164,7 @@ function renderSum(){
 }
 function status(c){if(c.paid_on)return el('span',{class:'st approved'},'Pago em '+br(c.paid_on));
   return c.due_date<today()?el('span',{class:'st blocked'},'Em atraso'):el('span',{class:'st pending'},'Aberto');}
-function rowFor(c,showMonth){
+function rowForOld(c,showMonth){
   const s=subOf(c.sub_id),inp=el('input',{type:'number',min:'0',step:'0.01',value:String(c.amount),'aria-label':'Valor'});
   const sv=el('button',{type:'button',class:'ghost'},'Salvar valor');
   sv.addEventListener('click',()=>upd(c.id,{amount:parseFloat(inp.value)||0}));
@@ -155,7 +176,7 @@ function rowFor(c,showMonth){
     el('td',{},s.student_name||'?'),el('td',{},s.plan||''),el('td',{class:'c'},br(c.due_date)),
     el('td',{},el('span',{},SYM[c.currency]+' '),inp),el('td',{},status(c)),el('td',{},el('div',{class:'row'},pay,sv,del)));
 }
-function renderTable(){
+function renderTableOld(){
   const t=$('tb');t.textContent='';t.append(th(['Aluno','Plano','Vencimento','Valor','Situação','Ações']));
   const b=el('tbody');monthCh($('mes').value).sort((x,y)=>x.due_date<y.due_date?-1:1).forEach(c=>b.append(rowFor(c)));t.append(b);
 }
@@ -163,10 +184,10 @@ function renderLate(){
   const L=CH.filter(c=>!c.paid_on&&c.due_date<today()),box=$('late');box.textContent='';
   if(!L.length){box.append(el('p',{class:'hint'},'Ninguém em atraso. 🎉'));return;}
   const tot={};L.forEach(c=>tot[c.currency]=(tot[c.currency]||0)+ +c.amount);
-  box.append(el('p',{},'Total em atraso: '+Object.keys(tot).map(c=>money(tot[c],c)).join(' + ')));
+  {const sb2=L.reduce((n,c)=>n+(toBRL(c)||0),0);box.append(el('p',{},'Total em atraso: '+fmBRL(sb2)));}
   const t=el('table');t.append(th(['Aluno','Vencimento','Valor','Dias de atraso']));const b=el('tbody');
   L.sort((x,y)=>x.due_date<y.due_date?-1:1).forEach(c=>{const d=Math.floor((new Date(today())-new Date(c.due_date))/864e5);
-    b.append(el('tr',{class:'late'},el('td',{},subOf(c.sub_id).student_name||'?'),el('td',{class:'c'},br(c.due_date)),el('td',{class:'n'},money(c.amount,c.currency)),el('td',{class:'c'},String(d))));});
+    b.append(el('tr',{class:'late'},el('td',{},nm(c)),el('td',{class:'c'},br(c.due_date)),el('td',{class:'n'},money(c.amount,c.currency)),el('td',{class:'c'},String(d))));});
   t.append(b);const w=el('div',{class:'tw'});w.append(t);box.append(w);
 }
 function renderChart(){
@@ -240,6 +261,68 @@ $('gen').addEventListener('click',async()=>{
   const r=await sb.from('charges').insert(rows);
   if(r.error){msg('gmsg',r.error.message,'bad');return;}msg('gmsg',rows.length+' mensalidade(s) criada(s).','ok');loadAll();
 });
+
+/* ---- cotação automática EUR→BRL, totais em reais, lista do mês ---- */
+let RATE=null,RATE_AT='';
+const nm=c=>subOf(c.sub_id).student_name||c.title||'?';
+const toBRL=c=>c.currency==='BRL'?+c.amount:(RATE?+c.amount*RATE:null);
+const fmBRL=v=>v==null?'—':money(v,'BRL');
+async function loadRate(force){
+  const key='bl-eurbrl';let cached=null;try{cached=JSON.parse(localStorage.getItem(key)||'null');}catch(e){}
+  if(cached&&!force&&cached.d===today()){RATE=cached.r;RATE_AT=cached.t;renderAll();return;}
+  for(const u of ['https://api.frankfurter.dev/v1/latest?base=EUR&symbols=BRL','https://api.frankfurter.app/latest?from=EUR&to=BRL']){
+    try{const r=await fetch(u);if(!r.ok)continue;const j=await r.json(),v=j.rates&&j.rates.BRL;
+      if(v){RATE=v;RATE_AT=j.date||today();try{localStorage.setItem(key,JSON.stringify({r:v,d:today(),t:RATE_AT}));}catch(e){}renderAll();return;}}catch(e){}}
+  if(cached){RATE=cached.r;RATE_AT=cached.t+' · última guardada';}
+  renderAll();
+}
+function renderSum(){
+  const box=$('sum');box.textContent='';const L=monthCh($('mes').value);
+  if(!L.length){box.append(el('p',{class:'hint'},'Nenhuma mensalidade neste mês. Cadastre os alunos e clique em "Gerar mensalidades do mês".'));return;}
+  let tot=0,rec=0;L.forEach(c=>{const v=toBRL(c);if(v==null)return;tot+=v;if(c.paid_on)rec+=v;});
+  box.append(el('div',{class:'kp big'},
+    el('div',{},el('small',{},'Total esperado'),el('b',{},fmBRL(tot))),
+    el('div',{class:'rc'},el('small',{},'Já recebido'),el('b',{},fmBRL(rec))),
+    el('div',{class:'wt'},el('small',{},'Pendente'),el('b',{},fmBRL(tot-rec)))));
+  const b=el('button',{type:'button',class:'ghost'},'Atualizar');b.addEventListener('click',()=>{b.disabled=true;loadRate(true).then(()=>{b.disabled=false;});});
+  box.append(el('div',{class:'rate'},el('span',{class:'sm'},'Cotação automática'),
+    el('b',{},RATE?'1 € = '+money(RATE,'BRL'):'indisponível agora'),
+    el('span',{class:'sm'},RATE?'de '+(/^\d{4}-/.test(RATE_AT)?br(RATE_AT.slice(0,10))+RATE_AT.slice(10):RATE_AT)+' · Banco Central Europeu':'os valores em euro aparecem sem conversão'),b));
+}
+function rowFor(c){
+  const inp=el('input',{type:'number',min:'0',step:'0.01',value:String(c.amount),'aria-label':'Valor'});
+  inp.addEventListener('change',()=>upd(c.id,{amount:parseFloat(inp.value)||0}));
+  const ck=el('input',{type:'checkbox','aria-label':'Pago'});ck.checked=!!c.paid_on;
+  ck.addEventListener('change',()=>upd(c.id,{paid_on:ck.checked?today():null}));
+  const del=el('button',{type:'button',class:'danger'},'Excluir');
+  del.addEventListener('click',()=>{if(confirm('Excluir esta cobrança?'))sb.from('charges').delete().eq('id',c.id).then(loadAll);});
+  const s=subOf(c.sub_id),late=!c.paid_on&&c.due_date<today();
+  return el('tr',{class:c.paid_on?'pd':(late?'late':'')},
+    el('td',{class:'ck c'},ck),
+    el('td',{class:'nm'},nm(c),el('small',{},c.paid_on?'Pago em '+br(c.paid_on):(s.plan||c.note||'Avulsa'))),
+    el('td',{class:'vl'},el('span',{},SYM[c.currency]+' '),inp),
+    el('td',{class:'dd c'},String(+c.due_date.slice(8))),
+    el('td',{class:'n'},fmBRL(toBRL(c))),
+    el('td',{class:'ac'},del));
+}
+function renderTable(){
+  const t=$('tb');t.textContent='';t.append(th(['Pago','Aluno / descrição','Valor','Vence dia','Em reais','']));
+  const b=el('tbody');monthCh($('mes').value).sort((x,y)=>x.due_date<y.due_date?-1:1).forEach(c=>b.append(rowFor(c)));t.append(b);
+}
+(function(){
+  const box=$('avl'),btn=$('avbtn');if(!box||!btn)return;
+  const d=el('input',{type:'text',id:'av-d','aria-label':'Descrição'}),cu=el('select',{id:'av-c','aria-label':'Moeda'},el('option',{value:'BRL'},'Real (R$)'),el('option',{value:'EUR'},'Euro (€)')),
+    am=el('input',{type:'number',min:'0',step:'0.01',id:'av-a'}),dt=el('input',{type:'date',id:'av-t',value:today()}),go=el('button',{type:'button'},'Adicionar');
+  const L=(t,x)=>el('div',{},el('label',{},t),x);
+  box.append(L('Descrição',d),L('Moeda',cu),L('Valor',am),L('Vencimento',dt),el('div',{},go));
+  btn.addEventListener('click',()=>{box.hidden=!box.hidden;});
+  go.addEventListener('click',()=>{const v=parseFloat(am.value);if(!d.value.trim()||isNaN(v)||v<0){msg('tmsg','Preencha a descrição e o valor.','bad');return;}
+    sb.from('charges').insert({sub_id:null,title:d.value.trim(),due_date:dt.value||today(),currency:cu.value,amount:v}).then(r=>{
+      if(r.error){msg('tmsg',/null value|sub_id|title/i.test(r.error.message)?'Falta rodar o SQL das cobranças avulsas (payments_avulsa.sql) no Supabase.':r.error.message,'bad');return;}
+      msg('tmsg','Cobrança avulsa adicionada.','ok');d.value='';am.value='';box.hidden=true;loadAll();});});
+})();
+loadRate();
+
 loadAll();
 });
 </script>
