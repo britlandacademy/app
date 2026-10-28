@@ -62,6 +62,7 @@ var S={
  gDel:{en:'Delete',pt:'Excluir',es:'Eliminar'},gSure:{en:'Sure? Tap again',pt:'Certeza? Toque de novo',es:'¿Seguro? Toca otra vez'},
  gNone:{en:'No groups yet.',pt:'Nenhuma turma ainda.',es:'Aún no hay grupos.'},gNoM:{en:'no members',pt:'sem alunos',es:'sin alumnos'},
  gErr:{en:'Enter a name and pick at least one student.',pt:'Informe o nome e marque ao menos um aluno.',es:'Escribe un nombre y marca al menos un alumno.'},
+ none:{en:'No lessons scheduled yet.',pt:'Nenhuma aula marcada ainda.',es:'Aún no hay clases programadas.'},
  busy:{en:'Working…',pt:'Aguarde…',es:'Espera…'},
  fail:{en:'Something went wrong. Try again.',pt:'Algo deu errado. Tente de novo.',es:'Algo salió mal. Inténtalo de nuevo.'}
 };
@@ -111,7 +112,6 @@ function mount(box,ctx){
   function draw(rows,reqs){
     clearTimeout(tm);box.textContent='';reqs=reqs||[];
     var pend=reqs.filter(isPend);
-    if(!rows.length&&!pend.length){box.hidden=true;return;}
     box.hidden=false;var w=el('div','ag');w.appendChild(el('h2','',T('title')));
     var z=tzName();w.appendChild(el('p','ag-s',T('tz')+(z?' ('+z+')':'')));
     var now=Date.now(),f=rows[0];
@@ -122,6 +122,7 @@ function mount(box,ctx){
         w.appendChild(b);}}
     reqs.filter(function(q){return q.status==='approved'||q.status==='rejected';}).slice(0,2).forEach(function(q){var m=el('p','ag-s ag-soon',T(q.status==='approved'?'okMsg':'noMsg',fmtFull(q.new_start)));m.setAttribute('role','status');w.appendChild(m);});
     w.appendChild(el('h2','',T('next')));
+    if(!rows.length)w.appendChild(el('p','ag-s',T('none')));
     rows.forEach(function(x){
       var r=el('div','ag-row'),dt=new Date(x.start_at),db=el('div','ag-date'),d=el('div');
       var wd='';try{wd=new Intl.DateTimeFormat(loc(),{weekday:'short'}).format(dt).replace('.','');}catch(e){}
