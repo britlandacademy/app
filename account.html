@@ -41,35 +41,54 @@ td.g{background:var(--ok-bg)}td.m{background:var(--warn-bg)}td.r{background:var(
 </head>
 <body>
 <style>
-.tabs{display:flex;gap:8px;margin:0 0 14px}
-.tabs button{flex:1;background:var(--card);color:var(--ink);border:2px solid var(--line)}
-.tabs button[aria-selected=true]{border-color:var(--accent);background:var(--chip)}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 14px}
+.tabs button{flex-direction:column;justify-content:center;gap:6px;min-height:84px;padding:12px 6px;background:var(--card);color:var(--ink);border:2px solid var(--line);border-radius:20px!important;font-size:.92rem}
+.tabs button svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.tabs button[aria-selected=true]{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
 .kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:10px 0}
-.kp>div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px}
+.kp>div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px}
 .kp small{display:block;color:var(--muted);font-size:.82rem;text-transform:uppercase;letter-spacing:.06em}
 .kp b{font-size:1.45rem;display:block}
 td.n{text-align:right;white-space:nowrap}
-details{margin:8px 0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+details{margin:8px 0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px 12px}
 summary{cursor:pointer;font-weight:700;padding:4px 0}
-.pill{display:inline-block;padding:2px 8px;border-radius:99px;font-weight:700;font-size:.85rem}
+.pill{display:inline-block;padding:2px 10px;border-radius:99px;font-weight:700;font-size:.85rem}
 .pill.ok{background:var(--ok-bg);color:var(--ok)}.pill.bad{background:var(--bad-bg);color:var(--bad)}.pill.wt{background:var(--warn-bg);color:var(--warn)}
-.next{border:2px solid var(--accent);border-radius:12px;padding:14px;margin:10px 0;background:var(--surface)}
+.next{border:2px solid var(--accent);border-radius:18px;padding:14px;margin:10px 0;background:var(--surface)}
 .next b{font-size:1.3rem}
 .hero{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.hero .ed{position:relative;border:0;background:none;padding:0;border-radius:50%;cursor:pointer}
 .hero .ed .cam{position:absolute;right:-2px;bottom:-2px;width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--accent-ink);border:3px solid var(--card);display:flex;align-items:center;justify-content:center}
 .hero .ed .cam svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 .hero h2{margin:0}.hero p{margin:2px 0 0;color:var(--muted)}
+.hero .hi{flex:1;min-width:180px}
+.bar{height:12px;border-radius:99px;background:var(--line);overflow:hidden;margin:8px 0 2px}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--accent);transition:width .6s ease}
+.rings{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;margin:6px 0 14px}
+.rings svg{width:92px;height:92px;max-width:100%}
+.rings .rt{font:700 22px/1 var(--font-body);fill:var(--ink)}
+.rings small{display:block;color:var(--muted);font-size:.82rem;margin-top:2px}
+.sec{font-size:1rem;margin:16px 0 6px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.chart svg{width:100%;height:auto;display:block}
+.chart .ax{display:flex;justify-content:space-between;color:var(--muted);font-size:.78rem}
+.medals{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:6px 0}
+.md{text-align:center;font-size:.78rem;line-height:1.2}
+.md svg{width:54px;height:54px;display:block;margin:0 auto 4px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.md.on svg{color:var(--accent)}.md.off{opacity:.38;filter:grayscale(1)}
+.sp{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:.92rem}
+.sp>span:first-child{width:74px;flex:none;font-weight:700}.sp .bar{flex:1;margin:0}.sp>span:last-child{width:44px;text-align:right;color:var(--muted)}
+.pbar{margin:10px 0}
 .choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:8px 0}
-.choices button{border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px;font:inherit;font-weight:700;cursor:pointer;min-height:48px}
-.choices button[aria-pressed=true]{border-color:var(--accent);background:var(--chip)}
-.smp{background:var(--surface);border-radius:10px;padding:10px 14px;margin-top:8px}
+.choices button{border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px!important;padding:12px;font:inherit;font-weight:700;cursor:pointer;min-height:48px;justify-content:center}
+.choices button[aria-pressed=true]{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
+.smp{background:var(--surface);border-radius:14px;padding:10px 14px;margin-top:8px}
 </style>
 <div class="wrap">
 <div class="band"><p>Britland Academy</p><h1>My Profile</h1><p style="margin-top:8px"><a href="index.html" style="color:#fff">← Back to the activities</a></p></div>
-<section class="card hero" id="hero"><button type="button" class="ed" id="edav" aria-label="Change picture"><span class="pf-av xl" data-pf-av="1"></span><span class="cam"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></span></button><div><h2 id="hn"></h2><p id="hs"></p><p><button type="button" class="btn" id="chg">Change picture</button></p></div></section>
-<div class="tabs" role="tablist"><button type="button" role="tab" id="t-g" aria-selected="true">Grades</button><button type="button" role="tab" id="t-p" aria-selected="false">Payments</button><button type="button" role="tab" id="t-s" aria-selected="false">Settings</button></div>
-<section class="card" id="p-g"><h2>My grades</h2><div id="g"></div></section>
-<section class="card" id="p-p" hidden><h2>My payments</h2><div id="p"></div></section>
+<section class="card hero" id="hero"><button type="button" class="ed" id="edav" aria-label="Change picture"><span class="pf-av xl" data-pf-av="1"></span><span class="cam"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></span></button><div class="hi"><h2 id="hn"></h2><p id="hs"></p><div class="bar" id="hbar" hidden><i style="width:0"></i></div><p class="sm" id="hbt"></p><p><button type="button" class="btn" id="chg">Change picture</button></p></div></section>
+<div class="tabs" role="tablist"><button type="button" role="tab" id="t-g" aria-selected="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Grades</span></button><button type="button" role="tab" id="t-p" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M2.5 10h19M6.5 15h4"/></svg><span>Payments</span></button><button type="button" role="tab" id="t-s" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/></svg><span>Settings</span></button></div>
+<section class="card" id="p-g"><div id="g"></div></section>
+<section class="card" id="p-p" hidden><div id="p"></div></section>
 <section class="card" id="p-s" hidden><h2>Settings</h2>
 <h3>Appearance</h3><p class="hint">Choose how Britland Academy looks on your device.</p>
 <div class="choices" id="thm"><button type="button" data-v="light">Light</button><button type="button" data-v="dark">Dark</button><button type="button" data-v="auto">Automatic</button></div>
@@ -106,6 +125,18 @@ document.querySelectorAll('#thm button').forEach(b=>b.addEventListener('click',(
 document.querySelectorAll('#sz button').forEach(b=>b.addEventListener('click',()=>Gate.setSize(Gate.sizeIdx()+(+b.dataset.d))));
 
 async function grades(){const b=$('g');Gate.skel(b,3,52);try{await grades0();}finally{Gate.unskel(b);}}
+function svgH(h){const d=document.createElement('div');d.innerHTML=h;return d.firstElementChild;}
+function ring(p,txt,lab){const R=34,C=2*Math.PI*R,v=Math.max(0,Math.min(1,p));
+  const w=el('div',{});w.append(svgH('<svg viewBox="0 0 92 92" role="img" aria-label="'+txt+'"><circle cx="46" cy="46" r="'+R+'" fill="none" stroke="var(--line)" stroke-width="9"/><circle cx="46" cy="46" r="'+R+'" fill="none" stroke="var(--accent)" stroke-width="9" stroke-linecap="round" stroke-dasharray="'+(C*v).toFixed(1)+' '+C.toFixed(1)+'" transform="rotate(-90 46 46)"/><text class="rt" x="46" y="53" text-anchor="middle">'+txt+'</text></svg>'),el('small',{},lab));return w;}
+const MD=[
+ ['First check','M5 13l4 4L19 7'],
+ ['10 checks','M4 19V9M10 19V5M16 19v-7M21 19H3'],
+ ['Perfect score','M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z'],
+ ['7 days in a row','M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-4-1-6 1-9z'],
+ ['Stage finished','M5 21V4M5 4h12l-2 4 2 4H5'],
+ ['Workbook','M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM8 17h11'],
+ ['50 exercises','M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3 2'],
+ ['Top student','M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M12 14v4M8 21h8']];
 async function grades0(){
   const box=$('g'),all=[];let from=0;
   for(;;){const r=await sb.from('attempts').select('kind,lesson,ex,score,total,created_at').order('created_at',{ascending:true}).range(from,from+999);
@@ -120,21 +151,58 @@ async function grades0(){
     if(o.last>l.last)l.last=o.last;});
   const L=Object.values(per);let cs=0,ct=0;L.forEach(l=>{if(l.check){cs+=l.check.s;ct+=l.check.t;}});
   const done=L.filter(l=>l.check).length;
-  box.append(el('div',{class:'kp'},
-    el('div',{},el('small',{},'Lesson Check average'),el('b',{},pct(cs,ct))),
-    el('div',{},el('small',{},'Lesson Checks done'),el('b',{},String(done))),
-    el('div',{},el('small',{},'Last activity'),el('b',{style:'font-size:1.1rem'},dt(all[all.length-1].created_at)))));
+  /* streak (days with any activity) */
+  const days=new Set(all.map(a=>iso(new Date(a.created_at))));
+  let cur=0,d0=new Date();if(!days.has(iso(d0)))d0.setDate(d0.getDate()-1);
+  while(days.has(iso(d0))){cur++;d0.setDate(d0.getDate()-1);}
+  const sorted=[...days].sort();let mx=0,run=0,prev=null;
+  sorted.forEach(x=>{const t=new Date(x+'T12:00:00').getTime();run=(prev!==null&&Math.round((t-prev)/864e5)===1)?run+1:1;prev=t;if(run>mx)mx=run;});
+  /* hero: stage progress */
+  let si=-1;STG.forEach((r,i)=>{if(L.some(l=>l.check&&l.lesson>=r[0]&&l.lesson<=r[1]))si=i;});
+  if(si>=0){const r=STG[si],n=L.filter(l=>l.check&&l.lesson>=r[0]&&l.lesson<=r[1]).length,tot=r[1]-r[0]+1,p=Math.round(n/tot*100);
+    $('hbar').hidden=false;$('hbar').firstChild.style.width=p+'%';
+    $('hbt').textContent=r[0]>1000?'Business · '+p+'%':'Stage '+(si+1)+' · '+p+'%';}
+  /* rings */
+  box.append(el('div',{class:'rings'},ring(ct?cs/ct:0,pct(cs,ct),'Lesson Check average'),ring(Math.min(1,done/STG.reduce((x,r)=>x+(r[1]-r[0]+1),0)*8),String(done),'Lesson Checks done'),ring(Math.min(1,cur/7),String(cur),'Days in a row')));
+  /* weekly chart */
+  const W=8,now=new Date();now.setHours(0,0,0,0);const wk=Array(W).fill(0);
+  all.forEach(a=>{const t=new Date(a.created_at);t.setHours(0,0,0,0);const k=Math.floor((now-t)/864e5/7);if(k>=0&&k<W)wk[W-1-k]++;});
+  const mxw=Math.max(1,...wk),pts=wk.map((v,i)=>[10+i*(300/(W-1)),82-(v/mxw)*66]);
+  box.append(el('h3',{class:'sec'},'Activity per week'));
+  const ch=el('div',{class:'chart'});ch.append(svgH('<svg viewBox="0 0 320 96" role="img" aria-label="Activity per week"><polyline points="'+pts.map(p=>p.join(',')).join(' ')+'" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>'+pts.map(p=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4" fill="var(--accent)"/>').join('')+'</svg>'));
+  ch.append(el('div',{class:'ax'},el('span',{},'8'),el('span',{},'0')));
+  ch.lastChild.firstChild.textContent='−8 w';ch.lastChild.lastChild.textContent='now';box.append(ch);
+  /* medals */
+  const perfect=Object.values(best).some(o=>o.kind==='check'&&o.t&&o.s===o.t);
+  const stageDone=STG.some(r=>{const n=L.filter(l=>l.check&&l.lesson>=r[0]&&l.lesson<=r[1]).length;return n>=(r[1]-r[0]+1);});
+  const exN=all.filter(a=>a.kind==='ex').length;
+  const has=[done>=1,done>=10,perfect,mx>=7,stageDone,all.some(a=>a.kind==='ex'&&/^wb/.test(String(a.ex))),exN>=50,done>=5&&ct&&cs/ct>=.9];
+  const prog=[done?1:0,Math.min(1,done/10),perfect?1:0,Math.min(1,mx/7),0,0,Math.min(1,exN/50),done>=5&&ct?Math.min(1,cs/ct/.9):0];
+  box.append(el('h3',{class:'sec'},'Medals'));
+  const mg=el('div',{class:'medals'});MD.forEach((m,i)=>{const d=el('div',{class:'md '+(has[i]?'on':'off')});d.append(svgH('<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" /><g transform="translate(4.8 4.8) scale(.6)"><path d="'+m[1]+'"/></g></svg>'),el('span',{},m[0]));mg.append(d);});box.append(mg);
+  let nx=-1,np=-1;has.forEach((h,i)=>{if(!h&&prog[i]>np){np=prog[i];nx=i;}});
+  if(nx>=0){const nb=el('div',{class:'pbar'},el('span',{class:'sm'},'Next medal'),el('b',{},' · '+MD[nx][0]),el('div',{class:'bar'},el('i',{style:'width:'+Math.round(np*100)+'%'})));
+    nb.querySelector('b').firstChild.textContent=' · ';nb.querySelector('b').append('');box.append(nb);
+    const bb=nb.querySelector('b');bb.textContent='';bb.append(' · ',el('span',{},MD[nx][0]));}
+  /* progress by stage */
+  const sg=[];STG.forEach((r,i)=>{const n=L.filter(l=>l.check&&l.lesson>=r[0]&&l.lesson<=r[1]).length;if(!n)return;
+    let s=0,t=0;L.forEach(l=>{if(l.check&&l.lesson>=r[0]&&l.lesson<=r[1]){s+=l.check.s;t+=l.check.t;}});
+    sg.push(el('div',{class:'sp'},el('span',{},r[0]>1000?'Business':'Stage '+(i+1)),el('div',{class:'bar'},el('i',{style:'width:'+Math.round(n/(r[1]-r[0]+1)*100)+'%'})),el('span',{},pct(s,t))));});
+  if(sg.length){box.append(el('h3',{class:'sec'},'Progress by Stage'));sg.forEach(x=>box.append(x));}
+  /* full table, collapsed */
+  const all2=el('details',{class:'allg'});all2.append(el('summary',{},'See all grades'));
   STG.forEach((r,i)=>{const ls=L.filter(l=>l.lesson>=r[0]&&l.lesson<=r[1]).sort((a,b)=>a.lesson-b.lesson);if(!ls.length)return;
     let s=0,t=0,n=0;ls.forEach(l=>{if(l.check){s+=l.check.s;t+=l.check.t;n++;}});
-    const d=el('details');if(i===STG.length-1||ls.some(l=>l.last===[...ls].map(x=>x.last).sort().pop()))d.open=false;
+    const d=el('details');
     d.append(el('summary',{},(r[0]>1000?'Business':'Stage '+(i+1))+' · Checks average '+pct(s,t)+' · '+n+' done'));
     const tb=el('table');tb.append(th(['Lesson','Lesson Check','Exercises','Workbook','Last activity']));const b=el('tbody');
     ls.forEach(l=>b.append(el('tr',{},el('td',{class:'c'},String(l.lesson>1000?l.lesson-1000:l.lesson)),
       el('td',{class:'c'},l.check?l.check.s+'/'+l.check.t+' ('+pct(l.check.s,l.check.t)+')':'—'),
       el('td',{class:'c'},l.ex.t?pct(l.ex.s,l.ex.t):'—'),el('td',{class:'c'},l.wb.t?pct(l.wb.s,l.wb.t):'—'),
       el('td',{class:'c'},dt(l.last)))));
-    tb.append(b);const w=el('div',{class:'tw'});w.append(tb);d.append(w);box.append(d);});
-  const lastD=[...box.querySelectorAll('details')].pop();if(lastD)lastD.open=true;
+    tb.append(b);const w=el('div',{class:'tw'});w.append(tb);d.append(w);all2.append(d);});
+  all2.append(el('p',{class:'hint'},'Last activity'));all2.lastChild.textContent='';all2.lastChild.append('Last activity: '+dt(all[all.length-1].created_at));
+  box.append(all2);
 }
 
 async function pays(){const b=$('p');Gate.skel(b,2,60);try{await pays0();}finally{Gate.unskel(b);}}
@@ -154,14 +222,14 @@ async function pays0(){
   const open=ch.filter(x=>!x.paid_on).sort((x,y)=>x.due_date<y.due_date?-1:1);
   if(open.length){const n=open[0],late=n.due_date<today;
     box.append(el('div',{class:'next'},el('small',{},late?'Overdue payment':'Next payment'),el('br'),el('b',{},money(n.amount,n.currency)),
-      el('span',{},' · due '+dt(n.due_date)+' '),el('span',{class:'pill '+(late?'bad':'wt')},late?'Overdue':'Open')));}
+      el('span',{},' · due '+dt(n.due_date)+' '),el('span',{class:'pill '+(late?'bad':'wt')},late?'Overdue':'Open'),(function(){const dd=new Date(n.due_date+'T12:00:00'),st=new Date(dd);st.setMonth(st.getMonth()-1);const p=Math.max(0,Math.min(1,(Date.now()-st)/(dd-st)));return el('div',{class:'bar'},el('i',{style:'width:'+Math.round((late?1:p)*100)+'%'}));})()));}
   else if(ch.length)box.append(el('div',{class:'next'},el('b',{},'All paid. Thank you!')));
   if(ch.length){const paid={};ch.forEach(x=>{if(x.paid_on)paid[x.currency]=(paid[x.currency]||0)+ +x.amount;});
     box.append(el('p',{class:'hint'},'Total paid so far: '+(Object.keys(paid).map(k=>money(paid[k],k)).join(' + ')||'—')));
     const tb=el('table');tb.append(th(['Due date','Amount','Status','Paid on']));const b=el('tbody');
     ch.forEach(x=>{const st=x.paid_on?el('span',{class:'pill ok'},'Paid'):(x.due_date<today?el('span',{class:'pill bad'},'Overdue'):el('span',{class:'pill wt'},'Open'));
       b.append(el('tr',{},el('td',{class:'c'},dt(x.due_date)),el('td',{class:'n'},money(x.amount,x.currency)),el('td',{class:'c'},st),el('td',{class:'c'},dt(x.paid_on))));});
-    tb.append(b);const w=el('div',{class:'tw'});w.append(tb);box.append(w);}
+    tb.append(b);const w=el('div',{class:'tw'});w.append(tb);const hd=el('details',{},el('summary',{},'Payment history'));hd.append(w);box.append(hd);}
   const nm=(ctx.profile&&ctx.profile.name)||'';
   box.append(el('p',{},el('a',{class:'btn',href:'https://wa.me/5511914881274?text='+encodeURIComponent('Hello! This is '+nm+', a Britland Academy student. I have a question about my payments.'),target:'_blank',rel:'noopener'},'Talk to the school')));
 }
