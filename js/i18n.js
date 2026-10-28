@@ -109,6 +109,7 @@ var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they 
 ["Lesson Check average","Média dos Lesson Checks","Promedio de los Lesson Checks"],
 ["Last activity","Última atividade","Última actividad"],
 ["Days in a row","Dias seguidos","Días seguidos"],
+["Language","Idioma","Idioma"],
 ["Activity per week","Atividade por semana","Actividad por semana"],
 ["−8 w","−8 sem","−8 sem"],
 ["now","agora","ahora"],
@@ -604,8 +605,10 @@ var MODE=COURSE.i18nMode||((PG==='workbook'||PG==='placement')?'free':(PG==='che
 FP=(UI==='en'&&MODE!=='free'); /* English course: student warnings, tutorials and exercise instructions always in Portuguese */
 var HK=COURSE.whyKey||'callan-why',hint=(UI==='en')?'pt':'en';
 try{var hs=localStorage.getItem(HK);if(hs==='en'||hs==='pt'||hs==='es')hint=hs;}catch(e){}
+var PREFK=KEY+'-ui';
+function pref(){var s=null;try{s=localStorage.getItem(PREFK);}catch(e){}return(s==='en'||s==='pt'||s==='es')?s:null;}
 function detect(){
-  if(MODE!=='free'){try{localStorage.removeItem(KEY);}catch(e){}return UI;}
+  if(MODE!=='free'){try{localStorage.removeItem(KEY);}catch(e){}return pref()||UI;}
   var s=null;try{s=localStorage.getItem(KEY);}catch(e){}
   if(s==='en'||s==='pt'||s==='es')return s;
   return 'en';
@@ -613,14 +616,15 @@ function detect(){
 function refresh(){
   var bs=document.querySelectorAll('.lang-sel .lang-btn');
   for(var i=0;i<bs.length;i++){
-    var b=bs[i],fr=b.parentNode.getAttribute('data-free')==='1',cur=fr||MODE==='free'?lang:(MODE==='why'?hint:UI);
+    var b=bs[i],fr=b.parentNode.getAttribute('data-free')==='1'||b.parentNode.getAttribute('data-ui')==='1',cur=fr||MODE==='free'?lang:(MODE==='why'?hint:UI);
     b.setAttribute('aria-pressed',b.getAttribute('data-l')===cur?'true':'false');
   }
 }
 function after(){
   if(MODE==='free'){defLang('en');return;}
   try{localStorage.removeItem(KEY);}catch(e){}
-  if(lang!==UI){lang=UI;apply();try{window.dispatchEvent(new CustomEvent('langchange',{detail:UI}));}catch(e){}}
+  var base=pref()||UI;
+  if(lang!==base){lang=base;apply();try{window.dispatchEvent(new CustomEvent('langchange',{detail:base}));}catch(e){}}
   refresh();
 }
 var IDX={en:0,pt:1,es:2};
@@ -694,6 +698,12 @@ function setLang(l,force){
   apply();refresh();
   try{window.dispatchEvent(new CustomEvent('langchange',{detail:l}));}catch(e){}
 }
+function setUi(l){
+  if(!IDX.hasOwnProperty(l))return;
+  try{localStorage.setItem(PREFK,l);if(MODE==='free')localStorage.setItem(KEY,l);}catch(e){}
+  lang=l;apply();refresh();
+  try{window.dispatchEvent(new CustomEvent('langchange',{detail:l}));}catch(e){}
+}
 function defLang(l){
   var s=null;try{s=localStorage.getItem(KEY);}catch(e){}
   if(s==='en'||s==='pt'||s==='es'||!IDX.hasOwnProperty(l)||l===lang)return;
@@ -717,14 +727,15 @@ function flagSVG(l,id){
 }
 var FLAGN=0;
 function selector(free){
-  var g=document.createElement('div');if(free)g.setAttribute('data-free','1');
+  var ui=(free==='ui');if(ui)free=false;
+  var g=document.createElement('div');if(free)g.setAttribute('data-free','1');if(ui)g.setAttribute('data-ui','1');
   g.className='lang-sel';g.setAttribute('role','group');g.setAttribute('aria-label','Language');g.setAttribute('data-noi18n','1');
   LANGS.forEach(function(x){
     var b=document.createElement('button');b.type='button';b.className='lang-btn';b.setAttribute('data-l',x[0]);
     b.setAttribute('aria-label',x[1]);b.title=x[1];
-    if(!free&&MODE==='lock'&&x[0]!==UI){b.disabled=true;b.setAttribute('aria-disabled','true');}
+    if(!free&&!ui&&MODE==='lock'&&x[0]!==UI){b.disabled=true;b.setAttribute('aria-disabled','true');}
     b.innerHTML=flagSVG(x[0],++FLAGN);
-    b.addEventListener('click',function(){setLang(x[0],!!free);});
+    b.addEventListener('click',function(){if(ui)setUi(x[0]);else setLang(x[0],!!free);});
     g.appendChild(b);
   });
   setTimeout(refresh,0);
@@ -746,5 +757,5 @@ function start(){
   obs.observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:ATTRS});
 }
 if(document.body)start();else document.addEventListener('DOMContentLoaded',start);
-window.I18N={pt:function(s){var c=String(s||'').trim();return MAP.hasOwnProperty(c)?MAP[c][1]:s;},flag:function(l){return flagSVG(l,++FLAGN);},def:defLang,t:tr,selector:selector,set:setLang,after:after,mode:MODE,get lang(){return lang;},get hint(){return MODE==='why'?hint:lang;}};
+window.I18N={pt:function(s){var c=String(s||'').trim();return MAP.hasOwnProperty(c)?MAP[c][1]:s;},flag:function(l){return flagSVG(l,++FLAGN);},def:defLang,t:tr,selector:selector,set:setLang,setUi:setUi,after:after,mode:MODE,get lang(){return lang;},get hint(){return MODE==='why'?hint:lang;}};
 })();

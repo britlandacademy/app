@@ -13,10 +13,14 @@ function lang(){try{var l=localStorage.getItem(KEY);return l==='en'||l==='es'||l
 var TX={en:{home:'Home',tro:'Trophies',pro:'Profile',lesson:'Lesson',here:'YOU ARE HERE',stars:'stars',welcome:'Welcome to',next:'NEXT STOP',locked:'Complete the current lesson first',tap:'Tap the lesson to open it',
  open:'Open lesson',medals:'Medals',streak:'Streak',stages:'My stages',days:'days in a row',lessons:'lessons',stars:'stars',pay:'Grades and payments',grades:'My grades',avg:'average',all:'All done! Ask your teacher for the next lessons.',
  m:['First lesson','3 lessons','10 lessons','7-day streak','Perfect score','30-day streak'],week:'SMTWTFS',stage:'Stage',gTitle:'next Stage is locked',review:'Review',rvGo:'Start Review',rvNeed:'Score 70% or more to open the next station.',photo:'Photo: Wikimedia Commons, public domain',rvPass:'Review passed: %',rvFail:'Not yet: %. You need 70%. Try the Review again.',rvGen:'Four lessons are behind you. A short quiz makes them stick.',rvGenPt:'Quatro lições ficaram para trás. Um quiz rápido ajuda a fixá-las.',rvPlate:'Time to review the last 4 lessons.',lessonsR:'Lessons'},
+ pt:{home:'Início',tro:'Troféus',pro:'Perfil',lesson:'Lição',here:'VOCÊ ESTÁ AQUI',stars:'estrelas',welcome:'Bem-vindo a',next:'PRÓXIMA PARADA',locked:'Complete primeiro a lição atual',tap:'Toque na lição para abri-la',
+ open:'Abrir lição',medals:'Medalhas',streak:'Sequência',stages:'Meus stages',days:'dias seguidos',lessons:'lições',pay:'Notas e pagamentos',grades:'Minhas notas',avg:'média',all:'Tudo pronto! Peça ao seu professor as próximas lições.',
+ m:['Primeira lição','3 lições','10 lições','7 dias seguidos','Nota máxima','30 dias seguidos'],week:'DSTQQSS',stage:'Stage',gTitle:'o próximo Stage está bloqueado',review:'Revisão',rvGo:'Começar a revisão',rvNeed:'Tire 70% ou mais para abrir a próxima estação.',photo:'Foto: Wikimedia Commons, domínio público',rvPass:'Revisão aprovada: %',rvFail:'Ainda não: %. Você precisa de 70%. Tente a revisão de novo.',rvGen:'Quatro lições ficaram para trás. Um quiz rápido ajuda a fixá-las.',rvGenPt:'Quatro lições ficaram para trás. Um quiz rápido ajuda a fixá-las.',rvPlate:'Hora de revisar as últimas 4 lições.',lessonsR:'Lições'},
  es:{home:'Inicio',tro:'Trofeos',pro:'Perfil',lesson:'Lección',here:'ESTÁS AQUÍ',stars:'estrellas',welcome:'Bienvenido a',next:'PRÓXIMA PARADA',locked:'Primero completa la lección actual',tap:'Toca la lección para abrirla',
  open:'Abrir lección',medals:'Medallas',streak:'Racha',stages:'Mis etapas',days:'días seguidos',lessons:'lecciones',stars:'estrellas',pay:'Notas y pagos',grades:'Mis notas',avg:'promedio',all:'¡Todo listo! Pide a tu profesor las próximas lecciones.',
  m:['Primera lección','3 lecciones','10 lecciones','Racha de 7 días','Nota perfecta','Racha de 30 días'],week:'LMXJVSD',stage:'Etapa',gTitle:'la próxima Etapa está cerrada',review:'Repaso',rvGo:'Empezar el repaso',rvNeed:'Saca un 70 % o más para abrir la próxima estación.',photo:'Foto: Wikimedia Commons, dominio público',rvPass:'Repaso aprobado: %',rvFail:'Todavía no: %. Necesitas un 70 %. Vuelve a intentar el repaso.',rvGen:'Cuatro lecciones quedan atrás. Un breve test ayuda a fijarlas.',rvGenPt:'',rvPlate:'Hora de repasar las últimas 4 lecciones.',lessonsR:'Lecciones'}};
-function T(){return ES?TX.es:TX.en;}
+function ul(){try{var s=localStorage.getItem(KEY+'-ui');return(s==='en'||s==='pt'||s==='es')?s:null;}catch(e){return null;}}
+function T(){var l=ul();return l==='pt'?TX.pt:l==='es'?TX.es:l==='en'?TX.en:(ES?TX.es:TX.en);}
 
 /* ---------- flags (own simple drawings) ---------- */
 var FL={
@@ -193,6 +197,8 @@ function cityIdx(name){for(var i=0;i<CITIES.length;i++)if(CITIES[i].city===name)
 
 /* ---------- mount ---------- */
 function mount(c,o){
+  if(D.getElementById('bl-metro'))return; /* never mount the game twice */
+  try{W.addEventListener('langchange',function(){location.reload();});}catch(e){}
   /* o: {upto,max,best,acts:[{key,label,city,done(l),links:[{t,href}],doneCount}] (one metro per activity), done(l)+links (single metro), stages:[[a,b]...]} */
   var tx=T(),upto=o.upto||0,max=o.max||206,best=o.best||{},profile=(c&&c.profile)||{};
   var acts=o.acts&&o.acts.length?o.acts:[{key:'main',label:'',city:null,done:o.done,links:o.links,doneCount:o.doneCount}];

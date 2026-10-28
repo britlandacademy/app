@@ -275,7 +275,7 @@ function settingsBlock(){
   var mn=el('button',{type:'button','aria-label':'Smaller text',onclick:function(){setSize(fsIdx-1);}},'A\u2212'),pl=el('button',{type:'button','aria-label':'Larger text',onclick:function(){setSize(fsIdx+1);}},'A+');
   w.append(birthdayField(),row('\uD83C\uDF19','Dark mode',ds),row('Aa','Text size',el('span',{class:'g-sz',role:'group'},mn,pl)),row('\uD83C\uDFAE','Game mode',gameSwitch()));
   if(COURSE.push!==false){var pr=pushRow(function(){});if(pr&&pr.nodeType===1)w.append(pr);}
-  if(window.I18N&&I18N.mode==='free')w.append(el('div',{class:'g-mr'},el('span',{},'Language'),I18N.selector()));
+  if(window.I18N)w.append(el('div',{class:'g-mr'},el('b',{style:'width:20px;text-align:center'},'\uD83C\uDF10'),el('span',{},'Language'),I18N.selector('ui')));
   var hb=el('button',{type:'button',class:'g-mi'},el('b',{style:'width:20px;text-align:center'},'\u2753'),el('span',{},'Help'));hb.addEventListener('click',function(){showHelp();});w.append(hb);
   if(prof&&prof.is_admin)w.append(el('a',{class:'g-mi',href:'admin.html'},el('b',{style:'width:20px;text-align:center'},'\uD83D\uDEE0\uFE0F'),el('span',{},'Teacher panel')));
   var ob=el('button',{type:'button',class:'g-mi out'},el('b',{style:'width:20px;text-align:center'},'\u21AA'),el('span',{},'Sign out'));ob.addEventListener('click',signOut);w.append(ob);
@@ -419,7 +419,7 @@ function addBar(){
     el('div',{class:'g-mr'},el('b',{style:'width:20px;text-align:center'},'\uD83C\uDFAE'),el('span',{},'Game mode'),gameSw),
     COURSE.push===false?document.createComment(''):pushRow(open),
     el('div',{class:'g-mr'},el('b',{style:'width:20px;text-align:center'},'Aa'),el('span',{},'Text size'),el('span',{class:'g-sz',role:'group','aria-label':'Text size'},minus,plus,lab)));
-  if(window.I18N&&I18N.mode==='free')mn.append(el('div',{class:'g-mr'},el('span',{},'Language'),window.I18N.selector()));
+  if(window.I18N)mn.append(el('div',{class:'g-mr'},el('b',{style:'width:20px;text-align:center'},'\uD83C\uDF10'),el('span',{},'Language'),window.I18N.selector('ui')));
   if(prof.is_admin)mn.append(mi('panel','Teacher panel',{href:'admin.html'}));
   mn.append(mi('help','Help',{onclick:function(){open(false);showHelp();}}),mi('out','Sign out',{class:'g-mi out',onclick:signOut}));
   mn.querySelectorAll('a.g-mi').forEach(function(a){a.addEventListener('click',function(){open(false);});});
