@@ -6,6 +6,8 @@
   var W=window,D=document;
   var S={
     cta:['Practise one question at a time','Praticar uma pergunta por vez','Practicar una pregunta a la vez'],
+    ctaOn:['Activate Game Mode','Ativar o Modo Jogo','Activar el Modo Juego'],
+    ctaOnHint:['Game Mode turns the exercises into a game, one question at a time. The page will reload.','O Modo Jogo transforma os exercícios em um jogo, uma pergunta por vez. A página será recarregada.','El Modo Juego convierte los ejercicios en un juego, una pregunta a la vez. La página se recargará.'],
     ctaHint:['Same questions, one screen each, with a progress bar and sounds.','As mesmas perguntas, uma por tela, com barra de progresso e sons.','Las mismas preguntas, una por pantalla, con barra de progreso y sonidos.'],
     check:['Check','Verificar','Comprobar'],
     cont:['Continue','Continuar','Continuar'],
@@ -556,6 +558,11 @@
 
   function cta(onclick){
     var d=el('div','duo-cta');
+    if(!gameOn()){
+      var a=el('button','btn primary','▶ '+T('ctaOn'));a.type='button';
+      a.addEventListener('click',function(){try{localStorage.setItem('bl-game','1');}catch(e){}location.reload();});
+      d.appendChild(a);d.appendChild(el('p','',T('ctaOnHint')));return d;
+    }
     var b=el('button','btn primary','▶ '+T('cta'));b.type='button';b.addEventListener('click',function(){actx();onclick();});
     d.appendChild(b);d.appendChild(el('p','',T('ctaHint')));
     return d;
