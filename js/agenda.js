@@ -23,6 +23,13 @@ var S={
  err:{en:'Last error: {0}',pt:'Último erro: {0}',es:'Último error: {0}'},
  ok:{en:'Google Calendar connected.',pt:'Google Agenda conectada.',es:'Google Calendar conectado.'},
  nm:{en:'no student matched',pt:'nenhum aluno identificado',es:'ningún alumno identificado'},
+ gT:{en:'Groups',pt:'Turmas',es:'Grupos'},
+ gH:{en:'Use the group name as it appears in the event title (e.g. BTS). All members then see the lesson.',pt:'Use o nome da turma como aparece no título do evento (ex.: BTS). Todos os membros passam a ver a aula.',es:'Usa el nombre del grupo como aparece en el título del evento (ej.: BTS). Todos los miembros verán la clase.'},
+ gNew:{en:'New group',pt:'Nova turma',es:'Nuevo grupo'},gNm:{en:'Group name',pt:'Nome da turma (como no título)',es:'Nombre del grupo'},
+ gSave:{en:'Save',pt:'Salvar',es:'Guardar'},gCan:{en:'Cancel',pt:'Cancelar',es:'Cancelar'},gEdit:{en:'Edit',pt:'Editar',es:'Editar'},
+ gDel:{en:'Delete',pt:'Excluir',es:'Eliminar'},gSure:{en:'Sure? Tap again',pt:'Certeza? Toque de novo',es:'¿Seguro? Toca otra vez'},
+ gNone:{en:'No groups yet.',pt:'Nenhuma turma ainda.',es:'Aún no hay grupos.'},gNoM:{en:'no members',pt:'sem alunos',es:'sin alumnos'},
+ gErr:{en:'Enter a name and pick at least one student.',pt:'Informe o nome e marque ao menos um aluno.',es:'Escribe un nombre y marca al menos un alumno.'},
  busy:{en:'Working…',pt:'Aguarde…',es:'Espera…'},
  fail:{en:'Something went wrong. Try again.',pt:'Algo deu errado. Tente de novo.',es:'Algo salió mal. Inténtalo de nuevo.'}
 };
@@ -37,7 +44,8 @@ var CSS='.ag{margin:14px 0;font:inherit}.ag h2{font-size:1.05rem;margin:0 0 4px}
 '.ag a.ag-btn,.ag .ag-btn{color:#1b1400!important}.ag .ag-btn.alt{color:inherit!important}.ag-btn{display:inline-block;min-height:44px;line-height:44px;padding:0 18px;border:0;border-radius:12px;background:#c9a23a;color:#1b1400;font:inherit;font-weight:700;letter-spacing:.5px;text-decoration:none;text-align:center;cursor:pointer;border-bottom:3px solid #8a6a14}'+
 '.ag-btn.alt{background:transparent;color:inherit;border:2px solid #c9a23a;line-height:40px}.ag-btn:disabled{opacity:.6}'+
 '.ag-row{display:flex;align-items:center;gap:10px;padding:10px 12px;margin:0 0 8px;border-radius:12px;background:rgba(127,127,127,.1);border:1px solid rgba(127,127,127,.25)}'+
-'.ag-row b{display:block}.ag-row small{opacity:.75}.ag-acts{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}';
+'.ag-row b{display:block}.ag-row small{opacity:.75}.ag-acts{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}'+
+'.ag-in{min-height:44px;padding:0 12px;border-radius:10px;border:1px solid rgba(127,127,127,.5);background:rgba(127,127,127,.12);color:inherit;font:inherit;margin:0 0 6px}.ag-ck{display:block;padding:8px 0;font-size:.95rem}.ag-g{margin-top:18px}.ag-row .ag-btn{min-height:40px;line-height:38px;padding:0 12px}';
 function css(){if(document.getElementById('ag-css'))return;var s=document.createElement('style');s.id='ag-css';s.textContent=CSS;document.head.appendChild(s);}
 
 /* ---------- student card ---------- */
@@ -72,7 +80,7 @@ function admin(box,lg){
   if(!box||!window.Gate||!Gate.sb)return;css();
   var w=el('div','ag');box.textContent='';box.appendChild(w);
   function msg(t){var m=w.querySelector('.ag-m');if(!m){m=el('p','ag-s ag-m');w.appendChild(m);}m.textContent=t||'';}
-  function render(st,rows){
+  function render(st,rows,gr){
     w.textContent='';w.appendChild(el('h2','',T('aTitle')));
     var conn=st&&st.connected;
     w.appendChild(el('p','ag-s',conn?T('aOn',st.calendar||''):T('aOff')));
@@ -85,11 +93,54 @@ function admin(box,lg){
     w.appendChild(acts);
     (rows||[]).forEach(function(x){var r=el('div','ag-row'),d=el('div');d.appendChild(el('b','',fmt(x.start_at)+' · '+(x.title||'')));if(!x.user_id)d.appendChild(el('small','',T('nm')));r.appendChild(d);w.appendChild(r);});
     if(/[?&]gcal=ok/.test(location.search))msg(T('ok'));
+    if(gr)groupsUI(gr);
   }
+  var edit=null;
+  function load(t,sel,ord){var q=Gate.sb.from(t).select(sel);if(ord)q=q.order(ord);return q.then(function(r){return (r&&r.data)||[];},function(){return [];});}
   function refresh(){
     Promise.all([Gate.sb.rpc('gcal_status').then(function(r){return r&&r.data;},function(){return null;}),
-      Gate.sb.from('lessons').select('id,title,start_at,user_id').gte('end_at',new Date().toISOString()).order('start_at').limit(12).then(function(r){return (r&&r.data)||[];},function(){return [];})
-    ]).then(function(v){render(v[0],v[1]);});
+      Gate.sb.from('lessons').select('id,title,start_at,user_id').gte('end_at',new Date().toISOString()).order('start_at').limit(12).then(function(r){return (r&&r.data)||[];},function(){return [];}),
+      load('class_groups','id,name','name'),load('class_group_members','group_id,user_id'),
+      Gate.sb.from('profiles').select('id,name,email').eq('is_admin',false).order('name').then(function(r){return (r&&r.data)||[];},function(){return [];})
+    ]).then(function(v){render(v[0],v[1],{groups:v[2],members:v[3],students:v[4]});});
+  }
+  function groupsUI(gr){
+    var sec=el('div','ag-g');sec.appendChild(el('h2','',T('gT')));sec.appendChild(el('p','ag-s',T('gH')));
+    var sn={};gr.students.forEach(function(p){sn[p.id]=p.name||p.email||'?';});
+    function done(){Gate.sb.functions.invoke('gcal-sync',{body:{force:true}}).then(refresh,refresh);}
+    if(edit){
+      var f=el('div','ag-row');f.style.flexDirection='column';f.style.alignItems='stretch';
+      var inp=el('input','ag-in');inp.placeholder=T('gNm');inp.value=edit.name||'';inp.setAttribute('aria-label',T('gNm'));f.appendChild(inp);
+      gr.students.forEach(function(p){var l=el('label','ag-ck'),c=document.createElement('input');c.type='checkbox';c.checked=edit.members.has(p.id);c.onchange=function(){if(c.checked)edit.members.add(p.id);else edit.members.delete(p.id);};l.appendChild(c);l.appendChild(document.createTextNode(' '+(p.name||p.email)));f.appendChild(l);});
+      var em=el('p','ag-s','');f.appendChild(em);
+      var acts=el('div','ag-acts'),ok=el('button','ag-btn',T('gSave')),no=el('button','ag-btn alt',T('gCan'));ok.type=no.type='button';
+      no.onclick=function(){edit=null;refresh();};
+      ok.onclick=function(){
+        var nm=inp.value.trim();if(!nm||!edit.members.size){em.textContent=T('gErr');return;}
+        ok.disabled=true;em.textContent=T('busy');
+        var p=edit.id?Gate.sb.from('class_groups').update({name:nm}).eq('id',edit.id).select('id').single():Gate.sb.from('class_groups').insert({name:nm}).select('id').single();
+        p.then(function(r){
+          if(r.error||!r.data){ok.disabled=false;em.textContent=T('fail');return;}
+          var gid=r.data.id,rows=[];edit.members.forEach(function(u){rows.push({group_id:gid,user_id:u});});
+          return Gate.sb.from('class_group_members').delete().eq('group_id',gid).then(function(){return Gate.sb.from('class_group_members').insert(rows);}).then(function(r2){if(r2&&r2.error){ok.disabled=false;em.textContent=T('fail');return;}edit=null;done();});
+        },function(){ok.disabled=false;em.textContent=T('fail');});
+      };
+      acts.appendChild(ok);acts.appendChild(no);f.appendChild(acts);sec.appendChild(f);
+    }else{
+      if(!gr.groups.length)sec.appendChild(el('p','ag-s',T('gNone')));
+      gr.groups.forEach(function(g){
+        var ids=gr.members.filter(function(m){return m.group_id===g.id;}).map(function(m){return m.user_id;});
+        var r=el('div','ag-row'),d=el('div');d.style.flex='1';d.appendChild(el('b','',g.name));
+        d.appendChild(el('small','',ids.length?ids.map(function(u){return sn[u]||'?';}).join(', '):T('gNoM')));r.appendChild(d);
+        var e1=el('button','ag-btn alt',T('gEdit')),e2=el('button','ag-btn alt',T('gDel'));e1.type=e2.type='button';
+        e1.onclick=function(){edit={id:g.id,name:g.name,members:new Set(ids)};refresh();};
+        var arm=false;e2.onclick=function(){if(!arm){arm=true;e2.textContent=T('gSure');return;}Gate.sb.from('class_groups').delete().eq('id',g.id).then(done,done);};
+        r.appendChild(e1);r.appendChild(e2);sec.appendChild(r);
+      });
+      var nb=el('button','ag-btn',T('gNew'));nb.type='button';nb.onclick=function(){edit={id:null,name:'',members:new Set()};refresh();};
+      var a2=el('div','ag-acts');a2.appendChild(nb);sec.appendChild(a2);
+    }
+    w.appendChild(sec);
   }
   refresh();
 }

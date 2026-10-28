@@ -34,12 +34,27 @@ Deno.serve(async (req) => {
     const ev = (await er.json()).items || [];
     const { data: profs } = await db.from("profiles").select("id,name,email").eq("is_admin", false);
     const byMail = new Map((profs || []).filter((p: any) => p.email).map((p: any) => [p.email.toLowerCase(), p.id]));
+    const { data: gs } = await db.from("class_groups").select("id,name");
+    const { data: gm } = await db.from("class_group_members").select("group_id,user_id");
+    const groups = (gs || []).map((g: any) => ({ n: norm(g.name || ""), members: (gm || []).filter((m: any) => m.group_id === g.id).map((m: any) => m.user_id) })).filter((g: any) => g.members.length);
     const rows: any[] = [];
     for (const e of ev) {
       if (e.status === "cancelled" || !e.start?.dateTime) continue; // ignora cancelados e eventos de dia inteiro
       const ids = new Set<string>();
       for (const a of e.attendees || []) { const id = byMail.get((a.email || "").toLowerCase()); if (id) ids.add(id); }
-      if (!ids.size) { const title = norm(e.summary || ""); for (const p of profs || []) { const n = norm(p.name || ""); if (n.length >= 3 && title.includes(n)) ids.add(p.id); } }
+      if (!ids.size) { // turmas: nome da turma contido no titulo
+        const t = norm(e.summary || "");
+        for (const g of groups) if (g.n.length >= 2 && t.includes(g.n)) for (const m of g.members) ids.add(m);
+      }
+      if (!ids.size) {
+        const title = norm(e.summary || "");
+        for (const p of profs || []) { const n = norm(p.name || ""); if (n.length >= 3 && title.includes(n)) ids.add(p.id); }
+        if (!ids.size) { // primeiro nome como palavra inteira, só se identificar um único aluno
+          const words = new Set(title.split(/[^a-z0-9]+/).filter((w: string) => w.length >= 3));
+          const hit = (profs || []).filter((p: any) => { const f = norm(p.name || "").split(/[^a-z0-9]+/)[0] || ""; return f.length >= 3 && words.has(f); });
+          if (hit.length === 1) ids.add(hit[0].id);
+        }
+      }
       const meet = e.hangoutLink || e.conferenceData?.entryPoints?.find((x: any) => x.entryPointType === "video")?.uri || null;
       const targets = ids.size ? [...ids] : [null];
       for (const uid of targets) rows.push({ id: e.id + ":" + (uid || "none"), user_id: uid, title: e.summary || "Aula", start_at: e.start.dateTime, end_at: e.end.dateTime, meet_url: meet, updated_at: new Date().toISOString() });

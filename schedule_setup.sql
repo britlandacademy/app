@@ -25,3 +25,13 @@ create or replace function public.gcal_status() returns jsonb language sql secur
     else null end $$;
 revoke all on function public.gcal_status() from public, anon;
 grant execute on function public.gcal_status() to authenticated;
+
+-- Turmas: o nome da turma (como aparece no titulo do evento) liga varios alunos a uma aula
+create table if not exists public.class_groups(id uuid primary key default gen_random_uuid(), name text not null unique, created_at timestamptz default now());
+create table if not exists public.class_group_members(group_id uuid not null references public.class_groups(id) on delete cascade, user_id uuid not null references public.profiles(id) on delete cascade, primary key(group_id,user_id));
+alter table public.class_groups enable row level security;
+alter table public.class_group_members enable row level security;
+drop policy if exists cg_admin on public.class_groups;
+create policy cg_admin on public.class_groups for all to authenticated using (exists(select 1 from public.profiles p where p.id=auth.uid() and p.is_admin)) with check (exists(select 1 from public.profiles p where p.id=auth.uid() and p.is_admin));
+drop policy if exists cgm_admin on public.class_group_members;
+create policy cgm_admin on public.class_group_members for all to authenticated using (exists(select 1 from public.profiles p where p.id=auth.uid() and p.is_admin)) with check (exists(select 1 from public.profiles p where p.id=auth.uid() and p.is_admin));
