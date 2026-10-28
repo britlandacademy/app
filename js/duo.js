@@ -96,6 +96,7 @@
 '#bl-duo .dz-lab{margin:6px 0 4px;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted,#555)}'+
 '#bl-duo .dz-pre{margin:0 0 10px}'+
 '#bl-duo .dz-pre .instr{margin:0 0 8px}'+
+'#bl-duo.game .dz-pre{margin:14px 0 4px;text-align:center}#bl-duo.game .dz-pre .instr{margin:0;font-weight:700;font-size:1.25rem;line-height:1.25;color:var(--ink,inherit)}#bl-duo.game .dz-pre .instr::after{content:"";display:block;width:50px;height:3px;margin:12px auto 0;border-radius:2px;background:#f5c542}'+
 '#bl-duo .dz-q{margin-top:8px;font-size:1.1rem}'+
 '#bl-duo .dz-q .q{font-size:1.3rem;line-height:1.3}'+
 '#bl-duo .dz-foot{padding:14px max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));border-top:2px solid var(--line,#bbb);background:var(--bg,#fff)}'+
@@ -453,8 +454,9 @@
       var s=steps[idx],g=s.g;
       if(game){var sc=el('div','dz-scene'),pw=el('div','dz-peep'),pi=el('img');pi.src=nextPeep();pi.alt='';pw.appendChild(pi);
       var bub=el('div','dz-bub'),chip=el('div','dz-chip',((g.title?g.title+' · ':'')+T('q',{a:idx+1,b:total})).toUpperCase());
-      sc.appendChild(pw);sc.appendChild(bub);inn.appendChild(chip);inn.appendChild(sc);}else inn.appendChild(el('p','dz-lab',(g.title?g.title+' · ':'')+T('q',{a:idx+1,b:total})));
+      sc.appendChild(pw);sc.appendChild(bub);inn.appendChild(chip);}else inn.appendChild(el('p','dz-lab',(g.title?g.title+' · ':'')+T('q',{a:idx+1,b:total})));
       if(g.pre){if(!g.pre_)g.pre_=g.pre()||[];if(g.pre_.length){var pw=el('div','dz-pre');g.pre_.forEach(function(n){if(n)pw.appendChild(n);});inn.appendChild(pw);}}
+      if(game)inn.appendChild(sc);
       cur=s.it.make();
       if(game){var qe=null,ns=cur.nodes||[];for(var qi=0;qi<ns.length&&!qe;qi++){var nn=ns[qi];if(!nn||!nn.querySelector)continue;qe=(nn.classList&&nn.classList.contains('q'))?nn:nn.querySelector('.q');}
         if(qe&&qe.textContent.trim()){bub.appendChild(el('b','',qe.textContent.trim()));qe.className+=' dz-sr';bub.setAttribute('aria-hidden','true');}
