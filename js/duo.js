@@ -345,6 +345,8 @@
     if(!inp||s.it.nobank)return;
     for(i=0;i<nodes.length;i++){if(nodes[i]&&nodes[i].querySelector&&(nodes[i].querySelector('.tokline')||(nodes[i].classList&&nodes[i].classList.contains('tokline'))))return;}
     var model=(s.it.ans&&s.it.ans[0]!=null)?String(s.it.ans[0]):null;
+    var rwn=nodes[top]&&nodes[top].classList&&nodes[top].classList.contains('rwtxt')?nodes[top]:null;
+    if(rwn){if(s.it.ok){rwn.style.display='none';return;}if(s.it.fix&&s.it.fix[0])model=String(s.it.fix[0]);}
     if(model==null){try{model=cur.get().model;}catch(e){}}
     if(!model)return;
     var toks=String(model).trim().split(/\s+/).filter(Boolean);
