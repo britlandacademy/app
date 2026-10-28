@@ -29,7 +29,7 @@ textarea,textarea.rep,.dic{border-radius:20px!important;padding:14px 20px}
 input:not([type=checkbox]):not([type=radio]):hover,select:hover,textarea:hover{border-color:var(--ui-gold)}
 input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus,.inp:focus,.dic:focus{outline:none!important;border-color:var(--ui-gold)!important;box-shadow:0 0 0 4px rgba(201,161,59,.3)!important}
 /* ---- floating header ---- */
-.g-bar:not(.gp){position:sticky;top:10px;z-index:60;max-width:calc(100% - 24px)!important;margin:10px auto 12px!important;padding:6px 10px!important;border-radius:999px;background:rgba(11,23,51,.93);border:1px solid #27407a;box-shadow:0 8px 24px rgba(0,0,0,.35);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);justify-content:space-between!important;color:#d6def0!important}
+.g-bar:not(.gp){position:sticky;top:10px;z-index:60;max-width:calc(100% - 24px)!important;margin:10px auto 12px!important;padding:6px 10px!important;border-radius:999px;background:rgba(11,23,51,.93);border:1px solid #27407a;box-shadow:0 8px 24px rgba(0,0,0,.35);justify-content:space-between!important;color:#d6def0!important}
 .g-bar:not(.gp) b,.g-bar:not(.gp) .g-name{color:#fff!important}
 .g-bar:not(.gp) a{color:#e4c06a!important}
 .g-logoc{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:8px;text-decoration:none;pointer-events:none}
