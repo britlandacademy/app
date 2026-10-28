@@ -145,11 +145,12 @@ function showLogin(mode){
   if(mode==='up')b.append(el('p',{class:'g-hint'},'First time here? Fill in the form. Your teacher will approve your access.'));
   var name=el('input',{id:'g-name',type:'text',autocomplete:'name',maxlength:'60',enterkeyhint:'next'});
   var email=el('input',{id:'g-email',type:'email',autocomplete:'email',inputmode:'email',autocapitalize:'none',spellcheck:'false',enterkeyhint:'next'});
+  var bday=el('input',{id:'g-bd',type:'date',min:'1920-01-01',max:isoToday(),autocomplete:'bday'});
   var pass=el('input',{id:'g-pass',type:'password',autocomplete:mode==='in'?'current-password':'new-password',enterkeyhint:'go'});
   var err=el('p',{class:'g-err','aria-live':'polite'});
   var go=el('button',{type:'submit',class:'g-btn'},mode==='in'?'Sign in':'Create account');
   var form=el('form',{novalidate:true},
-    mode==='up'?[el('label',{for:'g-name'},'Your name'),name]:null,
+    mode==='up'?[el('label',{for:'g-name'},'Your name'),name,el('label',{for:'g-bd'},'Date of birth'),bday]:null,
     el('label',{for:'g-email'},'E-mail'),email,
     el('label',{for:'g-pass'},mode==='in'?'Password':'Choose a password (at least 8 characters)'),pass,
     err,el('div',{class:'g-row'},go));
@@ -157,6 +158,7 @@ function showLogin(mode){
     ev.preventDefault();err.textContent='';
     var em=email.value.trim().toLowerCase(),pw=pass.value,nm=name.value.trim().replace(/\s+/g,' ');
     if(mode==='up'&&!nm){err.textContent='Type your name.';name.focus();return;}
+    if(mode==='up'&&!bday.value){err.textContent='Choose your date of birth.';bday.focus();return;}
     if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){err.textContent='Type a valid e-mail.';email.focus();return;}
     if(mode==='up'&&pw.length<8){err.textContent='The password needs at least 8 characters.';pass.focus();return;}
     if(!pw){err.textContent='Type your password.';pass.focus();return;}
@@ -166,6 +168,7 @@ function showLogin(mode){
     p.then(function(r){
       go.disabled=false;
       if(r.error){err.textContent=niceError(r.error);return;}
+      if(mode==='up'){try{localStorage.setItem('bl-pending-bd',bday.value);}catch(e){}}
       if(mode==='up'&&!r.data.session){
         message('Check your e-mail',['We sent a link to confirm your e-mail. After that, your teacher will approve your access.'],[btn('Back',function(){showLogin('in');})]);
         return;
@@ -189,7 +192,7 @@ function paintAvatars(){
   if(!window.Profile||!prof)return;
   Array.prototype.forEach.call(document.querySelectorAll('[data-pf-av]'),function(n){window.Profile.paint(n,prof.avatar,prof.id||user.id);});
 }
-function setAvatar(id){if(prof)prof.avatar=id;paintAvatars();}
+function setAvatar(id){if(prof)prof.avatar=id;try{if(user&&id!==localStorage.getItem('bl-pic-rand-'+user.id))localStorage.removeItem('bl-pic-rand-'+user.id);}catch(e){}paintAvatars();}
 function firstName(){return String((prof&&prof.name)||'').trim().split(/\s+/)[0]||'';}
 function thanksPay(){
   if(!sb||!prof||prof.is_admin||BUS)return;
@@ -323,6 +326,54 @@ function birthdayParty(){
     birthdayTune();done.focus();
   });
   document.body.append(ov);
+}
+/* ---------- on the home page after login: ask for the birth date once, and the picture after a few visits ---------- */
+function askBirthdate(done){
+  var L=gLang(),T={t:['When is your birthday?','Qual é a sua data de nascimento?','¿Cuál es tu fecha de nacimiento?'],m:['So we can celebrate with you!','Para comemorarmos com você!','¡Para celebrar contigo!'],s:['Save','Salvar','Guardar'],x:['Close','Fechar','Cerrar']};
+  var ov=el('div',{class:'g-hov',role:'dialog','aria-modal':'true','data-noi18n':'1'});
+  var inp=el('input',{type:'date',min:'1920-01-01',max:isoToday(),'aria-label':T.t[L],style:'font:inherit;padding:10px;border-radius:8px;border:2px solid var(--line,#999);background:var(--card,#fff);color:var(--ink,#111);min-height:44px;width:100%;box-sizing:border-box'});
+  var err=el('p',{class:'g-err','aria-live':'polite',style:'margin:8px 0 0'});
+  var cl=el('button',{type:'button',class:'btn',style:'display:none',onclick:function(){ov.remove();done();}},T.x[L]);
+  var sv=el('button',{type:'button',class:'btn primary',onclick:function(){
+    if(!inp.value){inp.focus();return;}sv.disabled=true;
+    sb.rpc('set_my_birthdate',{p_date:inp.value}).then(function(r){
+      if(r.error){sv.disabled=false;err.textContent=niceError(r.error);cl.style.display='';return;}
+      prof.birthdate=inp.value;ov.remove();done();
+    },function(){sv.disabled=false;cl.style.display='';});
+  }},T.s[L]);
+  ov.append(el('div',{class:'g-hdlg'},el('h2',{style:'margin:0 0 6px'},T.t[L]),el('p',{style:'margin:0 0 12px'},T.m[L]),inp,err,el('div',{style:'display:flex;gap:10px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap'},cl,sv)));
+  document.body.append(ov);inp.focus();
+}
+function randomAvatar(cb){
+  loadProfile(function(){
+    var A=(window.BL_AVATARS_ALL||window.BL_AVATARS||[]).filter(function(a){return a.cat!=='flags';});
+    if(!A.length)return;var id=A[Math.floor(Math.random()*A.length)].id;
+    window.Profile.savePrefs(sb,{avatar:id}).then(function(){try{localStorage.setItem('bl-pic-rand-'+user.id,id);}catch(e){}setAvatar(id);if(cb)cb();},function(){});
+  });
+}
+function profilePrompts(){
+  if(!prof||!user||OFF||!/(^|\/)(index\.html)?$/.test(location.pathname))return;
+  var fresh=!prof.avatar;
+  if(fresh)randomAvatar();   /* first login: the student gets a random picture */
+  var pend=null;try{pend=localStorage.getItem('bl-pending-bd');}catch(e){}
+  if(!prof.birthdate&&pend&&/^\d{4}-\d\d-\d\d$/.test(pend)){
+    try{sb.rpc('set_my_birthdate',{p_date:pend}).then(function(r){if(!r.error){prof.birthdate=pend;try{localStorage.removeItem('bl-pending-bd');}catch(e){}}},function(){});}catch(e){}
+    return;
+  }
+  if(!prof.birthdate){askBirthdate(function(){});return;}
+  if(fresh||birthdayToday())return;
+  /* still on the random picture after a few visits: open the picture chooser (3rd visit, then once more after 7 visits, then never) */
+  var rv=null;try{rv=localStorage.getItem('bl-pic-rand-'+user.id);}catch(e){}
+  if(!rv||prof.avatar!==rv)return;
+  var k='bl-pic-'+user.id,s={n:0,last:'',asked:0,at:0};
+  try{s=Object.assign(s,JSON.parse(localStorage.getItem(k)||'{}'));}catch(e){}
+  var today=isoToday();if(s.last===today)return;
+  s.last=today;s.n++;
+  var ask=(s.asked===0&&s.n>=3)||(s.asked===1&&s.n-s.at>=7);
+  if(ask){s.asked++;s.at=s.n;}
+  try{localStorage.setItem(k,JSON.stringify(s));}catch(e){}
+  if(!ask)return;
+  setTimeout(function(){loadProfile(function(){window.Profile.openPicker({sb:sb,uid:prof.id||user.id,current:prof.avatar,lang:COURSE.uiLang||'en',onSaved:function(id){setAvatar(id);}});});},1200);
 }
 function birthdayTune(){
   try{
@@ -720,7 +771,7 @@ function enter(){
       return OPTS.attempts?(Array.isArray(OPTS.attempts)?Promise.all(OPTS.attempts.map(fetchAttempts)).then(function(x){return [].concat.apply([],x);}):fetchAttempts(OPTS.attempts)):[];
     }).then(function(att){
       function fin(){
-        hideOverlay();applyServerPrefs();if(OFF)offBanner(true);else flushQ();if(!OPTS.bare){addBar();loadProfile(paintAvatars);try{thanksPay();}catch(e){}try{birthdayParty();}catch(e){}}
+        hideOverlay();applyServerPrefs();if(OFF)offBanner(true);else flushQ();if(!OPTS.bare){addBar();loadProfile(paintAvatars);try{thanksPay();}catch(e){}try{birthdayParty();}catch(e){}try{profilePrompts();}catch(e){}}
         /* the streak counts finished activities only (see saveAttempt) */
         CB({user:user,profile:prof,attempts:att,upto:upto()});
         setTimeout(function(){a11yPass();if(!(OPTS.admin||OPTS.bare||OFF||prof.is_admin)&&document.getElementById('today'))tourMaybe();pushNudge();},600);
