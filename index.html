@@ -154,10 +154,11 @@ Gate.start({kinds:[],attempts:['check','ex']},function(ctx){
   var done=Object.keys(best).length,sum=0;Object.keys(best).forEach(function(k){sum+=best[k];});
   if(window.Metro&&Metro.gameOn()){var sx=((ctx.upto||0)<1&&bz>0)?'?course=business':'';
     var SETS={check:{},grammar:{},workbook:{}};
-    (ctx.attempts||[]).forEach(function(a){if(a.k==='check')SETS.check[a.l]=1;else if(a.k==='ex'){if(/^wb/.test(a.e))SETS.workbook[a.l]=1;else SETS.grammar[a.l]=1;}});
+    (ctx.attempts||[]).forEach(function(a){var q=a.t?a.s/a.t:0,st=a.k==='check'?SETS.check:(a.k==='ex'?(/^wb/.test(a.e)?SETS.workbook:SETS.grammar):null);if(st&&(st[a.l]===undefined||q>st[a.l]))st[a.l]=q;});
+    var STR=function(q){return q>=.9?3:q>=.6?2:1;};
     var AD=[['check','Lesson Check','Check','London','check.html'+sx],['grammar','Grammar Exercises','Grammar','Ireland','exercises.html'+sx],['workbook','Workbook','Workbook','New York','workbook.html']];
-    var acts=AD.map(function(d){var st=SETS[d[0]],n=Object.keys(st).length,c0=1;while(c0<=upto&&st[c0])c0++;
-      return {key:d[0],label:d[1],short:d[2],city:d[3],doneCount:n,done:function(l){return l<c0;},links:[{t:'Start '+d[1],href:d[4]}]};});
+    var acts=AD.map(function(d){var st=SETS[d[0]],n=Object.keys(st).length,c0=1;while(c0<=upto&&st[c0]!==undefined)c0++;
+      return {key:d[0],label:d[1],short:d[2],city:d[3],doneCount:n,done:function(l){return l<c0;},pct:function(l){return st[l]===undefined?null:st[l];},stars:function(l){return st[l]===undefined?0:STR(st[l]);},links:[{t:'Start '+d[1],href:d[4]}]};});
     Metro.mount(ctx,{upto:upto,max:206,best:best,acts:acts,stages:STAGES});}
   document.getElementById('stats').hidden=false;
   if(window.Streak)Streak.mount(document.getElementById('streak'));

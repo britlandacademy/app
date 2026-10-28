@@ -136,7 +136,7 @@ Gate.start({kinds:[],attempts:['check','ex']},function(ctx){
   (ctx.attempts||[]).forEach(function(a){if(a.k==='ex'){if(/^dele:/.test(a.e))deleSet[a.e]=1;return;}var p=a.t?a.s/a.t:0;if(best[a.l]===undefined||p>best[a.l])best[a.l]=p;});
   var avail=REP.filter(function(l){return l<=upto;}),done=avail.filter(function(l){return best[l]!==undefined;}).length,sum=0;avail.forEach(function(l){if(best[l]!==undefined)sum+=best[l];});
   if(window.Metro&&Metro.gameOn()){var ld=0;REP.forEach(function(l){if(l<=upto&&best[l]!==undefined&&l>ld)ld=l;});
-    Metro.mount(ctx,{upto:upto,max:112,best:best,stages:STAGES,acts:[{key:'check',label:'Ejercicios de repaso',short:'Repaso',city:'Madrid',doneCount:done,done:function(l){return l<=ld;},links:[{t:'Ejercicios de repaso',href:'check.html'}]}]});}
+    Metro.mount(ctx,{upto:upto,max:112,best:best,stages:STAGES,acts:[{key:'check',label:'Ejercicios de repaso',short:'Repaso',city:'Madrid',doneCount:done,done:function(l){return l<=ld;},pct:function(l){return best[l]===undefined?null:best[l];},stars:function(l){var q=best[l];return q===undefined?0:(q>=.9?3:q>=.6?2:1);},links:[{t:'Ejercicios de repaso',href:'check.html'}]}]});}
   document.getElementById('stats').hidden=false;
   if(window.Streak)Streak.mount(document.getElementById('streak'));
   document.getElementById('s1').textContent=upto;
