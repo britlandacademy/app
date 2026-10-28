@@ -44,6 +44,27 @@
   function tone(f,t0,d,type,g){var c=actx();if(!c)return;var o=c.createOscillator(),v=c.createGain(),t=c.currentTime+t0;
     o.type=type||'sine';o.frequency.value=f;v.gain.setValueAtTime(0.0001,t);v.gain.linearRampToValueAtTime(g,t+.012);v.gain.exponentialRampToValueAtTime(.0001,t+d);
     o.connect(v);v.connect(c.destination);o.start(t);o.stop(t+d+.05);}
+
+  /* Short piano-style tunes played with the flag of the celebration character (melodies only, synthesised, no files) */
+  var NT={G3:55,A3:57,B3:59,C4:60,D4:62,E4:64,F4:65,Fs4:66,G4:67,A4:69,B4:71,C5:72,D5:74,E5:76,G5:79,A5:81};
+  var TUNE={
+   england:[200,'G4 .75,A4 .25,G4 .5,F4 .5,E4 .5,F4 .5,G4 1,D4 .5,E4 .5,F4 1,E4 .5,F4 .5,G4 1,G4 .75,A4 .25,G4 .5,F4 .5,E4 .5,F4 .5,G4 1,D4 1,G4 1,E4 1,C4 2'],
+   scotland:[150,'G4 1,C5 1.5,C5 .5,C5 1,E5 1,D5 1.5,C5 .5,D5 1,E5 1,C5 1.5,C5 .5,E5 1,G5 1,A5 3'],
+   usa:[190,'C4 1,C4 1,D4 1,E4 1,C4 1,E4 1,D4 1,G3 1,C4 1,C4 1,D4 1,E4 1,F4 1,E4 1,D4 1,C4 1'],
+   uk:[176,'G4 1,G4 1,A4 1,Fs4 1.5,G4 .5,A4 1,B4 1,B4 1,C5 1,B4 1.5,A4 .5,G4 2'],
+   mx:[200,'C4 .5,C4 .5,C4 .5,F4 1.5,A4 1,C4 .5,C4 .5,C4 .5,F4 1.5,A4 1,F4 .5,F4 .5,E4 .5,E4 .5,D4 .5,D4 .5,C4 2']
+  };
+  function playTune(key){
+    if(!sndOn()||!TUNE[key])return;var c=actx();if(!c)return;
+    var t=c.currentTime+.05,b=60/TUNE[key][0];
+    TUNE[key][1].split(',').forEach(function(x){
+      var q=x.split(' '),fr=440*Math.pow(2,(NT[q[0]]-69)/12),d=parseFloat(q[1])*b,dec=Math.max(d*3.6,1.1),out=c.createGain();out.gain.value=.15;out.connect(c.destination);
+      [[1,1],[2,.5],[3,.25],[4,.12],[5,.06]].forEach(function(p){var o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=fr*p[0]*(1+p[0]*.0004);
+        g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(p[1],t+.006);g.gain.exponentialRampToValueAtTime(.0008,t+dec/(1+p[0]*.25));
+        o.connect(g);g.connect(out);o.start(t);o.stop(t+dec+.1);});
+      t+=d;});
+  }
+  function tuneKey(flag){var m=/flags\/(england|scotland|usa|uk)\.svg$/.exec(flag);if(m)return m[1];return /flag-mx\.png$/.test(flag)?'mx':'';}
   function bell(){if(!sndOn())return;tone(1318.5,0,1.1,'sine',.2);tone(2637,0,.5,'sine',.06);tone(1760,.13,1.3,'sine',.2);tone(3520,.13,.5,'sine',.05);}
   function buzz(){if(!sndOn())return;tone(233,0,.26,'triangle',.16);tone(175,.13,.34,'triangle',.15);}
   function tick(){if(!sndOn())return;tone(660,0,.06,'square',.05);tone(990,.03,.05,'square',.03);}
@@ -477,7 +498,7 @@
       var nx=null;try{nx=o.next?o.next():null;}catch(e){}
       var pop=el('div','dz-pop'),card=el('div','dz-card');pop.setAttribute('role','alertdialog');pop.setAttribute('aria-label',T('gdone'));
       var lg=el('div','dz-logo'),li=el('img');li.src='img/britland-shield.png';li.alt='';lg.appendChild(li);lg.appendChild(el('b','','BRITLAND'));lg.appendChild(el('i','','ACADEMY'));lg.appendChild(el('u',''));card.appendChild(lg);
-      var ch=pickCh();card.appendChild(flagRow(ch));
+      var ch=pickCh();card.appendChild(flagRow(ch));setTimeout(function(){if(root.parentNode)playTune(tuneKey(ch.flag));},300);
       var hero=el('div','dz-hero');hero.appendChild(famBox(ch));hero.appendChild(medal(stars));card.appendChild(hero);
       var say=ch.say[3-stars],sy=el('p','dz-say',say[ix()===1?1:0]);card.appendChild(sy);
       var st=el('div','dz-stars');st.setAttribute('aria-label',stars+' / 3');
