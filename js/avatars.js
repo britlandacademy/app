@@ -136,6 +136,41 @@ A.push({id:'angelou',cat:'people',name:"Maya Angelou",svg:'<svg xmlns="http://ww
 A.push({id:'christie',cat:'people',name:"Agatha Christie",svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><image href="img/people/christie.jpg" width="100" height="100" preserveAspectRatio="xMidYMid slice"/></svg>'});
 A.push({id:'austen',cat:'people',name:"Jane Austen",svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><image href="img/people/austen.jpg" width="100" height="100" preserveAspectRatio="xMidYMid slice"/></svg>'});
 var B=window.BL_BASE||'';if(B)A.forEach(function(a){a.svg=a.svg.replace(/href="img\//g,'href="'+B+'img/');}); /* Spanish pages live in a sub-folder */
+
+/* ---- Spanish course: avatars from the Spanish-speaking world (public-domain images in img/es/) ---- */
+if(window.BL_COURSE&&window.BL_COURSE.id==='es'){(function(){
+  var OLD=A.slice(),ES=[],R=B+'img/es/',WINE='#2a0f12';
+  function addE(id,cat,name,svg){ES.push({id:id,cat:cat,name:name,svg:svg});}
+  function ph(id,cat,name,file,pos){addE(id,cat,name,'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><image href="'+R+file+'" width="100" height="100" preserveAspectRatio="'+(pos||'xMidYMin slice')+'"/></svg>');}
+  function flag(id,name,file){addE(id,'flags',name,'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#f4f1ea"/><image href="'+R+file+'" x="4" y="4" width="92" height="92" preserveAspectRatio="xMidYMid meet"/></svg>');}
+  /* school: Spanish shield and lion (page-relative: the Spanish pages have their own img/) */
+  addE('shield','school','Escudo',img('#3a0f14','img/britland-shield.png',72));
+  addE('lion-navy','school','León dorado',img('#250B0D','img/lion-gold.png',58));
+  addE('lion-red','school','León (rojo)',img('#AA151B','img/lion-gold.png',58));
+  addE('lion-green','school','León (ocre)',img('#6b4a12','img/lion-gold.png',58));
+  OLD.forEach(function(a){if(a.id==='book'||a.id==='quill')addE(a.id,'school',a.id==='book'?'Libro abierto':'Pluma',a.svg.replace(/#10224a/g,'#3a0f14').replace(/#1b3470/g,'#5a1a20'));});
+  /* famous people (colour paintings) */
+  ph('cervantes','people','Miguel de Cervantes','cervantes.jpg');ph('velazquez','people','Diego Velázquez','velazquez.jpg');ph('goya','people','Francisco de Goya','goya.jpg');
+  ph('bolivar','people','Simón Bolívar','bolivar.jpg');ph('sanmartin','people','José de San Martín','sanmartin.jpg');ph('isabel','people','Isabel la Católica','isabel.jpg');
+  /* characters */
+  ph('quijote','fiction','Don Quijote','quijote.jpg','xMidYMid slice');ph('quijote2','fiction','Don Quijote y Sancho','quijote2.jpg','xMidYMid slice');
+  /* monuments */
+  ph('sagrada','places','Sagrada Familia','sagrada.jpg','xMidYMid slice');ph('sagrada2','places','Sagrada Familia (interior)','sagrada2.jpg','xMidYMid slice');ph('batllo','places','Casa Batlló','batllo.jpg','xMidYMid slice');ph('machu','places','Machu Picchu','machu.jpg','xMidYMid slice');
+  /* animals */
+  ph('llama','animals','Llama','llama.jpg','xMidYMid slice');ph('toro','animals','Toro bravo','toro.jpg','xMidYMid slice');
+  /* food and culture (original drawings) */
+  addE('guitarra','culture','Guitarra',g('#7a2a16','<g transform="rotate(38 50 50)"><rect x="46.5" y="6" width="7" height="46" rx="2" fill="#5a3a1c"/><rect x="45" y="6" width="10" height="10" rx="2" fill="#2a1a0c"/><path d="M50 40C38 40 33 50 38 58C30 62 30 82 50 84C70 82 70 62 62 58C67 50 62 40 50 40Z" fill="#d9964a"/><circle cx="50" cy="64" r="6.5" fill="#2a1a0c"/><rect x="42" y="76" width="16" height="3" rx="1.5" fill="#5a3a1c"/><path d="M48.5 16V76M50 16V76M51.5 16V76" stroke="#f0e6d0" stroke-width=".6"/></g>'));
+  addE('castanuelas','culture','Castañuelas',g('#8a1620','<path d="M50 14C40 18 38 34 44 40L56 40C62 34 60 18 50 14Z" fill="none" stroke="#e8b84a" stroke-width="2.4"/><circle cx="50" cy="12" r="3" fill="#e8b84a"/><ellipse cx="34" cy="62" rx="20" ry="17" fill="#c0392b" stroke="#5a0f14" stroke-width="2"/><ellipse cx="66" cy="62" rx="20" ry="17" fill="#d9483a" stroke="#5a0f14" stroke-width="2"/><path d="M20 56Q34 48 48 56M52 56Q66 48 80 56" stroke="#5a0f14" stroke-width="2" fill="none"/><circle cx="34" cy="60" r="3" fill="#e8b84a"/><circle cx="66" cy="60" r="3" fill="#e8b84a"/>'));
+  addE('chile','culture','Chile',g('#f1bf00','<path d="M70 28C86 36 82 64 56 82C44 90 22 88 18 80C34 80 48 72 56 56C62 46 62 34 70 28Z" fill="#d62828" stroke="#7a1010" stroke-width="2"/><path d="M70 28C66 20 58 18 52 22C58 22 62 26 62 32" fill="#2f9e44" stroke="#1c5f2a" stroke-width="2"/><path d="M26 82C40 78 52 66 58 52" stroke="#f4a3a3" stroke-width="2" fill="none" opacity=".7"/>'));
+  addE('cafe','culture','Café',g('#3b2314','<path d="M26 44H66V62C66 74 58 82 46 82C34 82 26 74 26 62Z" fill="#f4efe6"/><path d="M66 50H72C80 50 80 66 70 66H66" fill="none" stroke="#f4efe6" stroke-width="5"/><ellipse cx="46" cy="44" rx="20" ry="4.5" fill="#6b3f1f"/><ellipse cx="46" cy="87" rx="30" ry="4" fill="#00000040"/><path d="M38 34C34 28 42 24 38 16M50 34C46 28 54 24 50 16" stroke="#f4efe6" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".8"/>'));
+  /* flags */
+  flag('flag-es','España','flag-es.png');flag('flag-mx','México','flag-mx.png');flag('flag-ar','Argentina','flag-ar.png');flag('flag-co','Colombia','flag-co.png');
+  flag('flag-cl','Chile','flag-cl.png');flag('flag-pe','Perú','flag-pe.png');flag('flag-ve','Venezuela','flag-ve.png');flag('flag-cu','Cuba','flag-cu.png');
+  var ids={};ES.forEach(function(a){ids[a.id]=1;});
+  window.BL_AVATARS_ALL=ES.concat(OLD.filter(function(a){return !ids[a.id];}));
+  A=ES;
+  window.BL_AVATAR_CATS=[['school','Escuela'],['people','Personajes famosos'],['fiction','Ficción'],['places','Monumentos'],['animals','Animales'],['culture','Comida y cultura'],['flags','Banderas']];
+})();}
 window.BL_AVATARS=A;
-window.BL_AVATAR_CATS=[['school','School'],['britain','Britain'],['people','Famous people'],['fiction','Characters'],['flags','Flags'],['world','Symbols']];
+if(!window.BL_AVATAR_CATS)window.BL_AVATAR_CATS=[['school','School'],['britain','Britain'],['people','Famous people'],['fiction','Characters'],['flags','Flags'],['world','Symbols']];
 })();

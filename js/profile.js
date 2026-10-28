@@ -10,7 +10,7 @@ function ready(){
   loaded=loadScript((window.BL_BASE||'')+'js/avatars.js').then(function(){return loadScript((window.BL_BASE||'')+'js/facts.js');}).then(function(){return loadScript((window.BL_BASE||'')+'js/facts_i18n.js');});
   return loaded;
 }
-function find(id){var A=window.BL_AVATARS||[],i;for(i=0;i<A.length;i++)if(A[i].id===id)return A[i];return null;}
+function find(id){var A=window.BL_AVATARS_ALL||window.BL_AVATARS||[],i;for(i=0;i<A.length;i++)if(A[i].id===id)return A[i];return null;}
 function photoUrl(uid,id){return CFG.url+'/storage/v1/object/public/avatars/'+uid+'/'+id.slice(6);}
 /* Fill an element with the avatar (id is profiles.avatar; empty = school lion) */
 function paint(node,id,uid){
