@@ -263,14 +263,30 @@ function admin(box,lg){
     var sec=el('div','ag-g');sec.appendChild(el('h2','','Sua disponibilidade'));
     sec.appendChild(el('p','ag-s','Horários em que o aluno pode marcar ou remarcar (horário de Brasília). Aulas de 50 min, de hora em hora a partir do início de cada faixa. Aulas e pedidos já existentes ficam ocupados.'));
     var m=el('p','ag-s ag-m','');m.setAttribute('role','status');
-    WD.forEach(function(d){
-      var r=el('div','ag-row');r.style.flexDirection='column';r.style.alignItems='stretch';r.appendChild(el('b','',d[1]));
-      gr.av.filter(function(a){return a.weekday===d[0];}).forEach(function(a){
-        var l=el('div','ag-acts'),t=el('span','',String(a.start_time).slice(0,5)+' – '+String(a.end_time).slice(0,5)),x=el('button','ag-btn alt','Remover');x.type='button';
-        x.onclick=function(){x.disabled=true;Gate.sb.from('availability').delete().eq('id',a.id).then(refresh,refresh);};l.appendChild(t);l.appendChild(x);l.style.alignItems='center';r.appendChild(l);});
-      var f=el('div','ag-acts'),i1=el('input','ag-in'),i2=el('input','ag-in'),ad=el('button','ag-btn alt','Adicionar');i1.type=i2.type='time';i1.step=i2.step=900;i1.setAttribute('aria-label','Início');i2.setAttribute('aria-label','Fim');ad.type='button';
-      ad.onclick=function(){if(!i1.value||!i2.value||i2.value<=i1.value){m.textContent='Informe início e fim (o fim depois do início).';return;}ad.disabled=true;Gate.sb.from('availability').insert({weekday:d[0],start_time:i1.value,end_time:i2.value}).then(function(q){if(q&&q.error){ad.disabled=false;m.textContent=T('fail');}else refresh();},function(){ad.disabled=false;m.textContent=T('fail');});};
-      f.appendChild(i1);f.appendChild(i2);f.appendChild(ad);r.appendChild(f);sec.appendChild(r);});
+    var SH={1:'Seg',2:'Ter',3:'Qua',4:'Qui',5:'Sex',6:'Sáb',0:'Dom'};
+    var grp={},ord=[];
+    gr.av.forEach(function(a){var k=String(a.start_time).slice(0,5)+' – '+String(a.end_time).slice(0,5);if(!grp[k]){grp[k]={days:[],ids:[]};ord.push(k);}grp[k].days.push(a.weekday);grp[k].ids.push(a.id);});
+    ord.sort();
+    if(!ord.length)sec.appendChild(el('p','ag-s','Nenhum horário cadastrado ainda.'));
+    ord.forEach(function(k){
+      var g=grp[k],r=el('div','ag-row'),d=el('div');d.style.flex='1';
+      var names=WD.filter(function(x){return g.days.indexOf(x[0])>-1;}).map(function(x){return SH[x[0]];}).join(', ');
+      d.appendChild(el('b','',k));d.appendChild(el('small','',names));r.appendChild(d);
+      var x=el('button','ag-btn alt','Remover');x.type='button';
+      x.onclick=function(){x.disabled=true;Gate.sb.from('availability').delete().in('id',g.ids).then(refresh,refresh);};r.appendChild(x);sec.appendChild(r);});
+    var nf=el('div','ag-row');nf.style.flexDirection='column';nf.style.alignItems='stretch';
+    nf.appendChild(el('b','','Adicionar horário'));
+    var picked={},dr=el('div','ag-chips');
+    WD.forEach(function(d){var c=el('button','ag-chip',SH[d[0]]);c.type='button';c.setAttribute('aria-pressed','false');c.onclick=function(){picked[d[0]]=!picked[d[0]];c.classList.toggle('on',!!picked[d[0]]);c.setAttribute('aria-pressed',picked[d[0]]?'true':'false');};dr.appendChild(c);});
+    nf.appendChild(dr);
+    var tf=el('div','ag-acts'),i1=el('input','ag-in'),i2=el('input','ag-in'),ad=el('button','ag-btn','Adicionar');i1.type=i2.type='time';i1.step=i2.step=900;i1.setAttribute('aria-label','Início');i2.setAttribute('aria-label','Fim');ad.type='button';
+    ad.onclick=function(){
+      var days=WD.filter(function(d){return picked[d[0]];}).map(function(d){return d[0];});
+      if(!days.length){m.textContent='Marque ao menos um dia da semana.';return;}
+      if(!i1.value||!i2.value||i2.value<=i1.value){m.textContent='Informe início e fim (o fim depois do início).';return;}
+      ad.disabled=true;m.textContent=T('busy');
+      Gate.sb.from('availability').insert(days.map(function(d){return {weekday:d,start_time:i1.value,end_time:i2.value};})).then(function(q){if(q&&q.error){ad.disabled=false;m.textContent=T('fail');}else refresh();},function(){ad.disabled=false;m.textContent=T('fail');});};
+    tf.appendChild(i1);tf.appendChild(i2);tf.appendChild(ad);nf.appendChild(tf);sec.appendChild(nf);
     sec.appendChild(el('h2','','Datas bloqueadas'));
     gr.blocks.forEach(function(bk){var r=el('div','ag-row'),d=el('div');d.style.flex='1';d.appendChild(el('b','',bk.day.split('-').reverse().join('/')));if(bk.note)d.appendChild(el('small','',bk.note));r.appendChild(d);
       var x=el('button','ag-btn alt','Liberar');x.type='button';x.onclick=function(){x.disabled=true;Gate.sb.from('availability_blocks').delete().eq('id',bk.id).then(refresh,refresh);};r.appendChild(x);sec.appendChild(r);});
