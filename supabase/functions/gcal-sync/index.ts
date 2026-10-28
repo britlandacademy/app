@@ -7,6 +7,7 @@ const SEC = Deno.env.get("GOOGLE_CLIENT_SECRET")!;
 const cors = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, content-type, apikey, x-client-info", "Access-Control-Allow-Methods": "POST, OPTIONS" };
 const db = createClient(URL_, KEY, { auth: { persistSession: false } });
 const json = (o: unknown, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { ...cors, "Content-Type": "application/json" } });
+const fmtP = (v: string | number) => { const p = new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", weekday: "short", hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit", hourCycle: "h23" }).formatToParts(new Date(v)); const g = (t: string) => p.find((x) => x.type === t)?.value || ""; return g("weekday").replace(".", "") + " " + g("day") + "/" + g("month") + " " + g("hour") + ":" + g("minute"); };
 const norm = (s: string) => (s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
 Deno.serve(async (req) => {
@@ -64,11 +65,27 @@ Deno.serve(async (req) => {
       const targets = ids.size ? [...ids] : [null];
       for (const uid of targets) rows.push({ id: e.id + ":" + (uid || "none"), user_id: uid, title: e.summary || "Aula", start_at: e.start.dateTime, end_at: e.end.dateTime, meet_url: meet, is_group: viaGroup || ids.size > 1, updated_at: new Date().toISOString() });
     }
+    // guarda as aulas futuras de antes para avisar o aluno se o professor remarcou ou cancelou no Google Agenda
+    const { data: before } = await db.from("lessons").select("id,user_id,start_at").not("user_id", "is", null).gte("start_at", new Date().toISOString()).lte("start_at", timeMax);
     if (rows.length) { const { error } = await db.from("lessons").upsert(rows); if (error) throw new Error("banco: " + error.message); }
     const keep = rows.map((r) => r.id);
     let del = db.from("lessons").delete().gte("start_at", timeMin).lte("start_at", timeMax);
     if (keep.length) del = del.not("id", "in", `(${keep.map((k) => `"${k}"`).join(",")})`);
     await del;
+    try { // avisos ao aluno (ignora o que veio de um pedido decidido ha pouco, que ja gerou o proprio aviso)
+      const since = new Date(Date.now() - 20 * 60e3).toISOString();
+      const { data: dec } = await db.from("lesson_requests").select("lesson_id").eq("status", "approved").gte("decided_at", since);
+      const skip = new Set((dec || []).map((d: any) => String(d.lesson_id || "").split(":")[0]));
+      const byId = new Map(rows.map((r) => [r.id, r]));
+      const evs = new Set(rows.map((r) => String(r.id).split(":")[0]));
+      for (const o of before || []) {
+        const evId = String(o.id).split(":")[0];
+        if (skip.has(evId)) continue;
+        const n = byId.get(o.id);
+        if (n && Math.abs(Date.parse(n.start_at) - Date.parse(o.start_at)) >= 60000) await db.from("student_msgs").insert({ user_id: o.user_id, body: "Sua aula de " + fmtP(o.start_at) + " foi remarcada para " + fmtP(n.start_at) + "." });
+        else if (!n && !evs.has(evId)) await db.from("student_msgs").insert({ user_id: o.user_id, body: "Sua aula de " + fmtP(o.start_at) + " foi cancelada." });
+      }
+    } catch (_) { /* aviso e opcional */ }
     await db.from("gcal_link").update({ last_error: null }).eq("id", 1);
     return json({ ok: true, count: rows.length });
   } catch (err) {

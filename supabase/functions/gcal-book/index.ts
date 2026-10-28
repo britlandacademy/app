@@ -19,6 +19,11 @@ const HOLD_HOURS = 24;     // pedido pendente reserva o horario por 24 h
 const MAX_PENDING_NEW = 3; // pedidos de aula nova pendentes por aluno
 const TZ_OFFSET = "-03:00"; // horario do professor (Brasilia, sem horario de verao)
 
+// ---- avisos push (gravam em teacher_events / student_msgs; a super-processor envia) ----
+const fmtP = (v: string | number) => { const p = new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", weekday: "short", hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit", hourCycle: "h23" }).formatToParts(new Date(v)); const g = (t: string) => p.find((x) => x.type === t)?.value || ""; return g("weekday").replace(".", "") + " " + g("day") + "/" + g("month") + " " + g("hour") + ":" + g("minute"); };
+const tNote = async (uid: string, rest: string) => { try { const { data: p } = await db.from("profiles").select("name").eq("id", uid).maybeSingle(); const fn = String(p?.name || "").trim().split(/\s+/)[0] || "Aluno"; await db.from("teacher_events").insert({ student_id: uid, kind: "msg", label: fn + rest }); } catch (_) { /* aviso e opcional */ } };
+const sNote = async (uid: string, text: string) => { try { await db.from("student_msgs").insert({ user_id: uid, body: text }); } catch (_) { /* aviso e opcional */ } };
+
 const MIN = 60000;
 const dayStr = (ms: number) => new Date(ms - 3 * 3600e3).toISOString().slice(0, 10); // data em Brasilia
 
@@ -54,7 +59,7 @@ async function accessToken(link: any) {
   if (!t.access_token) throw new Error("token: " + (t.error || "sem acesso"));
   return t.access_token as string;
 }
-const calUrl = (link: any, path = "") => `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(link.calendar_id || "primary")}/events${path}`;
+const calUrl = (link: any, path = "") => "https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(link.calendar_id || "primary") + "/events" + path;
 
 async function loadBusy(excludeRequest?: string): Promise<Iv[]> {
   const from = new Date(Date.now() - 86400e3).toISOString();
@@ -118,6 +123,7 @@ Deno.serve(async (req) => {
       }
       const { data: ins, error } = await db.from("lesson_requests").insert({ user_id: uid, kind, lesson_id, old_start, new_start: new Date(start).toISOString(), new_end: new Date(start + DUR * MIN).toISOString() }).select("id").single();
       if (error) throw new Error("banco: " + error.message);
+      await tNote(uid, kind === "reschedule" ? " pediu para remarcar a aula de " + fmtP(old_start!) + " para " + fmtP(start) : " pediu uma aula nova: " + fmtP(start));
       return json({ ok: true, id: ins.id });
     }
 
@@ -137,6 +143,7 @@ Deno.serve(async (req) => {
       await db.from("lessons").delete().eq("id", l.id);
       await db.from("lesson_requests").update({ status: "rejected", decided_at: new Date().toISOString() }).eq("status", "pending").eq("lesson_id", l.id);
       await db.from("lesson_requests").insert({ user_id: uid, kind: "cancel", lesson_id: l.id, old_start: l.start_at, new_start: l.start_at, new_end: l.end_at, status: "approved", decided_at: new Date().toISOString() });
+      await tNote(uid, " cancelou a aula de " + fmtP(l.start_at));
       return json({ ok: true });
     }
 
@@ -145,7 +152,7 @@ Deno.serve(async (req) => {
       const { data: r } = await db.from("lesson_requests").select("*").eq("id", String(body.id || "")).maybeSingle();
       if (!r || r.status !== "pending") return json({ ok: false, error: "not_pending" });
       const now = new Date().toISOString();
-      if (!body.approve) { await db.from("lesson_requests").update({ status: "rejected", decided_at: now }).eq("id", r.id); return json({ ok: true }); }
+      if (!body.approve) { await db.from("lesson_requests").update({ status: "rejected", decided_at: now }).eq("id", r.id); await sNote(r.user_id, "Seu pedido não pôde ser aprovado. Escolha outro horário."); return json({ ok: true }); }
       // o horario ainda precisa estar livre (ignorando a propria reserva deste pedido)
       const s = Date.parse(r.new_start), e = Date.parse(r.new_end);
       const busy = await loadBusy(r.id);
@@ -170,6 +177,7 @@ Deno.serve(async (req) => {
         await db.from("lessons").upsert({ id: c.id + ":" + r.user_id, user_id: r.user_id, title: ev.summary, start_at: r.new_start, end_at: r.new_end, meet_url: meet, is_group: false, updated_at: now });
       }
       await db.from("lesson_requests").update({ status: "approved", decided_at: now }).eq("id", r.id);
+      await sNote(r.user_id, r.kind === "reschedule" ? "Seu pedido foi aprovado ✅ Novo horário: " + fmtP(r.new_start) : "Sua aula foi marcada ✅ " + fmtP(r.new_start));
       return json({ ok: true });
     }
 
