@@ -1,7 +1,7 @@
 /* Britland Academy: registers the service worker and tells the student when a new version is ready. */
 (function(){
 'use strict';
-window.BL_VERSION='1.5.17'; /* keep equal to VERSION in sw.js */
+window.BL_VERSION='1.5.18'; /* keep equal to VERSION in sw.js */
 /* ---- error codes: every error shows a code the student can send to the teacher, and is logged in app_errors (errors_setup.sql) ---- */
 (function(){
 var V=window.BL_VERSION,seen={},sent=0,queue=[],box=null;
