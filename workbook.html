@@ -319,7 +319,7 @@ function bD(L,d,id){
       get:()=>{
         if(pick<0)return {ok:false,msg:'Tap the wrong word first.',model:model};
         if(!inp.value.trim())return {ok:false,msg:'Write the correct word.',model:model};
-        const a=it.idx.indexOf(pick)>=0,b=norm(inp.value)===norm(it.ans);
+        const a=it.idx.indexOf(pick)>=0,b=norm(inp.value)===norm(it.ans)||norm(inp.value)===norm(it.good);
         if(a&&b)return {ok:true,model:model};
         return {ok:false,msg:!a?'That is not the wrong word.':'Check the correct word.',model:model};},
       lock:()=>{locked=true;inp.disabled=true;btns.forEach(x=>{x.b.disabled=true;});}};
