@@ -168,7 +168,7 @@ var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they 
 ['We could not read your account. Try again in a moment.','Não foi possível ler a sua conta. Tente de novo em instantes.','No pudimos leer tu cuenta. Inténtalo de nuevo en un momento.'],
 ['Try again','Tentar de novo','Intentar de nuevo'],
 ['Sign out','Sair','Cerrar sesión'],
-['My Profile','Meu perfil','Mi perfil'],['Change picture','Trocar foto','Cambiar foto'],['Dark mode','Modo escuro','Modo oscuro'],['Help','Ajuda','Ayuda'],
+['My Profile','Meu perfil','Mi perfil'],['Change picture','Trocar foto','Cambiar foto'],['Dark mode','Modo escuro','Modo oscuro'],['Game mode','Modo jogo','Modo juego'],['Help','Ajuda','Ayuda'],
 ['Waiting for approval','Aguardando aprovação','Esperando aprobación'],
 ['Your request was sent, {0}. Your teacher needs to approve your access.','Seu pedido foi enviado, {0}. Seu professor precisa aprovar o seu acesso.','Tu solicitud fue enviada, {0}. Tu profesor debe aprobar tu acceso.'],
 ['Come back later and press "Check again".','Volte mais tarde e toque em "Verificar de novo".','Vuelve más tarde y pulsa "Verificar de nuevo".'],

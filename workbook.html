@@ -537,17 +537,21 @@ function place(L,s,focus){
   return node;
 }
 /* ---------- one question at a time (js/duo.js) ---------- */
-function duoLesson(L){
+const _auto={};
+function gameAuto(L){if(!L||!window.Duo||!Duo.game()||_auto[L.id])return;_auto[L.id]=1;setTimeout(()=>duoLesson(L,true),300);}
+function duoLesson(L,auto){
   const groups=[];
   secsOf(L).forEach(s=>{
     const d=L.wb[s],id=exId(L,s);
+    if(auto&&best(id)!==undefined)return;
     const spec=(KB[d.kind]||BUILD[s])(L,d,'duo'+id);
     if(spec.free)return;   // free writing stays in the normal page
     groups.push({title:d.title,pre:()=>spec.pre,
       items:spec.rows.map((r,i)=>({why:(d.items&&d.items[i]&&d.items[i].why)||null,make:()=>r})),
       save:(right)=>{const att={l:L.id,e:id,s:right,t:secTotal(L,s),at:Date.now()};me().attempts.push(att);return Gate.saveAttempt('ex',att);}});
   });
-  Duo.start({groups:groups,onDone:()=>{secsOf(L).forEach(s=>place(L,s,false));updateLesson(L);renderTabs();renderHistory();setTimeout(()=>cvCele(Covers.stageOf(L.id)),700);}});
+  if(!groups.length)return;
+  Duo.start({next:()=>{const n=LESSONS[LESSONS.indexOf(L)+1];return n?()=>showTab(String(n.id)):null;},groups:groups,onDone:()=>{secsOf(L).forEach(s=>place(L,s,false));updateLesson(L);renderTabs();renderHistory();setTimeout(()=>cvCele(Covers.stageOf(L.id)),700);}});
 }
 const lessonUI={};
 function mountLesson(L){
@@ -617,6 +621,7 @@ function showTab(t){
   LESSONS.forEach(L=>{lessonUI[L.id].panel.hidden=String(L.id)!==t;});
   histPanel.hidden=t!=='h';if(t==='h')renderHistory();
   renderTabs();window.scrollTo({top:0});
+  if(t!=='h')gameAuto(BYID[+t]);
 }
 const isWb=a=>BYID[a.l]&&/^wb/.test(String(a.e));
 function reportText(){

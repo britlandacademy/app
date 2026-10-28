@@ -487,8 +487,12 @@ function updateLesson(L){
 function refreshAfterAttempt(L){updateLesson(L);renderTabs();renderHistory();setTimeout(()=>cvCele(Covers.stageOf(L.id)),700);}
 
 /* ---------- one question at a time (js/duo.js) ---------- */
-function duoLesson(L){
-  Duo.start({groups:L.ex.map(ex=>{
+const _auto={};
+function gameAuto(L){if(!L||!window.Duo||!Duo.game()||_auto[L.id])return;_auto[L.id]=1;setTimeout(()=>duoLesson(L,true),300);}
+function duoLesson(L,auto){
+  const exs=auto?L.ex.filter(ex=>best(ex.id)===undefined):L.ex;
+  if(!exs.length)return;
+  Duo.start({next:()=>{const n=LESSONS[LESSONS.indexOf(L)+1];return n&&unlocked(n)?()=>showTab(String(n.id)):null;},groups:exs.map(ex=>{
     const pool=ex.type==='match'?shuffle(ex.items.map(i=>i.a)):null;
     if(ex.type==='mixed'){const mcs=ex.items.filter(x=>x.k==='mc');let bag=[];mcs.forEach(x=>{if(!bag.length)bag=shuffle(x.opts.map((_,j)=>j));x._pos=bag.pop();});}
     return {title:ex.title,
@@ -562,6 +566,7 @@ function showTab(t){
   histPanel.hidden=t!=='h';
   if(t==='h')renderHistory();
   renderTabs();window.scrollTo({top:0});
+  if(t!=='h')gameAuto(BYID[+t]);
 }
 function reportText(){
   const s=me();const lines=['Callan English · Lesson Checks · '+STAGETXT,'Teacher: Paulo S. Cruz','Student: '+s.name];

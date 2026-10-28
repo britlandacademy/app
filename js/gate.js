@@ -261,12 +261,15 @@ function addBar(){
   themeSw=el('button',{type:'button',class:'g-sw',role:'switch','aria-checked':'false','aria-label':'Dark mode',onclick:function(){setTheme(shownTheme()==='dark'?'light':'dark');}},el('u'));applyTheme();
   var minus=el('button',{type:'button','aria-label':'Smaller text',onclick:function(){setSize(fsIdx-1);}},'A−');
   var plus=el('button',{type:'button','aria-label':'Larger text',onclick:function(){setSize(fsIdx+1);}},'A+');
+  var gameOn=function(){try{return localStorage.getItem('bl-game')==='1';}catch(e){return false;}};
+  var gameSw=el('button',{type:'button',class:'g-sw'+(gameOn()?' on':''),role:'switch','aria-checked':String(gameOn()),'aria-label':'Game mode',onclick:function(){var n=!gameOn();try{localStorage.setItem('bl-game',n?'1':'0');}catch(e){}gameSw.setAttribute('aria-checked',String(n));gameSw.classList.toggle('on',n);}},el('u'));
   var lab=el('span',{style:'display:none','aria-live':'polite'});
   sizeUi={minus:minus,plus:plus,lab:lab};updateSizeUi();
   mn.append(head,
     COURSE.profile===false?document.createComment(''):mi('user','My Profile',{href:'account.html'}),
     COURSE.profile===false?document.createComment(''):mi('edit','Change picture',{href:'account.html#picture'}),
     el('div',{class:'g-mr'},ico('moon'),el('span',{},'Dark mode'),themeSw),
+    el('div',{class:'g-mr'},el('b',{style:'width:20px;text-align:center'},'\uD83C\uDFAE'),el('span',{},'Game mode'),gameSw),
     COURSE.push===false?document.createComment(''):pushRow(open),
     el('div',{class:'g-mr'},el('b',{style:'width:20px;text-align:center'},'Aa'),el('span',{},'Text size'),el('span',{class:'g-sz',role:'group','aria-label':'Text size'},minus,plus,lab)));
   if(window.I18N&&I18N.mode==='free')mn.append(el('div',{class:'g-mr'},el('span',{},'Language'),window.I18N.selector()));
