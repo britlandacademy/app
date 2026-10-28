@@ -157,6 +157,7 @@
 '#bl-duo.game .dz-flag img{width:100%;height:100%;object-fit:cover;display:block;max-height:none;margin:0;background:none;border-radius:0}'+
 '#bl-duo.game .dz-flag::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,0) 0,rgba(255,255,255,.28) 14px,rgba(0,0,0,.2) 28px,rgba(255,255,255,0) 40px);background-size:80px 100%;animation:dz-ripple 1.1s linear infinite}'+
 '#bl-duo.game .dz-fw{position:absolute;inset:0;width:100%;height:100%;z-index:6;pointer-events:none}'+
+'.dz-say{margin:6px 6px 0;padding:8px 12px;border-radius:14px;background:#fff;color:#10224a;font-weight:600;font-size:.92rem;line-height:1.35;position:relative}#bl-duo.game .dz-say::before{content:"";position:absolute;top:-6px;left:50%;margin-left:-6px;border:6px solid transparent;border-top:0;border-bottom-color:#fff}'+
 '.dz-halo{position:fixed;z-index:99995;pointer-events:none;border-radius:50%;background:radial-gradient(circle,rgba(255,213,74,0) 40%,rgba(255,213,74,.55) 58%,rgba(255,213,74,0) 72%)}'+
 '.dz-tw{position:fixed;z-index:99997;pointer-events:none;font-size:1.4rem;color:#ffe27a;text-shadow:0 0 8px #ffd54a;opacity:0}'+
 '.dz-flyav .dz-sh{position:absolute;inset:0;border-radius:50%;overflow:hidden;pointer-events:none}.dz-flyav .dz-sh i{position:absolute;top:-20%;left:-70%;width:45%;height:140%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.95),transparent);transform:rotate(20deg)}'+
@@ -195,10 +196,32 @@
   /* ---------- celebration assets ---------- */
   var B=W.BL_BASE||'';
   var PEEPS=[1,2,3,4,5,6,7,8].map(function(n){return B+'img/peeps/p'+n+'.svg';});
-  var FAM=B?['cervantes','frida','goya','picasso','velazquez','bolivar','sanmartin'].map(function(n){return B+'img/es/'+n+'.jpg';})
-           :['shakespeare','curie','newton','darwin','lincoln','franklin','mlk','austen','christie','angelou','parks','elizabeth2'].map(function(n){return 'img/people/'+n+'.jpg';});
-  var FLAGS=B?['ar','cl','co','cu','es','mx','pe','ve'].map(function(n){return B+'img/es/flag-'+n+'.png';})
-             :['england','scotland','wales','australia','india','jamaica'].map(function(n){return 'img/flags/'+n+'.svg';});
+  /* Celebration characters: portrait, flag of their country and a playful (not a real quote) congratulation, by score: [3 stars, 2 stars, 1 star], each [main language, Portuguese] */
+  var CH=B?[
+   ['cervantes','es','flag-es.png',[['¡Venciste los molinos de viento de la gramática!','Você venceu os moinhos de vento da gramática!'],['Buen camino, valiente. ¡La próxima aventura será aún mejor!','Bom caminho, valente. A próxima aventura será ainda melhor!'],['Hasta Don Quijote se cayó muchas veces. ¡Inténtalo otra vez!','Até Dom Quixote caiu muitas vezes. Tente de novo!']]],
+   ['frida','es','flag-mx.png',[['¡Pintaste esta lección con todos los colores!','Você pintou esta lição com todas as cores!'],['Hay color en tu progreso. ¡Sigue pintando!','Há cor no seu progresso. Continue pintando!'],['Cada pincelada cuenta. ¡Inténtalo de nuevo!','Cada pincelada conta. Tente de novo!']]],
+   ['goya','es','flag-es.png',[['Ni mis fantasmas encontraron un error. ¡Qué lección luminosa!','Nem meus fantasmas acharam erro. Que lição luminosa!'],['Buen trazo. Con un poco más de luz saldrá perfecto.','Bom traço. Com um pouco mais de luz fica perfeito.'],['Hasta las sombras enseñan algo. ¡Vuelve a intentarlo!','Até as sombras ensinam algo. Tente de novo!']]],
+   ['picasso','es','flag-es.png',[['Cada acierto es un trazo tuyo. ¡Hoy pintaste una obra maestra!','Cada acerto é um traço seu. Hoje você pintou uma obra-prima!'],['Tu cuadro va tomando forma. ¡Sigue!','Seu quadro está tomando forma. Siga!'],['Los grandes cuadros empiezan con un borrador. ¡Otra vez!','Grandes quadros começam com um rascunho. De novo!']]],
+   ['velazquez','es','flag-es.png',[['Este retrato de alumno dedicado merece un lugar en el museo.','Este retrato de aluno dedicado merece um lugar no museu.'],['Buena composición. Con más práctica será una obra maestra.','Boa composição. Com mais prática será uma obra-prima.'],['Un buen pintor retoca su obra. ¡Inténtalo otra vez!','Um bom pintor retoca sua obra. Tente de novo!']]],
+   ['bolivar','es','flag-ve.png',[['Te liberaste de las dudas y la victoria es tuya. ¡Adelante!','Você se libertou das dúvidas e a vitória é sua. Adiante!'],['Vas ganando terreno. ¡Sigue la marcha!','Você está ganhando terreno. Siga em frente!'],['Toda libertad cuesta esfuerzo. ¡Vuelve a la batalla!','Toda liberdade exige esforço. Volte à batalha!']]],
+   ['sanmartin','es','flag-ar.png',[['Cruzaste los Andes de las lecciones. ¡Felicitaciones!','Você atravessou os Andes das lições. Parabéns!'],['Ya estás subiendo la cordillera. ¡Un poco más!','Você já está subindo a cordilheira. Mais um pouco!'],['Hasta el mejor ejército se reagrupa. ¡Inténtalo otra vez!','Até o melhor exército se reagrupa. Tente de novo!']]]
+  ].map(function(c){return {img:B+'img/es/'+c[0]+'.jpg',flag:B+'img/es/'+c[2],say:c[3]};})
+  :[
+   ['shakespeare','england','A five-act triumph! Your English deserves a standing ovation.','Triunfo em cinco atos! Seu inglês merece aplausos de pé.','Well played! The next act will be even better.','Muito bem! O próximo ato será ainda melhor.','Every great play has a rough first draft. Try again!','Toda grande peça tem um primeiro rascunho difícil. Tente de novo!'],
+   ['curie','poland','Radiant result! Your dedication glows.','Resultado radiante! Sua dedicação brilha.','Good reaction! A little more practice and you will glow.','Boa reação! Mais um pouco de prática e você vai brilhar.','Every experiment teaches something. Run it again!','Todo experimento ensina algo. Repita!'],
+   ['newton','england','Your progress has force, mass and plenty of acceleration!','Seu progresso tem força, massa e muita aceleração!','You are gaining speed. Keep going!','Você está ganhando velocidade. Continue!','Even apples fall a few times before a big idea. Try again!','Até as maçãs caem algumas vezes antes de uma grande ideia. Tente de novo!'],
+   ['darwin','england','Some creatures evolve fast, but you are amazing!','Algumas criaturas evoluem rápido, mas você é demais!','You are adapting well. Evolving takes practice!','Você está se adaptando bem. Evoluir exige prática!','Even the fittest survive by trying again. Go on!','Até os mais fortes sobrevivem tentando de novo. Vá em frente!'],
+   ['lincoln','usa','Great work! Your English stands tall.','Ótimo trabalho! Seu inglês está de cabeça erguida.','A house united by practice stands strong. Keep going!','Uma casa unida pela prática fica firme. Continue!','Every long journey starts with one step. Try again!','Toda longa jornada começa com um passo. Tente de novo!'],
+   ['franklin','usa','A brilliant idea beats a thousand sparks. Yours was to study every day!','Uma ideia brilhante vale mais que mil faíscas. A sua foi estudar todo dia!','Your kite is flying high. A little more and lightning strikes!','Sua pipa está voando alto. Mais um pouco e vem o raio!','Time well spent is never lost. Try again!','Tempo bem gasto nunca se perde. Tente de novo!'],
+   ['mlk','usa','Your dedication inspires. Keep dreaming big and practising!','Sua dedicação inspira. Continue sonhando alto e praticando!','Step by step, you are getting closer to your goal.','Passo a passo, você chega mais perto do seu objetivo.','Do not stop now. Every effort moves you forward!','Não pare agora. Cada esforço leva você adiante!'],
+   ['austen','england','A perfect score! Even Mr Darcy would be impressed.','Nota perfeita! Até o Sr. Darcy ficaria impressionado.','Charming progress! The next chapter will be even better.','Progresso encantador! O próximo capítulo será ainda melhor.','Every good story has a difficult chapter. Try again!','Toda boa história tem um capítulo difícil. Tente de novo!'],
+   ['christie','england','Mystery solved: the one behind your success is your effort!','Mistério resolvido: o responsável pelo seu sucesso é o seu esforço!','You are on the right trail. One more clue and you have it!','Você está na pista certa. Mais uma pista e chega lá!','A good detective never gives up. Look again!','Um bom detetive nunca desiste. Procure de novo!'],
+   ['angelou','usa','Like poetry, you rise with every lesson. You flew high today!','Como a poesia, você se levanta a cada lição. Hoje voou alto!','You are rising nicely. Keep your head up!','Você está subindo bem. Cabeça erguida!','Every try is a verse. Write the next one!','Cada tentativa é um verso. Escreva o próximo!'],
+   ['parks','usa','You stood your ground and it paid off. Proud of you!','Você manteve seu lugar e valeu a pena. Orgulho de você!','Steady and strong. Keep going on the road to fluency!','Firme e forte. Siga no caminho da fluência!','Courage is trying again. You can do it!','Coragem é tentar de novo. Você consegue!'],
+   ['elizabeth2','uk','By royal decree: excellent work!','Por decreto real: excelente trabalho!','Very good indeed. A touch more practice and you will be a champion!','Muito bem! Um pouco mais de prática e você será campeão!','Keep calm and try again. You will get there!','Mantenha a calma e tente de novo. Você vai chegar lá!']
+  ].map(function(c){return {img:'img/people/'+c[0]+'.jpg',flag:'img/flags/'+c[1]+'.svg',say:[[c[2],c[3]],[c[4],c[5]],[c[6],c[7]]]};});
+  var lastCh=-1;
+  function pickCh(){var k;do{k=Math.floor(Math.random()*CH.length);}while(k===lastCh&&CH.length>1);lastCh=k;return CH[k];}
   var lastPeep=-1;
   function pick(a){return a[Math.floor(Math.random()*a.length)];}
   function nextPeep(){var k;do{k=Math.floor(Math.random()*PEEPS.length);}while(k===lastPeep&&PEEPS.length>1);lastPeep=k;return PEEPS[k];}
@@ -209,13 +232,13 @@
     n.innerHTML='<svg viewBox="0 0 80 100" width="76" height="95" aria-hidden="true"><path d="M20 0h16l10 34H30z" fill="#c8102e"/><path d="M60 0H44L34 34h16z" fill="#1d3f8a"/><circle cx="40" cy="62" r="30" fill="'+C[1]+'"/><circle cx="40" cy="62" r="25" fill="'+C[0]+'"/><path d="M40 44l5.3 11 12 1.7-8.7 8.4 2.1 12-10.7-5.7-10.7 5.7 2.1-12-8.7-8.4 12-1.7z" fill="'+C[1]+'" opacity=".85"/></svg>';
     return n;
   }
-  function famBox(){
-    var b=el('div','dz-fam'),i=el('img');i.src=pick(FAM);i.alt='';b.appendChild(i);
+  function famBox(ch){
+    var b=el('div','dz-fam'),i=el('img');i.src=ch.img;i.alt='';b.appendChild(i);
     b.appendChild(el('span','cl l','👏'));b.appendChild(el('span','cl r','👏'));return b;
   }
-  function flagRow(){
+  function flagRow(ch){
     var r=el('div','dz-flagrow'),w=el('div','dz-flagw'),pl=el('div','dz-pole'),f=el('div','dz-flag'),i=el('img');
-    i.src=pick(FLAGS);i.alt='';f.appendChild(i);w.appendChild(pl);w.appendChild(f);r.appendChild(w);return r;
+    i.src=ch.flag;i.alt='';f.appendChild(i);w.appendChild(pl);w.appendChild(f);r.appendChild(w);return r;
   }
   function fireworks(host){
     if(reduced())return;
@@ -449,8 +472,9 @@
       var nx=null;try{nx=o.next?o.next():null;}catch(e){}
       var pop=el('div','dz-pop'),card=el('div','dz-card');pop.setAttribute('role','alertdialog');pop.setAttribute('aria-label',T('gdone'));
       var lg=el('div','dz-logo'),li=el('img');li.src='img/britland-shield.png';li.alt='';lg.appendChild(li);lg.appendChild(el('b','','BRITLAND'));lg.appendChild(el('i','','ACADEMY'));lg.appendChild(el('u',''));card.appendChild(lg);
-      card.appendChild(flagRow());
-      var hero=el('div','dz-hero');hero.appendChild(famBox());hero.appendChild(medal(stars));card.appendChild(hero);
+      var ch=pickCh();card.appendChild(flagRow(ch));
+      var hero=el('div','dz-hero');hero.appendChild(famBox(ch));hero.appendChild(medal(stars));card.appendChild(hero);
+      var say=ch.say[3-stars],sy=el('p','dz-say',say[ix()===1?1:0]);card.appendChild(sy);
       var st=el('div','dz-stars');st.setAttribute('aria-label',stars+' / 3');
       for(var i=0;i<3;i++){var sp=el('span',i<stars?'on':'off','★');sp.style.animationDelay=(.5+i*.25)+'s';st.appendChild(sp);}
       card.appendChild(st);
