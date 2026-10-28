@@ -666,6 +666,7 @@ function startTour(force){
   }
   S.push({h:'My Profile',p:['Your grades, exam history and payments are here. This is also where you turn on reminder notifications.'],sel:['a.card[href="account.html"]']});
   S.push({h:'The menu on your picture',p:['Tap your picture to change it, use dark mode, change the language, make the text larger, get help or sign out. To see this tour again, open Help.'],sel:['.g-avbtn']});
+  S.push({h:'Game Mode',p:['Prefer to play? Game Mode turns your lessons into a metro line: every station is a lesson, and every 4 lessons you reach a Review at a famous landmark.','Questions come one at a time, with three lion lives, sounds and stars. Try one now.'],demo:1});
   S.push({h:'All set!',p:['Turn on notifications to get class reminders.'],last:1});
   S=S.filter(function(s){return !s.sel||document.querySelector(s.sel[s.sel.length-1])||s.sel.some(function(q){return document.querySelector(q);});});
   var i=0,ov=el('div',{id:'bl-tour',class:'tr','data-noi18n':'1'}),blk=el('div',{class:'tr-b'}),spot=el('div',{class:'tr-s'}),sheet=el('div',{class:'tr-sh',role:'dialog','aria-modal':'true','aria-label':'Tour','aria-live':'polite'}),conf=el('div',{class:'tr-c'});
@@ -710,6 +711,20 @@ function startTour(force){
         else{setL(7);snd('leao_7dias');fx();msg.textContent='Week complete! 7 days in a row.';}
         tourPt(document.getElementById('bl-tour'));});
       sheet.append(el('div',{class:'tr-l'},lw,b),msg);
+    }
+    if(s.demo){
+      var dm=el('div',{style:'margin:8px 0;padding:10px 12px;border:2px solid #F5C542;border-radius:10px;background:#FFF9E6'}),lv=el('div',{style:'display:flex;gap:6px;margin-bottom:8px','aria-label':'Lives: 3'}),lis=[];
+      for(var q=0;q<3;q++){var li=el('img',{src:'img/lion-gold.png',alt:'',width:'26',height:'30'});lis.push(li);lv.append(li);}
+      var dq=el('p',{style:'font-weight:700;margin:0 0 8px;color:#0B1B33'},'She ___ a teacher.'),dr=el('div',{class:'tr-f',style:'margin:0'}),dfb=el('p',{role:'status',class:'tr-m',style:'margin:6px 0 0'},''),lost=0,fin=false;
+      ['am','is','are'].forEach(function(w){dr.append(TB(w,'dm',function(){
+        if(fin)return;
+        if(w==='is'){fin=true;dfb.textContent='\u2713 Correct! Right answers build combos and win stars.';snd('crepitar');dr.remove();}
+        else{if(lost<2){lis[lost].src='img/lion-off.png';lost++;}dfb.textContent='\u2717 Not quite. You lose a lion life. Try again.';}
+        tourPt(document.getElementById('bl-tour'));}));});
+      dm.append(lv,dq,dr,dfb);sheet.append(dm);
+      var ga=el('div',{class:'tr-f'});
+      ga.append(TB('Activate Game Mode','dm',function(){try{localStorage.setItem('bl-game','1');}catch(e){}seen();location.reload();}),el('span',{style:'font-size:.85rem;color:#475671'},'You can switch it any time in the menu on your picture.'));
+      sheet.append(ga);
     }
     if(s.last){
       var box=el('div',{});sheet.append(box);tourPush(box,TB);

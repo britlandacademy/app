@@ -8,6 +8,13 @@ var COURSE=window.BL_COURSE||{},UI=COURSE.uiLang||'en';
 var KEY=COURSE.langKey||'callan-lang';
 var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they are */
 /* ---- sign in ---- */
+["Game Mode", "Modo Jogo", "Modo Juego"],
+["Prefer to play? Game Mode turns your lessons into a metro line: every station is a lesson, and every 4 lessons you reach a Review at a famous landmark.", "Prefere jogar? O Modo Jogo transforma suas lições em uma linha de metrô: cada estação é uma lição e, a cada 4 lições, você chega a uma Review em um ponto turístico famoso.", "¿Prefieres jugar? El Modo Juego convierte tus lecciones en una línea de metro: cada estación es una lección y cada 4 lecciones llegas a un repaso en un lugar famoso."],
+["Questions come one at a time, with three lion lives, sounds and stars. Try one now.", "As perguntas vêm uma de cada vez, com três vidas de leão, sons e estrelas. Experimente uma agora.", "Las preguntas llegan de una en una, con tres vidas de león, sonidos y estrellas. Prueba una ahora."],
+["\u2713 Correct! Right answers build combos and win stars.", "\u2713 Certo! Acertos formam combos e ganham estrelas.", "\u2713 ¡Correcto! Los aciertos forman combos y ganan estrellas."],
+["\u2717 Not quite. You lose a lion life. Try again.", "\u2717 Ainda não. Você perde uma vida de leão. Tente de novo.", "\u2717 Todavía no. Pierdes una vida de león. Inténtalo de nuevo."],
+["Activate Game Mode", "Ativar o Modo Jogo", "Activar el Modo Juego"],
+["You can switch it any time in the menu on your picture.", "Você pode ligar e desligar quando quiser no menu da sua foto.", "Puedes activarlo o desactivarlo cuando quieras en el menú de tu foto."],
 ["Let’s get to know the app in 1 minute", "Vamos conhecer o app em 1 minuto", "Vamos a conocer la app en 1 minuto"],
 ["I will show where each feature is and what it does. Tap Next to start.", "Vou mostrar onde fica cada recurso e para que ele serve. Toque em Próximo para começar.", "Te mostraré dónde está cada función y para qué sirve. Toca Siguiente para empezar."],
 ["Your study streak", "Sua sequência de estudo", "Tu racha de estudio"],
