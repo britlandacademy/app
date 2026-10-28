@@ -55,7 +55,7 @@ var ac=null;
 function sndOn(){try{return localStorage.getItem('bl-duo-snd')!=='0';}catch(e){return true;}}
 function ctx(){try{ac=ac||new (W.AudioContext||W.webkitAudioContext)();if(ac.state==='suspended')ac.resume();}catch(e){}return ac;}
 function tone(f,t0,dd,type,g,f2){var c=ctx();if(!c||!sndOn())return;try{var o=c.createOscillator(),v=c.createGain(),t=c.currentTime+t0;o.type=type||'sine';o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+dd);v.gain.setValueAtTime(0,t);v.gain.linearRampToValueAtTime(g||.15,t+.015);v.gain.exponentialRampToValueAtTime(.0001,t+dd);o.connect(v);v.connect(c.destination);o.start(t);o.stop(t+dd+.05);}catch(e){}}
-function tick(){tone(660,0,.06,'square',.05);tone(990,.03,.05,'square',.03);}
+function tick(){tone(523,0,.11,'sine',.05);tone(784,0,.07,'sine',.014);}
 function dingdong(){tone(784,0,.9,'sine',.17);tone(1568,0,.4,'sine',.05);tone(587.3,.42,1.1,'sine',.17);tone(1174.6,.42,.45,'sine',.05);}
 function whistle(){tone(880,0,.55,'triangle',.1,1250);tone(884,0,.55,'sine',.05,1260);tone(1320,.62,.35,'triangle',.07,1100);}
 function chug(n){for(var i=0;i<n;i++)tone(120,i*.22,.1,'square',.035,60);}
