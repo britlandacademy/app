@@ -153,9 +153,9 @@ if(window.BL_COURSE&&window.BL_COURSE.id==='es'){(function(){
   ph('cervantes','people','Miguel de Cervantes','cervantes.jpg');ph('velazquez','people','Diego Velázquez','velazquez.jpg');ph('goya','people','Francisco de Goya','goya.jpg');
   ph('frida','people','Frida Kahlo','frida.jpg');ph('picasso','people','Pablo Picasso','picasso.jpg');ph('bolivar','people','Simón Bolívar','bolivar.jpg');ph('sanmartin','people','José de San Martín','sanmartin.jpg');ph('isabel','people','Isabel la Católica','isabel.jpg');
   /* characters */
-  ph('quijote','fiction','Don Quijote','quijote.jpg','xMidYMid slice');ph('quijote2','fiction','Don Quijote y Sancho','quijote2.jpg','xMidYMid slice');
+  ph('quijote','fiction','Don Quijote','quijote.jpg','xMidYMid slice');
   /* monuments */
-  ph('sagrada','places','Sagrada Familia','sagrada.jpg','xMidYMid slice');ph('sagrada2','places','Sagrada Familia (interior)','sagrada2.jpg','xMidYMid slice');ph('batllo','places','Casa Batlló','batllo.jpg','xMidYMid slice');ph('machu','places','Machu Picchu','machu.jpg','xMidYMid slice');
+  ph('sagrada','places','Sagrada Familia','sagrada.jpg','xMidYMid slice');ph('batllo','places','Casa Batlló','batllo.jpg','xMidYMid slice');ph('machu','places','Machu Picchu','machu.jpg','xMidYMid slice');
   /* animals */
   ph('llama','animals','Llama','llama.jpg','xMidYMid slice');ph('toro','animals','Toro bravo','toro.jpg','xMidYMid slice');
   /* food and culture (original drawings) */
