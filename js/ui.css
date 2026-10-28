@@ -59,3 +59,5 @@ a.card:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(0,0,0,.4)}
 #prev,#next,#prev2,#next2{border-radius:999px!important}
 #next:not(:disabled),#next2:not(:disabled){box-shadow:0 4px 0 var(--ui-gold-dk)}
 #prev:active,#next:active,#prev2:active,#next2:active{transform:translateY(4px)}
+
+.g-bar:not(.gp) .g-name{display:none!important}
