@@ -288,13 +288,13 @@ function birthdayToday(){
 }
 function birthdayField(){
   var L=gLang(),lab=['Birthday','Aniversário','Cumpleaños'][L],sv=['Save','Salvar','Guardar'][L],ok=['Saved ✓','Salvo ✓','Guardado ✓'][L];
-  var inp=el('input',{type:'date',min:'1920-01-01',max:isoToday(),'aria-label':lab,value:(prof&&prof.birthdate)||'',style:'font:inherit;padding:8px;border-radius:8px;border:2px solid var(--line,#999);background:var(--card,#fff);color:var(--ink,#111);min-height:44px'});
+  var inp=el('input',{type:'date',min:'1920-01-01',max:isoToday(),'aria-label':lab,value:(prof&&prof.birthdate)||'',style:'font:inherit;padding:8px;min-width:0;flex:1 1 130px;border-radius:8px;border:2px solid var(--line,#999);background:var(--card,#fff);color:var(--ink,#111);min-height:44px'});
   var msg=el('small',{style:'margin-left:8px'},'');
   var b=el('button',{type:'button',class:'btn',onclick:function(){
     if(!inp.value||!sb)return;
     sb.rpc('set_my_birthdate',{p_date:inp.value}).then(function(r){if(r.error){msg.textContent=niceError(r.error);return;}if(prof)prof.birthdate=inp.value;msg.textContent=ok;},function(){});
   }},sv);
-  return el('div',{class:'g-mr',style:'flex-wrap:wrap;cursor:default'},el('b',{style:'width:20px;text-align:center'},'🎂'),el('span',{},lab),inp,b,msg);
+  return el('div',{class:'g-mr',style:'flex-wrap:wrap;cursor:default'},el('b',{style:'width:20px;text-align:center'},'\uD83C\uDF82'),el('span',{style:'white-space:nowrap'},lab),el('div',{style:'flex:1 0 100%;display:flex;gap:8px;align-items:center;flex-wrap:wrap'},inp,b,msg));
 }
 function birthdayParty(){
   if(!birthdayToday()||!/(^|\/)(index\.html)?$/.test(location.pathname)||document.getElementById('bl-bd'))return;
