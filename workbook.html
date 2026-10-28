@@ -194,6 +194,7 @@ textarea.wrt{width:100%;font:inherit;font-size:1rem;color:var(--ink);background:
 <script src="js/config.js" charset="utf-8"></script>
 <script src="js/gate.js" charset="utf-8"></script>
 <script src="js/covers.js" charset="utf-8"></script>
+<script src="js/duo.js" charset="utf-8"></script>
 <script>
 Gate.start({kinds:['ex'],attempts:'ex'},function(ctx){
 'use strict';
@@ -535,6 +536,19 @@ function place(L,s,focus){
   if(focus){const f=node.querySelector('input,select,button.cho,button.tok');if(f)f.focus({preventScroll:true});}
   return node;
 }
+/* ---------- one question at a time (js/duo.js) ---------- */
+function duoLesson(L){
+  const groups=[];
+  secsOf(L).forEach(s=>{
+    const d=L.wb[s],id=exId(L,s);
+    const spec=(KB[d.kind]||BUILD[s])(L,d,'duo'+id);
+    if(spec.free)return;   // free writing stays in the normal page
+    groups.push({title:d.title,pre:()=>spec.pre,
+      items:spec.rows.map((r,i)=>({why:(d.items&&d.items[i]&&d.items[i].why)||null,make:()=>r})),
+      save:(right)=>{const att={l:L.id,e:id,s:right,t:secTotal(L,s),at:Date.now()};me().attempts.push(att);return Gate.saveAttempt('ex',att);}});
+  });
+  Duo.start({groups:groups,onDone:()=>{secsOf(L).forEach(s=>place(L,s,false));updateLesson(L);renderTabs();renderHistory();setTimeout(()=>cvCele(Covers.stageOf(L.id)),700);}});
+}
 const lessonUI={};
 function mountLesson(L){
   const panel=el('section',{class:'panel',id:'panel-'+L.id,hidden:true,'aria-label':'Workbook lesson '+L.id});
@@ -546,7 +560,7 @@ function mountLesson(L){
   const msg=el('p',{class:'msgtotal','aria-live':'polite'});
   const actions=el('div',{class:'btnrow'});
   const card=el('section',{class:'card total','aria-label':'Workbook result'},el('p',{class:'lab'},'Result'),el('h2',{},'Workbook score · Lesson '+L.id),big,bar,msg,actions);
-  panel.append(el('h2',{class:'sep'},'Workbook · Lesson '+L.id),el('p',{class:'sub'},'Focus: '+L.wb.focus),gridEl,card);
+  panel.append(el('h2',{class:'sep'},'Workbook · Lesson '+L.id),el('p',{class:'sub'},'Focus: '+L.wb.focus),Duo.cta(()=>duoLesson(L)),gridEl,card);
   lessonUI[L.id]={panel:panel,barFill:barFill,bar:bar,big:big,msg:msg,actions:actions};
   updateLesson(L);return panel;
 }

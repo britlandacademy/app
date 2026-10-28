@@ -172,6 +172,7 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 <script src="js/config.js" charset="utf-8"></script>
 <script src="js/gate.js" charset="utf-8"></script>
 <script src="js/covers.js" charset="utf-8"></script>
+<script src="js/duo.js" charset="utf-8"></script>
 <script>
 Gate.start({kinds:['ex'],attempts:'ex'},function(ctx){
 'use strict';
@@ -431,7 +432,7 @@ function mountLesson(L){
   const actions=el('div',{class:'btnrow'});
   const card=el('section',{class:'card total','aria-label':'Result for '+L.title},
     el('p',{class:'lab'},'Result'),el('h2',{},'Score for '+L.title),big,bar,msg,actions);
-  panel.append(el('h2',{class:'sep'},L.title),el('p',{class:'sub'},L.sub));const gb=gramBox(L.gram);if(gb)panel.append(gb);panel.append(gridEl,card);
+  panel.append(el('h2',{class:'sep'},L.title),el('p',{class:'sub'},L.sub));const gb=gramBox(L.gram);if(gb)panel.append(gb);panel.append(Duo.cta(()=>duoLesson(L)),gridEl,card);
   lessonUI[L.id]={panel:panel,barFill:barFill,bar:bar,big:big,msg:msg,actions:actions};
   updateLesson(L);
   return panel;
@@ -451,6 +452,16 @@ function updateLesson(L){
   u.msg.textContent=m;
 }
 function refreshAfterAttempt(L){updateLesson(L);renderTabs();renderHistory();}
+/* ---------- one question at a time (js/duo.js) ---------- */
+function duoLesson(L){
+  Duo.start({groups:L.ex.map(ex=>{
+    const pool=ex.type==='match'?shuffle(ex.items.map(i=>i.a)):null;
+    return {title:ex.title,
+      pre:()=>[el('p',{class:'instr'},ex.instr),ex.facts?el('p',{class:'facts'},el('b',{},'Facts'),ex.facts):null],
+      items:ex.items.map((it,i)=>({why:it.why,make:()=>BUILD[ex.type](it,'duo'+ex.id+'i'+(i+1),i+1,pool)})),
+      save:(r,t)=>{const att={l:L.id,e:ex.id,s:r,t:t,at:Date.now()};me().attempts.push(att);return Gate.saveAttempt('ex',att);}};
+  }),onDone:()=>{L.ex.forEach((ex,k)=>place(L,ex,k,false));refreshAfterAttempt(L);}});
+}
 
 /* ---------- tabs, history, student ---------- */
 let curTab='1';
