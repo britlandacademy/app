@@ -175,8 +175,8 @@
 '#bl-duo.game .dz-hero{display:flex;align-items:center;justify-content:center;gap:16px;margin:2px 0 6px}'+
 '#bl-duo.game .dz-fam{position:relative;width:112px;height:112px;border-radius:22px;border:3px solid #e8b923;box-shadow:0 5px 0 #a8820f;background:#e9e2cf;animation:dz-bounce 1.1s ease-in-out infinite}'+
 '#bl-duo.game .dz-fam img{width:100%;height:100%;object-fit:cover;display:block;border-radius:18px}'+
-'#bl-duo.game .dz-fam .cl{position:absolute;bottom:-8px;font-size:1.7rem;animation:dz-clap .5s ease-in-out infinite alternate}'+
-'#bl-duo.game .dz-fam .cl.l{left:-14px}#bl-duo.game .dz-fam .cl.r{right:-14px;animation-delay:.25s;transform:scaleX(-1)}'+
+'#bl-duo.game .dz-fam .dz-cl{position:absolute;bottom:-8px;font-size:1.7rem;animation:dz-clap .5s ease-in-out infinite alternate}'+
+'#bl-duo.game .dz-fam .dz-cl.l{left:-14px}#bl-duo.game .dz-fam .dz-cl.r{right:-14px;animation-delay:.25s;transform:scaleX(-1)}'+
 '#bl-duo.game .dz-medal{animation:dz-drop .9s cubic-bezier(.3,1.6,.5,1) .2s both;transform-origin:50% 0}'+
 '#bl-duo.game .dz-flagrow{display:flex;justify-content:center;margin:0 0 12px}'+
 '#bl-duo.game .dz-flagw{display:flex;align-items:flex-start}#bl-duo.game .dz-pole{width:4px;height:74px;border-radius:2px;background:#b9b09a}'+
@@ -192,7 +192,7 @@
 '.dz-spark{position:fixed;z-index:99997;pointer-events:none;font-size:1.6rem;color:#fff3b0;text-shadow:0 0 10px #ffd54a,0 0 20px #ffb300;opacity:0;animation:dz-sp 1.3s ease-out both}'+
 '@keyframes dz-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}'+
 '@keyframes dz-clap{from{transform:rotate(-14deg) scale(.9)}to{transform:rotate(14deg) scale(1.15)}}'+
-'#bl-duo.game .dz-fam .cl.r{animation-name:dz-clapr}@keyframes dz-clapr{from{transform:scaleX(-1) rotate(-14deg) scale(.9)}to{transform:scaleX(-1) rotate(14deg) scale(1.15)}}'+
+'#bl-duo.game .dz-fam .dz-cl.r{animation-name:dz-clapr}@keyframes dz-clapr{from{transform:scaleX(-1) rotate(-14deg) scale(.9)}to{transform:scaleX(-1) rotate(14deg) scale(1.15)}}'+
 '@keyframes dz-drop{from{transform:translateY(-70px) rotate(-25deg) scale(.4);opacity:0}to{transform:none;opacity:1}}'+
 '@keyframes dz-ripple{to{background-position:80px 0}}'+
 '@keyframes dz-wave{0%,100%{transform:perspective(220px) rotateY(-9deg) skewY(-2deg)}50%{transform:perspective(220px) rotateY(9deg) skewY(2deg)}}'+
@@ -208,7 +208,7 @@
 '@keyframes dz-casc{from{transform:translateY(14px) scale(.85);opacity:0}to{transform:none;opacity:1}}'+
 '@keyframes dz-up{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}'+
 '@keyframes dz-shine{0%,100%{filter:brightness(1)}50%{filter:brightness(1.5) drop-shadow(0 0 8px #ffd54a)}}'+
-'@media (prefers-reduced-motion:reduce){#bl-duo .dz-life img,#bl-duo .dz-life::after,#bl-duo .dz-life .fire{animation:none!important}#bl-duo .dz-fill{transition:none}.dz-conf{display:none}#bl-duo .dz-lion,#bl-duo .dz-card,#bl-duo .dz-stars span,#bl-duo .dz-fam,#bl-duo .dz-fam .cl,#bl-duo .dz-medal,#bl-duo.game .dz-q .opt,#bl-duo.game .dz-q .chip,#bl-duo.game .dz-q button.cho,#bl-duo.game .dz-q .pcell,#bl-duo.game .dz-peep,#bl-duo.game .dz-fb,#bl-duo .dz-stars .on,#bl-duo .dz-flag,#bl-duo .dz-flag::after{animation:none;opacity:1}.dz-spark{display:none}}';
+'@media (prefers-reduced-motion:reduce){#bl-duo .dz-life img,#bl-duo .dz-life::after,#bl-duo .dz-life .fire{animation:none!important}#bl-duo .dz-fill{transition:none}.dz-conf{display:none}#bl-duo .dz-lion,#bl-duo .dz-card,#bl-duo .dz-stars span,#bl-duo .dz-fam,#bl-duo .dz-fam .dz-cl,#bl-duo .dz-medal,#bl-duo.game .dz-q .opt,#bl-duo.game .dz-q .chip,#bl-duo.game .dz-q button.cho,#bl-duo.game .dz-q .pcell,#bl-duo.game .dz-peep,#bl-duo.game .dz-fb,#bl-duo .dz-stars .on,#bl-duo .dz-flag,#bl-duo .dz-flag::after{animation:none;opacity:1}.dz-spark{display:none}}';
     D.head.appendChild(s);
   }
 
@@ -269,7 +269,7 @@
   }
   function famBox(ch){
     var b=el('div','dz-fam'),i=el('img');i.src=ch.img;i.alt='';b.appendChild(i);
-    b.appendChild(el('span','cl l','👏'));b.appendChild(el('span','cl r','👏'));return b;
+    b.appendChild(el('span','dz-cl l','👏'));b.appendChild(el('span','dz-cl r','👏'));return b;
   }
   function flagRow(ch){
     var r=el('div','dz-flagrow'),w=el('div','dz-flagw'),pl=el('div','dz-pole'),f=el('div','dz-flag'),i=el('img');
