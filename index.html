@@ -126,6 +126,7 @@ a.card:hover .i-tg .r2,a.card:focus-visible .i-tg .r2{animation:rp 1.8s ease inf
 <script src="js/covers.js" charset="utf-8"></script>
 <script src="js/streak.js" charset="utf-8"></script>
 <script src="js/today.js" charset="utf-8"></script>
+<script src="js/metro.js" charset="utf-8"></script>
 <script>
 var STAGES=[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[139,156],[157,174],[175,190],[191,206]];
 Gate.start({kinds:[],attempts:['check','ex']},function(ctx){
@@ -151,6 +152,9 @@ Gate.start({kinds:[],attempts:['check','ex']},function(ctx){
   var exSet={},wbSet={};
   (ctx.attempts||[]).forEach(function(a){if(a.k==='ex'){if(/^wb/.test(a.e))wbSet[a.e]=1;else exSet[a.e]=1;return;}var p=a.t?a.s/a.t:0;if(best[a.l]===undefined||p>best[a.l])best[a.l]=p;});
   var done=Object.keys(best).length,sum=0;Object.keys(best).forEach(function(k){sum+=best[k];});
+  if(window.Metro&&Metro.gameOn()){var sx=((ctx.upto||0)<1&&bz>0)?'?course=business':'';
+    Metro.mount(ctx,{upto:upto,max:206,best:best,done:function(l){return best[l]!==undefined;},doneCount:done,stages:STAGES,
+      links:[{t:'Lesson Check',href:'check.html'+sx},{t:'Lesson',href:'lessons.html'+sx},{t:'Grammar Exercises',href:'exercises.html'+sx},{t:'Workbook',href:'workbook.html'}]});}
   document.getElementById('stats').hidden=false;
   if(window.Streak)Streak.mount(document.getElementById('streak'));
   document.getElementById('s1').textContent=upto;
