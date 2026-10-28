@@ -284,7 +284,9 @@
     f.nodeValue=f.nodeValue.replace(DRE,'');
     var l=cl.lastChild;if(l&&l.nodeType===3)l.nodeValue=l.nodeValue.replace(/[”"»]\s*$/,'');
     var t1=qe.textContent.trim().replace(DRE,'').replace(/[”"»]/,'');
-    return {n1:m1[1],t1:t1,n2:m2[1],cl:cl};}
+    var ct='',k;for(k=0;k<cl.childNodes.length;k++)if(cl.childNodes[k].nodeType===3)ct+=cl.childNodes[k].nodeValue;
+    var sw=ct.indexOf('?')>=0&&t1.replace(/\(Hint[^)]*\)/i,'').indexOf('?')<0;
+    return {n1:m1[1],t1:t1,n2:m2[1],cl:cl,sw:sw};}
   function nextPeep(){var k;do{k=Math.floor(Math.random()*PEEPS.length);}while(k===lastPeep&&PEEPS.length>1);lastPeep=k;return PEEPS[k];}
   function reduced(){return W.matchMedia&&W.matchMedia('(prefers-reduced-motion:reduce)').matches;}
   function medal(k){
@@ -484,13 +486,14 @@
       cur=s.it.make();var skipN=null;
       if(game){var qe=null,ns=cur.nodes||[];for(var qi=0;qi<ns.length&&!qe;qi++){var nn=ns[qi];if(!nn||!nn.querySelector)continue;qe=(nn.classList&&nn.classList.contains('q'))?nn:nn.querySelector('.q');}
         if(qe&&qe.textContent.trim()){var dd=dialogOf(cur,qe);
-          if(dd){bub.appendChild(el('span','dz-nm',dd.n1));bub.appendChild(el('b','',dd.t1));
-            var a1=peepNo(dd.n1,0),a2=peepNo(dd.n2,a1),i1=sc.querySelector('img');
-            i1.src=PEEPS[a1-1];i1.style.transform='';i1.parentNode.style.background=PBG[nameHash(plain(dd.n1))%PBG.length];
+          if(dd){var A=dd.sw?{n:dd.n2,cl:dd.cl}:{n:dd.n1,t:dd.t1},B=dd.sw?{n:dd.n1,t:dd.t1}:{n:dd.n2,cl:dd.cl};
+            bub.appendChild(el('span','dz-nm',A.n));bub.appendChild(A.cl?A.cl:el('b','',A.t));
+            var a1=peepNo(A.n,0),a2=peepNo(B.n,a1),i1=sc.querySelector('img');
+            i1.src=PEEPS[a1-1];i1.style.transform='';i1.parentNode.style.background=PBG[nameHash(plain(A.n))%PBG.length];
             var sc2=el('div','dz-scene rev'),pw2=el('div','dz-peep'),pi2=el('img'),bub2=el('div','dz-bub');
-            pi2.src=PEEPS[a2-1];pi2.alt='';pi2.style.transform='scaleX(-1)';pw2.style.background=PBG[nameHash(plain(dd.n2))%PBG.length];
-            pw2.appendChild(pi2);bub2.appendChild(el('span','dz-nm',dd.n2));bub2.appendChild(dd.cl);sc2.appendChild(pw2);sc2.appendChild(bub2);inn.appendChild(sc2);skipN=dd.cl;}
-          else bub.appendChild(el('b','',qe.textContent.trim()));qe.className+=' dz-sr';bub.setAttribute('aria-hidden','true');}
+            pi2.src=PEEPS[a2-1];pi2.alt='';pi2.style.transform='scaleX(-1)';pw2.style.background=PBG[nameHash(plain(B.n))%PBG.length];
+            pw2.appendChild(pi2);bub2.appendChild(el('span','dz-nm',B.n));bub2.appendChild(B.cl?B.cl:el('b','',B.t));sc2.appendChild(pw2);sc2.appendChild(bub2);inn.appendChild(sc2);skipN=dd.cl;}
+          else bub.appendChild(el('b','',qe.textContent.trim()));qe.className+=' dz-sr';if(!(dd&&dd.sw))bub.setAttribute('aria-hidden','true');}
         else{if(g.title)bub.appendChild(el('b','',g.title));bub.appendChild(el('p','dz-lab',T('q',{a:idx+1,b:total})));}}
       if(game)bankify(cur,s,steps);
       var q=el('div','dz-q');(cur.nodes||[]).forEach(function(n){if(n&&n!==skipN)q.appendChild(n);});inn.appendChild(q);
