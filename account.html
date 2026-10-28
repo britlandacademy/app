@@ -165,6 +165,7 @@ async function pays0(){
   const nm=(ctx.profile&&ctx.profile.name)||'';
   box.append(el('p',{},el('a',{class:'btn',href:'https://wa.me/5511914881274?text='+encodeURIComponent('Hello! This is '+nm+', a Britland Academy student. I have a question about my payments.'),target:'_blank',rel:'noopener'},'Talk to the school')));
 }
+{const w=el('div',{class:'g-bar gp'},Gate.birthdayField());$('p-s').append(el('h3',{},'Birthday'),w);}
 grades();pays();
 });
 </script>

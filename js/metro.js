@@ -128,6 +128,7 @@ var CSS=
 '#bl-metro .ph0{text-align:center;margin-top:8px}#bl-metro .big{width:116px;height:116px;border-radius:50%;margin:0 auto;border:6px solid var(--lc);box-shadow:0 0 0 4px #fff,0 0 28px color-mix(in srgb,var(--lc) 55%,transparent);overflow:hidden;background:#fff;padding:0;display:block}#bl-metro .big svg,#bl-metro .big img{width:100%;height:100%;display:block;object-fit:cover}'+
 '#bl-metro h2.nm{margin:12px 0 0;font:700 21px Georgia,serif}#bl-metro .sub{font:700 10px sans-serif;letter-spacing:.14em;color:var(--go);margin-top:4px;text-transform:uppercase}'+
 '#bl-metro .gr{margin-top:10px}#bl-metro .gh{display:flex;justify-content:space-between;font:700 13px sans-serif;margin-bottom:4px}#bl-metro .gt{height:10px;border-radius:5px;background:var(--n2);overflow:hidden}#bl-metro .gt i{display:block;height:100%;background:#ffd54a}#bl-metro .gc{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:6px;margin-top:8px}#bl-metro .gc .c{text-align:center;border-radius:8px;padding:6px 0;font:800 13px sans-serif;border:2px solid var(--n2);background:var(--n1)}#bl-metro .gc .s3{border-color:#46c37b;color:#7fe3a4}#bl-metro .gc .s2{border-color:#f0c36a;color:#f0c36a}#bl-metro .gc .s1{border-color:#ff9e94;color:#ff9e94}#bl-metro .gp{margin-top:6px!important}'+
+'#bl-metro .bdb{margin:6px 0 0;padding:6px 8px;text-align:center;font:800 13px sans-serif;color:#1a1405;border-radius:10px;background:linear-gradient(90deg,#ff5d73,#ffd54a,#46c37b,#4aa8ff,#b36bff);background-size:200% 100%;animation:mt-bd 4s linear infinite}@keyframes mt-bd{to{background-position:200% 0}}'+
 '#bl-metro .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}#bl-metro .stats div{background:var(--n1);border:2px solid var(--n2);border-radius:12px;padding:8px 4px;text-align:center}#bl-metro .stats b{display:block;font:800 20px sans-serif}#bl-metro .stats small{font:600 10px sans-serif;color:var(--mu)}'+
 '#bl-metro .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}#bl-metro .md{text-align:center;animation:mt-casc .5s both}#bl-metro .md .c{width:54px;height:54px;border-radius:50%;margin:0 auto 4px;background:radial-gradient(circle at 35% 30%,#ffe68a,#e8b923);display:flex;align-items:center;justify-content:center;font-size:25px;box-shadow:0 3px 0 #9a7a10;position:relative;overflow:hidden}'+
 '#bl-metro .md:not(.off) .c::after{content:"";position:absolute;top:-30%;left:-60%;width:40%;height:160%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.7),transparent);transform:rotate(20deg);animation:mt-shine 3.2s ease-in-out infinite}@keyframes mt-shine{0%,60%{left:-60%}100%{left:130%}}'+
@@ -278,6 +279,7 @@ function mount(c,o){
     }
     trainEl=el('g',{opacity:0,'pointer-events':'none'},mapEl);
     el('rect',{x:-11,y:-16,width:22,height:32,rx:7,fill:C.color,stroke:'#fff','stroke-width':2.5},trainEl);el('rect',{x:-7,y:-12,width:14,height:8,rx:2,fill:'#1d3f8a'},trainEl);
+    if(W.Gate&&Gate.birthdayToday&&Gate.birthdayToday()){var bl=el('text',{y:-20,'font-size':18,'text-anchor':'middle'},trainEl);bl.textContent='\uD83C\uDF88\uD83C\uDF89';}
     el('circle',{cx:-4,cy:9,r:2,fill:'#fff'},trainEl);el('circle',{cx:4,cy:9,r:2,fill:'#fff'},trainEl);
     var ci=cur?cur-1:Math.max(0,Math.min(upto,max)-1);setProg(lens[ci]);
   }
@@ -380,6 +382,7 @@ function mount(c,o){
   signEl=h('div','sign');toastEl=h('div','toast');toastEl.setAttribute('role','status');
   var bar=h('nav','tabbar');bar.setAttribute('role','tablist');
   [['home','🏠',tx.home],['tro','🏆',tx.tro],['pro','👤',tx.pro]].forEach(function(x){var b=h('button','tab','<b>'+x[1]+'</b>'+x[2]);b.type='button';b.setAttribute('role','tab');b.setAttribute('data-t',x[0]);b.addEventListener('click',function(){if(busy)return;ctx();tick();tab=x[0];view();});bar.append(b);});
+  if(W.Gate&&Gate.birthdayToday&&Gate.birthdayToday()){var bb=h('div','bdb');bb.textContent='\uD83C\uDF89 \uD83C\uDF82 Feliz aniversário'+(profile.name?', '+profile.name.split(' ')[0]:'')+'! \uD83C\uDF82 \uD83C\uDF89';top.after?top.after(bb):0;root.append(top,bb,vw,signEl,toastEl,bar);}else
   root.append(top,vw,signEl,toastEl,bar);
   view();
   /* streak numbers (days in a row) */
