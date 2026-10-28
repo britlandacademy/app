@@ -86,7 +86,7 @@ var CSS='.ag{margin:14px 0;font:inherit}.ag h2{font-size:1.05rem;margin:0 0 4px}
 '.ag-sum{gap:10px}.ag-sr{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:.9rem}'+
 '.ag-check{width:92px;height:92px;border-radius:50%;background:rgba(88,204,2,.2);color:#3f9a00;font-size:3rem;display:flex;align-items:center;justify-content:center;border-bottom:4px solid rgba(88,204,2,.5)}'+
 '.ag-day{display:flex;flex-direction:column;gap:8px}.ag-chips{display:flex;gap:8px;flex-wrap:wrap}.ag-chip{min-height:44px;padding:0 16px;border-radius:10px;border:1px solid var(--line,rgba(127,127,127,.4));background:var(--card,transparent);color:inherit;font:inherit;font-weight:600;cursor:pointer}.ag-chip.on{border:2px solid #c9a23a;background:rgba(201,162,58,.25);font-weight:700}'+
-'.ag-two{flex-wrap:nowrap}.ag-two .ag-btn{flex:1;min-height:46px}.ag-rej{color:#b4532f!important;border-color:var(--line,#c9a23a)!important}.ag-ln{font-size:.9rem}.ag-go{width:100%;min-height:54px;font-size:.95rem}.ag-m{min-height:1.2em}.ag-ok{background:#58cc02;border-bottom-color:#3f9a00}.ag-row .ag-m{min-height:0;margin:0}';
+'.ag-tap{width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer}.ag-chev{font-size:1.6rem;opacity:.6}.ag-two{flex-wrap:nowrap}.ag-two .ag-btn{flex:1;min-height:46px}.ag-rej{color:#b4532f!important;border-color:var(--line,#c9a23a)!important}.ag-ln{font-size:.9rem}.ag-go{width:100%;min-height:54px;font-size:.95rem}.ag-m{min-height:1.2em}.ag-ok{background:#58cc02;border-bottom-color:#3f9a00}.ag-row .ag-m{min-height:0;margin:0}';
 function css(){if(document.getElementById('ag-css'))return;var s=document.createElement('style');s.id='ag-css';s.textContent=CSS;document.head.appendChild(s);}
 
 /* ---------- student card ---------- */
@@ -218,7 +218,13 @@ function admin(box,lg){
     acts.appendChild(b1);
     if(conn){var b2=el('button','ag-btn',T('sync'));b2.type='button';b2.onclick=function(){b2.disabled=true;msg(T('busy'));Gate.sb.functions.invoke('gcal-sync',{body:{force:true}}).then(function(){refresh();},function(){b2.disabled=false;msg(T('fail'));});};acts.appendChild(b2);}
     w.appendChild(acts);
-    (rows||[]).forEach(function(x){var r=el('div','ag-row'),d=el('div');d.appendChild(el('b','',fmt(x.start_at)+' · '+(x.title||'')));if(!x.user_id)d.appendChild(el('small','',T('nm')));r.appendChild(d);w.appendChild(r);});
+    var evs={},eo=[];
+    (rows||[]).forEach(function(x){var k=String(x.id).split(':')[0];if(!evs[k]){evs[k]={k:k,title:x.title,start_at:x.start_at,end_at:x.end_at,ids:[]};eo.push(k);}if(x.user_id)evs[k].ids.push(x.user_id);});
+    w.appendChild(el('h2','','Próximas aulas'));w.appendChild(el('p','ag-s','Toque numa aula para escolher a qual aluno ela pertence.'));
+    eo.slice(0,12).forEach(function(k){var x=evs[k],r=el('button','ag-row ag-tap'),d=el('div');r.type='button';d.style.flex='1';d.appendChild(el('b','',fmt(x.start_at)+' · '+(x.title||'')));
+      var nm=x.ids.map(function(i){return gr?sname(gr,i):i;});
+      d.appendChild(el('small','',nm.length?nm.join(', '):T('nm')));r.appendChild(d);r.appendChild(el('span','ag-chev','›'));
+      r.onclick=function(){if(gr)assignUI(gr,x);};w.appendChild(r);});
     if(/[?&]gcal=ok/.test(location.search))msg(T('ok'));
     if(gr){requestsUI(gr);availUI(gr);groupsUI(gr);}
   }
@@ -226,7 +232,7 @@ function admin(box,lg){
   function load(t,sel,ord){var q=Gate.sb.from(t).select(sel);if(ord)q=q.order(ord);return q.then(function(r){return (r&&r.data)||[];},function(){return [];});}
   function refresh(){
     Promise.all([Gate.sb.rpc('gcal_status').then(function(r){return r&&r.data;},function(){return null;}),
-      Gate.sb.from('lessons').select('id,title,start_at,user_id').gte('end_at',new Date().toISOString()).order('start_at').limit(12).then(function(r){return (r&&r.data)||[];},function(){return [];}),
+      Gate.sb.from('lessons').select('id,title,start_at,end_at,user_id').gte('end_at',new Date().toISOString()).order('start_at').limit(60).then(function(r){return (r&&r.data)||[];},function(){return [];}),
       load('class_groups','id,name','name'),load('class_group_members','group_id,user_id'),
       Gate.sb.from('profiles').select('id,name,email').eq('is_admin',false).order('name').then(function(r){return (r&&r.data)||[];},function(){return [];}),
       Gate.sb.from('lesson_requests').select('id,user_id,kind,lesson_id,old_start,new_start,new_end,status,created_at').in('status',['pending','approved']).gte('created_at',new Date(Date.now()-7*86400000).toISOString()).order('created_at',{ascending:false}).limit(40).then(function(r){return (r&&r.data)||[];},function(){return [];}),
@@ -239,6 +245,31 @@ function admin(box,lg){
   var BR='America/Sao_Paulo';
   function brF(iso){try{return new Intl.DateTimeFormat('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',timeZone:BR}).format(new Date(iso));}catch(e){return iso;}}
   function sname(gr,id){var n=id,i;for(i=0;i<gr.students.length;i++)if(gr.students[i].id===id)n=gr.students[i].name||gr.students[i].email||id;return n;}
+  var aov=null;
+  function info(lbl,val){var c=el('div','ag-info');c.appendChild(el('span','ag-lbl',lbl));c.appendChild(el('b','',val));return c;}
+  function close(){if(aov&&aov.parentNode)aov.parentNode.removeChild(aov);aov=null;document.body.style.overflow='';refresh();}
+  function sheet(title,body){
+    if(aov&&aov.parentNode)aov.parentNode.removeChild(aov);
+    aov=el('div','ag-ov');aov.setAttribute('role','dialog');aov.setAttribute('aria-label',title);
+    var top=el('div','ag-ovt'),bk=el('button','ag-back','‹');bk.type='button';bk.setAttribute('aria-label','Voltar');bk.onclick=close;
+    top.appendChild(bk);top.appendChild(el('h1','',title));aov.appendChild(top);aov.appendChild(body);document.body.appendChild(aov);document.body.style.overflow='hidden';
+  }
+  function assignUI(gr,x){
+    var body=el('div','ag-ovb'),chosen={};x.ids.forEach(function(i){chosen[i]=true;});
+    body.appendChild(info(fmt(x.start_at),x.title||''));
+    body.appendChild(el('h2','','Alunos desta aula'));
+    var box2=el('div','ag-info');
+    gr.students.forEach(function(p){var l=el('label','ag-ck'),c=document.createElement('input');c.type='checkbox';c.checked=!!chosen[p.id];c.onchange=function(){chosen[p.id]=c.checked;};l.appendChild(c);l.appendChild(document.createTextNode(' '+(p.name||p.email)));box2.appendChild(l);});
+    body.appendChild(box2);
+    var m=el('p','ag-s ag-m','');m.setAttribute('role','status');body.appendChild(m);body.appendChild(el('div','ag-sp'));
+    var save=el('button','ag-btn ag-go','Salvar'),auto=el('button','ag-btn alt','Voltar ao automático');save.type=auto.type='button';
+    function fin(){Gate.sb.functions.invoke('gcal-sync',{body:{force:true}}).then(function(){close();},function(){close();});}
+    save.onclick=function(){var ids=Object.keys(chosen).filter(function(i){return chosen[i];});if(!ids.length){m.textContent='Marque ao menos um aluno (ou use "Voltar ao automático").';return;}
+      save.disabled=auto.disabled=true;m.textContent=T('busy');
+      Gate.sb.from('lesson_assign').upsert({event_id:x.k,user_ids:ids,updated_at:new Date().toISOString()}).then(function(q){if(q&&q.error){save.disabled=auto.disabled=false;m.textContent=T('fail');}else fin();},function(){save.disabled=auto.disabled=false;m.textContent=T('fail');});};
+    auto.onclick=function(){save.disabled=auto.disabled=true;m.textContent=T('busy');Gate.sb.from('lesson_assign').delete().eq('event_id',x.k).then(fin,fin);};
+    body.appendChild(save);body.appendChild(auto);sheet('Aluno da aula',body);
+  }
   function requestsUI(gr){
     var pend=gr.reqs.filter(function(q){return q.status==='pending'&&Date.now()-new Date(q.created_at)<86400000&&q.kind!=='cancel';});
     var canc=gr.reqs.filter(function(q){return q.kind==='cancel';}).slice(0,5);

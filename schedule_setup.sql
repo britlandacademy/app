@@ -52,3 +52,8 @@ drop policy if exists lr_admin on public.lesson_requests;
 create policy lr_admin on public.lesson_requests for all to authenticated using (exists(select 1 from public.profiles p where p.id=auth.uid() and p.is_admin)) with check (exists(select 1 from public.profiles p where p.id=auth.uid() and p.is_admin));
 drop policy if exists lr_own on public.lesson_requests;
 create policy lr_own on public.lesson_requests for select to authenticated using (user_id=auth.uid());
+-- Aluno de cada aula escolhido a mao pelo professor (vale sobre a identificacao automatica)
+create table if not exists public.lesson_assign(event_id text primary key, user_ids uuid[] not null, updated_at timestamptz default now());
+alter table public.lesson_assign enable row level security;
+drop policy if exists la_admin on public.lesson_assign;
+create policy la_admin on public.lesson_assign for all to authenticated using (exists(select 1 from public.profiles p where p.id=auth.uid() and p.is_admin)) with check (exists(select 1 from public.profiles p where p.id=auth.uid() and p.is_admin));

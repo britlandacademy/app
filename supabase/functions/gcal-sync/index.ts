@@ -37,10 +37,14 @@ Deno.serve(async (req) => {
     const { data: gs } = await db.from("class_groups").select("id,name");
     const { data: gm } = await db.from("class_group_members").select("group_id,user_id");
     const groups = (gs || []).map((g: any) => ({ n: norm(g.name || ""), members: (gm || []).filter((m: any) => m.group_id === g.id).map((m: any) => m.user_id) })).filter((g: any) => g.members.length);
+    const { data: asg } = await db.from("lesson_assign").select("event_id,user_ids");
+    const manual = new Map((asg || []).map((a: any) => [a.event_id, a.user_ids as string[]]));
     const rows: any[] = [];
     for (const e of ev) {
       if (e.status === "cancelled" || !e.start?.dateTime) continue; // ignora cancelados e eventos de dia inteiro
       const ids = new Set<string>();
+      const man = manual.get(e.id);
+      if (man && man.length) for (const u of man) ids.add(u);
       for (const a of e.attendees || []) { const id = byMail.get((a.email || "").toLowerCase()); if (id) ids.add(id); }
       let viaGroup = false;
       if (!ids.size) { // turmas: nome da turma contido no titulo
