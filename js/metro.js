@@ -223,7 +223,7 @@ function mount(c,o){
       var ci=cur?cur-start:cnt-1;
       if(cur&&prev&&prev<cur&&prev>=start&&!reduced()){busy=true;fillTo(prev-start,10);whistle();setTimeout(function(){chug(6);},120);trainEl.setAttribute('opacity',1);
         var a=lens[prev-start],b=lens[ci],t0=null;(function fr(ts){if(t0===null)t0=ts;var k=Math.min(1,(ts-t0)/1500);setProg(a+(b-a)*ease(k));if(k<1)requestAnimationFrame(fr);else{dingdong();trainEl.setAttribute('opacity',0);plate(ci);busy=false;}})(performance.now());}
-      else fillTo(ci,1200);
+      else{fillTo(ci,1200);if(cur)setTimeout(function(){plate(ci);},1400);}
     },350);
   }
   function medals(){
