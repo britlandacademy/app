@@ -156,10 +156,10 @@ Gate.start({kinds:[],attempts:['check','ex']},function(ctx){
         return {cls:!open?'lock':(s.complete?'done':(i===st?'cur':'')),pct:s.total?100*s.done/s.total:0};}}));})();
     document.getElementById('cont').hidden=false;
     (function(){var r=STAGES[st-1],av=avail.filter(function(l){return l>=r[0]&&l<=r[1];}),dn=av.filter(function(l){return best[l]!==undefined;}).length,n=REP.indexOf(next)+1;
-      Today.mount(document.getElementById('today'),{title:'Qué hacer hoy',sub:'Dos pasos cortos para el repaso '+n+'.',stage:'Progreso de la Etapa '+st,done:dn,total:av.length,
+      Today.mount(document.getElementById('today'),{cta:'Continuar →',title:'Qué hacer hoy',sub:'Dos pasos cortos para el repaso '+n+'.',stage:'Progreso de la Etapa '+st,done:dn,total:av.length,
         steps:[{t:'Lee la lección y escucha el audio',href:'lessons.html',done:false},{t:'Ejercicio de repaso '+n,href:'check.html',done:false}]});})();
   }else if(upto>0){
-    Today.mount(document.getElementById('today'),{title:'Estás al día',sub:'Has terminado todos los ejercicios de repaso disponibles. Pide a tu profesor las próximas lecciones.',stage:'Progreso',done:done,total:avail.length,steps:[{t:'Practica las pruebas DELE',href:'dele.html',done:false}]});
+    Today.mount(document.getElementById('today'),{cta:'Continuar →',title:'Estás al día',sub:'Has terminado todos los ejercicios de repaso disponibles. Pide a tu profesor las próximas lecciones.',stage:'Progreso',done:done,total:avail.length,steps:[{t:'Practica las pruebas DELE',href:'dele.html',done:false}]});
   }
 });
 </script></body></html>

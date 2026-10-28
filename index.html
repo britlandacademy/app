@@ -180,11 +180,11 @@ Gate.start({kinds:[],attempts:['check','ex']},function(ctx){
       var lead=Math.max(T[0].max,T[1].max,T[2].max),lag=T.filter(function(t){return lead>=3&&lead-t.max>=3;});
       var todo=T.filter(function(t){return t.next;}).sort(function(a,b){return (lead-b.max)-(lead-a.max)||a.next-b.next;});
       var box=document.getElementById('today');
-      Today.mount(box,{title:'What to do today',sub:'Do all three: Lesson Checks, Grammar and Workbook.',stage:'Stage '+st+' progress',done:dn,total:tot,
+      Today.mount(box,{cta:'Continue →',title:'What to do today',sub:'Do all three: Lesson Checks, Grammar and Workbook.',stage:'Stage '+st+' progress',done:dn,total:tot,
         warn:lag.length?'Do not leave anything behind. Catch up on: '+lag.map(function(t){return t.n;}).join(', ')+'. Do these first.':'',
         steps:todo.map(function(t){return {t:t.n+' · Lesson '+t.next,href:t.href,done:false};})});})();
   }else if(upto>0){
-    Today.mount(document.getElementById('today'),{title:'You are up to date',sub:'You finished every Lesson Check released so far. Ask your teacher for the next lessons.',stage:'Progress',done:done,total:upto,steps:[{t:'Practise the Workbook',href:'workbook.html',done:false}]});
+    Today.mount(document.getElementById('today'),{cta:'Continue →',title:'You are up to date',sub:'You finished every Lesson Check released so far. Ask your teacher for the next lessons.',stage:'Progress',done:done,total:upto,steps:[{t:'Practise the Workbook',href:'workbook.html',done:false}]});
   }
 });
 </script></body></html>

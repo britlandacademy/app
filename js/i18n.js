@@ -8,6 +8,11 @@ var COURSE=window.BL_COURSE||{},UI=COURSE.uiLang||'en';
 var KEY=COURSE.langKey||'callan-lang';
 var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they are */
 /* ---- sign in ---- */
+["Skip to content","Ir para o conteúdo","Ir al contenido"],
+["Turn on notifications to get your class reminders.","Ative as notificações para receber os lembretes das aulas.","Activa las notificaciones para recibir los recordatorios de tus clases."],
+["Turn on","Ativar","Activar"],
+["Not now","Agora não","Ahora no"],
+["Continue →","Continuar →","Continuar →"],
 ["Do not leave anything behind. Catch up on: {0}. Do these first.","Não deixe nada para trás. Coloque em dia: {0}. Faça estes primeiro.","No dejes nada atrás. Ponte al día con: {0}. Haz estos primero."],
 ["Do all three: Lesson Checks, Grammar and Workbook.","Faça os três: Lesson Checks, Grammar e Workbook.","Haz los tres: Lesson Checks, Gramática y Workbook."],
 ["Lesson Check · Lesson {0}","Lesson Check · Lição {0}","Lesson Check · Lección {0}"],

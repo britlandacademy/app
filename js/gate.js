@@ -444,6 +444,36 @@ function loadProfile(cb){
 }
 /* ---------- routing ---------- */
 var OPTS={kinds:[],attempts:null,admin:false},CB=null;
+/* ---------- small helpers: skip link, icon-button labels, gentle notification reminder ---------- */
+function a11yPass(){
+  try{
+    var m=document.querySelector('main')||document.querySelector('[role=main]');
+    if(m&&!document.querySelector('.bl-skip')){if(!m.id)m.id='bl-main';var a=el('a',{class:'bl-skip',href:'#'+m.id},window.I18N?I18N.t('Skip to content'):'Skip to content');document.body.prepend(a);
+      var st=document.createElement('style');st.textContent='.bl-skip{position:absolute;left:8px;top:-60px;z-index:100000;padding:10px 14px;background:#111;color:#fff;border-radius:8px;font-weight:700}.bl-skip:focus{top:8px}';document.head.append(st);}
+    Array.prototype.forEach.call(document.querySelectorAll('button,a[href]'),function(b){
+      if(b.getAttribute('aria-label')||(b.textContent||'').trim()||b.getAttribute('aria-labelledby'))return;
+      var t=b.getAttribute('title');if(t)b.setAttribute('aria-label',t);});
+  }catch(e){}
+}
+function pushNudge(){
+  try{
+    if(OPTS.admin||OPTS.bare||OFF||!/(^|\/)(index\.html)?$/.test(location.pathname))return;
+    if(!('Notification' in window)||!('PushManager' in window)||Notification.permission!=='default')return;
+    var k=okey()+'-pn',last=parseInt(localStorage.getItem(k),10)||0;if(Date.now()-last<3*864e5)return;
+    if(document.getElementById('bl-pn'))return;
+    var bar=el('div',{id:'bl-pn',role:'region','aria-label':'Notifications',style:'display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 14px;padding:10px 14px;border:2px solid var(--accent,#c9a13b);border-radius:12px;background:var(--card,#fff);color:var(--ink,#111)'},
+      el('span',{style:'flex:1;min-width:180px'},'Turn on notifications to get your class reminders.'));
+    var on=btn('Turn on',function(){
+      on.disabled=true;
+      function go(){var P=window.BLPush;if(!P||!P.supported()||(P.ios()&&!P.standalone())){bar.remove();return;}P.enable(sb).then(function(){bar.remove();},function(){bar.remove();});}
+      if(window.BLPush)go();else{var sc=document.createElement('script');sc.src=(window.BL_BASE||'')+'js/push.js';sc.onload=go;document.head.append(sc);}
+    });
+    var no=btn('Not now',function(){try{localStorage.setItem(k,String(Date.now()));}catch(e){}bar.remove();},true);
+    bar.append(on,no);
+    var host=document.querySelector('main')||document.body;host.prepend(bar);
+    if(window.I18N&&I18N.after)try{I18N.after();}catch(e){}
+  }catch(e){}
+}
 /* ---------- welcome: three short screens for a brand-new student ---------- */
 function welcome(done){
   var k='bl-welcome-'+user.id;
@@ -512,6 +542,7 @@ function enter(){
         hideOverlay();applyServerPrefs();if(OFF)offBanner(true);else flushQ();if(!OPTS.bare){addBar();loadProfile(paintAvatars);try{thanksPay();}catch(e){}}
         /* the streak counts finished activities only (see saveAttempt) */
         CB({user:user,profile:prof,attempts:att,upto:upto()});
+        setTimeout(function(){a11yPass();pushNudge();},600);
       }
       if(OPTS.admin||OPTS.bare||OFF||prof.is_admin)fin();else welcome(fin);
     });
