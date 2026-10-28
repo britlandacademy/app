@@ -547,7 +547,7 @@ function duoLesson(L,auto){
     const spec=(KB[d.kind]||BUILD[s])(L,d,'duo'+id);
     if(spec.free)return;   // free writing stays in the normal page
     groups.push({title:d.title,pre:()=>spec.pre,
-      items:spec.rows.map((r,i)=>({why:(d.items&&d.items[i]&&d.items[i].why)||null,make:()=>r})),
+      items:spec.rows.map((r,i)=>({why:(d.items&&d.items[i]&&d.items[i].why)||null,nobank:d.kind==='mistake'||(!d.kind&&s==='D'),ans:((d.kind==='gap'||d.kind==='bank'||(!d.kind&&s==='H'))&&d.items&&d.items[i]&&d.items[i].ans!=null)?[String(d.items[i].ans)]:null,make:()=>r})),
       save:(right)=>{const att={l:L.id,e:id,s:right,t:secTotal(L,s),at:Date.now()};me().attempts.push(att);return Gate.saveAttempt('ex',att);}});
   });
   if(!groups.length)return;

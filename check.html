@@ -497,7 +497,7 @@ function duoLesson(L,auto){
     if(ex.type==='mixed'){const mcs=ex.items.filter(x=>x.k==='mc');let bag=[];mcs.forEach(x=>{if(!bag.length)bag=shuffle(x.opts.map((_,j)=>j));x._pos=bag.pop();});}
     return {title:ex.title,
       pre:()=>[el('p',{class:'instr'},ex.instr),ex.facts?el('p',{class:'facts'},el('b',{},'Facts'),ex.facts):null],
-      items:ex.items.map((it,i)=>({why:it.why,make:()=>BUILD[ex.type==='mixed'?it.k:ex.type](it,'duo'+ex.id+'i'+(i+1),i+1,pool)})),
+      items:ex.items.map((it,i)=>({why:it.why,ans:it.ans,make:()=>BUILD[ex.type==='mixed'?it.k:ex.type](it,'duo'+ex.id+'i'+(i+1),i+1,pool)})),
       save:(r,t)=>{const att={l:L.id,e:ex.id,s:r,t:t,at:Date.now()};me().attempts.push(att);return Gate.saveAttempt('check',att);}};
   }),onDone:()=>{L.ex.forEach((ex,k)=>place(L,ex,k,false));refreshAfterAttempt(L);}});
 }
