@@ -42,9 +42,10 @@ Deno.serve(async (req) => {
       if (e.status === "cancelled" || !e.start?.dateTime) continue; // ignora cancelados e eventos de dia inteiro
       const ids = new Set<string>();
       for (const a of e.attendees || []) { const id = byMail.get((a.email || "").toLowerCase()); if (id) ids.add(id); }
+      let viaGroup = false;
       if (!ids.size) { // turmas: nome da turma contido no titulo
         const t = norm(e.summary || "");
-        for (const g of groups) if (g.n.length >= 2 && t.includes(g.n)) for (const m of g.members) ids.add(m);
+        for (const g of groups) if (g.n.length >= 2 && t.includes(g.n)) { viaGroup = true; for (const m of g.members) ids.add(m); }
       }
       if (!ids.size) {
         const title = norm(e.summary || "");
@@ -57,7 +58,7 @@ Deno.serve(async (req) => {
       }
       const meet = e.hangoutLink || e.conferenceData?.entryPoints?.find((x: any) => x.entryPointType === "video")?.uri || null;
       const targets = ids.size ? [...ids] : [null];
-      for (const uid of targets) rows.push({ id: e.id + ":" + (uid || "none"), user_id: uid, title: e.summary || "Aula", start_at: e.start.dateTime, end_at: e.end.dateTime, meet_url: meet, updated_at: new Date().toISOString() });
+      for (const uid of targets) rows.push({ id: e.id + ":" + (uid || "none"), user_id: uid, title: e.summary || "Aula", start_at: e.start.dateTime, end_at: e.end.dateTime, meet_url: meet, is_group: viaGroup || ids.size > 1, updated_at: new Date().toISOString() });
     }
     if (rows.length) { const { error } = await db.from("lessons").upsert(rows); if (error) throw new Error("banco: " + error.message); }
     const keep = rows.map((r) => r.id);
