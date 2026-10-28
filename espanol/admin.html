@@ -522,11 +522,23 @@ function renderToday(){
       tb.append(el('tr',{},el('td',{},p.name||p.email||''),el('td',{},String(L.length)),el('td',{},tt?Math.round(100*sc/tt)+'%':'–'),el('td',{},pad(lt.getHours())+':'+pad(lt.getMinutes()))));});
     box.append(el('div',{class:'tw'},tb));
   }
+  if(OVERDUE)box.append(el('p',{class:'hint'},el('b',{},OVERDUE+' parcela(s) vencida(s). '),el('a',{href:'payments.html'},'Ver pagamentos')));
+  if(!window.BL_COURSE){
+    const mx={};ATT.forEach(a=>{const m=mx[a.user_id]=mx[a.user_id]||{c:0,g:0,w:0},k=a.kind==='check'?'c':(/^wb/.test(a.ex||'')?'w':'g');if(a.lesson<1001&&a.lesson>m[k])m[k]=a.lesson;});
+    const unb=stu.map(p=>{const m=mx[p.id]||{c:0,g:0,w:0},lead=Math.max(m.c,m.g,m.w),L=[['Ejercicio de repaso',m.c],['Grammar',m.g],['Workbook',m.w]].filter(x=>lead>=3&&lead-x[1]>=3);return {p,L,lead};}).filter(x=>x.L.length);
+    if(unb.length){
+      box.append(el('h3',{style:'margin:18px 0 6px'},'Fazendo só uma parte'));
+      const tb=el('table',{});tb.append(el('tr',{},...['Aluno','Atrasado em'].map(x=>el('th',{},x))));
+      unb.forEach(x=>tb.append(el('tr',{},el('td',{},x.p.name||x.p.email||''),el('td',{},x.L.map(y=>y[0]+' (lição '+y[1]+' de '+x.lead+')').join(', ')))));
+      box.append(el('div',{class:'tw'},tb));
+    }
+  }
+  const nudge=(p,btn)=>{btn.disabled=true;sb.rpc('teacher_nudge',{p_user:p.id}).then(r=>{if(r.error){btn.disabled=false;btn.textContent='Erro';return;}btn.textContent=r.data==='queued'?'Na fila ✓':'Sem notificações';}).catch(()=>{btn.disabled=false;btn.textContent='Erro';});};
   if(none.length){
     box.append(el('h3',{style:'margin:18px 0 6px'},'Ainda não estudaram hoje'));
-    const tb=el('table',{});tb.append(el('tr',{},...['Aluno','Última atividade'].map(x=>el('th',{},x))));
+    const tb=el('table',{});tb.append(el('tr',{},...['Aluno','Última atividade',''].map(x=>el('th',{},x))));
     none.sort((a,b)=>String(last[a.id]||'').localeCompare(String(last[b.id]||''))).forEach(p=>{const l=last[p.id];const days=l?Math.floor((Date.now()-new Date(l).getTime())/864e5):null;
-      tb.append(el('tr',{},el('td',{},p.name||p.email||''),el('td',{},days==null?'nunca':days===0?'hoje mais cedo':days===1?'ontem':'há '+days+' dias')));});
+      tb.append(el('tr',{},el('td',{},p.name||p.email||''),el('td',{},days==null?'nunca':days===0?'hoje mais cedo':days===1?'ontem':'há '+days+' dias'),el('td',{},(()=>{const b=el('button',{type:'button',class:'small'},'Enviar lembrete');b.onclick=()=>nudge(p,b);return b;})())));});
     box.append(el('div',{class:'tw'},tb));
   }
 }

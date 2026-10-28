@@ -55,6 +55,8 @@ var CSS=
 '.g-hint{color:var(--muted,#4d4d4d);font-size:.92rem}'+
 '.g-box label{display:block;font-weight:700;margin:14px 0 4px}'+
 '.g-box input{width:100%;min-height:46px;padding:8px 10px;font:inherit;font-size:16px;color:var(--ink,#111);background:var(--surface,var(--bg,#fff));border:2px solid var(--line,#b8b8b8);border-radius:3px}'+
+'html input:not([type=checkbox]):not([type=radio]):not([type=range]),html select,html textarea{border-color:var(--muted,#6b7280)}'+
+'@media (pointer:coarse){html button,html .btn,html .g-btn,html a.card{min-height:44px}html button.small{min-height:40px;padding-inline:14px}}'+
 '.g-box input:focus-visible,.g-btn:focus-visible,.g-tab:focus-visible{outline:3px solid var(--accent,#111);outline-offset:2px}'+
 '.g-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}'+
 '.g-btn{min-height:46px;padding:10px 20px;font:inherit;font-weight:700;cursor:pointer;border-radius:3px;border:2px solid var(--accent,#111);background:var(--accent,#111);color:var(--accent-ink,#fff)}'+
@@ -449,12 +451,42 @@ function welcome(done){
   function mark(){try{localStorage.setItem(k,'1');}catch(e){}}
   sb.from('attempts').select('id',{count:'exact',head:true}).eq('user_id',user.id).then(function(r){
     if(r.error||(r.count||0)>0){mark();return done();}
+    var SP=!!window.BL_COURSE;
     var S=[['Welcome to Britland Academy!',['Your lessons are here: read the lesson text, listen to the audio and practise.','It takes only a few minutes a day.']],
       ['How to study',['1. Read the lesson and listen to the audio.','2. Do the Lesson Check and the exercises.','3. Your teacher sees your progress and opens new lessons.']],
-      ['Keep it close',['Add Britland Academy to your home screen and turn on Notifications to get class reminders.','You can change this later in the menu on your picture.']]];
+      ['Keep it close',['Add Britland Academy to your home screen and turn on Notifications to get class reminders.','You can change this later in the menu on your picture.']],
+      ['Try your first question',[SP?'Choose the correct word: Yo ___ estudiante.':'Choose the correct word: I ___ a student.']]];
+    var Q=SP?['soy','eres','es']:['am','is','are'],QA=SP?0:0;
+    function finish(go){mark();hideOverlay();if(go)location.href='lessons.html';else done();}
+    function push(box){
+      var P=window.BLPush;
+      function ready(cb){if(window.BLPush)return cb();var sc=document.createElement('script');sc.src=(window.BL_BASE||'')+'js/push.js';sc.onload=cb;document.head.append(sc);}
+      var row=el('div',{class:'g-row'});var note=el('p',{},'');
+      var b=btn('Turn on notifications',function(){
+        b.disabled=true;
+        ready(function(){var P=window.BLPush;
+          if(!P||!P.supported()){note.textContent='This device cannot receive notifications here. Install the app first.';b.disabled=false;return;}
+          if(P.ios()&&!P.standalone()){note.textContent='On iPhone: tap Share, then “Add to Home Screen”, open the app from there and turn on notifications.';b.disabled=false;return;}
+          P.enable(sb).then(function(){b.textContent='Notifications on ✓';},function(){note.textContent='Notifications are off. You can turn them on later in My Profile.';b.disabled=false;});
+        });
+      });
+      row.append(b);box.append(row,note);
+    }
     (function show(i){
-      var last=i===S.length-1;
-      message(S[i][0],S[i][1],[btn(last?'Let’s start':'Next',function(){if(last){mark();hideOverlay();done();}else show(i+1);}),btn('Skip',function(){mark();hideOverlay();done();},true)]);
+      var last=i===S.length-1,box;
+      if(i===3){
+        box=message(S[i][0],S[i][1],[]);
+        var fb=el('p',{role:'status'},''),row=el('div',{class:'g-row'});
+        Q.forEach(function(w,k){row.append(btn(w,function(){
+          if(k===QA){fb.textContent=SP?'¡Correcto! Todos los ejercicios funcionan así.':'Correct! Every Lesson Check works like this.';row.remove();
+            var r2=el('div',{class:'g-row'});r2.append(btn(SP?'Ir a la Lección 1':'Go to Lesson 1',function(){finish(true);}),btn(SP?'Más tarde':'Later',function(){finish(false);},true));box.append(r2);}
+          else fb.textContent=SP?'Todavía no. Inténtalo otra vez.':'Not yet. Try again.';
+        }));});
+        box.append(row,fb);
+      }else{
+        box=message(S[i][0],S[i][1],[btn('Next',function(){show(i+1);}),btn('Skip',function(){finish(false);},true)]);
+        if(i===2)push(box);
+      }
       if(window.I18N&&I18N.after)try{I18N.after();}catch(e){}
     })(0);
   },function(){done();});
