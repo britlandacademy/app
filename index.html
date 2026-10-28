@@ -126,6 +126,7 @@ a.card:hover .i-tg .r2,a.card:focus-visible .i-tg .r2{animation:rp 1.8s ease inf
 <script src="js/covers.js" charset="utf-8"></script>
 <script src="js/streak.js" charset="utf-8"></script>
 <script src="js/today.js" charset="utf-8"></script>
+<script src="js/landmarks.js" charset="utf-8"></script>
 <script src="js/metro.js" charset="utf-8"></script>
 <script>
 var STAGES=[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[139,156],[157,174],[175,190],[191,206]];
@@ -157,9 +158,13 @@ Gate.start({kinds:[],attempts:['check','ex']},function(ctx){
     (ctx.attempts||[]).forEach(function(a){var q=a.t?a.s/a.t:0,st=a.k==='check'?SETS.check:(a.k==='ex'?(/^wb/.test(a.e)?SETS.workbook:SETS.grammar):null);if(st&&(st[a.l]===undefined||q>st[a.l]))st[a.l]=q;});
     var STR=function(q){return q>=.9?3:q>=.6?2:1;};
     var AD=[['check','Lesson Check','Check','London','check.html'+sx],['grammar','Grammar Exercises','Grammar','Ireland','exercises.html'+sx],['workbook','Workbook','Workbook','New York','workbook.html']];
-    var acts=AD.map(function(d){var st=SETS[d[0]],n=Object.keys(st).length,c0=1;while(c0<=upto&&st[c0]!==undefined)c0++;
-      return {key:d[0],label:d[1],short:d[2],city:d[3],doneCount:n,done:function(l){return l<c0;},pct:function(l){return st[l]===undefined?null:st[l];},stars:function(l){return st[l]===undefined?0:STR(st[l]);},links:[{t:'Start '+d[1],href:d[4]}]};});
-    Metro.mount(ctx,{upto:upto,max:206,best:best,acts:acts,stages:STAGES});}
+    var RV={check:{},grammar:{},workbook:{}};
+    var acts=AD.map(function(d){var st=SETS[d[0]],n=Object.keys(st).length,c0=1;while(c0<=upto&&st[c0]!==undefined)c0++;var rv=RV[d[0]];
+      return {key:d[0],label:d[1],short:d[2],city:d[3],doneCount:n,done:function(l){return l<c0;},pct:function(l){return st[l]===undefined?null:st[l];},stars:function(l){return st[l]===undefined?0:STR(st[l]);},links:[{t:'Start '+d[1],href:d[4]}],
+        rdone:function(id){return rv[id]!==undefined&&rv[id]>=.7;},rpct:function(id){return rv[id]===undefined?null:rv[id];},rstars:function(id){return rv[id]===undefined||rv[id]<.7?0:STR(rv[id]);},
+        rlink:function(r){return d[4]+(d[4].indexOf('?')<0?'?':'&')+'rev='+r.from+'-'+r.to+'&rid='+r.id;}};});
+    var mounted=false,go=function(){if(mounted)return;mounted=true;Metro.mount(ctx,{upto:upto,max:206,best:best,acts:acts,stages:STAGES});};
+    try{Gate.sb.from('review_results').select('tab,rid,score,total').then(function(r){((r&&r.data)||[]).forEach(function(x){var q=x.total?x.score/x.total:0,t=RV[x.tab];if(t&&(t[x.rid]===undefined||q>t[x.rid]))t[x.rid]=q;});go();},go);}catch(e){go();}}
   document.getElementById('stats').hidden=false;
   if(window.Streak)Streak.mount(document.getElementById('streak'));
   document.getElementById('s1').textContent=upto;

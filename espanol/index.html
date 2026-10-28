@@ -124,6 +124,7 @@ a.card:hover .i-tg .r2,a.card:focus-visible .i-tg .r2{animation:rp 1.8s ease inf
 <script src="../js/covers.js" charset="utf-8"></script>
 <script src="../js/streak.js" charset="utf-8"></script>
 <script src="../js/today.js" charset="utf-8"></script>
+<script src="../js/landmarks.js" charset="utf-8"></script>
 <script src="../js/metro.js" charset="utf-8"></script>
 <script>
 var STAGES=[[1,16],[17,32],[33,52],[53,72],[73,92],[93,112]];
@@ -136,7 +137,10 @@ Gate.start({kinds:[],attempts:['check','ex']},function(ctx){
   (ctx.attempts||[]).forEach(function(a){if(a.k==='ex'){if(/^dele:/.test(a.e))deleSet[a.e]=1;return;}var p=a.t?a.s/a.t:0;if(best[a.l]===undefined||p>best[a.l])best[a.l]=p;});
   var avail=REP.filter(function(l){return l<=upto;}),done=avail.filter(function(l){return best[l]!==undefined;}).length,sum=0;avail.forEach(function(l){if(best[l]!==undefined)sum+=best[l];});
   if(window.Metro&&Metro.gameOn()){var ld=0;REP.forEach(function(l){if(l<=upto&&best[l]!==undefined&&l>ld)ld=l;});
-    Metro.mount(ctx,{upto:upto,max:112,best:best,stages:STAGES,acts:[{key:'check',label:'Ejercicios de repaso',short:'Repaso',city:'Madrid',doneCount:done,done:function(l){return l<=ld;},pct:function(l){return best[l]===undefined?null:best[l];},stars:function(l){var q=best[l];return q===undefined?0:(q>=.9?3:q>=.6?2:1);},links:[{t:'Ejercicios de repaso',href:'check.html'}]}]});}
+    var rv={},STR=function(q){return q>=.9?3:q>=.6?2:1;};
+    var go=function(){if(go.d)return;go.d=1;Metro.mount(ctx,{upto:upto,max:112,best:best,stages:STAGES,acts:[{key:'check',label:'Ejercicios de repaso',short:'Repaso',city:'Madrid',doneCount:done,done:function(l){return l<=ld;},pct:function(l){return best[l]===undefined?null:best[l];},stars:function(l){var q=best[l];return q===undefined?0:(q>=.9?3:q>=.6?2:1);},links:[{t:'Ejercicios de repaso',href:'check.html'}],
+      rdone:function(id){return rv[id]!==undefined&&rv[id]>=.7;},rpct:function(id){return rv[id]===undefined?null:rv[id];},rstars:function(id){return rv[id]===undefined||rv[id]<.7?0:STR(rv[id]);},rlink:function(r){return 'check.html?rev='+r.from+'-'+r.to+'&rid='+r.id;}}]});};
+    try{Gate.sb.from('review_results').select('tab,rid,score,total').then(function(r){((r&&r.data)||[]).forEach(function(x){var q=x.total?x.score/x.total:0;if(rv[x.rid]===undefined||q>rv[x.rid])rv[x.rid]=q;});go();},go);}catch(e){go();}}
   document.getElementById('stats').hidden=false;
   if(window.Streak)Streak.mount(document.getElementById('streak'));
   document.getElementById('s1').textContent=upto;

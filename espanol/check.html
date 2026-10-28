@@ -187,6 +187,7 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 <script src="../js/protect.js" charset="utf-8"></script>
 <script src="../js/covers.js" charset="utf-8"></script>
 <script src="../js/duo.js" charset="utf-8"></script>
+<script src="../js/review.js" charset="utf-8"></script>
 <script>
 Gate.start({kinds:['check'],attempts:'check'},function(ctx){
 if(window.Protect)Protect.on((ctx.profile&&ctx.profile.name||'')+' · '+(ctx.user&&ctx.user.email||''),{wm:false});
@@ -489,7 +490,7 @@ function refreshAfterAttempt(L){updateLesson(L);renderTabs();renderHistory();set
 
 /* ---------- one question at a time (js/duo.js) ---------- */
 const _auto={};
-function gameAuto(L){if(!L||!window.Duo||!Duo.game()||_auto[L.id])return;_auto[L.id]=1;setTimeout(()=>duoLesson(L,true),300);}
+function gameAuto(L){if(!L||!window.Duo||!Duo.game()||_auto[L.id]||(window.Review&&Review.params()))return;_auto[L.id]=1;setTimeout(()=>duoLesson(L,true),300);}
 function duoLesson(L,auto){
   const exs=auto?L.ex.filter(ex=>best(ex.id)===undefined):L.ex;
   if(!exs.length)return;
@@ -502,6 +503,16 @@ function duoLesson(L,auto){
       save:(r,t)=>{const att={l:L.id,e:ex.id,s:r,t:t,at:Date.now()};me().attempts.push(att);return Gate.saveAttempt('check',att);}};
   }),onDone:()=>{L.ex.forEach((ex,k)=>place(L,ex,k,false));refreshAfterAttempt(L);}});
 }
+
+/* ---------- Review station (?rev=from-to&rid=n, js/review.js) ---------- */
+function revGroup(ex){
+  const pool=ex.type==='match'?shuffle(ex.items.map(i=>i.a)):null;
+  if(ex.type==='mixed'&&!ex.fixed){const mcs=ex.items.filter(x=>x.k==='mc');let bag=[];mcs.forEach(x=>{if(!bag.length)bag=shuffle(x.opts.map((_,j)=>j));x._pos=bag.pop();});}
+  return {title:ex.title,
+    pre:()=>[el('p',{class:'instr'},ex.instr),ex.facts?el('p',{class:'facts'},el('b',{},'Facts'),ex.facts):null],
+    items:ex.items.map((it,i)=>({why:it.why,ans:it.ans,make:()=>BUILD[ex.type==='mixed'?it.k:ex.type](it,'rv'+ex.id+'i'+(i+1),i+1,pool)}))};
+}
+function revStart(){Review.run({tab:'check',cands:l=>{const L=BYID[l];return L?L.ex.map(revGroup):[];}});}
 
 /* ---------- tabs, history, student ---------- */
 let curTab='1';
@@ -621,5 +632,6 @@ function loadStudent(key){
   setTimeout(()=>cvCele(curStage),900);
 }
 loadStudent(store.current);
+if(window.Review&&Review.params())setTimeout(revStart,500);
 });
 </script>

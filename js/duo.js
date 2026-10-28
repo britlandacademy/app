@@ -388,7 +388,7 @@
     if(!groups.length)return;
     var steps=[];groups.forEach(function(g){g.right=0;g.n=0;g.pre_=null;g.items.forEach(function(it){steps.push({g:g,it:it});});});
     var total=steps.length,idx=0,right=0,cur=null,state='ask',anySaved=false,failed=false,pending=[];
-    var game=gameOn(),lives=3,combo=0,over=false,lifeEls=[],comboEl=null;
+    var game=gameOn(),lives=3,combo=0,over=false,lifeEls=[],comboEl=null,noLives=!!o.nolives;
     var prevOverflow=D.body.style.overflow;D.body.style.overflow='hidden';
     var root=el('div');root.id='bl-duo';if(game)root.className='game';root.setAttribute('role','dialog');root.setAttribute('aria-modal','true');root.setAttribute('aria-label',T('cta'));
     var top=el('div','dz-top'),x=el('button','dz-x','✕');x.type='button';x.setAttribute('aria-label',T('close'));
@@ -396,7 +396,7 @@
     bar.setAttribute('role','progressbar');bar.setAttribute('aria-valuemin','0');bar.setAttribute('aria-valuemax','100');
     var sb=el('button','dz-snd','🔔');sb.type='button';sb.setAttribute('aria-label',T('snd'));if(!sndOn())sb.className+=' off';
     top.appendChild(x);top.appendChild(bar);
-    if(game){var lv=el('div','dz-lives');lv.setAttribute('role','img');
+    if(game&&!noLives){var lv=el('div','dz-lives');lv.setAttribute('role','img');
       for(var li=0;li<3;li++){var sp=el('span','dz-life gold'),im=el('img');im.src='img/lion-gold.png';im.alt='';sp.appendChild(im);sp.appendChild(el('span','fire','🔥'));lv.appendChild(sp);lifeEls.push(sp);}
       top.appendChild(lv);}
     top.appendChild(sb);
@@ -411,7 +411,7 @@
     function lifeLabel(){var l=top.querySelector('.dz-lives');if(l)l.setAttribute('aria-label',T('lives',{n:lives}));}
     function setLife(k,gold){var sp=lifeEls[k],im=sp.firstChild;sp.className='dz-life '+(gold?'gold':'dead');im.src=gold?'img/lion-gold.png':'img/lion-off.png';}
     function lose(){
-      if(lives<=0)return;lives--;var k=lives;var sp=lifeEls[k];
+      if(noLives||lives<=0)return;lives--;var k=lives;var sp=lifeEls[k];
       sp.className='dz-life burn';flame();
       setTimeout(function(){setLife(k,false);},1400);
       lifeLabel();if(lives<=0)over=true;
@@ -518,6 +518,7 @@
       var st=el('div','dz-stars');st.setAttribute('aria-label',stars+' / 3');
       for(var i=0;i<3;i++){var sp=el('span',i<stars?'on':'off','★');sp.style.animationDelay=(.5+i*.25)+'s';st.appendChild(sp);}
       card.appendChild(st);
+      if(o.verdict){try{var vt=o.verdict(right,total);if(vt)card.appendChild(el('p','dz-say',vt));}catch(e){}}
       for(var q=0;q<stars;q++)(function(q){setTimeout(function(){if(root.parentNode)tone(1046.5*Math.pow(1.122,q*2),0,.5,'sine',.14);},500+q*250);})(q);
       card.appendChild(el('h2','',T('gdone')));
       card.appendChild(el('p','big',T('gscore',{r:right,t:total})));

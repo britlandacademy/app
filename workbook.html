@@ -195,6 +195,7 @@ textarea.wrt{width:100%;font:inherit;font-size:1rem;color:var(--ink);background:
 <script src="js/gate.js" charset="utf-8"></script>
 <script src="js/covers.js" charset="utf-8"></script>
 <script src="js/duo.js" charset="utf-8"></script>
+<script src="js/review.js" charset="utf-8"></script>
 <script>
 Gate.start({kinds:['ex'],attempts:'ex'},function(ctx){
 'use strict';
@@ -538,7 +539,7 @@ function place(L,s,focus){
 }
 /* ---------- one question at a time (js/duo.js) ---------- */
 const _auto={};
-function gameAuto(L){if(!L||!window.Duo||!Duo.game()||_auto[L.id])return;_auto[L.id]=1;setTimeout(()=>duoLesson(L,true),300);}
+function gameAuto(L){if(!L||!window.Duo||!Duo.game()||_auto[L.id]||(window.Review&&Review.params()))return;_auto[L.id]=1;setTimeout(()=>duoLesson(L,true),300);}
 function duoLesson(L,auto){
   const groups=[];
   secsOf(L).forEach(s=>{
@@ -553,6 +554,18 @@ function duoLesson(L,auto){
   if(!groups.length)return;
   Duo.start({next:()=>{const n=LESSONS[LESSONS.indexOf(L)+1];return n?()=>showTab(String(n.id)):null;},groups:groups,onDone:()=>{secsOf(L).forEach(s=>place(L,s,false));updateLesson(L);renderTabs();renderHistory();setTimeout(()=>cvCele(Covers.stageOf(L.id)),700);}});
 }
+/* ---------- Review station (?rev=from-to&rid=n, js/review.js) ---------- */
+function revCands(l){
+  const L=LESSONS.find(x=>x.id===l);if(!L)return [];
+  return secsOf(L).map(s=>{
+    const d=L.wb[s],id=exId(L,s);let spec;
+    try{spec=(KB[d.kind]||BUILD[s])(L,d,'rv'+id);}catch(e){return null;}
+    if(!spec||spec.free||!spec.rows||!spec.rows.length)return null;
+    return {title:d.title,pre:()=>spec.pre,
+      items:spec.rows.map((r,i)=>({why:(d.items&&d.items[i]&&d.items[i].why)||null,nobank:d.kind==='mistake'||(!d.kind&&s==='D'),ans:((d.kind==='gap'||d.kind==='bank'||(!d.kind&&s==='H'))&&d.items&&d.items[i]&&d.items[i].ans!=null)?[String(d.items[i].ans)]:null,make:()=>r}))};
+  }).filter(Boolean);
+}
+function revStart(){Review.run({tab:'workbook',cands:revCands});}
 const lessonUI={};
 function mountLesson(L){
   const panel=el('section',{class:'panel',id:'panel-'+L.id,hidden:true,'aria-label':'Workbook lesson '+L.id});
@@ -653,5 +666,6 @@ LESSONS.forEach(L=>panelsEl.append(mountLesson(L)));panelsEl.append(histPanel);
 const first=LESSONS.find(L=>!lessonStats(L).complete);
 showTab(first?String(first.id):'1');
 setTimeout(()=>cvCele(curStage),900);
+if(window.Review&&Review.params())setTimeout(revStart,500);
 });
 </script>
