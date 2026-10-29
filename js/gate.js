@@ -54,6 +54,7 @@ var CSS=
 '.g-box h1{font-size:1.5rem;line-height:1.2;margin:0 0 6px}'+
 '.g-box p{margin:8px 0}'+
 '.g-hint{color:var(--muted,#4d4d4d);font-size:.92rem}'+
+'.g-forgot{margin:8px 0 0}.g-forgot a{color:inherit;font-weight:600}'+
 '.g-box label{display:block;font-weight:700;margin:14px 0 4px}'+
 '.g-box input{width:100%;min-height:46px;padding:8px 10px;font:inherit;font-size:16px;color:var(--ink,#111);background:var(--surface,var(--bg,#fff));border:2px solid var(--line,#b8b8b8);border-radius:3px}'+
 'html input:not([type=checkbox]):not([type=radio]):not([type=range]),html select,html textarea{border-color:var(--muted,#6b7280)}'+
@@ -130,7 +131,7 @@ function niceError(e){
   if(/invalid login/i.test(m))return 'Wrong e-mail or password.';
   if(/already registered|already been registered/i.test(m))return 'This e-mail is already registered. Use "Sign in".';
   if(/email not confirmed/i.test(m))return 'This e-mail is not confirmed yet. Ask your teacher.';
-  if(/password/i.test(m)&&/(least|short|weak)/i.test(m))return 'Choose a longer password (at least 8 characters).';
+  if(/password/i.test(m)&&/(least|short|weak)/i.test(m))return 'Choose a longer password (at least 6 characters).';
   if(/rate limit|too many/i.test(m))return 'Too many attempts. Wait a few minutes and try again.';
   if(/failed to fetch|network/i.test(m))return 'No connection. Check your internet and try again.';
   return 'Something went wrong. Try again.'+(m?' ('+String(m).slice(0,140)+')':'');
@@ -153,7 +154,8 @@ function showLogin(mode){
   var form=el('form',{novalidate:true},
     mode==='up'?[el('label',{for:'g-name'},'Your name'),name,el('label',{for:'g-bd'},'Date of birth'),bday]:null,
     el('label',{for:'g-email'},'E-mail'),email,
-    el('label',{for:'g-pass'},mode==='in'?'Password':'Choose a password (at least 8 characters)'),pass,
+    el('label',{for:'g-pass'},mode==='in'?'Password':'Choose a password (at least 6 characters)'),pass,
+    mode==='in'?el('p',{class:'g-forgot'},el('a',{href:'#',onclick:function(ev){ev.preventDefault();showForgot(email.value.trim());}},'Forgot my password')):null,
     err,el('div',{class:'g-row'},go));
   form.addEventListener('submit',function(ev){
     ev.preventDefault();err.textContent='';
@@ -161,7 +163,7 @@ function showLogin(mode){
     if(mode==='up'&&!nm){err.textContent='Type your name.';name.focus();return;}
     if(mode==='up'&&!bday.value){err.textContent='Choose your date of birth.';bday.focus();return;}
     if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){err.textContent='Type a valid e-mail.';email.focus();return;}
-    if(mode==='up'&&pw.length<8){err.textContent='The password needs at least 8 characters.';pass.focus();return;}
+    if(mode==='up'&&pw.length<6){err.textContent='The password needs at least 6 characters.';pass.focus();return;}
     if(!pw){err.textContent='Type your password.';pass.focus();return;}
     go.disabled=true;
     var p=mode==='in'?sb.auth.signInWithPassword({email:em,password:pw})
@@ -179,6 +181,66 @@ function showLogin(mode){
   });
   b.append(form);
   (mode==='up'?name:email).focus({preventScroll:true});
+}
+
+/* ---------- forgot / reset password ---------- */
+function dirUrl(){return location.origin+location.pathname.replace(/[^\/]*$/,'');}
+function showForgot(prefill){
+  var b=box('Recover password');
+  b.append(el('p',{class:'g-hint'},'Type your e-mail. We will send a link so you can create a new password.'));
+  var email=el('input',{id:'g-femail',type:'email',autocomplete:'email',inputmode:'email',autocapitalize:'none',spellcheck:'false',enterkeyhint:'go'});
+  if(prefill)email.value=prefill;
+  var err=el('p',{class:'g-err','aria-live':'polite'});
+  var go=el('button',{type:'submit',class:'g-btn'},'Send link');
+  var form=el('form',{novalidate:true},el('label',{for:'g-femail'},'E-mail'),email,err,
+    el('div',{class:'g-row'},go,btn('Back',function(){showLogin('in');},true)));
+  form.addEventListener('submit',function(ev){
+    ev.preventDefault();err.textContent='';
+    var em=email.value.trim().toLowerCase();
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){err.textContent='Type a valid e-mail.';email.focus();return;}
+    go.disabled=true;
+    sb.auth.resetPasswordForEmail(em,{redirectTo:dirUrl()}).then(function(r){
+      go.disabled=false;
+      if(r.error&&/rate limit|too many|seconds/i.test(r.error.message||'')){err.textContent='Wait a few minutes before asking for another link.';return;}
+      if(r.error&&isNet(r.error)){err.textContent=niceError(r.error);return;}
+      message('Check your e-mail',['If this e-mail has an account, we sent a link to create a new password.','Not there? Look in the spam folder too. The link works for 1 hour.'],[btn('Back to sign in',function(){showLogin('in');})]);
+    },function(e){go.disabled=false;err.textContent=niceError(e);});
+  });
+  b.append(form);email.focus({preventScroll:true});
+}
+function showNewPass(){
+  var b=box('Create new password');
+  b.append(el('p',{class:'g-hint'},'Choose a password with at least 6 characters.'));
+  var p1=el('input',{id:'g-np1',type:'password',autocomplete:'new-password',enterkeyhint:'next'});
+  var p2=el('input',{id:'g-np2',type:'password',autocomplete:'new-password',enterkeyhint:'go'});
+  var err=el('p',{class:'g-err','aria-live':'polite'});
+  var go=el('button',{type:'submit',class:'g-btn'},'Save and sign in');
+  var form=el('form',{novalidate:true},el('label',{for:'g-np1'},'New password'),p1,el('label',{for:'g-np2'},'Repeat the new password'),p2,err,el('div',{class:'g-row'},go));
+  form.addEventListener('submit',function(ev){
+    ev.preventDefault();err.textContent='';
+    if(p1.value.length<6){err.textContent='The password needs at least 6 characters.';p1.focus();return;}
+    if(p1.value!==p2.value){err.textContent='The two passwords are different.';p2.focus();return;}
+    go.disabled=true;
+    sb.auth.updateUser({password:p1.value}).then(function(r){
+      go.disabled=false;
+      if(r.error){err.textContent=/same|different from the old/i.test(r.error.message||'')?'Choose a password different from the old one.':niceError(r.error);return;}
+      route();
+    },function(e){go.disabled=false;err.textContent=niceError(e);});
+  });
+  b.append(form);p1.focus({preventScroll:true});
+}
+function expiredLink(){message('Link expired',['This link is no longer valid. Ask for a new one.'],[btn('Ask for a new link',function(){showForgot('');}),btn('Back to sign in',function(){showLogin('in');},true)]);}
+/* link from the e-mail: #access_token=...&type=recovery (or #error_code=otp_expired) */
+function handleRecovery(){
+  var h=location.hash||'';if(h.length<2||!/type=recovery|error_code=/.test(h))return false;
+  var q={};h.slice(1).split('&').forEach(function(x){var i=x.indexOf('=');if(i>0)q[x.slice(0,i)]=decodeURIComponent(x.slice(i+1).replace(/\+/g,' '));});
+  try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}
+  if(q.error||q.error_code){expiredLink();return true;}
+  if(q.type==='recovery'&&q.access_token&&q.refresh_token){
+    sb.auth.setSession({access_token:q.access_token,refresh_token:q.refresh_token}).then(function(r){if(r.error)expiredLink();else showNewPass();},function(){expiredLink();});
+    return true;
+  }
+  return false;
 }
 
 function signOut(){
@@ -836,7 +898,7 @@ function start(opts,cb){
     if(err){message('No connection',['Could not load the sign-in system. Check your internet and reload the page.'],[btn('Reload',function(){location.reload();})]);return;}
     sb=window.supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
     window.Gate.sb=sb;
-    route();
+    if(!handleRecovery())route();
   });
 }
 
