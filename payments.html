@@ -331,15 +331,32 @@ function renderTable(){
 loadRate();
 
 /* ---- pagamentos lidos do e-mail (Wise/XP): conferir e baixar ---- */
-let INB=[];
+let INB=[],CLM=[];
 const normN=s=>(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
 async function loadInbox(){
   const r=await sb.from('pay_inbox').select('*').eq('status','conferir').order('received_at',{ascending:false});
-  INB=r.error?[]:(r.data||[]);renderInbox();
+  INB=r.error?[]:(r.data||[]);
+  const q=await sb.from('pay_claims').select('*').eq('status','pendente').order('created_at',{ascending:false});
+  CLM=q.error?[]:(q.data||[]);renderInbox();
 }
 function renderInbox(){
-  const box=$('inb');if(!box)return;box.textContent='';box.hidden=!INB.length;if(!INB.length)return;
-  box.append(el('h3',{},INB.length+(INB.length>1?' pagamentos para conferir':' pagamento para conferir')));
+  const box=$('inb');if(!box)return;const N=INB.length+CLM.length;box.textContent='';box.hidden=!N;if(!N)return;
+  box.append(el('h3',{},N+(N>1?' pagamentos para conferir':' pagamento para conferir')));
+  CLM.forEach(k=>{
+    const c=CH.find(x=>x.id===k.charge_id)||{},s0=subOf(c.sub_id);
+    const nmS=s0.student_name||(PROF.find(p=>p.id===k.user_id)||{}).name||'Aluno';
+    const ver=el('button',{type:'button',class:'ghost'},'Ver comprovante');
+    if(!k.proof_path){ver.disabled=true;ver.textContent='Sem comprovante';}
+    ver.addEventListener('click',async()=>{const u=await sb.storage.from('proofs').createSignedUrl(k.proof_path,300);if(u.error){msg('tmsg',u.error.message,'bad');return;}window.open(u.data.signedUrl,'_blank','noopener');});
+    const ok=el('button',{type:'button'},'Confirmar'),no=el('button',{type:'button',class:'danger'},'Recusar');
+    ok.addEventListener('click',async()=>{ok.disabled=true;
+      const u=await sb.from('charges').update({paid_on:today(),note:'Baixa por comprovante ('+k.method+')'}).eq('id',k.charge_id);
+      if(u.error){msg('tmsg',u.error.message,'bad');ok.disabled=false;return;}
+      await sb.from('pay_claims').update({status:'confirmado'}).eq('id',k.id);msg('tmsg','Pagamento confirmado.','ok');loadAll();loadInbox();});
+    no.addEventListener('click',async()=>{await sb.from('pay_claims').update({status:'recusado'}).eq('id',k.id);msg('tmsg','Comprovante recusado. O aluno poderá reenviar.','ok');loadInbox();});
+    box.append(el('div',{class:'it'},el('div',{},el('b',{},nmS+' · '+(c.amount!=null?money(c.amount,c.currency):'?'))),
+      el('small',{},'Aluno avisou que pagou ('+k.method+') · '+new Date(k.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})),
+      el('div',{class:'row'},ver,ok,no)));});
   INB.forEach(p=>{
     const op=CH.filter(c=>!c.paid_on).sort((a,b)=>{const sa=(a.currency===p.currency&&+a.amount===+p.amount)?0:1,sb2=(b.currency===p.currency&&+b.amount===+p.amount)?0:1;return sa-sb2||(a.due_date<b.due_date?-1:1);});
     const sel=el('select',{'aria-label':'Mensalidade'});
@@ -360,7 +377,7 @@ function renderInbox(){
       el('small',{},(p.source==='wise'?'Wise':'XP')+' · '+new Date(p.received_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+' · nome ainda não reconhecido'),
       el('div',{class:'row'},sel,ok,ig)));
   });
-  box.append(el('p',{class:'hint'},'Ao baixar, o nome do pagador fica salvo e os próximos pagamentos dele são baixados sozinhos.'));
+  if(INB.length)box.append(el('p',{class:'hint'},'Ao baixar, o nome do pagador fica salvo e os próximos pagamentos dele são baixados sozinhos.'));
 }
 
 loadAll().then(loadInbox);

@@ -241,6 +241,43 @@ async function pays0(){
     el('div',{},el('small',{},'Status'),el('b',{style:'font-size:1.1rem'},s.active?'Active':'Paused'))));});
   const IC='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg>';
   const rcpt=x=>{const bt=el('button',{type:'button','aria-label':'Download receipt',class:'rcb'});bt.innerHTML=IC;bt.addEventListener('click',async()=>{if(bt.disabled)return;bt.disabled=true;try{const sb0=subs.find(q=>q.id===x.sub_id);await Receipt.download({charge:x,plan:sb0?sb0.plan:'',name:(ctx.profile&&ctx.profile.name)||'',base:''});}catch(e){}bt.disabled=false;});return bt;};
+
+  let CLM=[];try{const q=await sb.from('pay_claims').select('*').order('created_at',{ascending:false});if(!q.error)CLM=q.data||[];else CLM=null;}catch(e){CLM=null;}
+  function claimCtl(x,late){
+    const pill=el('span',{class:'pill '+(late?'bad':'wt')},late?'Overdue':'Open');
+    if(CLM===null)return pill;
+    const c=CLM.find(k=>k.charge_id===x.id);
+    if(c&&c.status==='pendente')return el('span',{class:'pill ok'},'Sent, in review');
+    const b=el('button',{type:'button',class:c?'ghost':''},c?'Send again':"I've paid");
+    b.addEventListener('click',()=>paidSheet(x));return b;}
+  function paidSheet(x){
+    const ov=el('div',{class:'g-hov',role:'dialog','aria-modal':'true'}),close=()=>ov.remove();
+    let method='Wise';const mb={};
+    const mrow=el('div',{class:'row'});
+    ['Wise','Revolut','Other'].forEach(m=>{const b=el('button',{type:'button',class:m===method?'':'ghost'},m);mb[m]=b;
+      b.addEventListener('click',()=>{method=m;Object.keys(mb).forEach(k=>mb[k].className=k===m?'':'ghost');note.textContent=m==='Wise'?NOTE_W:NOTE_O;});mrow.append(b);});
+    const NOTE_W='Pagou pelo Wise? Não precisa de comprovante: o pagamento é identificado sozinho. Se quiser, anexe mesmo assim.';
+    const NOTE_O='Pagou pela Revolut ou por outro meio? Anexe o comprovante (foto ou PDF) para o professor conferir.';
+    const note=el('p',{class:'hint','data-noi18n':'1'},NOTE_W);
+    const fi=el('input',{type:'file',accept:'image/*,application/pdf','aria-label':'Proof of payment'});
+    const msgE=el('p',{class:'msg','aria-live':'polite','data-noi18n':'1'});
+    const ok=el('button',{type:'button'},'Send to teacher'),cn=el('button',{type:'button',class:'ghost'},'Cancel');
+    cn.addEventListener('click',close);
+    ok.addEventListener('click',async()=>{
+      const f=fi.files&&fi.files[0];
+      if(method!=='Wise'&&!f){msgE.textContent='Anexe o comprovante.';return;}
+      if(f&&f.size>8*1024*1024){msgE.textContent='Arquivo muito grande (máximo 8 MB).';return;}
+      ok.disabled=true;msgE.textContent='';let path=null;
+      if(f){const ext=(f.name.split('.').pop()||'bin').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,5)||'bin';
+        path=(ctx.user.id)+'/'+x.id+'-'+Date.now()+'.'+ext;
+        const u=await sb.storage.from('proofs').upload(path,f,{contentType:f.type||undefined});
+        if(u.error){msgE.textContent='Não foi possível enviar o arquivo. Tente de novo.';ok.disabled=false;return;}}
+      const r=await sb.from('pay_claims').insert({charge_id:x.id,method:method==='Other'?'Outro':method,proof_path:path});
+      if(r.error){msgE.textContent='Não foi possível enviar. Tente de novo.';ok.disabled=false;return;}
+      close();box.textContent='';pays0();});
+    ov.append(el('div',{class:'g-hdlg'},el('h2',{style:'margin:0 0 6px'},"I've paid"),
+      el('p',{style:'margin:0 0 10px'},money(x.amount,x.currency)+' · '+(x.title||dt(x.due_date))),mrow,note,fi,msgE,el('div',{class:'row'},cn,ok)));
+    ov.addEventListener('click',e=>{if(e.target===ov)close();});document.body.append(ov);}
   const open=ch.filter(x=>!x.paid_on).sort((x,y)=>x.due_date<y.due_date?-1:1);
   if(open.length){const n=open[0],late=n.due_date<today;
     box.append(el('div',{class:'next'},el('small',{},late?'Overdue payment':'Next payment'),el('br'),el('b',{},money(n.amount,n.currency)),
@@ -252,7 +289,7 @@ async function pays0(){
     ch.forEach(x=>{const late=!x.paid_on&&x.due_date<today;const d=new Date(x.due_date+'T12:00:00');
       const t=x.title||d.toLocaleDateString('en-GB',{month:'long',year:'numeric'});
       const sub=x.paid_on?money(x.amount,x.currency)+' · paid '+dt(x.paid_on):money(x.amount,x.currency)+' · due '+dt(x.due_date);
-      const st=x.paid_on?rcpt(x):el('span',{class:'pill '+(late?'bad':'wt')},late?'Overdue':'Open');
+      const st=x.paid_on?rcpt(x):claimCtl(x,late);
       box.append(el('div',{class:'rc'},el('div',{class:'ri'},x.currency==='EUR'?'€':'R$'),el('div',{class:'rt2'},el('b',{},t),el('small',{},sub)),st));});}
   const nm=(ctx.profile&&ctx.profile.name)||'';
   box.append(el('p',{},el('a',{class:'btn',href:'https://wa.me/5511914881274?text='+encodeURIComponent('Hello! This is '+nm+', a Britland Academy student. I have a question about my payments.'),target:'_blank',rel:'noopener'},'Talk to the school')));
