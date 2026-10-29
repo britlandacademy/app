@@ -21,8 +21,12 @@ function parsePlanTab(values, sheetName) {
     else if (/^dict/i.test(c)) col.dict = k;
     else if (/^lc$/i.test(c)) col.lc = k;
     else if (/^status$/i.test(c)) col.status = k;
+    else if (/^done$/i.test(c)) col.done = k;
   });
   if (col.contents == null || col.status == null) return { ok: false, error: 'columns-not-found', sheetName: sheetName };
+  /* Student columns: between "Done" and "Status" (a checked box = the student came to that class). */
+  var scols = [];
+  if (col.done != null) for (j = col.done + 1; j < col.status; j++) { var nm = norm(values[h][j]); if (nm) scols.push({ name: nm, k: j }); }
 
   /* 2. Stage: from the tab name (Stage 1 / Stg 2 / Etapa 3), then from the "STAGE N PROGRESS" label. */
   var stage = null, m = String(sheetName).match(/(?:stage|stg|etapa)\s*(\d+)/i);
@@ -40,6 +44,7 @@ function parsePlanTab(values, sheetName) {
     var noShow = /no.?show/i.test(word) || /^ns$/i.test(par);
     rows.push({
       row: i + 1, cls: col.cls != null ? num(r[col.cls]) : null, contents: contents,
+      att: scols.map(function (sc) { return { name: sc.name, here: /^true$/i.test(norm(r[sc.k])) }; }),
       conv: /^e$/i.test(par) || /conversation/i.test(contents),
       status: status, noShow: noShow, done: /^completed$/i.test(status) && !noShow,
       paragraph: num(par), word: noShow ? '' : word,
@@ -75,12 +80,26 @@ function parsePlanTab(values, sheetName) {
     if (current == null) { current = bounds[bounds.length - 1].lesson; finished = true; }
   }
 
+  var lessonOf = function (x) { if (!x.nw) return null; for (var q = 0; q < bounds.length; q++) if (bounds[q].endWord >= x.nw.to) return bounds[q].lesson; return null; };
+  var students = {};
+  scols.forEach(function (sc) {
+    var me = { lastWord: '', lastNewWord: null, missed: [] };
+    rows.forEach(function (x) {
+      if (!x.done) return;
+      var a = x.att.filter(function (y) { return y.name === sc.name; })[0];
+      if (!a) return;
+      if (a.here) { if (!x.conv && x.word && !/^[—–-]+$/.test(x.word)) me.lastWord = x.word; if (x.nw) me.lastNewWord = x.nw.to; }
+      else me.missed.push({ classNumber: x.cls, lesson: lessonOf(x), conversation: !!x.conv, review: x.rev, newWords: x.nw });
+    });
+    me.missed = me.missed.slice(-3);
+    students[sc.name] = me;
+  });
   var wordRow = null;
   var parRow = null;
   rows.forEach(function (x) { if (x.done && !x.conv && x.word && !/^[—–-]+$/.test(x.word)) wordRow = x; if (x.done && x.paragraph != null) parRow = x; });
   var pending = function (v) { return v !== '' && !dash.test(v); };
   return {
-    ok: true, sheetName: sheetName, stage: stage,
+    ok: true, sheetName: sheetName, stage: stage, students: students,
     currentPosition: lastRow ? {
       classNumber: lastRow.cls, lesson: current, lessonFinished: finished, paragraph: parRow ? parRow.paragraph : null,
       lastWord: wordRow ? wordRow.word : '', lastNewWord: lastNW,

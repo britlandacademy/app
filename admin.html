@@ -295,23 +295,24 @@ function fillStages(){
 }
 function renderPlan(){
   const t=$('planTbl');if(!t)return;
-  Promise.all([sb.from('plan_links').select('user_id,sheet_name'),sb.from('plan_progress').select('user_id,stage,lesson,class_number,last_word,updated_at')]).then(function(rs){
-    const links={},prog={};((rs[0]&&rs[0].data)||[]).forEach(x=>links[x.user_id]=x.sheet_name);((rs[1]&&rs[1].data)||[]).forEach(x=>prog[x.user_id]=x);
+  Promise.all([sb.from('plan_links').select('user_id,sheet_name,student_col'),sb.from('plan_progress').select('user_id,stage,lesson,class_number,last_word,updated_at')]).then(function(rs){
+    const links={},cols={},prog={};((rs[0]&&rs[0].data)||[]).forEach(x=>links[x.user_id]=x.sheet_name,cols[x.user_id]=x.student_col||'');((rs[1]&&rs[1].data)||[]).forEach(x=>prog[x.user_id]=x);
     t.textContent='';
-    const hd=document.createElement('tr');['Aluno','Aba da planilha','','Última leitura'].forEach(h=>{const th=document.createElement('th');th.textContent=h;hd.append(th);});t.append(hd);
+    const hd=document.createElement('tr');['Aluno','Aba da planilha','Coluna do aluno (turmas)','','Última leitura'].forEach(h=>{const th=document.createElement('th');th.textContent=h;hd.append(th);});t.append(hd);
     PROFILES.filter(p=>p.status!=='pending'&&!p.is_admin).forEach(p=>{
-      const tr=document.createElement('tr'),c1=document.createElement('td'),c2=document.createElement('td'),c3=document.createElement('td'),c4=document.createElement('td');
+      const tr=document.createElement('tr'),c1=document.createElement('td'),c2=document.createElement('td'),c3=document.createElement('td'),c4=document.createElement('td'),c5=document.createElement('td');
       c1.textContent=p.name||p.email;
       const inp=document.createElement('input');inp.type='text';inp.value=links[p.id]||'';inp.placeholder='ex.: Vanessa VIP - Stage 1 3rd';inp.setAttribute('aria-label','Aba de '+(p.name||p.email));inp.style.minWidth='220px';
+      const ic=document.createElement('input');ic.type='text';ic.value=cols[p.id]||'';ic.placeholder='ex.: Vanessa (vazio = individual)';ic.setAttribute('aria-label','Coluna de '+(p.name||p.email));ic.style.minWidth='170px';c3.append(ic);
       const b=document.createElement('button');b.type='button';b.textContent='Salvar';const m=document.createElement('span');m.className='msg';m.setAttribute('aria-live','polite');
       b.onclick=function(){
         const v=inp.value.trim();m.textContent='…';
-        const q=v?sb.from('plan_links').upsert({user_id:p.id,sheet_name:v}):sb.from('plan_links').delete().eq('user_id',p.id);
+        const q=v?sb.from('plan_links').upsert({user_id:p.id,sheet_name:v,student_col:ic.value.trim()||null}):sb.from('plan_links').delete().eq('user_id',p.id);
         q.then(function(r){m.textContent=r.error?'Erro: '+r.error.message:(v?'Salvo ✓':'Removido ✓');});
       };
-      c2.append(inp);c3.append(b,m);
-      const g=prog[p.id];c4.textContent=g?('Stage '+(g.stage||'?')+' · Lição '+(g.lesson||'?')+(g.last_word?' · '+g.last_word:'')+' · '+new Date(g.updated_at).toLocaleString('pt-BR')):(links[p.id]?'aguardando a próxima leitura':'—');
-      tr.append(c1,c2,c3,c4);t.append(tr);
+      c2.append(inp);c4.append(b,m);
+      const g=prog[p.id];c5.textContent=g?('Stage '+(g.stage||'?')+' · Lição '+(g.lesson||'?')+(g.last_word?' · '+g.last_word:'')+' · '+new Date(g.updated_at).toLocaleString('pt-BR')):(links[p.id]?'aguardando a próxima leitura':'—');
+      tr.append(c1,c2,c3,c4,c5);t.append(tr);
     });
   });
 }

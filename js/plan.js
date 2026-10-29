@@ -4,10 +4,10 @@
 (function(){
 'use strict';
 var T={
-  pt:{next:'Próxima aula',imp:'Importante',prep:'Prepare-se para a aula nº ',lastw:'Última palavra estudada:',rev:'Revisão das palavras ',nw:' e novas palavras ',conv:'Aula de Conversation. Aproveite para praticar a fala!',act:'Atividade da aula: ',will:'Haverá ',dict:'ditado',read:'leitura',quiz:'Lesson Check',listen:'Listening · Lição ',again:'Ouça de novo antes da aula',
+  pt:{next:'Próxima aula',imp:'Importante',prep:'Prepare-se para a aula nº ',lastw:'Última palavra estudada:',rev:'Revisão das palavras ',nw:' e novas palavras ',again2:'toque para refazer',conv:'Aula de Conversation. Aproveite para praticar a fala!',miss:'Você faltou à aula nº ',missc:'Você faltou à aula de Conversation nº ',missr:'. Revise as palavras ',missl:' e ouça o Listening da Lição ',missx:'Aula perdida',act:'Atividade da aula: ',will:'Haverá ',dict:'ditado',read:'leitura',quiz:'Lesson Check',listen:'Listening · Lição ',again:'Ouça de novo antes da aula',
     rec:'Exercícios recomendados para você',lesson:'Lição ',lc:'Lesson Check · Lição ',gr:'Grammar · Lição ',wb:'Workbook · Lição ',done:'feito',doneL:'Concluído',recd:'Recomendado',
     all:'Tudo em dia! 🎉',allp:'Você fez todos os exercícios da Lição ',allp2:'. Parabéns pela dedicação!',redo:'Refazer o Lesson Check →',n:' de ',ex:' exercícios feitos',play:'Ouvir',pause:'Pausar'},
-  es:{next:'Próxima clase',imp:'Importante',prep:'Prepárate para la clase n.º ',lastw:'Última palabra estudiada:',rev:'Repaso de las palabras ',nw:' y palabras nuevas ',conv:'Clase de conversación. ¡Aprovecha para practicar el habla!',act:'Actividad de la clase: ',will:'Habrá ',dict:'dictado',read:'lectura',quiz:'Lesson Check',listen:'Listening · Lección ',again:'Escúchalo de nuevo antes de la clase',
+  es:{next:'Próxima clase',imp:'Importante',prep:'Prepárate para la clase n.º ',lastw:'Última palabra estudiada:',rev:'Repaso de las palabras ',nw:' y palabras nuevas ',again2:'toca para repetir',conv:'Clase de conversación. ¡Aprovecha para practicar el habla!',miss:'Faltaste a la clase n.º ',missc:'Faltaste a la clase de conversación n.º ',missr:'. Repasa las palabras ',missl:' y escucha el Listening de la Lección ',missx:'Clase perdida',act:'Actividad de la clase: ',will:'Habrá ',dict:'dictado',read:'lectura',quiz:'Lesson Check',listen:'Listening · Lección ',again:'Escúchalo de nuevo antes de la clase',
     rec:'Ejercicios recomendados para ti',lesson:'Lección ',lc:'Lesson Check · Lección ',gr:'Gramática · Lección ',wb:'Workbook · Lección ',done:'hecho',doneL:'Completado',recd:'Recomendado',
     all:'¡Todo al día! 🎉',allp:'Has hecho todos los ejercicios de la Lección ',allp2:'. ¡Felicidades por tu dedicación!',redo:'Repetir el Lesson Check →',n:' de ',ex:' ejercicios hechos',play:'Escuchar',pause:'Pausar'}
 };
@@ -25,7 +25,7 @@ function mount(ctx,o){
   var q;try{q=Gate.sb.from('plan_progress').select('stage,lesson,data,updated_at').eq('user_id',ctx.user.id).maybeSingle();}catch(e){return;}
   q.then(function(r){
     var row=r&&r.data;if(!row||!row.data||!row.data.currentPosition)return;
-    var d=row.data,cp=d.currentPosition,nx=d.nextClass,up=ctx.upto||0;
+    var d=row.data,cp=d.currentPosition,nx=d.nextClass,up=ctx.upto||0,me=d.me||null,ms=(me&&me.missed)||[];
     var L=row.lesson||up;if(!L||L<1)return;if(up>0&&L>up)L=up;
     var St=(window.Covers&&Covers.stageOf)?Covers.stageOf(L):(row.stage||1);
     var A=ctx.attempts||[],done={lc:{},gr:{},wb:{}};
@@ -35,6 +35,11 @@ function mount(ctx,o){
     items.push({t:L10.lc+L,d:!!done.lc[L],h:'check.html?stage='+St+'&lesson='+L});
     items.push({t:L10.gr+L,d:!!done.gr[L],h:(es?'exercicios.html':'exercises.html')+'?lesson='+L});
     items.push({t:L10.wb+L,d:!!done.wb[L],h:'workbook.html?lesson='+L});
+    var seenM={},extra=[];
+    ms.slice().reverse().forEach(function(m){var M=m.lesson;if(!M||m.conversation||M>=L||seenM[M]||(up>0&&M>up))return;seenM[M]=1;
+      if(!done.gr[M])extra.push({t:L10.gr+M,d:false,h:(es?'exercicios.html':'exercises.html')+'?lesson='+M,x:L10.missx});
+      if(!done.wb[M])extra.push({t:L10.wb+M,d:false,h:'workbook.html?lesson='+M,x:L10.missx});});
+    items=extra.concat(items);
     var pend=items.filter(function(x){return!x.d;}),first=pend[0];
     sec.textContent='';
     var st=document.createElement('style');st.textContent=CSS;sec.append(st);
@@ -43,7 +48,11 @@ function mount(ctx,o){
       var c=el('div',{class:'pc imp'});
       c.append(el('div',{class:'pr'},[el('small',{text:L10.next}),el('span',{class:'bd',text:L10.imp})]));
       c.append(el('h2',{text:L10.prep+nx.classNumber}));
-      if(cp.lastWord){c.append(el('div',{class:'pr',style:'gap:10px;flex-wrap:wrap;margin:2px 0 8px'},[el('span',{class:'pm',text:L10.lastw}),el('span',{class:'wd',text:cp.lastWord}),cp.lastNewWord?el('span',{class:'pm',style:'font-size:.8rem',text:'nº '+cp.lastNewWord}):null]));}
+      var lw=(me&&me.lastWord)||cp.lastWord,ln=(me&&me.lastNewWord)||cp.lastNewWord;
+      if(lw){c.append(el('div',{class:'pr',style:'gap:10px;flex-wrap:wrap;margin:2px 0 8px'},[el('span',{class:'pm',text:L10.lastw}),el('span',{class:'wd',text:lw}),ln?el('span',{class:'pm',style:'font-size:.8rem',text:'nº '+ln}):null]));}
+      var m0=ms.length?ms[ms.length-1]:null;
+      if(m0){var mt=m0.conversation?(L10.missc+m0.classNumber+'.'):(L10.miss+m0.classNumber+(m0.review&&m0.newWords?L10.missr+m0.newWords.from+'–'+m0.newWords.to:'')+(m0.lesson?L10.missl+m0.lesson:'')+'.');
+        c.append(el('p',{class:'pm',style:'border-left:3px solid var(--hl);padding:4px 10px;margin:0 0 10px;color:var(--ink)',text:mt}));}
       var s='';
       if(nx.conversation)s=L10.conv;
       else if(nx.activity)s=L10.act+nx.activity+'.';
@@ -51,8 +60,9 @@ function mount(ctx,o){
       var wl=[];if(nx.hasDictation)wl.push(L10.dict);if(nx.hasReading)wl.push(L10.read);if(nx.hasQuiz)wl.push(L10.quiz);
       if(wl.length)s+=(s?' ':'')+L10.will+wl.join(', ')+'.';
       if(s)c.append(el('p',{class:'pm',text:s}));
-      if(L>1&&Gate.audioUrl){
-        var P=L-1,n=Covers.stageOf(P),path=es?('Etapa '+n+'/Etapa '+n+' Lección '+String(P).padStart(3,'0')+'.mp3'):('Stage '+n+'/Stage '+n+' Lesson '+P+'.mp3');
+      var mL=(m0&&!m0.conversation&&m0.lesson&&m0.lesson<=L)?m0.lesson:0;
+      if((L>1||mL)&&Gate.audioUrl){
+        var P=mL||(L-1),n=Covers.stageOf(P),path=es?('Etapa '+n+'/Etapa '+n+' Lección '+String(P).padStart(3,'0')+'.mp3'):('Stage '+n+'/Stage '+n+' Lesson '+P+'.mp3');
         var au=el('audio',{preload:'none'}),btn=el('button',{type:'button','aria-label':L10.play,text:'▶'}),bar=el('div'),tm=el('span',{class:'pm',style:'flex:none;font-size:.8rem',text:''});
         var box=el('div',{class:'pl pr'},[btn,el('div',{style:'min-width:0;flex:1'},[el('b',{style:'font-size:.95rem',text:L10.listen+P}),el('div',{class:'pm',style:'font-size:.8rem',text:L10.again}),el('div',{class:'tr'},[bar])]),tm,au]);
         var loaded=false;
@@ -76,14 +86,14 @@ function mount(ctx,o){
     if(!first){
       r2.append(el('h2',{text:L10.all}));
       r2.append(el('p',{class:'pm',text:L10.allp+L+L10.allp2}));
-      items.forEach(function(x){r2.append(el('div',{class:'pr li ok'},[el('span',{class:'bx',text:'☑'}),el('b',{text:x.t}),el('span',{class:'tg',text:L10.done})]));});
+      items.forEach(function(x){r2.append(el('a',{class:'pr li ok',href:x.h,'aria-label':x.t+', '+L10.again2},[el('span',{class:'bx',text:'☑'}),el('b',{text:x.t}),el('span',{class:'tg',style:'margin-left:auto',text:L10.done}),el('i',{class:'go',style:'margin-left:8px','aria-hidden':'true',text:'↻'})]));});
       var a=el('a',{class:'btn primary full',href:'check.html?stage='+St+'&lesson='+L,text:L10.redo});
       r2.append(a);r2.lastChild.style.margin='10px 0 12px';
     }else{
       r2.append(el('h2',{text:L10.lesson+L}));
       items.forEach(function(x){
-        if(x.d){r2.append(el('div',{class:'pr li ok'},[el('span',{class:'bx',text:'☑'}),el('div',{},[el('b',{text:x.t}),el('span',{class:'s',text:L10.doneL})]),el('span',{class:'tg',text:L10.done})]));}
-        else r2.append(el('a',{class:'pr li',href:x.h},[el('span',{class:'bx',text:'☐'}),el('div',{},[el('b',{text:x.t}),x===first?el('span',{class:'s',text:L10.recd}):null]),el('i',{class:'go','aria-hidden':'true',text:'→'})]));
+        if(x.d){r2.append(el('a',{class:'pr li ok',href:x.h,'aria-label':x.t+', '+L10.again2},[el('span',{class:'bx',text:'☑'}),el('div',{},[el('b',{text:x.t}),el('span',{class:'s',text:L10.doneL})]),el('span',{class:'tg',text:L10.done}),el('i',{class:'go',style:'margin-left:8px','aria-hidden':'true',text:'↻'})]));}
+        else r2.append(el('a',{class:'pr li',href:x.h},[el('span',{class:'bx',text:'☐'}),el('div',{},[el('b',{text:x.t}),x.x?el('span',{class:'s',text:x.x}):(x===first?el('span',{class:'s',text:L10.recd}):null)]),el('i',{class:'go','aria-hidden':'true',text:'→'})]));
       });
     }
     sec.append(r2);sec.hidden=false;

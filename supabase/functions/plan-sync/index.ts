@@ -8,7 +8,7 @@ Deno.serve(async (req) => {
   if (!secret || b.secret !== secret) return out({ error: "forbidden" }, 403);
   const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   if (b.action === "links") {
-    const { data, error } = await sb.from("plan_links").select("user_id,sheet_name");
+    const { data, error } = await sb.from("plan_links").select("user_id,sheet_name,student_col");
     return error ? out({ error: error.message }, 500) : out({ links: data });
   }
   if (b.action === "push" && b.user_id && b.progress) {
