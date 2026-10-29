@@ -146,13 +146,13 @@ async function certs(box,es){
   let r;try{r=await sb.from('certificates').select('id,student_name,stage,hours,exam_pct,distinction,completed_on').order('stage',{ascending:true});}catch(e){return;}
   if(!r||r.error)return;
   const rows=r.data||[],d=el('details',{class:'allg cts'});
-  d.append(el('summary',{},'Certificates'+(rows.length?' ('+rows.length+')':'')));
+  d.append(el('summary',{},el('span',{},'Certificates'),rows.length?' ('+rows.length+')':''));
   if(!rows.length)d.append(el('p',{class:'hint'},'Your Stage certificate will appear here after your teacher approves it.'));
   const IC='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg>';
   rows.forEach(x=>{
     const bt=el('button',{type:'button','aria-label':'Download certificate',class:'rcb'});bt.innerHTML=IC;
     bt.addEventListener('click',async()=>{if(bt.disabled)return;bt.disabled=true;try{await Certificate.download({cert:x,lang:es?'es':'en',base:BASE});}catch(e){}bt.disabled=false;});
-    d.append(el('div',{class:'rc'},el('div',{class:'ri'},String(x.stage)),el('div',{class:'rt2'},el('b',{},'Stage '+x.stage+' · '+(es?'Español':'English')),el('small',{},'Completed '+dt(x.completed_on)+' · '+x.hours+' hours')),bt));
+    d.append(el('div',{class:'rc'},el('div',{class:'ri'},String(x.stage)),el('div',{class:'rt2'},el('b',{},'Stage '+x.stage+' · '+(es?'Español':'English')),el('small',{},el('span',{},'Completed'),' '+dt(x.completed_on)+' · '+x.hours+' ',el('span',{},'hours'))),bt));
   });
   box.append(d);
 }
