@@ -104,7 +104,7 @@ summary{cursor:pointer;font-weight:700;padding:4px 0}
 <script src="js/config.js" charset="utf-8"></script>
 <script src="js/i18n-es.js" charset="utf-8"></script>
 <script src="../js/i18n.js" charset="utf-8"></script>
-<script src="../js/gate.js" charset="utf-8"></script><script src="../js/receipt.js" charset="utf-8"></script>
+<script src="../js/gate.js" charset="utf-8"></script><script src="../js/receipt.js" charset="utf-8"></script><script src="../js/qr.js" charset="utf-8"></script><script src="../js/certificate.js" charset="utf-8"></script>
 <script>
 Gate.start({kinds:[]},function(ctx){
 if(Gate.gameOn()){location.replace('index.html#profile');return;}
@@ -142,12 +142,27 @@ const MD=[
  ['Workbook','M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM8 17h11'],
  ['50 exercises','M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3 2'],
  ['Top student','M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M12 14v4M8 21h8']];
+const BASE='../';
+async function certs(box,es){
+  let r;try{r=await sb.from('certificates').select('id,student_name,stage,hours,exam_pct,distinction,completed_on').order('stage',{ascending:true});}catch(e){return;}
+  if(!r||r.error)return;
+  const rows=r.data||[],d=el('details',{class:'allg cts'});
+  d.append(el('summary',{},'Certificates'+(rows.length?' ('+rows.length+')':'')));
+  if(!rows.length)d.append(el('p',{class:'hint'},'Your Stage certificate will appear here after your teacher approves it.'));
+  const IC='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg>';
+  rows.forEach(x=>{
+    const bt=el('button',{type:'button','aria-label':'Download certificate',class:'rcb'});bt.innerHTML=IC;
+    bt.addEventListener('click',async()=>{if(bt.disabled)return;bt.disabled=true;try{await Certificate.download({cert:x,lang:es?'es':'en',base:BASE});}catch(e){}bt.disabled=false;});
+    d.append(el('div',{class:'rc'},el('div',{class:'ri'},String(x.stage)),el('div',{class:'rt2'},el('b',{},'Stage '+x.stage+' · '+(es?'Español':'English')),el('small',{},'Completed '+dt(x.completed_on)+' · '+x.hours+' hours')),bt));
+  });
+  box.append(d);
+}
 async function grades0(){
   const box=$('g'),all=[];let from=0;
   for(;;){const r=await sb.from('attempts').select('kind,lesson,ex,score,total,created_at').order('created_at',{ascending:true}).range(from,from+999);
     if(r.error){box.append(el('p',{class:'msg bad'},'Could not load your grades: '+r.error.message));return;}
     all.push(...(r.data||[]));if((r.data||[]).length<1000)break;from+=1000;}
-  if(!all.length){box.append(el('p',{class:'hint'},'Your grades will appear here after your first Lesson Check or exercise.'));return;}
+  if(!all.length){box.append(el('p',{class:'hint'},'Your grades will appear here after your first Lesson Check or exercise.'));await certs(box,true);return;}
   const best={};all.forEach(a=>{const k=(a.kind==='ex'&&/^wb/.test(String(a.ex))?'wb':a.kind)+'|'+a.lesson+'|'+a.ex;
     const o=best[k]||(best[k]={kind:a.kind==='ex'&&/^wb/.test(String(a.ex))?'wb':a.kind,lesson:a.lesson,s:0,t:a.total,last:a.created_at,n:0});
     if(a.score>o.s||(a.score===o.s&&a.total>o.t)){o.s=a.score;o.t=a.total;}o.n++;if(a.created_at>o.last)o.last=a.created_at;});
@@ -208,6 +223,7 @@ async function grades0(){
     tb.append(b);const w=el('div',{class:'tw'});w.append(tb);d.append(w);all2.append(d);});
   all2.append(el('p',{class:'hint'},'Last activity'));all2.lastChild.textContent='';all2.lastChild.append('Last activity: '+dt(all[all.length-1].created_at));
   box.append(all2);
+  await certs(box,true);
 }
 
 async function pays(){const b=$('p');Gate.skel(b,2,60);try{await pays0();}finally{Gate.unskel(b);}}
