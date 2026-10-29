@@ -550,7 +550,7 @@ function renderHistory(){
   LESSONS.forEach(L=>{const st=lessonStats(L);if(!st.done)return;
     sum.append(el('div',{class:'hbox'},el('p',{class:'lab'},L.title),el('p',{class:'big-score'},st.pts+' / '+st.tot),
       el('p',{class:'hint'},st.pct+'% · '+(st.complete?'completed ✔':st.done+' of '+st.n+' exercises'))));});
-  const rows=s.attempts.filter(a=>BYID[a.l]&&!/^wb/.test(String(a.e))).reverse();
+  const rows=s.attempts.filter(a=>BYID[a.l]&&BYID[a.l].ex.some(x=>x.id===a.e)&&!/^wb/.test(String(a.e))).reverse();
   const tbl=el('table',{},el('caption',{class:'hint'},'All attempts, newest first'),
     el('thead',{},el('tr',{},['Date and time','Lesson','Exercise','Score','%'].map(h=>el('th',{scope:'col'},h)))),
     el('tbody',{},rows.length?rows.map(a=>{const L=BYID[a.l];const k=L.ex.findIndex(x=>x.id===a.e)+1;
