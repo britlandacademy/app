@@ -96,6 +96,28 @@ body{padding-bottom:104px}
  #pend td[data-l]::before,#stu td[data-l]::before{content:attr(data-l);display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
  #pend .tw,#stu+*{overflow:visible}
 }
+
+.chp{min-height:40px;padding:6px 14px;border:2px solid var(--line);border-radius:99px!important;background:var(--card);color:var(--ink);font-weight:700}
+.chp.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+#xchips{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}
+.kpr{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:6px 0 14px}.kpr>div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px}.kpr small{display:block;color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.06em}.kpr b{font-size:1.5rem}
+@media (max-width:560px){.kpr{grid-template-columns:repeat(2,1fr)}}
+.pl{display:inline-block;padding:2px 10px;border-radius:99px;font-weight:700;font-size:.82rem;white-space:nowrap}.pl.ok{background:var(--ok-bg);color:var(--ok)}.pl.wt{background:var(--warn-bg);color:var(--warn)}.pl.gr{background:var(--line);color:var(--ink)}.pl.bad{background:var(--bad-bg);color:var(--bad)}
+.ec{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;margin:0 0 10px}.ec .t{display:flex;align-items:center;gap:12px}
+.av{width:42px;height:42px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-weight:700;flex:none}
+.ec .nm{flex:1;min-width:0}.ec .nm b{display:block;overflow-wrap:anywhere}.ec .nm small{color:var(--muted)}
+.bar2{height:10px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 4px}.bar2 i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.ec .m{display:flex;justify-content:space-between;gap:10px;font-size:.85rem;color:var(--muted);flex-wrap:wrap}.ec .act{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center;position:relative}
+button.gold{background:#C5A880;border-color:#C5A880;color:#1a1305}
+.mn{display:none;position:absolute;left:0;top:100%;margin-top:4px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px;min-width:240px;box-shadow:0 8px 24px rgba(0,0,0,.35);z-index:6;flex-direction:column;gap:2px}.mn.open{display:flex}
+.mn .mi{background:transparent;color:var(--ink);border:0;text-align:left;justify-content:flex-start;min-height:40px;border-radius:8px!important;font-weight:600}.mn .mi.d{color:var(--bad)}
+.ovl{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:80;display:flex;align-items:flex-start;justify-content:center;padding:40px 12px;overflow:auto}
+.dlg{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;width:min(520px,100%)}.dlg h3{margin:0 0 4px}
+.cbn{border-radius:10px;padding:8px 12px;margin:8px 0;font-size:.92rem}.cbn.ok{background:var(--ok-bg);color:var(--ok)}.cbn.bad{background:var(--bad-bg);color:var(--bad)}
+.fl{display:block;margin:6px 0;font-weight:700}.cf{display:grid;grid-template-columns:150px 1fr;gap:4px 8px;align-items:center;margin:8px 0}.cf label{font-size:.82rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:700}.cf small{grid-column:2;color:var(--muted)}
+.cf input[type=number],.cf input[type=date]{width:100%}.row2{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}.cid{font-family:ui-monospace,monospace}
+@media (max-width:520px){.cf{grid-template-columns:1fr}.cf small{grid-column:1}}
+details.h{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px 12px;margin:6px 0 12px}details.h summary{cursor:pointer;font-weight:700}
 </style>
 <link rel="stylesheet" href="js/theme.css">
 </head>
@@ -131,10 +153,11 @@ body{padding-bottom:104px}
   <div class="row"><label for="who">Detalhe de um aluno</label><select id="who"></select></div>
   <div class="tw"><table id="det"></table></div>
 </section></div>
-<div class="sc" id="s-exams"><section class="card" aria-labelledby="h-ex"><h2 id="h-ex">Stage Exams (provas)</h2>
-  <div class="row"><label for="xst">Stage</label><select id="xst"></select><span class="msg" id="xmsg" aria-live="polite"></span></div>
-  <p class="hint">A prova dura 40 minutos, só pode ser feita uma vez e só abre para o aluno depois que você liberar aqui. A coluna Lesson Checks mostra o que falta; se faltar algo, o sistema avisa antes de liberar. Você lê o ditado e as perguntas orais ao vivo.</p>
-  <div class="tw"><table id="xtab"></table></div>
+<div class="sc" id="s-exams"><section class="card" aria-labelledby="h-ex"><h2 id="h-ex">Exames</h2>
+  <select id="xst" hidden aria-hidden="true"></select><div id="xchips" role="group" aria-label="Escolher Stage"></div><span class="msg" id="xmsg" aria-live="polite"></span>
+  <div class="kpr" id="xkp"></div>
+  <details class="h"><summary>Como funciona</summary><p class="hint">A prova dura 40 minutos, só pode ser feita uma vez e só abre para o aluno depois que você liberar aqui. A coluna Lesson Checks mostra o que falta; se faltar algo, o sistema avisa antes de liberar. Você lê o ditado e as perguntas orais ao vivo.</p></details>
+  <div id="xcards"></div><table id="xtab" hidden></table>
   <div class="row"><button type="button" class="ghost" id="xall">Liberar a nota de todos os que já enviaram este Stage</button></div>
   <div id="xdet"></div>
 </section></div>
@@ -442,11 +465,12 @@ function xChecks(uid,st){
   const vals=Object.values(done);
   return {total:r[1]-r[0]+1,done:vals.length,miss:miss,avg:vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null};
 }
-let XUN=[];
+let XUN=[],CERTS=[],CERT_OK=false;
 async function loadExams(){
   const a=await sb.from('exam_release').select('*'),b=await sb.from('exam_results').select('*'),c=await sb.from('exam_defs').select('stage,minutes');
   if(a.error||b.error||c.error){XOK=false;setMsg('xmsg','Tabelas da prova ainda não existem no Supabase. Rode o arquivo exam_setup.sql (e exam_data_stage1-2.sql) no SQL Editor.','bad');$('xtab').textContent='';return;}
   {const d=await sb.from('stage_unlock').select('*');XUN=(d&&!d.error&&d.data)||[];}
+  {const d=await sb.from('certificates').select('*');CERT_OK=!!(d&&!d.error);CERTS=CERT_OK?(d.data||[]):[];}
   XOK=true;XREL=a.data||[];XRES=b.data||[];XDEF={};(c.data||[]).forEach(x=>{XDEF[x.stage]=x;});
   const sel=$('xst');if(!sel.options.length){for(let i=1;i<=XSTG.length;i++)sel.append(el('option',{value:String(i)},'Stage '+i));sel.addEventListener('change',()=>{$('xdet').textContent='';renderExam();});}
   if(!$('xall').dataset.on){$('xall').dataset.on='1';$('xall').addEventListener('click',()=>{const st=parseInt($('xst').value,10)||1;
@@ -463,44 +487,103 @@ function xStatus(rel,res,def){
   if(rel)return el('span',{class:'st approved'},'Liberada, ainda não iniciada');
   return el('span',{},'Não liberada');
 }
+function certOf(uid,st){return CERTS.find(x=>x.user_id===uid&&x.stage===st);}
+const HRS=[35,45,50,60,65,65,60,70,80,100,135,155];
+function xchips(){const w=$('xchips');if(!w)return;w.textContent='';const sel=$('xst');
+  for(let i=1;i<=XSTG.length;i++){const b=el('button',{type:'button',class:'chp'+(String(i)===sel.value?' on':'')},'Stage '+i);
+    b.addEventListener('click',()=>{sel.value=String(i);$('xdet').textContent='';renderExam();});w.append(b);}}
+document.addEventListener('click',e=>{if(!e.target.closest('.mn,.mnb'))document.querySelectorAll('.mn.open').forEach(x=>x.classList.remove('open'));});
+function xbtn(t,cls,fn){const b=el('button',{type:'button',class:cls||''},t);b.addEventListener('click',fn);return b;}
+function certDialog(p,st,c,res,cert){
+  const def=XDEF[st],sub=!!(res&&res.submitted_at);let pct=null;
+  if(sub){const sc=res.scores||{},mx=res.maxes||{};let T=0,M=0;Object.keys(mx).forEach(k=>{T+=sc[k]||0;M+=mx[k];});pct=M?Math.round(100*T/M):null;}
+  const why=[];
+  if(c.miss.length)why.push('faltam os Lesson Checks das lessons '+c.miss.join(', '));
+  if(c.avg==null||c.avg<0.7)why.push('média dos Lesson Checks: '+(c.avg==null?'sem notas':Math.round(c.avg*100)+'% (mínimo 70%)'));
+  if(def&&!sub)why.push('prova ainda não feita');else if(sub&&(pct==null||pct<70))why.push('prova com '+(pct==null?'—':pct+'%')+' (mínimo 70%)');
+  const ov=el('div',{class:'ovl',role:'dialog','aria-modal':'true'}),d=el('div',{class:'dlg'});ov.append(d);
+  const close=()=>ov.remove();ov.addEventListener('click',e=>{if(e.target===ov)close();});
+  d.append(el('h3',{},cert?'Certificado '+(cert.revoked?'revogado':'emitido'):'Emitir certificado'),el('p',{class:'sm'},(p.name||p.email)+' · English · Stage '+st));
+  if(cert)d.append(el('p',{},'ID: ',el('b',{class:'cid'},cert.id)+(cert.revoked?' (revogado)':'')));
+  const ban=el('div',{class:'cbn '+(why.length?'bad':'ok')});
+  if(why.length){ban.append(el('b',{},'⚠ Este aluno ainda não concluiu o Stage '+st+'.'),el('br'),why.join(' · ')+'.');}
+  else ban.append(el('b',{},'✓ Stage concluído:'),' prova '+(pct==null?'—':pct+'%')+', média '+(c.avg==null?'—':Math.round(c.avg*100)+'%')+', Lesson Checks em dia.');
+  d.append(ban);
+  let ovr=null;if(why.length&&!cert){ovr=el('input',{type:'checkbox',id:'cvr'});d.append(el('label',{class:'fl',for:'cvr'},ovr,' Emitir mesmo assim'));}
+  const hrs=el('input',{type:'number',min:'1',max:'999',value:String(cert?cert.hours:(HRS[st-1]||50)),id:'chr'});
+  const ex=el('input',{type:'number',min:'0',max:'100',placeholder:'—',value:cert?(cert.exam_pct==null?'':String(cert.exam_pct)):(pct==null?'':String(pct)),id:'cex'});
+  const today=new Date().toLocaleDateString('sv-SE');
+  const dn=el('input',{type:'date',value:cert?cert.completed_on:(sub&&res.submitted_at?new Date(res.submitted_at).toLocaleDateString('sv-SE'):today),id:'cdn'});
+  const ds=el('input',{type:'checkbox',id:'cds'});ds.checked=cert?!!cert.distinction:(pct!=null&&pct>=85&&c.avg!=null&&c.avg>=0.85);
+  const fld=(l,i,id,note)=>el('div',{class:'cf'},el('label',{for:id},l),i,note?el('small',{},note):null);
+  d.append(fld('Horas acadêmicas',hrs,'chr'),fld('Nota da prova (%)',ex,'cex'),fld('Concluído em',dn,'cdn'),fld('Com distinção',el('span',{},ds,' Sim'),'cds','Sugestão: prova ≥ 85% e média ≥ 85%'));
+  d.append(el('p',{class:'sm'},cert?'Ao salvar, o certificado do aluno é atualizado (o ID continua o mesmo).':'O certificado aparece para o aluno assim que você emitir.'));
+  const msg=el('p',{class:'msg',id:'cmsg'});d.append(msg);
+  const go=xbtn(cert?'Salvar alterações':'Emitir certificado','',async()=>{
+    const h=parseInt(hrs.value,10);if(!(h>0)){msg.textContent='Informe as horas.';msg.className='msg bad';return;}
+    if(!dn.value){msg.textContent='Informe a data.';msg.className='msg bad';return;}
+    go.disabled=true;msg.textContent='Salvando…';msg.className='msg';
+    const r=await sb.rpc('cert_issue',{p_user:p.id,p_stage:st,p_hours:h,p_exam_pct:ex.value===''?null:Math.max(0,Math.min(100,parseInt(ex.value,10)||0)),p_distinction:ds.checked,p_completed:dn.value,p_prefix:'STG'});
+    if(r.error){msg.textContent='Erro: '+r.error.message;msg.className='msg bad';go.disabled=false;return;}
+    close();setMsg('xmsg','Certificado '+r.data+' salvo.','ok');loadExams();});
+  if(ovr){go.disabled=true;ovr.addEventListener('change',()=>{go.disabled=!ovr.checked;});}
+  const row=el('div',{class:'row2'});
+  if(cert&&!cert.revoked)row.append(xbtn('Revogar','danger',async()=>{if(!confirm('Revogar o certificado '+cert.id+'? O aluno deixa de vê-lo e a verificação pública passa a dizer que não é válido.'))return;
+    const r=await sb.from('certificates').update({revoked:true}).eq('id',cert.id);if(r.error){msg.textContent='Erro: '+r.error.message;msg.className='msg bad';return;}close();loadExams();}));
+  row.append(xbtn('Cancelar','ghost',close),go);d.append(row);document.body.append(ov);
+}
 function renderExam(){
   if(!XOK)return;
-  const st=parseInt($('xst').value,10)||1,t=$('xtab');t.textContent='';
-  const studs=PROFILES.filter(p=>p.status!=='pending'&&!p.is_admin),tb=el('tbody',{}),def=XDEF[st];
-  if(!studs.length)tb.append(el('tr',{},el('td',{colspan:'4'},'Nenhum aluno ainda.')));
+  const st=parseInt($('xst').value,10)||1,def=XDEF[st];xchips();
+  const studs=PROFILES.filter(p=>p.status!=='pending'&&!p.is_admin),box=$('xcards');box.textContent='';
+  let nRel=0,nPro=0,nDone=0,nRev=0;
+  if(!studs.length)box.append(el('p',{class:'hint'},'Nenhum aluno ainda.'));
   studs.forEach(p=>{
-    const rel=XREL.find(x=>x.user_id===p.id&&x.stage===st),res=XRES.find(x=>x.user_id===p.id&&x.stage===st),c=xChecks(p.id,st);
-    const ck=el('td',{},c.done+'/'+c.total+(c.avg!=null?' · média '+Math.round(c.avg*100)+'%':''),c.miss.length?el('div',{class:'sm',style:'color:var(--bad)'},'Faltam as lessons: '+c.miss.join(', ')):el('div',{class:'sm'},'Todos feitos'));
-    const act=el('td',{});
-    {const un=XUN.find(x=>x.user_id===p.id&&x.stage===st);
-      act.append(el('button',{type:'button',class:un?'ghost':'',onclick:()=>{
-        if(un){sb.from('stage_unlock').delete().eq('user_id',p.id).eq('stage',st).then(r=>{if(r.error)setMsg('xmsg','Erro: '+r.error.message,'bad');else loadExams();});return;}
-        if(!confirm('Liberar o próximo Stage para '+p.name+', ignorando a trava do Stage '+st+' (prova, média e exercícios)?'))return;
-        sb.from('stage_unlock').insert({user_id:p.id,stage:st}).then(r=>{if(r.error)setMsg('xmsg','Erro: '+r.error.message,'bad');else loadExams();});}},un?'Remover liberação do Stage '+st:'Liberar passagem do Stage '+st),' ');}
-    if(!res){
-      if(!rel&&def)act.append(el('button',{type:'button',onclick:()=>{
-        if(c.miss.length&&!confirm(p.name+' ainda não fez os Lesson Checks das lessons: '+c.miss.join(', ')+'.\n\nLiberar a prova mesmo assim?'))return;
-        sb.from('exam_release').insert({user_id:p.id,stage:st}).then(r=>{if(r.error)setMsg('xmsg','Erro: '+r.error.message,'bad');else loadExams();});}},'Liberar prova'));
-      if(rel)act.append(el('button',{type:'button',class:'ghost',onclick:()=>{if(!confirm('Cancelar a liberação para '+p.name+'?'))return;
-        sb.from('exam_release').delete().eq('user_id',p.id).eq('stage',st).then(r=>{if(r.error)setMsg('xmsg','Erro: '+r.error.message,'bad');else loadExams();});}},'Cancelar liberação'));
+    const rel=XREL.find(x=>x.user_id===p.id&&x.stage===st),res=XRES.find(x=>x.user_id===p.id&&x.stage===st),c=xChecks(p.id,st),un=XUN.find(x=>x.user_id===p.id&&x.stage===st),cert=certOf(p.id,st);
+    const sub=!!(res&&res.submitted_at),prog=!!(res&&!res.submitted_at);
+    const nrev=sub?Object.values(res.review||{}).reduce((s,x)=>s+x.length,0):0;
+    if(rel&&!res)nRel++;if(prog)nPro++;if(sub){nDone++;if(nrev)nRev++;}
+    let T=0,M=0;if(sub){const sc=res.scores||{},mx=res.maxes||{};Object.keys(mx).forEach(k=>{T+=sc[k]||0;M+=mx[k];});}
+    let pill;
+    if(!def)pill=el('span',{class:'pl bad'},'Prova não cadastrada');
+    else if(sub)pill=el('span',{class:'pl '+(res.score_visible?'ok':'wt')},'Concluída · '+T+'/'+M+(res.score_visible?'':' · nota oculta'));
+    else if(prog)pill=el('span',{class:'pl wt'},'Em andamento');
+    else if(rel)pill=el('span',{class:'pl ok'},'Liberada');
+    else pill=el('span',{class:'pl gr'},'Não liberada');
+    const pc=c.total?Math.round(c.done/c.total*100):0;
+    const m1=el('span',c.miss.length?{style:'color:var(--bad)'}:{},c.done+'/'+c.total+' Lesson Checks'+(c.avg!=null?' · média '+Math.round(c.avg*100)+'%':'')+(c.miss.length?' · faltam lessons '+c.miss.join(', '):''));
+    const bits=[];if(sub&&nrev)bits.push(nrev+' resposta(s) para revisar');if(sub&&res.late)bits.push('enviada após o tempo');if(prog)bits.push('desde '+fmt(res.started_at));if(un)bits.push('passagem liberada');
+    if(cert)bits.push('★ '+cert.id+(cert.revoked?' (revogado)':''));
+    const act=el('div',{class:'act'}),mn=el('div',{class:'mn'});
+    const fail=r=>{if(r.error){setMsg('xmsg','Erro: '+r.error.message,'bad');return true;}return false;};
+    const reload=r=>{if(!fail(r)){setMsg('xmsg','');loadExams();}};
+    if(sub){
+      if(!res.score_visible)act.append(xbtn('Liberar nota','',()=>{if(nrev&&!confirm('Ainda há '+nrev+' resposta(s) para você revisar. Liberar a nota assim mesmo?'))return;
+        sb.from('exam_results').update({score_visible:true}).eq('user_id',p.id).eq('stage',st).then(reload);}));
+      act.append(xbtn('Ver resultado',res.score_visible?'':'ghost',()=>showExam(p,st)));
+    }else if(prog){
+      act.append(xbtn('Encerrar e corrigir','',()=>{if(!confirm('Encerrar e corrigir agora a prova de '+p.name+' com as respostas salvas?'))return;sb.rpc('exam_finalize',{p_user:p.id,p_stage:st}).then(reload);}));
+    }else if(!rel&&def){
+      act.append(xbtn('Liberar prova','',()=>{if(c.miss.length&&!confirm(p.name+' ainda não fez os Lesson Checks das lessons: '+c.miss.join(', ')+'.\n\nLiberar a prova mesmo assim?'))return;
+        sb.from('exam_release').insert({user_id:p.id,stage:st}).then(reload);}));
     }
-    if(rel&&!(res&&res.submitted_at)){
-      const mi=el('input',{type:'number',min:'1',max:'60',value:'5','aria-label':'Minutos extras para '+p.name,style:'width:4.5em'});
-      act.append(' ',mi,' ',el('button',{type:'button',class:'ghost',onclick:()=>{const v=Math.max(1,Math.min(60,parseInt(mi.value,10)||0));
-        sb.from('exam_release').update({extra_minutes:(rel.extra_minutes||0)+v}).eq('user_id',p.id).eq('stage',st).then(r=>{if(r.error)setMsg('xmsg','Erro: '+r.error.message,'bad');else{setMsg('xmsg','+'+v+' min para '+p.name+' (total extra: '+((rel.extra_minutes||0)+v)+').','ok');loadExams();}});}},'+ min'));
-    }
-    if(res&&!res.submitted_at)act.append(' ',el('button',{type:'button',class:'ghost',onclick:()=>{if(!confirm('Encerrar e corrigir agora a prova de '+p.name+' com as respostas salvas?'))return;
-      sb.rpc('exam_finalize',{p_user:p.id,p_stage:st}).then(r=>{if(r.error)setMsg('xmsg','Erro: '+r.error.message,'bad');else loadExams();});}},'Encerrar e corrigir'));
-    if(res&&res.submitted_at){act.append(el('button',{type:'button',onclick:()=>showExam(p,st)},'Ver resultado'),' ',
-      el('button',{type:'button',class:res.score_visible?'ghost':'',onclick:()=>{
-        const nrev=Object.values(res.review||{}).reduce((s2,x)=>s2+x.length,0);
-        if(!res.score_visible&&nrev&&!confirm('Ainda há '+nrev+' resposta(s) para você revisar. Liberar a nota assim mesmo?'))return;
-        sb.from('exam_results').update({score_visible:!res.score_visible}).eq('user_id',p.id).eq('stage',st).then(r=>{if(r.error)setMsg('xmsg','Erro: '+r.error.message,'bad');else loadExams();});}},res.score_visible?'Ocultar nota':'Liberar nota'));}
-    if(res)act.append(' ',el('button',{type:'button',class:'danger',onclick:()=>{if(!confirm('APAGAR a prova de '+p.name+' (Stage '+st+') para ele poder refazer? Isso não pode ser desfeito.'))return;
-      sb.from('exam_results').delete().eq('user_id',p.id).eq('stage',st).then(r=>{if(r.error)setMsg('xmsg','Erro: '+r.error.message,'bad');else{$('xdet').textContent='';loadExams();}});}},'Zerar'));
-    tb.append(el('tr',{},el('td',{},p.name||p.email),ck,el('td',{},xStatus(rel,res,def)),act));
+    if(rel&&!sub)act.append(xbtn('+5 min','ghost',()=>{sb.from('exam_release').update({extra_minutes:(rel.extra_minutes||0)+5}).eq('user_id',p.id).eq('stage',st).then(r=>{if(!fail(r)){setMsg('xmsg','+5 min para '+p.name+'.','ok');loadExams();}});}));
+    if(CERT_OK)act.append(xbtn(cert&&!cert.revoked?'★ Certificado emitido':'★ Certificado','gold',()=>certDialog(p,st,c,res,cert)));
+    const mi=(t,cls,fn)=>{const b=el('button',{type:'button',class:'mi '+(cls||'')},t);b.addEventListener('click',()=>{mn.classList.remove('open');fn();});mn.append(b);};
+    mi(un?'Remover liberação do Stage '+st:'Liberar passagem do Stage '+st,'',()=>{
+      if(un){sb.from('stage_unlock').delete().eq('user_id',p.id).eq('stage',st).then(reload);return;}
+      if(!confirm('Liberar o próximo Stage para '+p.name+', ignorando a trava do Stage '+st+' (prova, média e exercícios)?'))return;
+      sb.from('stage_unlock').insert({user_id:p.id,stage:st}).then(reload);});
+    if(sub&&res.score_visible)mi('Ocultar nota','',()=>sb.from('exam_results').update({score_visible:false}).eq('user_id',p.id).eq('stage',st).then(reload));
+    if(rel&&!res)mi('Cancelar liberação da prova','',()=>{if(!confirm('Cancelar a liberação para '+p.name+'?'))return;sb.from('exam_release').delete().eq('user_id',p.id).eq('stage',st).then(reload);});
+    if(res)mi('Zerar prova','d',()=>{if(!confirm('APAGAR a prova de '+p.name+' (Stage '+st+') para ele poder refazer? Isso não pode ser desfeito.'))return;
+      sb.from('exam_results').delete().eq('user_id',p.id).eq('stage',st).then(r=>{if(!fail(r)){$('xdet').textContent='';loadExams();}});});
+    const mb=el('button',{type:'button',class:'ghost mnb'},'⋯ Mais');mb.addEventListener('click',()=>{const o=mn.classList.contains('open');document.querySelectorAll('.mn.open').forEach(x=>x.classList.remove('open'));if(!o)mn.classList.add('open');});
+    act.append(mb,mn);
+    box.append(el('div',{class:'ec'},el('div',{class:'t'},el('div',{class:'av'},((p.name||p.email||'?')[0]||'?').toUpperCase()),el('div',{class:'nm'},el('b',{},p.name||p.email),el('small',{},'Stage '+st)),pill),
+      el('div',{class:'bar2'},el('i',{style:'width:'+pc+'%'})),el('div',{class:'m'},m1,el('span',{},bits.join(' · '))),act));
   });
-  t.append(th(['Aluno','Lesson Checks do Stage','Prova','Ações']),tb);
+  const k=$('xkp');k.textContent='';[['Liberadas',nRel],['Em andamento',nPro],['Concluídas',nDone],['Para revisar',nRev]].forEach(x=>k.append(el('div',{},el('small',{},x[0]),el('b',{},String(x[1])))));
 }
 async function showExam(p,st){
   const box=$('xdet');box.textContent='';
