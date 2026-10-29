@@ -100,7 +100,7 @@ summary{cursor:pointer;font-weight:700;padding:4px 0}
 <script src="js/config.js" charset="utf-8"></script>
 <script src="js/i18n-es.js" charset="utf-8"></script>
 <script src="../js/i18n.js" charset="utf-8"></script>
-<script src="../js/gate.js" charset="utf-8"></script>
+<script src="../js/gate.js" charset="utf-8"></script><script src="../js/receipt.js" charset="utf-8"></script>
 <script>
 Gate.start({kinds:[]},function(ctx){
 if(Gate.gameOn()){location.replace('index.html#profile');return;}
@@ -220,6 +220,7 @@ async function pays0(){
     el('div',{},el('small',{},'Monthly amount'),el('b',{},money(s.amount,s.currency))),
     el('div',{},el('small',{},'Due day'),el('b',{},'Day '+s.due_day)),
     el('div',{},el('small',{},'Status'),el('b',{style:'font-size:1.1rem'},s.active?'Active':'Paused'))));});
+  const rcpt=x=>{const bt=el('button',{type:'button',class:'btn',style:'padding:.25rem .6rem;font-size:.8rem'},'Download');bt.addEventListener('click',async()=>{bt.disabled=true;try{const sb0=subs.find(q=>q.id===x.sub_id);await Receipt.download({charge:x,plan:sb0?sb0.plan:'',name:(ctx.profile&&ctx.profile.name)||'',base:'../'});}catch(e){}bt.disabled=false;});return bt;};
   const open=ch.filter(x=>!x.paid_on).sort((x,y)=>x.due_date<y.due_date?-1:1);
   if(open.length){const n=open[0],late=n.due_date<today;
     box.append(el('div',{class:'next'},el('small',{},late?'Overdue payment':'Next payment'),el('br'),el('b',{},money(n.amount,n.currency)),
@@ -227,9 +228,9 @@ async function pays0(){
   else if(ch.length)box.append(el('div',{class:'next'},el('b',{},'All paid. Thank you!')));
   if(ch.length){const paid={};ch.forEach(x=>{if(x.paid_on)paid[x.currency]=(paid[x.currency]||0)+ +x.amount;});
     box.append(el('p',{class:'hint'},'Total paid so far: '+(Object.keys(paid).map(k=>money(paid[k],k)).join(' + ')||'—')));
-    const tb=el('table');tb.append(th(['Due date','Amount','Status','Paid on']));const b=el('tbody');
+    const tb=el('table');tb.append(th(['Due date','Amount','Status','Paid on','Receipt']));const b=el('tbody');
     ch.forEach(x=>{const st=x.paid_on?el('span',{class:'pill ok'},'Paid'):(x.due_date<today?el('span',{class:'pill bad'},'Overdue'):el('span',{class:'pill wt'},'Open'));
-      b.append(el('tr',{},el('td',{class:'c'},dt(x.due_date)),el('td',{class:'n'},money(x.amount,x.currency)),el('td',{class:'c'},st),el('td',{class:'c'},dt(x.paid_on))));});
+      b.append(el('tr',{},el('td',{class:'c'},dt(x.due_date)),el('td',{class:'n'},money(x.amount,x.currency)),el('td',{class:'c'},st),el('td',{class:'c'},dt(x.paid_on)),el('td',{class:'c'},x.paid_on?rcpt(x):'')));});
     tb.append(b);const w=el('div',{class:'tw'});w.append(tb);const hd=el('details',{},el('summary',{},'Payment history'));hd.append(w);box.append(hd);}
   const nm=(ctx.profile&&ctx.profile.name)||'';
   box.append(el('p',{},el('a',{class:'btn',href:'https://wa.me/5511914881274?text='+encodeURIComponent('Hello! This is '+nm+', a Britland Academy student. I have a question about my payments.'),target:'_blank',rel:'noopener'},'Talk to the school')));
