@@ -664,7 +664,8 @@ function renderHistory(){
 whoEl.textContent=me().name;appEl.hidden=false;
 LESSONS.forEach(L=>panelsEl.append(mountLesson(L)));panelsEl.append(histPanel);
 const first=LESSONS.find(L=>!lessonStats(L).complete);
-showTab(first?String(first.id):'1');
+let q0=first?String(first.id):'1';try{const q=+new URLSearchParams(location.search).get('lesson');if(q&&BYID[q])q0=String(q);}catch(e){}
+showTab(q0);
 setTimeout(()=>cvCele(curStage),900);
 if(window.Review&&Review.params())setTimeout(revStart,500);
 });

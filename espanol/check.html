@@ -627,6 +627,7 @@ function loadStudent(key){
   panelsEl.append(histPanel);
   let first=LESSONS.find(L=>!lessonStats(L).complete);
   curTab=first?String(first.id):'h';
+  try{const q=+new URLSearchParams(location.search).get('lesson');if(q&&BYID[q])curTab=String(q);}catch(e){}
   confirmDel=false;
   showTab(curTab);
   setTimeout(()=>cvCele(curStage),900);

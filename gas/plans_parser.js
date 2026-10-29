@@ -1,0 +1,128 @@
+/* Britland: reads ONE tab of the "Planos de Aula" sheet and returns the pedagogical position of the student.
+   Pure function of the tab's values (2D array) + the tab name, so it can be tested without Google. */
+function parsePlanTab(values, sheetName) {
+  var norm = function (v) { return String(v == null ? '' : v).trim(); };
+  var num = function (v) { var m = norm(v).match(/^\d+$/); return m ? parseInt(m[0], 10) : null; };
+  var dash = /^[—–-]?$/;
+
+  /* 1. Header row: the row that has a "Contents" cell (it moves between tabs, row 7 or 8). */
+  var h = -1, i, j;
+  for (i = 0; i < values.length && h < 0; i++)
+    for (j = 0; j < values[i].length; j++) if (/^contents$/i.test(norm(values[i][j]))) { h = i; break; }
+  if (h < 0) return parseOldLayout_(values, sheetName);
+  var col = {};
+  values[h].forEach(function (c, k) {
+    c = norm(c);
+    if (/^date$/i.test(c)) { col.date = k; col.cls = k - 1; }
+    else if (/^contents$/i.test(c)) col.contents = k;
+    else if (/^paragraph$/i.test(c)) col.par = k;
+    else if (/^last word/i.test(c)) col.word = k;
+    else if (/^read/i.test(c)) col.read = k;
+    else if (/^dict/i.test(c)) col.dict = k;
+    else if (/^lc$/i.test(c)) col.lc = k;
+    else if (/^status$/i.test(c)) col.status = k;
+  });
+  if (col.contents == null || col.status == null) return { ok: false, error: 'columns-not-found', sheetName: sheetName };
+
+  /* 2. Stage: from the tab name (Stage 1 / Stg 2 / Etapa 3), then from the "STAGE N PROGRESS" label. */
+  var stage = null, m = String(sheetName).match(/(?:stage|stg|etapa)\s*(\d+)/i);
+  if (m) stage = parseInt(m[1], 10);
+  for (i = 0; i < h && stage == null; i++)
+    for (j = 0; j < values[i].length; j++) { m = norm(values[i][j]).match(/STAGE\s*(\d+)\s*PROGRESS/i); if (m) { stage = parseInt(m[1], 10); break; } }
+
+  /* 3. Class rows: from the header down while there is a status. */
+  var rows = [];
+  for (i = h + 1; i < values.length; i++) {
+    var r = values[i], status = norm(r[col.status]), contents = norm(r[col.contents]);
+    if (!contents || !status) { if (rows.length) break; else continue; }
+    if (/^(lançamento|nota|pontua|b[oô]nus|resultado)/i.test(contents)) break;
+    var word = col.word != null ? norm(r[col.word]) : '', par = col.par != null ? norm(r[col.par]) : '';
+    var noShow = /no.?show/i.test(word) || /^ns$/i.test(par);
+    rows.push({
+      row: i + 1, cls: col.cls != null ? num(r[col.cls]) : null, contents: contents,
+      conv: /^e$/i.test(par) || /conversation/i.test(contents),
+      status: status, noShow: noShow, done: /^completed$/i.test(status) && !noShow,
+      paragraph: num(par), word: noShow ? '' : word,
+      read: col.read != null ? norm(r[col.read]) : '', dict: col.dict != null ? norm(r[col.dict]) : '',
+      lc: col.lc != null ? norm(r[col.lc]) : ''
+    });
+  }
+
+  /* 4. Contents: "REV 1 hello - 9 number / NW 10 on - 12 where" */
+  var rng = function (txt, tag) {
+    var rx = new RegExp(tag + '\\s+(\\d+)\\s+(.+?)\\s+[-–]\\s+(\\d+)\\s+(.+?)\\s*(?:/|$)', 'i'), q = txt.match(rx);
+    return q ? { from: parseInt(q[1], 10), fromWord: q[2], to: parseInt(q[3], 10), toWord: q[4] } : null;
+  };
+  rows.forEach(function (x) { x.rev = rng(x.contents, 'REV'); x.nw = rng(x.contents, 'NW'); });
+
+  /* 5. Where the student stopped = last taught class; next = first class after it that is not done. */
+  var last = -1;
+  rows.forEach(function (x, k) { if (x.done) last = k; });
+  var lastRow = last >= 0 ? rows[last] : null, nextRow = null;
+  for (k = last + 1; k < rows.length; k++) if (!rows[k].done && !rows[k].noShow) { nextRow = rows[k]; break; }
+  var k;
+
+  /* 6. Callan lesson (same numbering as the app): each Lesson Check row ends one lesson. Lesson k holds
+        the words up to the last new word of the class where "LC k" is scheduled. */
+  var bounds = [];
+  rows.forEach(function (x) { var n = num(x.lc); if (n != null && x.nw) bounds.push({ lesson: n, endWord: x.nw.to }); });
+  bounds.sort(function (a, b) { return a.lesson - b.lesson; });
+  var lastNW = null;
+  rows.forEach(function (x) { if (x.done && x.nw) lastNW = x.nw.to; });
+  var current = null, finished = false;
+  if (bounds.length && lastNW != null) {
+    for (k = 0; k < bounds.length; k++) if (bounds[k].endWord >= lastNW) { current = bounds[k].lesson; finished = bounds[k].endWord === lastNW; break; }
+    if (current == null) { current = bounds[bounds.length - 1].lesson; finished = true; }
+  }
+
+  var wordRow = null;
+  var parRow = null;
+  rows.forEach(function (x) { if (x.done && !x.conv && x.word && !/^[—–-]+$/.test(x.word)) wordRow = x; if (x.done && x.paragraph != null) parRow = x; });
+  var pending = function (v) { return v !== '' && !dash.test(v); };
+  return {
+    ok: true, sheetName: sheetName, stage: stage,
+    currentPosition: lastRow ? {
+      classNumber: lastRow.cls, lesson: current, lessonFinished: finished, paragraph: parRow ? parRow.paragraph : null,
+      lastWord: wordRow ? wordRow.word : '', lastNewWord: lastNW,
+      reading: lastRow.read, dictation: lastRow.dict, lessonCheck: lastRow.lc
+    } : null,
+    nextClass: nextRow ? {
+      classNumber: nextRow.cls, contents: nextRow.contents, conversation: !!nextRow.conv, activity: (!nextRow.conv && !nextRow.rev && !nextRow.nw) ? nextRow.contents : '',
+      review: nextRow.rev, newWords: nextRow.nw,
+      hasReading: pending(nextRow.read), hasDictation: pending(nextRow.dict), hasQuiz: pending(nextRow.lc),
+      reading: nextRow.read, dictation: nextRow.dict, lessonCheck: nextRow.lc
+    } : null,
+    classesDone: rows.filter(function (x) { return x.done; }).length, classesTotal: rows.length
+  };
+}
+
+
+/* Older tabs (2025 and some 2026 ones) have no Contents/Status columns: the header row has
+   "Last Word Taught" and "Read/Dict"; column before it holds the class number and paragraph. */
+function parseOldLayout_(values, sheetName) {
+  var norm = function (v) { return String(v == null ? '' : v).trim(); };
+  var num = function (v) { var m = norm(v).match(/^\d+$/); return m ? parseInt(m[0], 10) : null; };
+  var h = -1, w = -1, i, j;
+  for (i = 0; i < values.length && h < 0; i++)
+    for (j = 0; j < values[i].length; j++) if (/^last word taught$/i.test(norm(values[i][j]))) { h = i; w = j; break; }
+  if (h < 0) return { ok: false, error: 'header-not-found', sheetName: sheetName };
+  var stage = null, m = String(sheetName).match(/(?:stage|stg|etapa)\s*(\d+)/i);
+  if (m) stage = parseInt(m[1], 10);
+  if (stage == null) for (i = 0; i < h; i++) for (j = 0; j < values[i].length; j++) { m = norm(values[i][j]).match(/stage\s*(\d+)/i); if (m && stage == null) stage = parseInt(m[1], 10); }
+  var rows = [];
+  for (i = h + 1; i < values.length; i++) {
+    var r = values[i], cls = num(r[w - 2]);
+    if (cls == null) { if (rows.length) break; else continue; }
+    var word = norm(r[w]);
+    rows.push({ row: i + 1, cls: cls, paragraph: num(r[w - 3]), word: word, done: word !== '', readDict: norm(r[w + 2]) });
+  }
+  var last = -1, k;
+  rows.forEach(function (x, n) { if (x.done) last = n; });
+  var lastRow = last >= 0 ? rows[last] : null, nextRow = null;
+  for (k = last + 1; k < rows.length; k++) if (!rows[k].done) { nextRow = rows[k]; break; }
+  return { ok: true, layout: 'old', sheetName: sheetName, stage: stage,
+    currentPosition: lastRow ? { classNumber: lastRow.cls, lesson: null, lessonFinished: false, paragraph: lastRow.paragraph, lastWord: lastRow.word, lastNewWord: null, reading: lastRow.readDict, dictation: '', lessonCheck: '' } : null,
+    nextClass: nextRow ? { classNumber: nextRow.cls, contents: '', review: null, newWords: null, hasReading: false, hasDictation: false, hasQuiz: false, reading: '', dictation: '', lessonCheck: '' } : null,
+    classesDone: rows.filter(function (x) { return x.done; }).length, classesTotal: rows.length };
+}
+if (typeof module !== 'undefined') module.exports = { parsePlanTab: parsePlanTab };

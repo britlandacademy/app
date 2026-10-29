@@ -143,6 +143,9 @@ details.h{background:var(--surface);border:1px solid var(--line);border-radius:1
   <div class="tw"><table id="stu"></table></div>
   <p class="hint">Bloquear fecha o acesso na hora (o áudio já aberto pode tocar por até 2 horas). Para apagar uma conta de vez: Supabase, Authentication, Users, Delete.</p>
 </section>
+<section class="card" aria-labelledby="h-plan"><h2 id="h-plan">Planos de Aula (planilha)</h2>
+  <p class="hint">Digite o nome exato da aba da planilha "Planos de Aula" de cada aluno. A cada 30 minutos o app lê só essa aba e mostra as recomendações na Home do aluno. Deixe em branco para desligar.</p>
+  <div class="tw"><table id="planTbl"></table></div></section>
 <div id="streakBox" hidden></div></div>
 <div class="sc" id="s-grades"><section class="card" aria-labelledby="h-sc"><h2 id="h-sc">Notas</h2>
   <div class="row"><label for="kind">Mostrar</label><select id="kind"><option value="check">Ejercicios de repaso (nº = repaso)</option><option value="dele">DELE (nº 1–6 = A1…C2)</option></select>
@@ -217,7 +220,7 @@ function clampN(v){v=parseInt(v,10);return isNaN(v)?0:Math.max(0,Math.min(MAXL,v
 /* ----- profiles ----- */
 function loadProfiles(){
   return sb.from('profiles').select('*').order('created_at',{ascending:true}).then(r=>{
-    if(r.error)throw r.error;PROFILES=r.data||[];renderPend();renderStu();renderMat();renderWho();if(typeof renderHome==='function')renderHome();
+    if(r.error)throw r.error;PROFILES=r.data||[];renderPend();renderStu();renderMat();if(typeof renderPlan==="function")renderPlan();renderWho();if(typeof renderHome==='function')renderHome();
   });
 }
 function update(id,patch,msgId){
@@ -290,6 +293,28 @@ const STG=C.stages||[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[
 function fillEtapas(){
   const s=$('mst');if(s.options.length)return;
   STG.forEach((r,k)=>s.append(el('option',{value:String(k)},r[0]>1000?'Business (Lecciones 1 a 17)':'Etapa '+(k+1)+' (Lecciones '+r[0]+' a '+r[1]+')')));
+}
+function renderPlan(){
+  const t=$('planTbl');if(!t)return;
+  Promise.all([sb.from('plan_links').select('user_id,sheet_name'),sb.from('plan_progress').select('user_id,stage,lesson,class_number,last_word,updated_at')]).then(function(rs){
+    const links={},prog={};((rs[0]&&rs[0].data)||[]).forEach(x=>links[x.user_id]=x.sheet_name);((rs[1]&&rs[1].data)||[]).forEach(x=>prog[x.user_id]=x);
+    t.textContent='';
+    const hd=document.createElement('tr');['Aluno','Aba da planilha','','Última leitura'].forEach(h=>{const th=document.createElement('th');th.textContent=h;hd.append(th);});t.append(hd);
+    PROFILES.filter(p=>p.status!=='pending'&&!p.is_admin).forEach(p=>{
+      const tr=document.createElement('tr'),c1=document.createElement('td'),c2=document.createElement('td'),c3=document.createElement('td'),c4=document.createElement('td');
+      c1.textContent=p.name||p.email;
+      const inp=document.createElement('input');inp.type='text';inp.value=links[p.id]||'';inp.placeholder='ex.: Vanessa VIP - Stage 1 3rd';inp.setAttribute('aria-label','Aba de '+(p.name||p.email));inp.style.minWidth='220px';
+      const b=document.createElement('button');b.type='button';b.textContent='Salvar';const m=document.createElement('span');m.className='msg';m.setAttribute('aria-live','polite');
+      b.onclick=function(){
+        const v=inp.value.trim();m.textContent='…';
+        const q=v?sb.from('plan_links').upsert({user_id:p.id,sheet_name:v}):sb.from('plan_links').delete().eq('user_id',p.id);
+        q.then(function(r){m.textContent=r.error?'Erro: '+r.error.message:(v?'Salvo ✓':'Removido ✓');});
+      };
+      c2.append(inp);c3.append(b,m);
+      const g=prog[p.id];c4.textContent=g?('Stage '+(g.stage||'?')+' · Lição '+(g.lesson||'?')+(g.last_word?' · '+g.last_word:'')+' · '+new Date(g.updated_at).toLocaleString('pt-BR')):(links[p.id]?'aguardando a próxima leitura':'—');
+      tr.append(c1,c2,c3,c4);t.append(tr);
+    });
+  });
 }
 function renderMat(){
   fillEtapas();
