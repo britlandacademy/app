@@ -77,6 +77,13 @@ td input[type=number]{width:7em}
  #tb td.ac{grid-column:1/-1;text-align:right}
 }
 </style>
+<style>
+.inb{background:var(--warn-bg);border:2px solid var(--warn);border-radius:10px;padding:12px;margin:0 0 14px}
+.inb h3{margin:0 0 6px;font-size:1.05rem;color:var(--warn)}
+.it{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;margin:8px 0}
+.it small{color:var(--muted)}.it select{max-width:100%}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;padding:1px 6px;border-radius:3px;background:var(--ok-bg);color:var(--ok);margin-left:6px}
+</style>
 <div class="wrap">
 <div class="band"><p>Britland Academy</p><h1>Pagamentos dos alunos</h1><p style="margin-top:8px"><a href="admin.html" style="color:#fff">← Painel do professor</a></p></div>
 
@@ -87,6 +94,7 @@ td input[type=number]{width:7em}
 </section>
 
 <section class="card"><h2>Mensalidades do mês</h2>
+  <div class="inb" id="inb" hidden></div>
   <div class="tw" data-noi18n="1"><table id="tb"></table></div>
   <div class="row"><button type="button" class="ghost" id="avbtn">+ Cobrança avulsa</button></div>
   <div id="avl" hidden></div>
@@ -299,7 +307,7 @@ function rowFor(c){
   const s=subOf(c.sub_id),late=!c.paid_on&&c.due_date<today();
   return el('tr',{class:c.paid_on?'pd':(late?'late':'')},
     el('td',{class:'ck c'},ck),
-    el('td',{class:'nm'},nm(c),el('small',{},c.paid_on?'Pago em '+br(c.paid_on):(s.plan||c.note||'Avulsa'))),
+    el('td',{class:'nm'},nm(c),el('small',{},c.paid_on?'Pago em '+br(c.paid_on):(s.plan||c.note||'Avulsa'),/^Baixa autom/.test(c.note||'')?el('span',{class:'tag'},'automático'):null)),
     el('td',{class:'vl'},el('span',{},SYM[c.currency]+' '),inp),
     el('td',{class:'dd c'},String(+c.due_date.slice(8))),
     el('td',{class:'n'},fmBRL(toBRL(c))),
@@ -323,7 +331,40 @@ function renderTable(){
 })();
 loadRate();
 
-loadAll();
+/* ---- pagamentos lidos do e-mail (Wise/XP): conferir e baixar ---- */
+let INB=[];
+const normN=s=>(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+async function loadInbox(){
+  const r=await sb.from('pay_inbox').select('*').eq('status','conferir').order('received_at',{ascending:false});
+  INB=r.error?[]:(r.data||[]);renderInbox();
+}
+function renderInbox(){
+  const box=$('inb');if(!box)return;box.textContent='';box.hidden=!INB.length;if(!INB.length)return;
+  box.append(el('h3',{},INB.length+(INB.length>1?' pagamentos para conferir':' pagamento para conferir')));
+  INB.forEach(p=>{
+    const op=CH.filter(c=>!c.paid_on).sort((a,b)=>{const sa=(a.currency===p.currency&&+a.amount===+p.amount)?0:1,sb2=(b.currency===p.currency&&+b.amount===+p.amount)?0:1;return sa-sb2||(a.due_date<b.due_date?-1:1);});
+    const sel=el('select',{'aria-label':'Mensalidade'});
+    op.forEach(c=>sel.append(el('option',{value:String(c.id)},nm(c)+' · '+money(c.amount,c.currency)+' · '+br(c.due_date))));
+    if(!op.length)sel.append(el('option',{value:''},'Nenhuma mensalidade em aberto'));
+    const ok=el('button',{type:'button'},'Baixar'),ig=el('button',{type:'button',class:'ghost'},'Ignorar');
+    ok.addEventListener('click',async()=>{
+      const c=CH.find(x=>String(x.id)===sel.value);if(!c){msg('tmsg','Escolha a mensalidade.','bad');return;}
+      ok.disabled=true;
+      const u=await sb.from('charges').update({paid_on:today(),note:'Baixa manual ('+p.source+' '+p.ref+')'}).eq('id',c.id);
+      if(u.error){msg('tmsg',u.error.message,'bad');ok.disabled=false;return;}
+      const uid=subOf(c.sub_id).user_id;
+      if(uid&&p.payer)await sb.from('pay_aliases').upsert({alias:normN(p.payer),user_id:uid});
+      await sb.from('pay_inbox').update({status:'baixado',charge_id:c.id,user_id:uid||null}).eq('ref',p.ref);
+      msg('tmsg','Baixa feita'+(uid?'. Da próxima vez, '+p.payer+' será reconhecido sozinho.':'.'),'ok');loadAll();loadInbox();});
+    ig.addEventListener('click',()=>sb.from('pay_inbox').update({status:'ignorado'}).eq('ref',p.ref).then(loadInbox));
+    box.append(el('div',{class:'it'},el('div',{},el('b',{},money(p.amount,p.currency)+' · '+(p.payer||'?'))),
+      el('small',{},(p.source==='wise'?'Wise':'XP')+' · '+new Date(p.received_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+' · nome ainda não reconhecido'),
+      el('div',{class:'row'},sel,ok,ig)));
+  });
+  box.append(el('p',{class:'hint'},'Ao baixar, o nome do pagador fica salvo e os próximos pagamentos dele são baixados sozinhos.'));
+}
+
+loadAll().then(loadInbox);
 });
 </script>
 </body></html>
