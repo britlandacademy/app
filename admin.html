@@ -295,25 +295,36 @@ function fillStages(){
 }
 function renderPlan(){
   const t=$('planTbl');if(!t)return;
-  Promise.all([sb.from('plan_links').select('user_id,sheet_name,student_col'),sb.from('plan_progress').select('user_id,stage,lesson,class_number,last_word,updated_at')]).then(function(rs){
-    const links={},cols={},prog={};((rs[0]&&rs[0].data)||[]).forEach(x=>links[x.user_id]=x.sheet_name,cols[x.user_id]=x.student_col||'');((rs[1]&&rs[1].data)||[]).forEach(x=>prog[x.user_id]=x);
+  Promise.all([sb.from('plan_links').select('user_id,sheet_name,student_col'),sb.from('plan_progress').select('user_id,stage,lesson,class_number,last_word,updated_at'),sb.from('plan_tabs').select('sheet_name,students').order('sheet_name')]).then(function(rs){
+    const links={},cols={},prog={},tabs={};
+    ((rs[0]&&rs[0].data)||[]).forEach(x=>{links[x.user_id]=x.sheet_name;cols[x.user_id]=x.student_col||'';});
+    ((rs[1]&&rs[1].data)||[]).forEach(x=>{prog[x.user_id]=x;});
+    ((rs[2]&&rs[2].data)||[]).forEach(x=>{tabs[x.sheet_name]=x.students||[];});
+    const names=Object.keys(tabs);
     t.textContent='';
     const hd=document.createElement('tr');['Aluno','Aba da planilha','Coluna do aluno (turmas)','','Última leitura'].forEach(h=>{const th=document.createElement('th');th.textContent=h;hd.append(th);});t.append(hd);
+    const fill=(sel,vals,cur,empty)=>{sel.textContent='';const o0=document.createElement('option');o0.value='';o0.textContent=empty;sel.append(o0);const all=vals.slice();if(cur&&all.indexOf(cur)<0)all.unshift(cur);all.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;sel.append(o);});sel.value=cur||'';};
     PROFILES.filter(p=>p.status!=='pending'&&!p.is_admin).forEach(p=>{
       const tr=document.createElement('tr'),c1=document.createElement('td'),c2=document.createElement('td'),c3=document.createElement('td'),c4=document.createElement('td'),c5=document.createElement('td');
       c1.textContent=p.name||p.email;
-      const inp=document.createElement('input');inp.type='text';inp.value=links[p.id]||'';inp.placeholder='ex.: Vanessa VIP - Stage 1 3rd';inp.setAttribute('aria-label','Aba de '+(p.name||p.email));inp.style.minWidth='220px';
-      const ic=document.createElement('input');ic.type='text';ic.value=cols[p.id]||'';ic.placeholder='ex.: Vanessa (vazio = individual)';ic.setAttribute('aria-label','Coluna de '+(p.name||p.email));ic.style.minWidth='170px';c3.append(ic);
+      const inp=document.createElement('select');inp.setAttribute('aria-label','Aba de '+(p.name||p.email));inp.style.minWidth='220px';
+      const ic=document.createElement('select');ic.setAttribute('aria-label','Coluna de '+(p.name||p.email));ic.style.minWidth='170px';
+      fill(inp,names,links[p.id]||'','— sem planilha —');
+      const refill=()=>fill(ic,tabs[inp.value]||[],ic.value||cols[p.id]||'','individual (sem turma)');
+      fill(ic,tabs[inp.value]||[],cols[p.id]||'','individual (sem turma)');
+      inp.onchange=()=>{fill(ic,tabs[inp.value]||[],'','individual (sem turma)');};
+      c2.append(inp);c3.append(ic);
       const b=document.createElement('button');b.type='button';b.textContent='Salvar';const m=document.createElement('span');m.className='msg';m.setAttribute('aria-live','polite');
       b.onclick=function(){
         const v=inp.value.trim();m.textContent='…';
         const q=v?sb.from('plan_links').upsert({user_id:p.id,sheet_name:v,student_col:ic.value.trim()||null}):sb.from('plan_links').delete().eq('user_id',p.id);
         q.then(function(r){m.textContent=r.error?'Erro: '+r.error.message:(v?'Salvo ✓':'Removido ✓');});
       };
-      c2.append(inp);c4.append(b,m);
+      c4.append(b,m);
       const g=prog[p.id];c5.textContent=g?('Stage '+(g.stage||'?')+' · Lição '+(g.lesson||'?')+(g.last_word?' · '+g.last_word:'')+' · '+new Date(g.updated_at).toLocaleString('pt-BR')):(links[p.id]?'aguardando a próxima leitura':'—');
       tr.append(c1,c2,c3,c4,c5);t.append(tr);
     });
+    if(!names.length){const n=document.createElement('p');n.className='hint';n.textContent='A lista de abas aparece depois da próxima sincronização do Apps Script.';t.parentNode.append(n);}
   });
 }
 function renderMat(){
