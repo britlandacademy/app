@@ -26,7 +26,26 @@ function call_(body) {
   return JSON.parse(r.getContentText() || '{}');
 }
 /* Sincroniza: pede ao Supabase a lista aba->aluno e envia o progresso, uma aba por vez. */
+function tabsInfo_() {
+  return SpreadsheetApp.getActive().getSheets().map(function (sh) {
+    var students = [];
+    try {
+      var rows = Math.min(15, sh.getLastRow()), cols = sh.getLastColumn();
+      if (rows && cols) {
+        var v = sh.getRange(1, 1, rows, cols).getDisplayValues();
+        for (var i = 0; i < v.length; i++) {
+          var d = -1, s = -1;
+          v[i].forEach(function (c, k) { c = String(c).trim(); if (/^done$/i.test(c)) d = k; if (/^status$/i.test(c)) s = k; });
+          if (d >= 0 && s > d) { for (var j = d + 1; j < s; j++) { var n = String(v[i][j]).trim(); if (n) students.push(n); } break; }
+        }
+      }
+    } catch (e) {}
+    return { name: sh.getName(), students: students };
+  });
+}
 function syncAll() {
+  var tr = call_({ action: 'tabs', tabs: tabsInfo_() });
+  if (tr.error) Logger.log('Erro abas: ' + tr.error);
   var resp = call_({ action: 'links' });
   if (resp.error) Logger.log('Erro links: ' + resp.error);
   var links = resp.links || [], ok = 0, bad = [];
