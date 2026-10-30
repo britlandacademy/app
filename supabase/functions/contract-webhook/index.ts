@@ -19,11 +19,29 @@ Deno.serve(async (req) => {
   let ev: any; try { ev = JSON.parse(raw); } catch { return new Response("bad json", { status: 400 }); }
   const type = ev?.event?.type || "";
   const obj = ev?.event?.data?.object || {};
-  if (type === "document.finished" && obj.id) {
-    const signed = obj?.files?.signed || obj?.files?.original || null;
-    await db.from("contracts").update({
-      status: "signed", signed_at: new Date().toISOString(), signed_url: typeof signed === "string" ? signed : null, updated_at: new Date().toISOString(),
-    }).eq("doc_id", obj.id);
+  const docId = obj.id || ev?.event?.data?.document || null;
+  console.log("webhook", type, docId);
+  if (docId && /^(document\.finished|document\.updated|signature\.accepted)$/.test(type)) {
+    let signedUrl: string | null = typeof obj?.files?.signed === "string" ? obj.files.signed : null;
+    let done = type === "document.finished";
+    if (!done) {
+      try {
+        const r = await fetch("https://api.autentique.com.br/v2/graphql", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${Deno.env.get("AUTENTIQUE_TOKEN")}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ query: `query($id:UUID!){document(id:$id){signatures{signed{created_at}} files{signed}}}`, variables: { id: docId } }),
+        });
+        const d = (await r.json())?.data?.document;
+        if (d?.signatures?.length && d.signatures.every((x: any) => x?.signed?.created_at)) { done = true; signedUrl = d?.files?.signed || signedUrl; }
+        else console.log("pending", JSON.stringify(d));
+      } catch (e) { console.log("gql error", String(e)); }
+    }
+    if (done) {
+      const { error } = await db.from("contracts").update({
+        status: "signed", signed_at: new Date().toISOString(), signed_url: signedUrl, updated_at: new Date().toISOString(),
+      }).eq("doc_id", docId);
+      if (error) console.log("db error", error.message);
+    }
   }
   return new Response("ok");
 });
