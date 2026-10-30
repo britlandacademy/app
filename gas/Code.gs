@@ -66,6 +66,7 @@ function syncAll() {
     if (!res.ok || !res.currentPosition) { bad.push(l.sheet_name + ': ' + (res.error || 'sem aula dada')); return; }
     /* each student only gets his own column (never the other students' attendance) */
     if (l.student_col && res.students && res.students[l.student_col]) { res.me = res.students[l.student_col]; res.studentCol = l.student_col; }
+    if (res.currentPosition) { var lp = lessonByPar_(res.currentPosition.paragraph, res.stage); if (lp) { res.currentPosition.lesson = lp; res.currentPosition.lessonFinished = false; } }
     if (res.currentPosition && res.currentPosition.lesson == null) fillLesson_(res.currentPosition, res.stage && SB[res.stage]);
     if (res.me && res.me.missed) res.me.missed.forEach(function (x) { if (x.lesson == null && x.newWords) { var t = { lastNewWord: x.newWords.to }; fillLesson_(t, res.stage && SB[res.stage]); x.lesson = t.lesson; } });
     delete res.bounds;
@@ -74,6 +75,18 @@ function syncAll() {
     if (pr.error) bad.push(l.sheet_name + ': push ' + pr.error); else ok++;
   });
   Logger.log('Sincronizadas: ' + ok + (bad.length ? ' | Ignoradas: ' + bad.join('; ') : ''));
+}
+/* Primeiro parágrafo de cada lição (Teacher's Book Callan, numeração contínua) e primeira lição de cada etapa. */
+var LESSON_PAR_ = [1,11,18,25,31,37,44,50,56,62,69,78,83,89,96,101,106,112,117,123,129,135,141,147,153,160,166,172,178,184,190,196,201,207,213,219,225,230,236,242,248,254,260,266,271,277,283,288,294,301,307,313,320,326,333,340,346,353,360,366,372,379,386,392,399,405,410,416,423,430,436,441,447,453,459,465,471,476,483,489,496,503,509,515,522,528,535,541,547,553,559,566,571,577,583,589,595,602,608,614,620,626,633,640,645,651,656,662,669,675,681,687,694,700,707,714,720,726,733,740,748,754,762,769,775,782,789,795,802,809,815,821,827,834,841,847,854,861,868,875,882,889,896,902,908,915,922,928,934,942,948,955,962,970,977,985,992,998,1006,1013,1020,1026,1033,1040,1047,1053,1059,1066,1073,1079,1085,1092,1099,1105,1112,1118,1129,1136,1144,1152,1161,1170,1179,1186,1196,1205,1214,1221,1230,1240,1248,1255,1264,1274,1283,1291,1300,1307,1316,1326,1334,1345,1354,1363,1371,1380];
+var STAGE_LESSON_ = [1,13,28,45,64,83,102,121,139,157,175,191];
+/* Lição pelo número do parágrafo; só vale se cair dentro da etapa da aba. */
+function lessonByPar_(par, stage) {
+  if (par == null || !stage || stage < 1 || stage > 12) return null;
+  var k = 0;
+  for (var i = 0; i < LESSON_PAR_.length; i++) if (LESSON_PAR_[i] <= par) k = i + 1;
+  if (!k) return null;
+  var a = STAGE_LESSON_[stage - 1], b = stage < 12 ? STAGE_LESSON_[stage] - 1 : 206;
+  return (k >= a && k <= b) ? k : null;
 }
 /* Descobre a lição pela última palavra nova, usando o fim de cada lição conhecido na etapa. */
 function fillLesson_(pos, map) {
