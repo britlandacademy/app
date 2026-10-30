@@ -17,7 +17,7 @@ const clean = (s: string) => s.replace(/[^\x09\x0A\x0D\x20-\x7E -ÿ€–—‘
 async function makePdf(text: string, title: string) {
   const pdf = await PDFDocument.create();
   const font = await pdf.embedFont(StandardFonts.Helvetica), bold = await pdf.embedFont(StandardFonts.HelveticaBold);
-  const W = 595, H = 842, M = 56, maxW = W - 2 * M;
+  const W = 595, H = 842, M = 48, maxW = W - 2 * M;
   let page = pdf.addPage([W, H]), y = H - M;
   const line = (t: string, f: typeof font, size: number, gap: number) => {
     if (y < M + size) { page = pdf.addPage([W, H]); y = H - M; }
@@ -33,10 +33,10 @@ async function makePdf(text: string, title: string) {
   };
   for (const raw of text.split("\n")) {
     const l = raw.trimEnd();
-    if (!l.trim()) { y -= 6; continue; }
-    if (l.startsWith("# ")) { y -= 4; wrap(l.slice(2), bold, 15, 6); y -= 4; }
-    else if (l.startsWith("## ")) { y -= 6; wrap(l.slice(3), bold, 12, 4); }
-    else wrap(l.replace(/\*\*/g, ""), font, 10.5, 3.5);
+    if (!l.trim()) { y -= 3; continue; }
+    if (l.startsWith("# ")) { y -= 2; wrap(l.slice(2), bold, 14, 5); y -= 2; }
+    else if (l.startsWith("## ")) { y -= 3; wrap(l.slice(3), bold, 11, 3); }
+    else wrap(l.replace(/\*\*/g, ""), font, 9.5, 2.5);
   }
   pdf.setTitle(title); pdf.setAuthor("Britland Academy");
   return await pdf.save();
