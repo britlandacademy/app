@@ -159,6 +159,8 @@
 '#bl-duo.game .dz-scene{display:flex;align-items:center;gap:14px;margin:6px 0 16px}'+
 '#bl-duo.game .dz-peep{flex:none;width:84px;height:84px;border-radius:18px;overflow:hidden;border:3px solid #e8b923;box-shadow:0 4px 0 #a8820f;background:#e9e2cf}'+
 '#bl-duo.game .dz-peep img{width:100%;height:100%;display:block;object-fit:cover;max-height:none;margin:0;background:none;border-radius:0}'+
+'#bl-duo.game .dz-q.fix{display:flex;flex-direction:column;gap:8px}#bl-duo.game .dz-q.fix .dz-wrong{margin:0;text-align:center;font-size:1.3rem;padding:12px 14px;border:2px solid #7a3a4a;border-radius:14px;background:rgba(122,58,74,.25);color:var(--ink,#fff)}#bl-duo.game .dz-q.fix .dz-wrong em{font-style:normal;color:#ff6b6b;border-bottom:3px solid #ff6b6b}#bl-duo.game .dz-q.fix .dz-arrow{text-align:center;color:var(--muted,#9fb0d6);font-size:1.3rem;line-height:1}'+
+'#bl-duo.game .dz-bank.fix{display:flex;flex-direction:column;gap:8px;min-height:34vh}#bl-duo.game .dz-bank.fix .area{order:1;min-height:90px;border:2px solid #f5c542;border-radius:14px;padding:10px;margin:0;align-content:center}#bl-duo.game .dz-bank.fix .dz-undo{order:2;align-self:flex-end;min-height:40px;padding:0 14px;border:2px solid var(--line,#2b4a8c);border-radius:12px;background:transparent;color:#f5c542;font:inherit;font-size:.9rem}#bl-duo.game .dz-bank.fix .pool{order:3;margin:auto 0 0;display:flex;flex-wrap:wrap;justify-content:center;gap:10px}#bl-duo.game .dz-bank.fix .chip{min-height:48px;font-size:1.15rem;border-radius:14px;padding:10px 18px}'+
 '#bl-duo.game .dz-chip{display:inline-block;align-self:flex-start;margin:0 0 8px;padding:3px 10px;border:1px solid var(--line,#bbb);border-radius:10px;background:var(--surface,#fff);font:700 .68rem/1.3 system-ui,sans-serif;letter-spacing:.07em;color:var(--mu,#667)}'+
 '#bl-duo.game .dz-sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}'+
 '#bl-duo.game .dz-bub{position:relative;flex:1;min-width:0;border:2px solid var(--line,#bbb);border-radius:16px;padding:10px 14px;background:var(--surface,#fff)}'+
@@ -384,10 +386,21 @@
     var have={};toks.forEach(function(t){have[bare(t)]=1;});
     var pool=[];
     steps.forEach(function(o){if(o.g===s.g&&o!==s&&o.it.ans&&o.it.ans[0]!=null)String(o.it.ans[0]).split(/\s+/).forEach(function(w){var b=bare(w);if(b&&!have[b]&&pool.indexOf(w.replace(/[.,;:?!]+$/,''))<0)pool.push(w.replace(/[.,;:?!]+$/,''));});});
-    var gen=(W.BL_COURSE&&W.BL_COURSE.id==='es')?GEN_ES:GEN_EN;
+    var gen=(W.BL_COURSE&&W.BL_COURSE.id==='es')?GEN_ES:GEN_EN,isEs=!!(W.BL_COURSE&&W.BL_COURSE.id==='es');
+    var shownEl=null,shownTxt='';nodes.forEach(function(n){if(n&&n.classList&&n.classList.contains('shown')){var st=n.querySelector&&n.querySelector('s');if(st){shownEl=n;shownTxt=st.textContent;}}});
+    var fixMode=!!(shownEl&&toks.length>1);
+    var ansW={};(s.it.ans||[model]).concat([model]).forEach(function(a){String(a).split(/\s+/).forEach(function(w){ansW[bare(w)]=1;});});
     gen.forEach(function(w){if(!have[w]&&pool.indexOf(w)<0)pool.push(w);});
     pool=shuf(pool);
     var nEx=toks.length===1?3:(Math.random()<.5?1:0);
+    if(fixMode){
+      /* "Correct the mistake": the wrong words of the shown sentence and variants of the corrected ones are the best traps */
+      var pri=[],sw={};String(shownTxt).split(/\s+/).forEach(function(w){sw[bare(w)]=1;var b=w.replace(/[.,;:?!]+$/,'');if(b&&!ansW[bare(b)]&&pri.indexOf(b)<0)pri.push(b);});
+      if(!isEs)toks.forEach(function(t){var b=t.replace(/[.,;:?!]+$/,''),lb=bare(b);if(sw[lb]||lb.length<3||/^[A-Z]/.test(b))return;[b+'s',b.replace(/(ing|ed|es|s)$/,'')].forEach(function(v){if(v&&v.length>1&&!ansW[bare(v)]&&pri.indexOf(v)<0)pri.push(v);});});
+      pool=pri.concat(pool.filter(function(w){return pri.indexOf(w)<0;}));
+      nEx=4;
+    }
+    pool=pool.filter(function(w){return !ansW[bare(w)];});
     var words=toks.map(function(t,k){return {t:t,k:k};});
     pool.slice(0,nEx).forEach(function(w,k){words.push({t:w,k:100+k});});
     var avail=shuf(words),built=[],locked=false,cap=toks.length;
@@ -406,7 +419,15 @@
     clear.addEventListener('click',function(){if(locked)return;avail=shuf(words);built=[];draw();});
     draw();
     inp.style.display='none';inp.setAttribute('aria-hidden','true');inp.tabIndex=-1;
-    var wrap=el('div','dz-bank');if(!blank)wrap.appendChild(area);wrap.appendChild(poolEl);wrap.appendChild(clear);
+    var wrap=el('div','dz-bank'+(fixMode?' fix':''));if(!blank)wrap.appendChild(area);wrap.appendChild(poolEl);wrap.appendChild(clear);
+    if(fixMode){
+      clear.className='small dz-undo';clear.textContent='\u21BA '+({'en':'Clear','pt':'Limpar','es':'Borrar'}[['en','pt','es'][ix()]]);
+      for(i=0;i<nodes.length;i++){var sh=nodes[i];if(sh===shownEl){
+        sh.textContent='';sh.classList.add('dz-wrong');
+        String(shownTxt).split(/(\s+)/).forEach(function(w){var b=bare(w);if(b&&!have[b]){var m=w.match(/^([^\w\u00C0-\u024F]*)(.*?)([^\w\u00C0-\u024F]*)$/);sh.appendChild(D.createTextNode(m[1]));sh.appendChild(el('em','',m[2]));sh.appendChild(D.createTextNode(m[3]));}else sh.appendChild(D.createTextNode(w));});
+        nodes.splice(i+1,0,el('div','dz-arrow','\u2193'));top++;break;}}
+      cur.fixMode=true;
+    }
     nodes.splice(top+1,0,wrap);cur.nodes=nodes;
     var og=cur.get,ol=cur.lock;
     cur.get=function(){inp.value=built.map(function(o){return o.t;}).join(' ');return og();};
@@ -496,7 +517,7 @@
           else bub.appendChild(el('b','',qe.textContent.trim()));qe.className+=' dz-sr';if(!(dd&&dd.sw))bub.setAttribute('aria-hidden','true');}
         else{if(g.title)bub.appendChild(el('b','',g.title));bub.appendChild(el('p','dz-lab',T('q',{a:idx+1,b:total})));}}
       if(game)bankify(cur,s,steps);
-      var q=el('div','dz-q');(cur.nodes||[]).forEach(function(n){if(n&&n!==skipN)q.appendChild(n);});inn.appendChild(q);
+      var q=el('div','dz-q'+(cur.fixMode?' fix':''));(cur.nodes||[]).forEach(function(n){if(n&&n!==skipN)q.appendChild(n);});inn.appendChild(q);
       main.scrollTop=0;setBar(idx);
       var f=inn.querySelector('input:not([type=radio]),select');if(f){try{f.focus({preventScroll:true});}catch(e){}}
     }
