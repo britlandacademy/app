@@ -49,17 +49,39 @@ function syncAll() {
   var resp = call_({ action: 'links' });
   if (resp.error) Logger.log('Erro links: ' + resp.error);
   var links = resp.links || [], ok = 0, bad = [];
+  /* Fim de cada lição (por etapa), colhido de todas as abas: serve para abas sem "LC n" preenchido. */
+  var SB = {};
+  SpreadsheetApp.getActive().getSheets().forEach(function (sh) {
+    try {
+      var r0 = readTab_(sh.getName());
+      if (r0 && r0.ok && r0.stage && r0.bounds) r0.bounds.forEach(function (b) {
+        var m = SB[r0.stage] = SB[r0.stage] || {};
+        if (m[b.lesson] == null) m[b.lesson] = b.endWord;
+      });
+    } catch (e) {}
+  });
   Logger.log('Abas ligadas: ' + links.length);
   links.forEach(function (l) {
     var res = readTab_(l.sheet_name);
     if (!res.ok || !res.currentPosition) { bad.push(l.sheet_name + ': ' + (res.error || 'sem aula dada')); return; }
     /* each student only gets his own column (never the other students' attendance) */
     if (l.student_col && res.students && res.students[l.student_col]) { res.me = res.students[l.student_col]; res.studentCol = l.student_col; }
+    if (res.currentPosition && res.currentPosition.lesson == null) fillLesson_(res.currentPosition, res.stage && SB[res.stage]);
+    if (res.me && res.me.missed) res.me.missed.forEach(function (x) { if (x.lesson == null && x.newWords) { var t = { lastNewWord: x.newWords.to }; fillLesson_(t, res.stage && SB[res.stage]); x.lesson = t.lesson; } });
+    delete res.bounds;
     delete res.students;
     var pr = call_({ action: 'push', user_id: l.user_id, progress: res });
     if (pr.error) bad.push(l.sheet_name + ': push ' + pr.error); else ok++;
   });
   Logger.log('Sincronizadas: ' + ok + (bad.length ? ' | Ignoradas: ' + bad.join('; ') : ''));
+}
+/* Descobre a lição pela última palavra nova, usando o fim de cada lição conhecido na etapa. */
+function fillLesson_(pos, map) {
+  if (!map || pos.lastNewWord == null) return;
+  var ls = Object.keys(map).map(Number).sort(function (a, b) { return a - b; });
+  if (!ls.length) return;
+  for (var k = 0; k < ls.length; k++) if (map[ls[k]] >= pos.lastNewWord) { pos.lesson = ls[k]; pos.lessonFinished = map[ls[k]] === pos.lastNewWord; return; }
+  pos.lesson = ls[ls.length - 1] + 1; pos.lessonFinished = false;
 }
 /* Rode UMA vez: agenda a sincronização a cada 30 min. */
 function installTrigger() {
@@ -179,7 +201,8 @@ function parsePlanTab(values, sheetName) {
       hasReading: pending(nextRow.read), hasDictation: pending(nextRow.dict), hasQuiz: pending(nextRow.lc),
       reading: nextRow.read, dictation: nextRow.dict, lessonCheck: nextRow.lc
     } : null,
-    classesDone: rows.filter(function (x) { return x.done; }).length, classesTotal: rows.length
+    classesDone: rows.filter(function (x) { return x.done; }).length, classesTotal: rows.length,
+    bounds: bounds
   };
 }
 

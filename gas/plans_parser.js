@@ -111,7 +111,8 @@ function parsePlanTab(values, sheetName) {
       hasReading: pending(nextRow.read), hasDictation: pending(nextRow.dict), hasQuiz: pending(nextRow.lc),
       reading: nextRow.read, dictation: nextRow.dict, lessonCheck: nextRow.lc
     } : null,
-    classesDone: rows.filter(function (x) { return x.done; }).length, classesTotal: rows.length
+    classesDone: rows.filter(function (x) { return x.done; }).length, classesTotal: rows.length,
+    bounds: bounds
   };
 }
 
