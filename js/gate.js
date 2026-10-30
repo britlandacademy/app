@@ -652,8 +652,10 @@ function applyServerPrefs(){
   try{
     if(prof.theme&&prof.theme!==theme&&/^(light|dark|auto)$/.test(prof.theme))setTheme(prof.theme,true);
     if(prof.lang&&window.I18N&&I18N.mode==='free'&&I18N.def)I18N.def(prof.lang);
+    if(prof.lang&&/^(en|pt|es)$/.test(prof.lang)&&window.I18N&&I18N.mode!=='free'&&I18N.setUi&&!I18N.hasPref&&prof.lang!==I18N.lang)I18N.setUi(prof.lang);
   }catch(e){}
 }
+if(!window.__uilangBound){window.__uilangBound=true;window.addEventListener('uilang',function(e){try{if(sb&&user)sb.rpc('set_my_prefs',{p_avatar:null,p_theme:null,p_lang:e.detail}).then(function(){},function(){});}catch(x){}});}
 function loadProfile(cb){
   function go(){window.Profile.css();window.Profile.ready().then(cb||function(){});}
   if(window.Profile){go();return;}

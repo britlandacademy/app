@@ -787,7 +787,7 @@ function selector(free){
     b.setAttribute('aria-label',x[1]);b.title=x[1];
     if(!free&&!ui&&MODE==='lock'&&x[0]!==UI){b.disabled=true;b.setAttribute('aria-disabled','true');}
     b.innerHTML=flagSVG(x[0],++FLAGN);
-    b.addEventListener('click',function(){if(ui)setUi(x[0]);else setLang(x[0],!!free);});
+    b.addEventListener('click',function(){if(ui){setUi(x[0]);try{window.dispatchEvent(new CustomEvent('uilang',{detail:x[0]}));}catch(e){}}else setLang(x[0],!!free);});
     g.appendChild(b);
   });
   setTimeout(refresh,0);
@@ -809,5 +809,5 @@ function start(){
   obs.observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:ATTRS});
 }
 if(document.body)start();else document.addEventListener('DOMContentLoaded',start);
-window.I18N={pt:function(s){var c=String(s||'').trim();return MAP.hasOwnProperty(c)?MAP[c][1]:s;},flag:function(l){return flagSVG(l,++FLAGN);},def:defLang,t:tr,selector:selector,set:setLang,setUi:setUi,after:after,mode:MODE,get lang(){return lang;},get hint(){return MODE==='why'?hint:lang;}};
+window.I18N={pt:function(s){var c=String(s||'').trim();return MAP.hasOwnProperty(c)?MAP[c][1]:s;},flag:function(l){return flagSVG(l,++FLAGN);},def:defLang,t:tr,selector:selector,set:setLang,setUi:setUi,after:after,mode:MODE,get lang(){return lang;},get hasPref(){return !!pref();},get hint(){return MODE==='why'?hint:lang;}};
 })();
