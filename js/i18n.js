@@ -519,6 +519,22 @@ var X=[ /* forced Portuguese in the English course: [English, Português, Españ
 ["Correct the sentence.","Qual é a frase correta?","Correct the sentence."],
 ["Complete the sentence","Complete a frase","Complete the sentence"],
 ["Type the missing word. Grammar: {0}","Complete a lacuna. Gramática: {0}","Type the missing word. Grammar: {0}"],
+["Choose the correct word","Escolha a palavra correta","Elige la palabra correcta"],
+["Build the sentence","Monte a frase","Construye la frase"],
+["Build the sentence.","Monte a frase.","Construye la frase."],
+["Complete the sequence.","Complete a sequência.","Completa la secuencia."],
+["Choose the correct option. Grammar: {0}","Escolha a opção correta. Gramática: {0}","Elige la opción correcta. Gramática: {0}"],
+["Choose the correct word to complete each sentence. Grammar: {0}","Escolha a palavra correta para completar cada frase. Gramática: {0}","Elige la palabra correcta para completar cada frase. Gramática: {0}"],
+["Tap the words in the right order to build the sentence. Tap a word you have placed to take it back. Grammar: {0}","Toque nas palavras na ordem certa para montar a frase. Toque em uma palavra já colocada para tirá-la. Gramática: {0}","Toca las palabras en el orden correcto para construir la frase. Toca una palabra ya colocada para quitarla. Gramática: {0}"],
+["Choose the correct answer for each question.","Escolha a resposta correta para cada pergunta.","Elige la respuesta correcta para cada pregunta."],
+["A, B or C","A, B ou C","A, B o C"],
+["One word","Uma palavra","Una palabra"],
+["Right or wrong?","Certo ou errado?","¿Correcto o incorrecto?"],
+["Yes or No","Sim ou Não","Sí o No"],
+["Book exercise {0}","Exercício {0} do livro","Ejercicio {0} del libro"],
+["Words","Palavras","Palabras"],
+["Picture {0}","Figura {0}","Imagen {0}"],
+["— choose —","— escolha —","— elige —"],
 ["Each sentence has a mistake. Type the correct sentence. Grammar: {0}","Cada frase tem um erro: corrija-a. Gramática: {0}","Each sentence has a mistake. Type the correct sentence. Grammar: {0}"],
 ["Dictation. Listen and write.","Ditado. Ouça e escreva.","Dictation. Listen and write."],
 ["Match the pictures with the words. Draw a line.","Ligue as figuras às palavras. Trace uma linha.","Match the pictures with the words. Draw a line."],
@@ -669,11 +685,11 @@ function tr(s){
   var m=/^(\s*)([\s\S]*?)(\s*)$/.exec(s),core=m[2];
   if(!core)return s;
   var e=MAP.hasOwnProperty(core)?MAP[core]:null,out=null;
-  if(e)out=e[(FP&&e.f&&lang==='en')?1:IDX[lang]];
+  if(e)out=e[(FP&&!pref()&&e.f&&lang==='en')?1:IDX[lang]];
   else{
     for(var i=0;i<TPL.length;i++){
       var r=TPL[i].re.exec(core);
-      if(r){out=TPL[i].entry[(FP&&TPL[i].entry.f&&lang==='en')?1:IDX[lang]].replace(/\{(\d)\}/g,function(_,n){return r[+n+1]!==undefined?r[+n+1]:'';});break;}
+      if(r){out=TPL[i].entry[(FP&&!pref()&&TPL[i].entry.f&&lang==='en')?1:IDX[lang]].replace(/\{(\d)\}/g,function(_,n){return r[+n+1]!==undefined?r[+n+1]:'';});break;}
     }
   }
   return out===null?s:m[1]+out+m[3];
@@ -682,7 +698,7 @@ function skip(n){
   var p=n.nodeType===1?n:n.parentNode;
   while(p&&p.nodeType===1){
     var t=p.tagName;
-    if(t==='SCRIPT'||t==='STYLE'||t==='SVG'||t==='svg'||t==='TEXTAREA'||(p.id==='panels'&&!FP)||p.id==='out'||p.hasAttribute('data-noi18n'))return true;
+    if(t==='SCRIPT'||t==='STYLE'||t==='SVG'||t==='svg'||t==='TEXTAREA'||(p.id==='panels'&&!(FP&&!pref()))||p.id==='out'||p.hasAttribute('data-noi18n'))return true;
     p=p.parentNode;
   }
   return false;
