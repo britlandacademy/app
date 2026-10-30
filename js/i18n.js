@@ -517,6 +517,8 @@ var X=[ /* forced Portuguese in the English course: [English, Português, Españ
 ["Find the mistake. Circle it and write the correct word.","Encontre o erro. Circule-o e escreva a palavra correta.","Find the mistake. Circle it and write the correct word."],
 ["Correct the mistake","Corrija o erro","Correct the mistake"],
 ["Correct the sentence.","Qual é a frase correta?","Correct the sentence."],
+["Complete the sentence","Complete a frase","Complete the sentence"],
+["Type the missing word. Grammar: {0}","Complete a lacuna. Gramática: {0}","Type the missing word. Grammar: {0}"],
 ["Each sentence has a mistake. Type the correct sentence. Grammar: {0}","Cada frase tem um erro: corrija-a. Gramática: {0}","Each sentence has a mistake. Type the correct sentence. Grammar: {0}"],
 ["Dictation. Listen and write.","Ditado. Ouça e escreva.","Dictation. Listen and write."],
 ["Match the pictures with the words. Draw a line.","Ligue as figuras às palavras. Trace uma linha.","Match the pictures with the words. Draw a line."],

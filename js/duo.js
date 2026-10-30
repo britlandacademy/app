@@ -161,6 +161,7 @@
 '#bl-duo.game .dz-peep img{width:100%;height:100%;display:block;object-fit:cover;max-height:none;margin:0;background:none;border-radius:0}'+
 '#bl-duo.game .dz-q.fix{display:flex;flex-direction:column;gap:8px}#bl-duo.game .dz-q.fix .dz-wrong{margin:0;text-align:center;font-size:1.3rem;padding:12px 14px;border:2px solid #7a3a4a;border-radius:14px;background:rgba(122,58,74,.25);color:var(--ink,#fff)}#bl-duo.game .dz-q.fix .dz-wrong em{font-style:normal;color:#ff6b6b;border-bottom:3px solid #ff6b6b}#bl-duo.game .dz-q.fix .dz-arrow{text-align:center;color:var(--muted,#9fb0d6);font-size:1.3rem;line-height:1}'+
 '#bl-duo.game .dz-bank.fix{display:flex;flex-direction:column;gap:8px;min-height:34vh}#bl-duo.game .dz-bank.fix .area{order:1;min-height:90px;border:2px solid #f5c542;border-radius:14px;padding:10px;margin:0;align-content:center}#bl-duo.game .dz-bank.fix .dz-undo{order:2;align-self:flex-end;min-height:40px;padding:0 14px;border:2px solid var(--line,#2b4a8c);border-radius:12px;background:transparent;color:#f5c542;font:inherit;font-size:.9rem}#bl-duo.game .dz-bank.fix .pool{order:3;margin:auto 0 0;display:flex;flex-wrap:wrap;justify-content:center;gap:10px}#bl-duo.game .dz-bank.fix .chip{min-height:48px;font-size:1.15rem;border-radius:14px;padding:10px 18px}'+
+'#bl-duo.game .dz-q.fix .cloze{margin:0;padding:22px 16px;border:2px solid var(--line,#2b4a8c);border-radius:16px;background:var(--surface,#142a5c);text-align:center;font-size:1.5rem;line-height:2.1;color:var(--ink,#fff)}#bl-duo.game .dz-q.fix .dz-bl{display:inline-block;min-width:80px;height:36px;vertical-align:middle;border-bottom:3px solid #f5c542;background:rgba(245,197,66,.12);border-radius:8px 8px 0 0;color:transparent;overflow:hidden;margin:0 4px}#bl-duo.game .dz-q.fix .dz-bw{font-size:1.3rem}'+
 '#bl-duo.game .dz-chip{display:inline-block;align-self:flex-start;margin:0 0 8px;padding:3px 10px;border:1px solid var(--line,#bbb);border-radius:10px;background:var(--surface,#fff);font:700 .68rem/1.3 system-ui,sans-serif;letter-spacing:.07em;color:var(--mu,#667)}'+
 '#bl-duo.game .dz-sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}'+
 '#bl-duo.game .dz-bub{position:relative;flex:1;min-width:0;border:2px solid var(--line,#bbb);border-radius:16px;padding:10px 14px;background:var(--surface,#fff)}'+
@@ -420,6 +421,7 @@
     draw();
     inp.style.display='none';inp.setAttribute('aria-hidden','true');inp.tabIndex=-1;
     var wrap=el('div','dz-bank'+(fixMode?' fix':''));if(!blank)wrap.appendChild(area);wrap.appendChild(poolEl);wrap.appendChild(clear);
+    if(blank){wrap.className='dz-bank fix cz';clear.className='small dz-undo';clear.textContent='\u21BA '+({'en':'Clear','pt':'Limpar','es':'Borrar'}[['en','pt','es'][ix()]]);cur.fixMode=true;}
     if(fixMode){
       clear.className='small dz-undo';clear.textContent='\u21BA '+({'en':'Clear','pt':'Limpar','es':'Borrar'}[['en','pt','es'][ix()]]);
       for(i=0;i<nodes.length;i++){var sh=nodes[i];if(sh===shownEl){
@@ -515,7 +517,8 @@
             pi2.src=PEEPS[a2-1];pi2.alt='';pi2.style.transform='scaleX(-1)';pw2.style.background=PBG[nameHash(plain(B.n))%PBG.length];
             pw2.appendChild(pi2);bub2.appendChild(el('span','dz-nm',B.n));bub2.appendChild(B.cl?B.cl:el('b','',B.t));sc2.appendChild(pw2);sc2.appendChild(bub2);inn.appendChild(sc2);skipN=dd.cl;}
           else bub.appendChild(el('b','',qe.textContent.trim()));qe.className+=' dz-sr';if(!(dd&&dd.sw))bub.setAttribute('aria-hidden','true');}
-        else{if(g.title)bub.appendChild(el('b','',g.title));bub.appendChild(el('p','dz-lab',T('q',{a:idx+1,b:total})));}}
+        else{var gt=g.title||'';if(/^Match the pictures with the words/i.test(gt))gt=['Choose the word that matches each picture.','Escolha a palavra que combina com a figura.','Elige la palabra que corresponde a cada imagen.'][ix()];
+          if(gt){chip.textContent=T('q',{a:idx+1,b:total}).toUpperCase();bub.appendChild(el('b','',gt));}else bub.appendChild(el('p','dz-lab',T('q',{a:idx+1,b:total})));}}
       if(game)bankify(cur,s,steps);
       var q=el('div','dz-q'+(cur.fixMode?' fix':''));(cur.nodes||[]).forEach(function(n){if(n&&n!==skipN)q.appendChild(n);});inn.appendChild(q);
       main.scrollTop=0;setBar(idx);
