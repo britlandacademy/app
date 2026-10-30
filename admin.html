@@ -187,6 +187,7 @@ details.h{background:var(--surface);border:1px solid var(--line);border-radius:1
 <script src="js/config.js" charset="utf-8"></script>
 <script src="js/gate.js" charset="utf-8"></script>
 <script src="js/streak.js" charset="utf-8"></script>
+<script src="js/contract-admin.js" charset="utf-8"></script>
 <script src="js/agenda.js" charset="utf-8"></script>
 <script>
 Gate.start({admin:true,kinds:[]},function(ctx){
@@ -219,7 +220,8 @@ function clampN(v){v=parseInt(v,10);return isNaN(v)?0:Math.max(0,Math.min(MAXL,v
 /* ----- profiles ----- */
 function loadProfiles(){
   return sb.from('profiles').select('*').order('created_at',{ascending:true}).then(r=>{
-    if(r.error)throw r.error;PROFILES=r.data||[];renderPend();renderStu();renderMat();if(typeof renderPlan==="function")renderPlan();renderWho();if(typeof renderHome==='function')renderHome();
+    if(r.error)throw r.error;PROFILES=r.data||[];
+    return (window.ContractAdmin?ContractAdmin.load(sb):Promise.resolve()).then(()=>{renderPend();renderStu();renderMat();if(typeof renderPlan==="function")renderPlan();renderWho();if(typeof renderHome==='function')renderHome();});
   });
 }
 function update(id,patch,msgId){
@@ -238,7 +240,7 @@ function renderPend(){
     const n=el('input',{type:'number',min:'0',max:String(MAXL),value:'12','aria-label':'Liberar até a Lesson, '+p.name});
     tb.append(el('tr',{},el('td',{},cvThumb(n,p.name||'(sem nome)')),el('td',{},p.email),el('td',{},fmt(p.created_at)),
       el('td',{},el('div',{class:'row',style:'margin:0'},'Liberar até a Lesson ',n,' ',stageSel(n),' ',
-        el('button',{type:'button',onclick:()=>update(p.id,{status:'approved',lessons_upto:clampN(n.value)})},'Aprovar'),
+        el('button',{type:'button',onclick:()=>{const ap=()=>update(p.id,{status:'approved',lessons_upto:clampN(n.value)});if(window.ContractAdmin&&ContractAdmin.on())ContractAdmin.open({el:el,sb:sb,profile:p,approve:ap,reload:loadProfiles});else ap();}},'Aprovar'),
         el('button',{type:'button',class:'danger',onclick:()=>update(p.id,{status:'blocked'})},'Recusar')))));
   });
   box.append(el('div',{class:'tw'},el('table',{},th(['Nome','E-mail','Pedido em','Ação']),tb)));
@@ -246,8 +248,9 @@ function renderPend(){
 function renderStu(){
   const t=$('stu');t.textContent='';
   const list=PROFILES.filter(p=>p.status!=='pending'&&!p.is_admin);
+  const CON=!!(window.ContractAdmin&&ContractAdmin.on());
   const tb=el('tbody',{});
-  if(!list.length)tb.append(el('tr',{},el('td',{colspan:BIZ?'6':'5'},'Nenhum aluno ainda.')));
+  if(!list.length)tb.append(el('tr',{},el('td',{colspan:(BIZ?6:5)+(CON?1:0)},'Nenhum aluno ainda.')));
   list.forEach(p=>{
     const n=el('input',{type:'number',min:'0',max:String(MAXL),value:String(p.lessons_upto),'aria-label':'Liberado até, '+p.name});
     const bn=el('input',{type:'number',min:'0',max:'17',value:String(p.business_upto||0),'aria-label':'Business liberado até, '+p.name});
@@ -257,9 +260,10 @@ function renderStu(){
       BIZ?el('td',{},bn,' ',el('button',{type:'button',class:'ghost',onclick:()=>update(p.id,{business_upto:Math.max(0,Math.min(17,parseInt(bn.value,10)||0))})},'Salvar')):null,
       el('td',{},p.status==='blocked'
         ?el('button',{type:'button',onclick:()=>update(p.id,{status:'approved'})},'Reativar')
-        :el('button',{type:'button',class:'danger',onclick:()=>{if(confirm('Bloquear '+(p.name||p.email)+'?'))update(p.id,{status:'blocked'});}},'Bloquear'))));
+        :el('button',{type:'button',class:'danger',onclick:()=>{if(confirm('Bloquear '+(p.name||p.email)+'?'))update(p.id,{status:'blocked'});}},'Bloquear')),
+      CON?el('td',{},ContractAdmin.cell({el:el,sb:sb,profile:p,reload:loadProfiles})):null));
   });
-  t.append(th(['Nome','E-mail','Situação','Liberado até a Lesson'].concat(BIZ?['Business (0–17)']:[],[''])),tb);
+  t.append(th(['Nome','E-mail','Situação','Liberado até a Lesson'].concat(BIZ?['Business (0–17)']:[],[''],CON?['Contrato']:[])),tb);
 }
 $('bulkstage').append(stageSel($('bulk')));
 $('bulkgo').addEventListener('click',()=>{
