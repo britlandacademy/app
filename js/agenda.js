@@ -32,7 +32,7 @@ var S={
  bSelNote:{en:'Only the next 5 days have times.',pt:'Só os próximos 5 dias têm horários.',es:'Solo los próximos 5 días tienen horarios.'},
  bDur:{en:'Lesson length:',pt:'Duração da aula:',es:'Duración de la clase:'},
  bPickN:{en:'Choose a time',pt:'Escolha o horário',es:'Elige el horario'},
- bNote:{en:'Only free times are shown, in your time zone. You can reschedule or cancel up to 1 hour before the lesson.',pt:'Só aparecem horários livres, no seu fuso. Dá para remarcar ou cancelar até 1 hora antes da aula.',es:'Solo se muestran horarios libres, en tu zona horaria. Puedes reprogramar o cancelar hasta 1 hora antes de la clase.'},
+ bNote:{en:'Only free times are shown, in your time zone. You can reschedule or cancel up to 24 hours before the lesson.',pt:'Só aparecem horários livres, no seu fuso. Dá para remarcar ou cancelar até 24 horas antes da aula.',es:'Solo se muestran horarios libres, en tu zona horaria. Puedes reprogramar o cancelar hasta 24 horas antes de la clase.'},
  bNew2:{en:'New time',pt:'Novo horário',es:'Nuevo horario'},
  bAsk:{en:'REQUEST NEW TIME',pt:'PEDIR REMARCAÇÃO',es:'PEDIR CAMBIO'},
  bAskN:{en:'REQUEST LESSON',pt:'PEDIR AULA',es:'PEDIR CLASE'},
@@ -48,13 +48,13 @@ var S={
  sWith:{en:'Withdraw request',pt:'Cancelar pedido',es:'Retirar pedido'},
  cx:{en:'Cancel lesson',pt:'Cancelar aula',es:'Cancelar clase'},
  cxQ:{en:'Cancel the lesson on {0}?',pt:'Cancelar a aula de {0}?',es:'¿Cancelar la clase del {0}?'},
- cxN:{en:'The time becomes free again. You cannot cancel less than 1 hour before the lesson.',pt:'O horário volta a ficar livre. Não dá para cancelar a menos de 1 hora da aula.',es:'El horario vuelve a quedar libre. No se puede cancelar a menos de 1 hora de la clase.'},
+ cxN:{en:'The time becomes free again. You cannot cancel less than 24 hours before the lesson.',pt:'O horário volta a ficar livre. Não dá para cancelar a menos de 24 horas da aula.',es:'El horario vuelve a quedar libre. No se puede cancelar a menos de 24 horas de la clase.'},
  cxYes:{en:'YES, CANCEL LESSON',pt:'SIM, CANCELAR AULA',es:'SÍ, CANCELAR CLASE'},
  newReq:{en:'New lesson',pt:'Aula nova',es:'Clase nueva'},
  okMsg:{en:'Your request for {0} was approved.',pt:'Seu pedido para {0} foi aprovado.',es:'Tu pedido para {0} fue aprobado.'},
  noMsg:{en:'Your request for {0} was declined. Pick another time or message your teacher.',pt:'Seu pedido para {0} foi recusado. Escolha outro horário ou fale com o professor.',es:'Tu pedido para {0} fue rechazado. Elige otro horario o habla con tu profesor.'},
  eTaken:{en:'That time was just taken. Pick another one.',pt:'Esse horário acabou de ser ocupado. Escolha outro.',es:'Ese horario acaba de ocuparse. Elige otro.'},
- eLate:{en:'Less than 1 hour is left, so this lesson can no longer be changed.',pt:'Falta menos de 1 hora, então esta aula não pode mais ser alterada.',es:'Falta menos de 1 hora, así que esta clase ya no se puede cambiar.'},
+ eLate:{en:'Less than 24 hours are left, so this lesson can no longer be changed.',pt:'Faltam menos de 24 horas, então esta aula não pode mais ser alterada.',es:'Faltan menos de 24 horas, así que esta clase ya no se puede cambiar.'},
  ePend:{en:'This lesson already has a pending request.',pt:'Esta aula já tem um pedido aguardando resposta.',es:'Esta clase ya tiene un pedido pendiente.'},
  eMany:{en:'You already have 3 pending requests. Wait for an answer first.',pt:'Você já tem 3 pedidos aguardando resposta. Espere uma resposta antes.',es:'Ya tienes 3 pedidos pendientes. Espera una respuesta antes.'},
  eGroup:{en:'Group lessons are changed by your teacher only.',pt:'Aulas em turma só o professor altera.',es:'Las clases en grupo solo las cambia el profesor.'},
@@ -140,7 +140,7 @@ function mount(box,ctx){
       var acts=el('div','ag-racts');
       var kb=el('button','ag-btn alt',T('cal'));kb.type='button';kb.onclick=function(){calAsk(x);};acts.appendChild(kb);
       if(q){acts.appendChild(el('span','ag-pill',T('pend')));}
-      else if(!x.is_group&&new Date(x.start_at)-now>HOUR){
+      else if(!x.is_group&&new Date(x.start_at)-now>24*HOUR){
         var rb=el('button','ag-btn alt',T('rs'));rb.type='button';rb.onclick=function(){book('reschedule',x);};
         var cb=el('button','ag-btn alt ag-dim',T('cx'));cb.type='button';cb.onclick=function(){cancelAsk(x);};
         acts.appendChild(rb);acts.appendChild(cb);}

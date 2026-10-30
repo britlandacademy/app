@@ -13,7 +13,8 @@ const json = (o: unknown, s = 200) => new Response(JSON.stringify(o), { status: 
 const DUR = 50;            // minutos de aula
 const GAP = 10;            // folga entre aulas
 const STEP = 60;           // horarios oferecidos de hora em hora a partir do inicio da janela
-const NOTICE_MIN = 60;     // aluno so remarca/cancela/pede com mais de 1 h de antecedencia
+const NOTICE_MIN = 60;     // horarios novos so com mais de 1 h de antecedencia
+const CHANGE_MIN = 1440;   // aluno so remarca/cancela aula com mais de 24 h de antecedencia
 const HORIZON_DAYS = 30;   // quantos dias a frente oferecer
 const HOLD_HOURS = 24;     // pedido pendente reserva o horario por 24 h
 const MAX_PENDING_NEW = 3; // pedidos de aula nova pendentes por aluno
@@ -113,7 +114,7 @@ Deno.serve(async (req) => {
         const { data: l } = await db.from("lessons").select("id,user_id,start_at,is_group").eq("id", String(body.lesson_id || "")).maybeSingle();
         if (!l || l.user_id !== uid) return json({ ok: false, error: "not_yours" });
         if (l.is_group) return json({ ok: false, error: "group" });
-        if (Date.parse(l.start_at) - Date.now() <= NOTICE_MIN * MIN) return json({ ok: false, error: "too_late" });
+        if (Date.parse(l.start_at) - Date.now() <= CHANGE_MIN * MIN) return json({ ok: false, error: "too_late" });
         const { count } = await db.from("lesson_requests").select("id", { count: "exact", head: true }).eq("status", "pending").eq("lesson_id", l.id);
         if (count) return json({ ok: false, error: "already_pending" });
         old_start = l.start_at; lesson_id = l.id;
@@ -136,7 +137,7 @@ Deno.serve(async (req) => {
       const { data: l } = await db.from("lessons").select("id,user_id,start_at,end_at,is_group").eq("id", String(body.lesson_id || "")).maybeSingle();
       if (!l || l.user_id !== uid) return json({ ok: false, error: "not_yours" });
       if (l.is_group) return json({ ok: false, error: "group" });
-      if (Date.parse(l.start_at) - Date.now() <= NOTICE_MIN * MIN) return json({ ok: false, error: "too_late" });
+      if (Date.parse(l.start_at) - Date.now() <= CHANGE_MIN * MIN) return json({ ok: false, error: "too_late" });
       const tok = await accessToken(link);
       const dr = await fetch(calUrl(link, "/" + encodeURIComponent(eventOf(l.id))) + "?sendUpdates=none", { method: "DELETE", headers: { Authorization: "Bearer " + tok } });
       if (!dr.ok && dr.status !== 404 && dr.status !== 410) throw new Error("agenda: " + dr.status);
