@@ -9,7 +9,7 @@ const SCOPES = "https://www.googleapis.com/auth/calendar.events https://www.goog
 const cors = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, content-type, apikey, x-client-info", "Access-Control-Allow-Methods": "GET, POST, OPTIONS" };
 const db = createClient(URL_, KEY, { auth: { persistSession: false } });
 const json = (o: unknown, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { ...cors, "Content-Type": "application/json" } });
-const BACK = Deno.env.get("ADMIN_URL") || "https://britlandacademy.github.io/app/admin.html"; // no projeto de espanhol, defina o segredo ADMIN_URL = https://britlandacademy.github.io/app/espanol/admin.html
+const BACK = Deno.env.get("ADMIN_URL") || "https://www.britlandacademy.co.uk/app/admin.html"; // no projeto de espanhol, defina o segredo ADMIN_URL = https://www.britlandacademy.co.uk/app/espanol/admin.html
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
