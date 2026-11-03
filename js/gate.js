@@ -376,11 +376,11 @@ function bdBook(ov,done){
       var n=function(x){return String(x).replace(/\B(?=(\d{3})+(?!\d))/g,'.');};
       var card=el('div',{class:'bd-card'},
         el('div',{class:'bd-k'},'Seu presente é um livro 📖'),
-        el('img',{class:'bd-cv',src:(window.BL_BASE||'')+b.cover,alt:'Capa de '+b.title}),
+        b.cover?el('img',{class:'bd-cv',src:(window.BL_BASE||'')+b.cover,alt:'Capa de '+b.title}):'',
         el('div',{class:'bd-tt'},b.title),
         el('div',{class:'bd-au'},b.author+' · '+b.year+' · Level '+b.level),
         el('p',{class:'bd-tx'},b.text),
-        el('div',{class:'bd-ch'},el('span',{},n(b.words)+' palavras'),el('span',{},n(b.uniq)+' diferentes'),el('span',{},'≈ '+b.min+' min')),
+        el('div',{class:'bd-ch'},el('span',{},'≈ '+n(Math.round(b.words/100)*100)+' palavras'),el('span',{},'≈ '+n(Math.round(b.uniq/10)*10)+' diferentes'),el('span',{},'≈ '+b.min+' min')),
         el('div',{class:'bd-nt'},'🎁 Seu professor vai enviar este livro para você.'));
       ov.append(card,done);
     };
