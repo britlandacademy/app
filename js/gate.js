@@ -362,6 +362,34 @@ function birthdayField(){
   }},sv);
   return el('div',{class:'g-mr',style:'flex-wrap:wrap;cursor:default'},el('b',{style:'width:20px;text-align:center'},'\uD83C\uDF82'),el('span',{style:'white-space:nowrap'},lab),el('div',{style:'flex:1 0 100%;display:flex;gap:8px;align-items:center;flex-wrap:wrap'},inp,b,msg));
 }
+/* livro de presente (só no app em inglês): sorteia um reader Penguin do nível do aluno; o professor envia o PDF */
+function bdLevels(){var n=stageOf(Math.max((prof&&prof.lessons_upto)||1,1));return n<=2?[0,1]:n<=4?[2]:n<=6?[3]:n<=8?[4]:n<=10?[5]:[6];}
+function bdBook(ov,done){
+  if(/\/espanol\//.test(location.pathname)){ov.append(done);return;}
+  var sc=document.createElement('script');sc.charset='utf-8';sc.src=(window.BL_BASE||'')+'js/readers.js?v='+(window.BL_VERSION||'');
+  var fin=function(){
+    var lv=bdLevels(),all=(window.BL_READERS||[]).filter(function(b){return lv.indexOf(b.level)>=0;});
+    if(!all.length){ov.append(done);return;}
+    var pick=all[Math.floor(Math.random()*all.length)];
+    var show=function(b){
+      ov.classList.add('bk');
+      var n=function(x){return String(x).replace(/\B(?=(\d{3})+(?!\d))/g,'.');};
+      var card=el('div',{class:'bd-card'},
+        el('div',{class:'bd-k'},'Seu presente é um livro 📖'),
+        el('img',{class:'bd-cv',src:(window.BL_BASE||'')+b.cover,alt:'Capa de '+b.title}),
+        el('div',{class:'bd-tt'},b.title),
+        el('div',{class:'bd-au'},b.author+' · '+b.year+' · Level '+b.level),
+        el('p',{class:'bd-tx'},b.text),
+        el('div',{class:'bd-ch'},el('span',{},n(b.words)+' palavras'),el('span',{},n(b.uniq)+' diferentes'),el('span',{},'≈ '+b.min+' min')),
+        el('div',{class:'bd-nt'},'🎁 Seu professor vai enviar este livro para você.'));
+      ov.append(card,done);
+    };
+    var ret=null;
+    try{ret=sb.rpc('set_my_birthday_book',{p_title:pick.title,p_level:pick.level});}catch(e){}
+    if(ret&&ret.then)ret.then(function(r){var t=r&&r.data,f=all.filter(function(b){return b.title===t})[0];show(f||pick);},function(){show(pick);});else show(pick);
+  };
+  sc.onload=fin;sc.onerror=function(){ov.append(done);};document.head.append(sc);
+}
 function birthdayParty(){
   if(!birthdayToday()||!/(^|\/)(index\.html)?$/.test(location.pathname)||document.getElementById('bl-bd'))return;
   var key='bl-bday-'+(user&&user.id);try{if(localStorage.getItem(key)===isoToday())return;}catch(e){}
@@ -371,6 +399,11 @@ function birthdayParty(){
   '@keyframes bd-up{to{transform:translateY(-130vh) rotate(8deg)}}'+
   '#bl-bd>:not(.bd-b){position:relative;z-index:2}#bl-bd .bd-l{position:relative;width:150px;height:150px;animation:bd-bob 1.2s ease-in-out infinite}#bl-bd .bd-l img{width:150px;height:150px;object-fit:contain}'+
   '#bl-bd .bd-h{position:absolute;left:80px;top:-24px;width:46px;height:54px;transform:rotate(16deg)}#bl-bd .bd-h svg{width:46px;height:54px}'+
+  '#bl-bd.bk{justify-content:flex-start;overflow-y:auto;padding-top:18px}#bl-bd.bk .bd-l{zoom:.62}#bl-bd.bk h1{font-size:1.5rem;margin:4px 0 0}#bl-bd.bk>p{margin:2px 0 8px;font-size:1rem}'+
+  '#bl-bd .bd-card{max-width:340px;background:#10224a;border:1px solid #c9a13b;border-radius:16px;padding:12px 14px;margin:6px 0 14px;animation:bd-in .9s both}#bl-bd .bd-k{font:700 11px/1 system-ui;letter-spacing:2px;text-transform:uppercase;color:#ec4654;margin-bottom:8px}'+
+  '#bl-bd .bd-cv{width:110px;border-radius:6px;box-shadow:0 5px 14px #000a;animation:bd-in .9s .3s both}#bl-bd .bd-tt{font-weight:700;color:#e4c06a;font-size:1.05rem;margin-top:8px}#bl-bd .bd-au{color:#b4bfd6;font-size:.8rem}#bl-bd .bd-tx{font-size:.85rem;line-height:1.45;color:#dfe6f3;margin:8px 0 6px;text-align:left}'+
+  '#bl-bd .bd-ch{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}#bl-bd .bd-ch span{background:#1a3366;border-radius:999px;padding:2px 9px;font-size:.7rem;color:#b4bfd6}#bl-bd .bd-nt{margin-top:8px;font-size:.8rem;font-weight:600;color:#e4c06a}'+
+  '@keyframes bd-in{from{opacity:0;transform:translateY(24px) scale(.85)}to{opacity:1;transform:none}}@media(prefers-reduced-motion:reduce){#bl-bd .bd-card,#bl-bd .bd-cv{animation:none}}'+
   '@keyframes bd-bob{50%{transform:translateY(-10px)}}#bl-bd h1{font-size:2rem;margin:14px 0 4px}#bl-bd p{margin:4px 0 18px;font-size:1.1rem}#bl-bd .btn{font-size:1.1rem}#bl-bd .bd-gift{font-size:6rem;animation:bd-bob 1s ease-in-out infinite;background:none;border:0;cursor:pointer;color:inherit}';
   document.head.append(st);
   var ov=el('div',{id:'bl-bd',role:'dialog','aria-modal':'true','data-noi18n':'1'});
@@ -383,7 +416,8 @@ function birthdayParty(){
     for(i=0;i<22;i++){var b=el('i',{class:'bd-b',style:'left:'+(Math.random()*92)+'%;background:'+cols[i%6]+';animation-duration:'+(5+Math.random()*5)+'s;animation-delay:-'+(Math.random()*8)+'s'});ov.append(b);}
     var lion=el('div',{class:'bd-l'},el('img',{src:(window.BL_BASE||'')+'img/lion-gold.png',alt:''}),(function(){var s=el('span',{class:'bd-h'});s.innerHTML='<svg viewBox="0 0 44 52"><path d="M22 4 L40 48 L4 48Z" fill="#ff5d73"/><path d="M4 48 L40 48" stroke="#ffd54a" stroke-width="6"/><circle cx="22" cy="5" r="5" fill="#ffd54a"/></svg>';return s;})());
     var done=el('button',{type:'button',class:'btn primary',onclick:close},'Continuar');
-    ov.append(lion,el('h1',{},'Parabéns'+(first?', '+first:'')+'! 🎂'),el('p',{},'Feliz aniversário!'),done);
+    ov.append(lion,el('h1',{},'Parabéns'+(first?', '+first:'')+'! 🎂'),el('p',{},'Feliz aniversário!'));
+    bdBook(ov,done);
     try{localStorage.setItem(key,isoToday());}catch(e){}
     try{var a=new Audio((window.BL_BASE||'')+'js/sfx/roar.mp3');a.volume=.7;a.play().catch(function(){});}catch(e){}
     birthdayTune();done.focus();
@@ -659,7 +693,7 @@ if(!window.__uilangBound){window.__uilangBound=true;window.addEventListener('uil
 function loadProfile(cb){
   function go(){window.Profile.css();window.Profile.ready().then(cb||function(){});}
   if(window.Profile){go();return;}
-  var sc=document.createElement('script');sc.src=(window.BL_BASE||'')+'js/profile.js';sc.onload=go;document.head.append(sc);var sp=document.createElement('script');sp.src=(window.BL_BASE||'')+'js/push.js';document.head.append(sp);
+  var sc=document.createElement('script');sc.charset='utf-8';sc.src=(window.BL_BASE||'')+'js/profile.js';sc.onload=go;document.head.append(sc);var sp=document.createElement('script');sp.src=(window.BL_BASE||'')+'js/push.js';document.head.append(sp);
 }
 /* ---------- routing ---------- */
 var OPTS={kinds:[],attempts:null,admin:false},CB=null;
@@ -685,7 +719,7 @@ function pushNudge(){
     var on=btn('Turn on',function(){
       on.disabled=true;
       function go(){var P=window.BLPush;if(!P||!P.supported()||(P.ios()&&!P.standalone())){bar.remove();return;}P.enable(sb).then(function(){bar.remove();},function(){bar.remove();});}
-      if(window.BLPush)go();else{var sc=document.createElement('script');sc.src=(window.BL_BASE||'')+'js/push.js';sc.onload=go;document.head.append(sc);}
+      if(window.BLPush)go();else{var sc=document.createElement('script');sc.charset='utf-8';sc.src=(window.BL_BASE||'')+'js/push.js';sc.onload=go;document.head.append(sc);}
     });
     var no=btn('Not now',function(){try{localStorage.setItem(k,String(Date.now()));}catch(e){}bar.remove();},true);
     bar.append(on,no);
@@ -824,7 +858,7 @@ function startTour(force){
 }
 function tourPush(box,TB){
   function Pp(s){return window.I18N&&I18N.pt?I18N.pt(s):s;}
-  function ready(cb){if(window.BLPush)return cb();var sc=document.createElement('script');sc.src=(window.BL_BASE||'')+'js/push.js';sc.onload=cb;document.head.append(sc);}
+  function ready(cb){if(window.BLPush)return cb();var sc=document.createElement('script');sc.charset='utf-8';sc.src=(window.BL_BASE||'')+'js/push.js';sc.onload=cb;document.head.append(sc);}
   var note=el('p',{},'');
   var b=TB('Turn on notifications','dm',function(){
     b.disabled=true;
