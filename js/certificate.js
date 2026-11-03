@@ -11,7 +11,7 @@ var TX={
   es:{title:'CERTIFICADO DE FINALIZACIÓN',cert:'Se certifica que',body:['ha dominado el programa del método directo y completado','todas las lecciones y evaluaciones requeridas de'],stage:'ETAPA ',lang:'LENGUA ESPAÑOLA',exam:'Examen final ',dist:'Con Distinción',hours:' HORAS ACADÉMICAS',done:'Concluido el ',scan:'Escanee para verificar',dir:'DIRECTOR DE ESTUDIOS',
     date:function(d){return d[2].replace(/^0/,'')+' de '+MES[+d[1]-1]+' de '+d[0];},path:'espanol/verify.html'}
 };
-var HOST='https://britlandacademy.github.io/app/';
+var HOST='https://www.britlandacademy.co.uk/app/';
 function link(id,lang){return HOST+TX[lang].path+'?id='+encodeURIComponent(id);}
 function img(src){return new Promise(function(ok){var i=new Image();i.onload=function(){ok(i);};i.onerror=function(){ok(null);};i.src=src;});}
 function fonts(){

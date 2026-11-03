@@ -1,29 +1,11 @@
 /* Britland Academy: registers the service worker and tells the student when a new version is ready. */
 (function(){
 'use strict';
-window.BL_VERSION='1.9.17'; /* keep equal to VERSION in sw.js */
-/* ---- error codes: every error shows a code the student can send to the teacher, and is logged in app_errors (errors_setup.sql) ---- */
+window.BL_VERSION='1.9.19'; /* keep equal to VERSION in sw.js */
+/* ---- error codes: erros são gravados em silêncio em app_errors (aba Estatísticas); o aluno não vê nada ---- */
 (function(){
-var V=window.BL_VERSION,seen={},sent=0,queue=[],box=null;
+var V=window.BL_VERSION,seen={},sent=0,queue=[];
 function hash(str){var h=5381,i;for(i=0;i<str.length;i++)h=((h<<5)+h+str.charCodeAt(i))|0;return ('0000'+(h>>>0).toString(16)).slice(-4);}
-function lang(){var h=window.I18N&&window.I18N.hint;return h==='pt'?1:h==='es'?2:0;}
-var TXT={t:['Something went wrong','Algo deu errado','Algo salió mal'],m:['Send this code to your teacher:','Envie este código ao professor:','Envía este código al profesor:'],c:['Copy','Copiar','Copiar'],x:['Close','Fechar','Cerrar'],ok:['Copied','Copiado','Copiado']};
-function T(k){return TXT[k][lang()];}
-function dialog(code){
-  if(box||!document.body)return;
-  var ov=document.createElement('div');ov.setAttribute('role','alertdialog');ov.setAttribute('data-noi18n','1');
-  ov.style.cssText='position:fixed;inset:0;z-index:100000;background:rgba(5,10,25,.7);display:flex;align-items:center;justify-content:center;padding:16px';
-  var d=document.createElement('div');d.style.cssText='background:#fff;color:#111;border-top:6px solid #c9a13b;border-radius:14px;max-width:420px;width:100%;padding:20px;box-sizing:border-box;font:16px system-ui,sans-serif';
-  var h=document.createElement('h2');h.textContent=T('t');h.style.cssText='margin:0 0 8px;font-size:1.2rem';
-  var p=document.createElement('p');p.textContent=T('m');p.style.margin='0 0 10px';
-  var c=document.createElement('code');c.textContent=code;c.style.cssText='display:block;padding:10px;background:#eee;border-radius:8px;font:700 1.05rem monospace;word-break:break-all;user-select:all';
-  var r=document.createElement('div');r.style.cssText='display:flex;gap:10px;justify-content:flex-end;margin-top:14px';
-  function btn(l,pri){var b=document.createElement('button');b.type='button';b.textContent=l;b.style.cssText='font:inherit;font-weight:700;border-radius:8px;padding:10px 16px;min-height:44px;border:2px solid #c9a13b;'+(pri?'background:#c9a13b;color:#1a1405':'background:#fff;color:#111');return b;}
-  var cp=btn(T('c'),1),cl=btn(T('x'),0);
-  cp.onclick=function(){try{navigator.clipboard.writeText(code).then(function(){cp.textContent=T('ok');},function(){});}catch(e){}try{var g=document.createRange();g.selectNodeContents(c);var s=getSelection();s.removeAllRanges();s.addRange(g);}catch(e){}};
-  cl.onclick=function(){ov.remove();box=null;};
-  r.append(cl,cp);d.append(h,p,c,r);ov.append(d);document.body.append(ov);box=ov;
-}
 function flush(){
   var sb=window.Gate&&window.Gate.sb;if(!sb||!queue.length)return false;
   while(queue.length){var e=queue.shift();try{sb.from('app_errors').insert(e).then(function(){},function(){});}catch(x){}}
@@ -32,7 +14,6 @@ function flush(){
 function report(kind,detail,ref,show){
   var code=kind+'-'+V+'-'+(ref||hash(String(detail)));
   if(seen[code])return code;seen[code]=1;
-  if(show!==false&&navigator.onLine!==false)dialog(code);
   if(sent<10){sent++;queue.push({code:code,kind:kind,message:String(detail).slice(0,500),page:location.pathname+location.search.slice(0,80),version:V,ua:navigator.userAgent.slice(0,200)});
     var n=0,iv=setInterval(function(){if(flush()||++n>20)clearInterval(iv);},1500);}
   return code;
