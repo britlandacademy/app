@@ -57,6 +57,41 @@ async function logSent(rows: any[], sentFlags: number[]) {
   }
 }
 
+// ---- e-mail de feliz aniversário (visual A do livro de estilo). Só roda se o segredo SMTP_PASS existir. ----
+// Segredos: SMTP_USER, SMTP_PASS (senha de app do Gmail), MAIL_FROM (ex.: Britland Academy <contact@britlandacademy.co.uk>), MAIL_LANG (pt no inglês; es no espanhol).
+const SHIELD = "https://www.britlandacademy.co.uk/app/img/britland-shield.png";
+const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]!));
+function birthdayMail(name: string, lang: string) {
+  const es = lang === "es", n = esc(name || (es ? "alumno" : "aluno"));
+  const T = es
+    ? { sub: name ? `¡Feliz cumpleaños, ${name}!` : "¡Feliz cumpleaños!", h: `¡Feliz cumpleaños, ${n}!`, e: "Feliz aniversário!", p1: "Hoy es tu día. Que tu nuevo año llegue con salud, alegría y muchos logros, también en el español.", p2: "¡Mira cuánto ya hablas! Gracias por aprender con nosotros. Sigue así, sin prisa y sin vergüenza.", ab: "Un abrazo," }
+    : { sub: name ? `Feliz aniversário, ${name}!` : "Feliz aniversário!", h: `Feliz aniversário, ${n}!`, e: "Happy birthday!", p1: "Hoje o dia é seu. Que seu novo ano venha com saúde, alegria e muitas conquistas, inclusive no inglês.", p2: "Olha o quanto você já fala! Obrigado por aprender com a gente. Continue assim, sem pressa e sem vergonha.", ab: "Um abraço," };
+  const html = `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#EFE9D9"><tr><td align="center" style="padding:20px 10px"><table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" bgcolor="#FAF8F3" style="width:100%;max-width:560px;border-radius:6px;overflow:hidden"><tr><td bgcolor="#0B1733" style="padding:22px 30px;border-bottom:4px solid #C9A13B"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right:14px"><img src="${SHIELD}" width="48" alt="Britland Academy" style="display:block;border:0"></td><td style="font-family:Georgia,serif;color:#F2F5FA"><div style="font-size:21px;font-weight:bold;letter-spacing:2px">BRITLAND</div><div style="font-family:Arial,sans-serif;font-size:10px;letter-spacing:5px;color:#EC4654;font-weight:bold">ACADEMY</div></td></tr></table></td></tr><tr><td style="padding:30px 30px 8px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#17202F"><div style="font-family:Georgia,serif;font-size:26px;line-height:1.2;font-weight:bold;color:#0B1733;margin:0 0 6px">${T.h}</div><div style="font-family:Georgia,serif;font-style:italic;font-size:16px;color:#B3202A;margin:0 0 18px">${T.e}</div><p style="margin:0 0 14px">${T.p1}</p><p style="margin:0 0 14px">${T.p2}</p><p style="margin:0 0 6px">${T.ab}</p></td></tr><tr><td style="padding:14px 30px 26px;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#17202F"><div style="border-top:1px solid #d9d2bf;padding-top:14px"><div style="font-family:Georgia,serif;font-weight:bold;font-size:16px;color:#0B1733">Paulo Sérgio Cruz</div><div style="color:#5A6577">Britland Academy · ${es ? "Inglés y español 100% online" : "Inglês e espanhol 100% online"}</div></div></td></tr><tr><td bgcolor="#0B1733" style="padding:14px 30px;font-family:Arial,sans-serif;font-size:11px;line-height:1.5;color:#B4BFD6;text-align:center">Britland Academy · Cruz e Trento Cursos de Idiomas · Franca, SP</td></tr></table></td></tr></table>`;
+  return { subject: T.sub, html, text: `${T.h}\n${T.e}\n\n${T.p1}\n${T.p2}\n\n${T.ab}\nPaulo Sérgio Cruz · Britland Academy` };
+}
+async function sendBirthdayEmails() {
+  const pass = Deno.env.get("SMTP_PASS"), user = Deno.env.get("SMTP_USER");
+  if (!pass || !user) return { skipped: "sem SMTP_PASS" };
+  const { data, error } = await sb.rpc("due_birthday_emails");
+  if (error) return { error: error.message };
+  const rows = data || [];
+  if (!rows.length) return { due: 0, sent: 0 };
+  const { SMTPClient } = await import("https://deno.land/x/denomailer@1.6.0/mod.ts"); // import só quando há e-mail a enviar: nunca derruba as notificações push
+  const client = new SMTPClient({ connection: { hostname: "smtp.gmail.com", port: 465, tls: true, auth: { username: user, password: pass } } });
+  let sent = 0;
+  const year = String(new Date(Date.now() - 3 * 3600_000).getUTCFullYear());
+  for (const r of rows) {
+    try {
+      const m = birthdayMail(r.first_name, Deno.env.get("MAIL_LANG") || "pt");
+      await client.send({ from: Deno.env.get("MAIL_FROM") || user, to: r.email, subject: m.subject, content: m.text, html: m.html });
+      await sb.from("notif_log").insert({ user_id: r.user_id, kind: "birthday_email", ref: year });
+      sent++;
+    } catch (_e) { /* tenta de novo na próxima rodada */ }
+  }
+  try { await client.close(); } catch (_e) { /* ignora */ }
+  return { due: rows.length, sent };
+}
+
 Deno.serve(async (req) => {
   const body = await req.json().catch(() => ({}));
 
@@ -83,7 +118,9 @@ Deno.serve(async (req) => {
     const rows = data || [], flags: number[] = [];
     for (const r of rows) flags.push(await send(r, build(r), r.kind === "lesson1h" ? 3000 : 3600));
     await logSent(rows, flags);
-    return out({ due: rows.length, sent: flags.reduce((a, b) => a + b, 0) });
+    let mail: unknown = null;
+    try { mail = await sendBirthdayEmails(); } catch (e) { mail = { error: String(e) }; }
+    return out({ due: rows.length, sent: flags.reduce((a, b) => a + b, 0), mail });
   }
 
   const { data, error } = await sb.rpc("due_reminders");
