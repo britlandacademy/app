@@ -249,7 +249,7 @@ function signOut(){
 }
 
 /* ---------- top bar ---------- */
-var SVG={bell:'<path d="M6 9a6 6 0 0 1 12 0c0 6 2 7 2 7H4s2-1 2-7"/><path d="M10 20a2 2 0 0 0 4 0"/>',user:'<path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',moon:'<path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/>',help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 1-1 1.7M12 17.3v.2"/>',out:'<path d="M10 4H5v16h5M15 8l4 4-4 4M19 12H9"/>',panel:'<rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8"/>'};
+var SVG={bell:'<path d="M6 9a6 6 0 0 1 12 0c0 6 2 7 2 7H4s2-1 2-7"/><path d="M10 20a2 2 0 0 0 4 0"/>',home:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',user:'<path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',moon:'<path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/>',help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 1-1 1.7M12 17.3v.2"/>',out:'<path d="M10 4H5v16h5M15 8l4 4-4 4M19 12H9"/>',panel:'<rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8"/>'};
 function ico(k){var s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('aria-hidden','true');s.innerHTML=SVG[k];return s;}
 function paintAvatars(){
   if(!window.Profile||!prof)return;
@@ -517,6 +517,7 @@ function addBar(){
     el('div',{class:'g-mr'},el('b',{style:'width:20px;text-align:center'},'Aa'),el('span',{},'Text size'),el('span',{class:'g-sz',role:'group','aria-label':'Text size'},minus,plus,lab)));
   if(window.I18N)mn.append(el('div',{class:'g-mr'},el('b',{style:'width:20px;text-align:center'},'\uD83C\uDF10'),el('span',{},'Language'),window.I18N.selector('ui')));
   (function(){try{localStorage.setItem(COURSE.id==='es'?'bl-has-es':'bl-has-en','1');}catch(e){}})();
+  if(prof.is_admin&&/admin\.html$/.test(location.pathname))mn.append(mi('home','Student home',{href:'index.html?aluno=1'}));
   if(prof.is_admin)mn.append(mi('panel','Teacher panel',{href:'admin.html'}));
   mn.append(mi('help','Help',{onclick:function(){open(false);showHelp();}}),mi('out','Sign out',{class:'g-mi out',onclick:signOut}));
   mn.querySelectorAll('a.g-mi').forEach(function(a){a.addEventListener('click',function(){open(false);});});

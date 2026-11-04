@@ -136,6 +136,8 @@ a.card:hover .i-tg .r2,a.card:focus-visible .i-tg .r2{animation:rp 1.8s ease inf
 <script>
 var STAGES=[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[139,156],[157,174],[175,190],[191,206]];
 Gate.start({kinds:[],attempts:['check','ex']},function(ctx){
+  try{if(/[?&]aluno=1/.test(location.search))sessionStorage.setItem('bl-stay-student','1');
+    if(ctx.profile&&ctx.profile.is_admin&&!sessionStorage.getItem('bl-stay-student')){location.replace('admin.html');return;}}catch(e){}
   try{Plan.mount(ctx,{es:false});}catch(e){}
   var name=(ctx.profile&&ctx.profile.name||'').split(' ')[0];
   (function(){

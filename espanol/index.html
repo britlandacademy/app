@@ -135,6 +135,8 @@ a.card:hover .i-tg .r2,a.card:focus-visible .i-tg .r2{animation:rp 1.8s ease inf
 var STAGES=[[1,16],[17,32],[33,52],[53,72],[73,92],[93,112]];
 var REP=[7,10,12,15,20,24,28,31,34,37,40,43,46,48,51,53,56,58,61,63,66,69,71,73,76,79,81,84,87,90,92,95,97,100,102,105,108,110,112];
 Gate.start({kinds:[],attempts:['check','ex']},function(ctx){
+  try{if(/[?&]aluno=1/.test(location.search))sessionStorage.setItem('bl-stay-student','1');
+    if(ctx.profile&&ctx.profile.is_admin&&!sessionStorage.getItem('bl-stay-student')){location.replace('admin.html');return;}}catch(e){}
   try{Plan.mount(ctx,{es:true});}catch(e){}
   var name=(ctx.profile&&ctx.profile.name||'').split(' ')[0];
   document.getElementById('hi').textContent=name?'Bienvenido de nuevo, '+name:'Bienvenido de nuevo';
