@@ -33,9 +33,11 @@ a{color:inherit}
 .pane.es .go{border-color:#fff}
 .top{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:5;display:flex;align-items:center;gap:10px;padding:8px 18px 8px 10px;border-radius:999px;background:rgba(11,23,51,.88);border:1px solid #27407a;pointer-events:none}
 .top img{height:38px}.top b{font:700 18px BLSerif,Georgia,serif;display:block;line-height:1}.top i{font:500 9.5px BLSans,Arial;letter-spacing:.14em;color:#ec4654;font-style:normal}
+.tagline{position:absolute;top:calc(74px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:5;width:max-content;max-width:92vw;text-align:center;font:700 clamp(13px,1.8vw,17px) Montserrat,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6);pointer-events:none}
 .scrollhint{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:5;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#fff;opacity:.8;animation:bob 2s ease-in-out infinite;pointer-events:none}
 @keyframes bob{50%{transform:translate(-50%,8px)}}
-@media(max-width:700px){.hero{flex-direction:column}.pane{padding:76px 16px 20px;gap:10px}.pane canvas{width:min(54%,230px)}.hero:hover .pane,.hero .pane:hover{flex:1}.pane p{display:none}.scrollhint{display:none}}
+@media(max-width:700px){.hero{flex-direction:column}.pane{padding:76px 16px 20px;gap:10px}.pane canvas{width:min(54%,230px)}.hero:hover .pane,.hero .pane:hover{flex:1}.pane p{display:none}.tagline{position:absolute;top:calc(74px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:5;width:max-content;max-width:92vw;text-align:center;font:700 clamp(13px,1.8vw,17px) Montserrat,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6);pointer-events:none}
+.scrollhint{display:none}}
 /* ---------- course sections ---------- */
 .course{position:relative;padding:clamp(70px,10vw,130px) max(18px,env(safe-area-inset-left)) clamp(60px,8vw,110px);overflow:hidden}
 .course.uk{background:linear-gradient(180deg,#0a0f3a 0,#12306e 55%,#0b1733 100%)}
@@ -68,6 +70,7 @@ a{color:inherit}
 .cap b{font:700 22px BLSerif,Georgia,serif;display:block;color:var(--gold2)}.cap span{font-size:15px}
 .facts{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
 .fact{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);border-radius:22px;padding:20px 16px;text-align:center;backdrop-filter:blur(6px)}
+.fact.wide{grid-column:1/-1}
 .fact b{font:700 clamp(34px,5vw,52px) BLSerif,Georgia,serif;color:var(--gold2);display:block;line-height:1}.fact span{font-size:13.5px;color:var(--mut);display:block;margin-top:8px}
 .flagrow{display:flex;justify-content:center;margin:0 0 26px}
 .flagrow canvas{width:min(100%,300px);aspect-ratio:2/1;filter:drop-shadow(0 14px 18px rgba(0,0,0,.45))}
@@ -120,15 +123,15 @@ footer{padding:26px 16px calc(26px + env(safe-area-inset-bottom,0px));text-align
 
 <header class="hero" id="top">
   <div class="top"><img src="img/britland-shield.png" alt=""><div><b>Britland</b><i>ACADEMY</i></div></div>
-  <a class="pane uk" href="#english"><canvas class="flag" data-f="uk" width="600" height="300"></canvas><h2>English</h2><p>Londres, Oxford, Liverpool… o mundo inteiro fala inglês.</p><span class="go">Conhecer o curso <b>→</b></span></a>
-  <a class="pane es" href="#espanol"><canvas class="flag" data-f="es" width="600" height="300"></canvas><h2>Español</h2><p>Madrid, Sevilla, Barcelona… 500 milhões de pessoas falam espanhol.</p><span class="go">Conhecer o curso <b>→</b></span></a>
-  <div class="scrollhint">escolha seu idioma</div>
+  <a class="pane uk" href="#english"><canvas class="flag" data-f="uk" width="600" height="300"></canvas><h2>English</h2><p>Fale inglês com segurança, do primeiro dia à fluência.</p><span class="go">Conhecer o curso <b>→</b></span></a>
+  <a class="pane es" href="#espanol"><canvas class="flag" data-f="es" width="600" height="300"></canvas><h2>Español</h2><p>Hable español sin travarse, com acompanhamento de perto.</p><span class="go">Conhecer o curso <b>→</b></span></a>
+  <div class="tagline">Inglês e Espanhol com resultado de verdade</div><div class="scrollhint">escolha seu idioma</div>
 </header>
 
 <section class="course uk" id="english"><div class="in">
   <span class="tag rv">English course</span>
-  <h2 class="big rv d1">Fale inglês <em>de verdade</em></h2>
-  <p class="lead rv d2">Do primeiro dia à conversação fluente: 12 stages, com aulas online individuais ou em turmas pequenas.</p>
+  <h2 class="big rv d1">Fale inglês <em>com segurança</em></h2>
+  <p class="lead rv d2">Do primeiro dia à fluência: aulas online individuais ou em turmas de até 4 alunos, com um plano feito para o seu objetivo: trabalho, viagem ou carreira.</p>
   <div class="stage">
     <div class="rv"><div class="mapbox">
       <svg class="map" viewBox="0 0 520 785" data-city="uk" role="img" aria-label="Mapa do Reino Unido">
@@ -144,6 +147,7 @@ footer{padding:26px 16px calc(26px + env(safe-area-inset-bottom,0px));text-align
         <div class="fact"><b data-n="4">0</b><span>alunos por turma, no máximo</span></div>
         <div class="fact"><b>1:1</b><span>ou aulas em grupo</span></div>
         <div class="fact"><b>Grátis</b><span>a aula experimental</span></div>
+        <div class="fact wide"><b>Centenas</b><span>de alunos ao redor do mundo</span></div>
       </div>
     </div>
   </div>
@@ -151,8 +155,8 @@ footer{padding:26px 16px calc(26px + env(safe-area-inset-bottom,0px));text-align
 
 <section class="course es" id="espanol"><div class="in">
   <span class="tag rv">Curso de Español</span>
-  <h2 class="big rv d1">Hable español <em>con confianza</em></h2>
-  <p class="lead rv d2">Seis etapas, preparação para o DELE (A1 a C2) e um aplicativo feito para quem quer falar.</p>
+  <h2 class="big rv d1">Hable español <em>sin travarse</em></h2>
+  <p class="lead rv d2">Seis etapas claras, preparação para o DELE (A1 a C2) e acompanhamento de perto até você falar com naturalidade.</p>
   <div class="stage">
     <div class="rv"><div class="mapbox">
       <svg class="map" viewBox="0 0 600 454" data-city="es" role="img" aria-label="Mapa da Espanha">
@@ -168,25 +172,26 @@ footer{padding:26px 16px calc(26px + env(safe-area-inset-bottom,0px));text-align
         <div class="fact"><b data-n="4">0</b><span>alunos por turma, no máximo</span></div>
         <div class="fact"><b>DELE</b><span>preparação de A1 a C2</span></div>
         <div class="fact"><b>Grátis</b><span>a aula experimental</span></div>
+        <div class="fact wide"><b>Centenas</b><span>de alunos ao redor do mundo</span></div>
       </div>
     </div>
   </div>
 </div></section>
 
 <section class="metodo" id="metodo"><div class="in">
-  <h2 class="rv">Nosso método</h2>
-  <p class="sub rv d1">Você fala desde o primeiro minuto. O professor faz perguntas rápidas, só no idioma que você está aprendendo, e corrige na hora.</p>
+  <h2 class="rv">Você fala desde a primeira aula</h2>
+  <p class="sub rv d1">Menos teoria, mais prática, com um professor ao seu lado em cada etapa.</p>
   <div class="steps">
-    <div class="step rv"><i>1</i><h3>Pergunta e resposta</h3><p>Um ritmo vivo de perguntas e respostas que treina a mente a pensar direto no idioma.</p></div>
-    <div class="step rv d1"><i>2</i><h3>Correção na hora</h3><p>Cada erro é corrigido no momento, e a frase certa é repetida até ficar natural.</p></div>
-    <div class="step rv d2"><i>3</i><h3>Sem tradução</h3><p>Nada de traduzir palavra por palavra. Você aprende a usar o idioma, não a decorar regras.</p></div>
-    <div class="step rv d3"><i>4</i><h3>Etapa por etapa</h3><p>Um caminho claro, com provas e certificado ao concluir cada etapa.</p></div>
+    <div class="step rv"><i>1</i><h3>Conversa desde o minuto 1</h3><p>Menos teoria, mais prática. Você fala o tempo todo e perde o medo rápido.</p></div>
+    <div class="step rv d1"><i>2</i><h3>Correção na hora</h3><p>Cada erro vira aprendizado imediato, e a frase certa é repetida até ficar natural.</p></div>
+    <div class="step rv d2"><i>3</i><h3>Turmas pequenas</h3><p>No máximo 4 alunos, com a atenção total do professor. Ou aulas individuais.</p></div>
+    <div class="step rv d3"><i>4</i><h3>Etapas com certificado</h3><p>Você vê o seu progresso e conquista cada nível, com prova e certificado.</p></div>
   </div>
 </div></section>
 
 <section class="app" id="app"><div class="in">
-  <h2 class="rv">O aplicativo da Britland</h2>
-  <p class="sub rv d1">Estude entre as aulas, no celular ou no computador. Cada erro vem com uma explicação.</p>
+  <h2 class="rv">Estude entre as aulas e avance mais rápido</h2>
+  <p class="sub rv d1">Exercícios, provas e certificados no celular ou no computador. Cada erro vem com uma explicação.</p>
   <div class="phones rv d2">
     <div class="phone"><div class="pill"></div><h4>Lesson Check</h4><div class="q">Where do you live?</div><span class="ch">I live in Spain.</span><span class="ch ok">I live in Brazil.</span><span class="ch">He lives in London.</span><div class="bar2"><i></i></div></div>
     <div class="phone"><div class="pill"></div><h4>Exercises</h4><div class="tiles"><div>🏠</div><div class="m">🌳</div><div>🚗</div><div>📚</div><div>☕</div><div>✈️</div></div><div class="bar2"><i style="width:40%"></i></div></div>
@@ -195,9 +200,10 @@ footer{padding:26px 16px calc(26px + env(safe-area-inset-bottom,0px));text-align
 </div></section>
 
 <section class="contato" id="contato"><div class="in">
-  <h2 class="rv">Comece com uma aula grátis</h2>
-  <p class="sub rv d1">Venha conhecer o método e conversar sobre o seu objetivo. Sem compromisso.</p>
-  <a class="cta rv d2" id="cta" href="#">Quero minha aula experimental <b>→</b></a>
+  <span class="tag rv" style="background:#c8102e;color:#fff;margin-bottom:16px">Vagas limitadas</span>
+  <h2 class="rv">Sua aula experimental é gratuita</h2>
+  <p class="sub rv d1">Agende, converse sobre o seu objetivo e sinta a diferença. As vagas são limitadas.</p>
+  <a class="cta rv d2" id="cta" href="#">Quero minha aula grátis <b>→</b></a>
   <div class="two rv d3"><a href="index.html">Já sou aluno de English</a><a href="espanol/index.html">Ya soy alumno de Español</a></div>
 </div></section>
 <footer>Britland Academy · English &amp; Español</footer>
