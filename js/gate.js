@@ -566,7 +566,8 @@ var BUS=/[?&]course=business/.test(location.search);window.CBUS=BUS;
 var GATES=null;
 function gateCap(){return (GATES&&GATES.cap)||99999;}
 function loadGates(){if(BUS||prof.is_admin||OPTS.admin||OFF)return Promise.resolve();return sb.rpc('my_stage_gates').then(function(r){if(r&&!r.error&&r.data&&r.data.cap)GATES=r.data;},function(){});}
-function upto(){if(BUS)return prof.is_admin?17:(prof.status==='approved'?(prof.business_upto||0):0);return prof.is_admin?MAXL:(prof.status==='approved'?Math.min(prof.lessons_upto||0,gateCap()):0);}
+function autoCap(){var u=prof.lessons_upto||0;return(prof.auto_release!==false&&prof.lessons_auto!=null)?Math.min(u,prof.lessons_auto):u;}
+function upto(){if(BUS)return prof.is_admin?17:(prof.status==='approved'?(prof.business_upto||0):0);return prof.is_admin?MAXL:(prof.status==='approved'?Math.min(autoCap(),gateCap()):0);}
 var STG=COURSE.stages||[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[139,156],[157,174],[175,190],[191,206]];
 var MAXL=COURSE.maxLesson||206,SKEYST=COURSE.stageKey||'callan-stage';
 function stageOf(n){var i;for(i=0;i<STG.length;i++)if(n>=STG[i][0]&&n<=STG[i][1])return i+1;return 1;}
@@ -649,7 +650,7 @@ function loadContent(kinds){
     });
   });
 }
-function mainUpto(){return prof.is_admin?MAXL:(prof.status==='approved'?Math.min(prof.lessons_upto||0,gateCap()):0);}
+function mainUpto(){return prof.is_admin?MAXL:(prof.status==='approved'?Math.min(autoCap(),gateCap()):0);}
 function bizUpto(){return prof.is_admin?17:(prof.status==='approved'?(prof.business_upto||0):0);}
 function goStage(v){
   try{

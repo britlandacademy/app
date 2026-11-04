@@ -263,7 +263,7 @@ function renderStu(){
     const bn=el('input',{type:'number',min:'0',max:'17',value:String(p.business_upto||0),'aria-label':'Business liberado até, '+p.name});
     tb.append(el('tr',{},el('td',{},cvThumb(n,p.name||'(sem nome)')),el('td',{},p.email),
       el('td',{},el('span',{class:'st '+p.status},STATUS[p.status])),
-      el('td',{},n,' ',stageSel(n),' ',el('button',{type:'button',class:'ghost',onclick:()=>update(p.id,{lessons_upto:clampN(n.value)})},'Salvar')),
+      el('td',{},n,' ',stageSel(n),' ',el('button',{type:'button',class:'ghost',onclick:()=>update(p.id,{lessons_upto:clampN(n.value)})},'Salvar'),el('label',{style:'display:block;font-size:.8em;margin-top:4px',title:'Libera só até a lição em que o aluno está na planilha'},el('input',{type:'checkbox',checked:p.auto_release!==false,onchange:e=>update(p.id,{auto_release:e.target.checked})}),' Auto pela planilha'+(p.lessons_auto!=null?' (lição '+p.lessons_auto+')':' (sem dados)'))),
       BIZ?el('td',{},bn,' ',el('button',{type:'button',class:'ghost',onclick:()=>update(p.id,{business_upto:Math.max(0,Math.min(17,parseInt(bn.value,10)||0))})},'Salvar')):null,
       el('td',{},p.status==='blocked'
         ?el('button',{type:'button',onclick:()=>update(p.id,{status:'approved'})},'Reativar')
