@@ -4,10 +4,10 @@
 (function(){
 'use strict';
 var T={
-  pt:{next:'Próxima aula',imp:'Importante',prep:'Prepare-se para a aula nº ',lastw:'Última palavra estudada:',rev:'Revisão das palavras ',nw:' e novas palavras ',again2:'toque para refazer',conv:'Aula de Conversation. Aproveite para praticar a fala!',miss:'Você faltou à aula nº ',missc:'Você faltou à aula de Conversation nº ',missr:'. Revise as palavras ',missl:' e ouça o Listening da Lição ',missx:'Aula perdida',act:'Atividade da aula: ',will:'Haverá ',dict:'ditado',read:'leitura',quiz:'Lesson Check',listen:'Listening · Lição ',again:'Ouça de novo antes da aula',
+  pt:{cdIn:'Faltam ',cdNow:'Começa em ',cdOn:'Sua aula começou',cdGo:'Entrar na aula',next:'Próxima aula',imp:'Importante',prep:'Prepare-se para a aula nº ',lastw:'Última palavra estudada:',rev:'Revisão das palavras ',nw:' e novas palavras ',again2:'toque para refazer',conv:'Aula de Conversation. Aproveite para praticar a fala!',miss:'Você faltou à aula nº ',missc:'Você faltou à aula de Conversation nº ',missr:'. Revise as palavras ',missl:' e ouça o Listening da Lição ',missx:'Aula perdida',act:'Atividade da aula: ',will:'Haverá ',dict:'ditado',read:'leitura',quiz:'Lesson Check',listen:'Listening · Lição ',again:'Ouça de novo antes da aula',
     rec:'Exercícios recomendados para você',lesson:'Lição ',lc:'Lesson Check · Lição ',gr:'Grammar · Lição ',wb:'Workbook · Lição ',done:'feito',doneL:'Concluído',recd:'Recomendado',
     all:'Tudo em dia! 🎉',allp:'Você fez todos os exercícios da Lição ',allp2:'. Parabéns pela dedicação!',redo:'Refazer o Lesson Check →',n:' de ',ex:' exercícios feitos',play:'Ouvir',pause:'Pausar'},
-  es:{next:'Próxima clase',imp:'Importante',prep:'Prepárate para la clase n.º ',lastw:'Última palabra estudiada:',rev:'Repaso de las palabras ',nw:' y palabras nuevas ',again2:'toca para repetir',conv:'Clase de conversación. ¡Aprovecha para practicar el habla!',miss:'Faltaste a la clase n.º ',missc:'Faltaste a la clase de conversación n.º ',missr:'. Repasa las palabras ',missl:' y escucha el Listening de la Lección ',missx:'Clase perdida',act:'Actividad de la clase: ',will:'Habrá ',dict:'dictado',read:'lectura',quiz:'Lesson Check',listen:'Listening · Lección ',again:'Escúchalo de nuevo antes de la clase',
+  es:{cdIn:'Faltan ',cdNow:'Empieza en ',cdOn:'Tu clase ha empezado',cdGo:'Entrar en la clase',next:'Próxima clase',imp:'Importante',prep:'Prepárate para la clase n.º ',lastw:'Última palabra estudiada:',rev:'Repaso de las palabras ',nw:' y palabras nuevas ',again2:'toca para repetir',conv:'Clase de conversación. ¡Aprovecha para practicar el habla!',miss:'Faltaste a la clase n.º ',missc:'Faltaste a la clase de conversación n.º ',missr:'. Repasa las palabras ',missl:' y escucha el Listening de la Lección ',missx:'Clase perdida',act:'Actividad de la clase: ',will:'Habrá ',dict:'dictado',read:'lectura',quiz:'Lesson Check',listen:'Listening · Lección ',again:'Escúchalo de nuevo antes de la clase',
     rec:'Ejercicios recomendados para ti',lesson:'Lección ',lc:'Lesson Check · Lección ',gr:'Gramática · Lección ',wb:'Workbook · Lección ',done:'hecho',doneL:'Completado',recd:'Recomendado',
     all:'¡Todo al día! 🎉',allp:'Has hecho todos los ejercicios de la Lección ',allp2:'. ¡Felicidades por tu dedicación!',redo:'Repetir el Lesson Check →',n:' de ',ex:' ejercicios hechos',play:'Escuchar',pause:'Pausar'}
 };
@@ -18,7 +18,34 @@ var CSS='#plan{margin:0 0 16px;display:grid;gap:14px}#plan .pc{background:var(--
 +'#plan .wd{background:var(--chip);border:1px solid var(--hl);color:var(--hl);border-radius:99px;padding:2px 12px;font-weight:700}#plan .li{padding:12px 0;border-top:1px solid var(--line);color:var(--ink);text-decoration:none;min-height:44px}#plan .li b{display:block}#plan .li span.s{color:var(--muted);font-size:.8rem}'
 +'#plan .bx{font-size:1.3rem;flex:none;color:var(--muted)}#plan .li.ok .bx{color:var(--hl)}#plan .tg{margin-left:auto;font-size:.72rem;background:var(--chip);border-radius:20px;padding:2px 10px;color:var(--muted)}#plan .go{margin-left:auto;color:var(--hl);font-style:normal;font-size:1.2rem}'
 +'#plan .pl{background:var(--chip);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:14px}#plan .pl button{flex:none;width:44px;height:44px;border-radius:99px;border:0;background:#c9a13b;color:#1a1405;font-size:1.1rem;box-shadow:0 3px 0 #8a6a14;cursor:pointer}#plan .pl button:active{transform:translateY(3px);box-shadow:none}'
-+'#plan .tr{height:6px;background:var(--line);border-radius:9px;margin-top:6px;overflow:hidden}#plan .tr div{height:100%;width:0;background:var(--hl)}#plan .full{display:flex;justify-content:center;margin-top:12px}';
++'#plan .tr{height:6px;background:var(--line);border-radius:9px;margin-top:6px;overflow:hidden}#plan .tr div{height:100%;width:0;background:var(--hl)}#plan .full{display:flex;justify-content:center;margin-top:12px}'
++'#plan .cdf{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem}#plan .cdf b{color:var(--hl);font-size:1.05rem}#plan .cdf .cz{margin-left:auto;background:var(--hl);color:var(--hli);font-weight:700;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;border-radius:10px;padding:10px 14px;text-decoration:none;min-height:44px;display:inline-flex;align-items:center}#plan .cdf [hidden]{display:none!important}#plan .cdf.soon b{text-shadow:0 0 10px rgba(245,197,66,.7)}';
+var ZOOM='https://us06web.zoom.us/j/2447679341';
+/* Countdown strip at the foot of the "next class" card: next lesson of this student from the agenda (own time zone). The Zoom button shows from 10 minutes before the start until 1 hour after it. */
+function countdown(card,L10,es,uid){
+  Gate.sb.from('lessons').select('start_at,end_at').eq('user_id',uid).gte('end_at',new Date().toISOString()).order('start_at').limit(1).then(function(r){
+    var row=r&&r.data&&r.data[0];if(!row)return;
+    var t0=new Date(row.start_at).getTime(),t1=new Date(row.end_at).getTime();if(!(t0>0))return;
+    var loc=es?'es':'pt-BR',when;
+    try{when=new Date(t0).toLocaleString(loc,{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});}catch(e){when=new Date(t0).toLocaleString();}
+    var f=el('div',{class:'cdf'}),sp=el('span'),bt=el('b'),go=el('a',{class:'cz',href:ZOOM,target:'_blank',rel:'noopener',text:L10.cdGo});go.hidden=true;
+    f.append(sp,go);card.append(f);
+    function p2(n){return String(n).padStart(2,'0');}
+    function tick(){
+      if(!f.isConnected){clearInterval(iv);return;}
+      var now=Date.now(),d=t0-now;
+      if(now>=t1){f.hidden=true;clearInterval(iv);return;}
+      go.hidden=!(now>=t0-600000&&now<=t0+3600000);
+      f.classList.toggle('soon',d<=3600000);
+      sp.textContent='';
+      if(d<=0){sp.append(el('b',{text:L10.cdOn}));return;}
+      var days=Math.floor(d/86400000),h=Math.floor(d%86400000/3600000),m=Math.floor(d%3600000/60000),sc=Math.floor(d%60000/1000);
+      if(d<=3600000){sp.append(document.createTextNode(L10.cdNow),el('b',{text:p2(m)+':'+p2(sc)}));}
+      else{var u=es?[' d ',' h ',' min']:[' d ',' h ',' min'];sp.append(document.createTextNode(L10.cdIn),el('b',{text:(days?days+u[0]:'')+(days||h?h+u[1]:'')+m+u[2]}),document.createTextNode(' · '+when));}
+    }
+    var iv=setInterval(tick,1000);tick();
+  },function(){});
+}
 function mount(ctx,o){
   var L10=(o&&o.es)?T.es:T.pt,es=!!(o&&o.es),sec=document.getElementById('plan');
   if(!sec||!window.Gate||!Gate.sb||!ctx||!ctx.user)return;
@@ -79,6 +106,7 @@ function mount(ctx,o){
         c.append(box);
       }
       sec.append(c);
+      try{countdown(c,L10,es,ctx.user.id);}catch(e){}
     }
     /* ---- recommended list ---- */
     var r2=el('div',{class:'pc',style:'padding-bottom:6px'});
