@@ -245,7 +245,8 @@ function mount(c,o){
   function say(t){toastEl.textContent=t;toastEl.classList.add('on');clearTimeout(say.t);say.t=setTimeout(function(){toastEl.classList.remove('on');},1900);}
   var welDone=false,pend=null,wq=[];
   function onWel(fn){if(welDone)setTimeout(fn,350);else wq.push(fn);}
-  function plateLater(i){if(welDone)plate(i);else pend=i;}
+  function warm(i){try{var sq=SEQ[i];if(sq&&sq.t==='L')stPhoto(stn(sq.l-1)+' '+C.city,function(u){if(u){var m=new Image();m.src=u;}});}catch(e){}}
+  function plateLater(i){warm(i);if(welDone)plate(i);else pend=i;}
   /* Photo of a lesson station: searched once on Wikimedia Commons (public domain / CC0 only), then remembered on this device. No photo found or no internet: the drawing stays. */
   var STPH=(function(){try{return JSON.parse(localStorage.getItem('bl-stph')||'{}')||{};}catch(e){return {};}})();
   function stPhoto(q,cb){
@@ -255,7 +256,7 @@ function mount(c,o){
     try{fetch(u).then(function(r){return r.json();}).then(function(j){
       var pg=j&&j.query&&j.query.pages,L=pg?Object.keys(pg).map(function(k){return pg[k];}):[],best=null;
       L.sort(function(x,y){return (x.index||0)-(y.index||0);});
-      for(var n=0;n<L.length&&!best;n++){var ii=L[n].imageinfo&&L[n].imageinfo[0];if(!ii||ii.mime!=='image/jpeg'||ii.width<900||!ii.thumburl)continue;
+      for(var n=0;n<L.length&&!best;n++){var ii=L[n].imageinfo&&L[n].imageinfo[0];if(!ii||ii.mime!=='image/jpeg'||ii.width<1200||!ii.thumburl||/painting|drawing|map\b|poster|logo|plan\b|diagram|stamp|postcard|engraving|print\b|illustration|sketch|arms|ticket|sign\b|poem|album|cover|signature|portrait|statue|bust/i.test(L[n].title||''))continue;
         var lic=((ii.extmetadata&&ii.extmetadata.LicenseShortName&&ii.extmetadata.LicenseShortName.value)||'').toLowerCase();
         if(/^(public domain|pd[ -]|cc0)/.test(lic))best=ii.thumburl;}
       save(best||0);
