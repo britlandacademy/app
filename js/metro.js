@@ -503,8 +503,8 @@ function mount(c,o){
     else{tr.setAttribute('transform','translate(-1690 0)');doors(1);u2.setAttribute('opacity',1);svg.style.transform='scale(6)';ov.style.opacity='0';}
     ov.addEventListener('click',function(){if(kind==='in')end();});
     setTimeout(end,6500);requestAnimationFrame(f);}
-  fxExit=function(cb){if(reduced()||D.getElementById('bl-fx')){cb();return;}try{sessionStorage.setItem('bl-fx','out:'+Date.now());}catch(e){}fxRun('out',cb);};
-  var fxIn=false;try{var fv=sessionStorage.getItem('bl-fx')||'';sessionStorage.removeItem('bl-fx');fxIn=/^in:\d+$/.test(fv)&&Date.now()-(+fv.slice(3))<20000;}catch(e){}
+  fxExit=function(cb){if(reduced()||D.getElementById('bl-fx')){cb();return;}try{localStorage.setItem('bl-fx','out:'+Date.now());}catch(e){}fxRun('out',cb);};
+  var fxIn=false;try{var fv=localStorage.getItem('bl-fx')||'';localStorage.removeItem('bl-fx');fxIn=/^in:\d+$/.test(fv)&&Date.now()-(+fv.slice(3))<20000;}catch(e){}
   if(fxIn&&!reduced()){fxRun('in');return;}
   /* welcome banner: flag + city, 2 seconds */
   var wel=h('div','wel','<div><div class="fw">'+flagHTML(C)+'</div><small>'+tx.next+'</small><h2></h2><div class="ln"><i></i><span></span></div></div>');
@@ -522,5 +522,5 @@ W.Metro={mount:mount,exitFx:function(cb){if(fxExit)fxExit(cb);else cb();},gameOn
     if(found<0)found=Math.max(0,l-1);
     return {city:c.city,line:c.line,color:c.color,ink:c.ink,flagHTML:flagHTML(c),station:c.stn[found%c.stn.length]};}};
 
-try{var __o=sessionStorage.getItem('bl-fx')||'';if(/^out:\d+$/.test(__o)){sessionStorage.removeItem('bl-fx');if(Date.now()-(+__o.slice(4))<20000){var __v=document.createElement('div');__v.style.cssText='position:fixed;inset:0;z-index:400;background:#f1ead6;opacity:1;transition:opacity .5s;pointer-events:none';document.body.appendChild(__v);setTimeout(function(){__v.style.opacity='0';},60);setTimeout(function(){__v.remove();},700);}}}catch(e){}
+try{var __o=localStorage.getItem('bl-fx')||'';if(/^out:\d+$/.test(__o)){localStorage.removeItem('bl-fx');if(Date.now()-(+__o.slice(4))<20000){var __v=document.createElement('div');__v.style.cssText='position:fixed;inset:0;z-index:400;background:#f1ead6;opacity:1;transition:opacity .5s;pointer-events:none';document.body.appendChild(__v);setTimeout(function(){__v.style.opacity='0';},60);setTimeout(function(){__v.remove();},700);}}}catch(e){}
 })();

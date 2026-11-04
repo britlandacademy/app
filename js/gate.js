@@ -338,7 +338,7 @@ function gameConfirm(turnOn){
   var no=['Cancel','Cancelar','Cancelar'],yes=['OK','OK','OK'];
   var ov=el('div',{class:'g-hov',role:'dialog','aria-modal':'true'});
   var close=function(){ov.remove();};
-  var okb=el('button',{type:'button',class:'btn primary',onclick:function(){try{localStorage.setItem('bl-game',turnOn?'1':'0');}catch(e){}if(turnOn){try{sessionStorage.setItem('bl-fx','in:'+Date.now());}catch(e){}}if(turnOn&&prof&&prof.is_admin&&/\/admin(\.html)?\/?$/.test(location.pathname)){location.href='index.html?aluno=1';return;}if(!turnOn&&window.Metro&&Metro.exitFx){close();Metro.exitFx(function(){location.reload();});return;}location.reload();}},gT(yes));
+  var okb=el('button',{type:'button',class:'btn primary',onclick:function(){try{localStorage.setItem('bl-game',turnOn?'1':'0');}catch(e){}if(turnOn){try{localStorage.setItem('bl-fx','in:'+Date.now());}catch(e){}}if(turnOn&&prof&&prof.is_admin&&/\/admin(\.html)?\/?$/.test(location.pathname)){location.href='index.html?aluno=1';return;}if(!turnOn&&window.Metro&&Metro.exitFx){close();Metro.exitFx(function(){location.reload();});return;}location.reload();}},gT(yes));
   var nob=el('button',{type:'button',class:'btn',onclick:close},gT(no));
   ov.append(el('div',{class:'g-hdlg','data-noi18n':'1'},el('h2',{style:'margin:0 0 16px'},gT(tt)),el('div',{style:'display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap'},nob,okb)));
   ov.addEventListener('click',function(e){if(e.target===ov)close();});
@@ -849,7 +849,7 @@ function startTour(force){
         tourPt(document.getElementById('bl-tour'));}));});
       dm.append(lv,dq,dr,dfb);sheet.append(dm);
       var ga=el('div',{class:'tr-f'});
-      ga.append(TB('Activate Game Mode','dm',function(){try{localStorage.setItem('bl-game','1');sessionStorage.setItem('bl-fx','in:'+Date.now());}catch(e){}seen();location.reload();}),el('span',{style:'font-size:.85rem;color:#475671'},'You can switch it any time in the menu on your picture.'));
+      ga.append(TB('Activate Game Mode','dm',function(){try{localStorage.setItem('bl-game','1');localStorage.setItem('bl-fx','in:'+Date.now());}catch(e){}seen();location.reload();}),el('span',{style:'font-size:.85rem;color:#475671'},'You can switch it any time in the menu on your picture.'));
       sheet.append(ga);
     }
     if(s.last){
