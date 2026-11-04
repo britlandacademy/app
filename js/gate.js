@@ -4,7 +4,7 @@
 (function(){
 'use strict';
 var CFG=window.CALLAN_CFG||{};
-(function(){try{var B=window.BL_BASE||'',h=document.head,l=document.createElement('link');l.rel='stylesheet';l.href=B+'js/fx.css';h.appendChild(l);var sc=document.createElement('script');sc.src=B+'js/fx.js';h.appendChild(sc);}catch(e){}})();
+(function(){try{var B=window.BL_BASE||'',h=document.head,l=document.createElement('link');l.rel='stylesheet';l.href=B+'js/fx.css';h.appendChild(l);var sc=document.createElement('script');sc.src=B+'js/fx.js';h.appendChild(sc);var s2=document.createElement('script');s2.src=B+'js/loadfx.js';s2.onload=function(){try{ldMount();}catch(e){}};h.appendChild(s2);}catch(e){}})();
 var COURSE=window.BL_COURSE||{};
 try{var _u=document.createElement('link');_u.rel='stylesheet';_u.href=(window.BL_BASE||'')+'js/ui.css?v='+(window.BL_VERSION||'1');document.head.appendChild(_u);}catch(e){} /* per-course settings (Spanish sets its own in espanol/js/config.js) */
 var LIB=['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js',
@@ -100,17 +100,33 @@ var LDCSS='.g-ld{display:flex;flex-direction:column;align-items:center;justify-c
 '.bl-sk{display:block;border-radius:10px;background:linear-gradient(90deg,rgba(128,128,128,.16),rgba(128,128,128,.30),rgba(128,128,128,.16));background-size:200% 100%;animation:gSk 1.4s ease-in-out infinite}'+
 '@keyframes gSk{0%{background-position:200% 0}100%{background-position:-200% 0}}'+
 '@media(prefers-reduced-motion:reduce){.g-ld img,.g-ld .bar i,.bl-sk{animation:none}}';
+var LD=null,LDP=0;
+function ldOn(){try{return localStorage.getItem('bl-fx')!=='0';}catch(e){return true;}}
+function ldProg(p){if(p>LDP)LDP=p;if(LD)LD.progress(LDP);}
+function ldMount(){
+  if(LD||!overlay||!window.BLLoad||!ldOn())return;
+  var box=overlay.querySelector('.g-ld');if(!box)return;
+  var course=COURSE.id==='es'?'es':'en',cp=null,bd='';
+  try{var c=cachedAcct();cp=c&&c.prof;}catch(e){}
+  bd=String((prof&&prof.birthdate)||(cp&&cp.birthdate)||'').slice(5,10);
+  var ef=null;
+  try{ef=BLLoad.pick(new Date(),course,bd);if(ef==='aniversario-aluno'){var k='bl-bdfx',t=isoToday();if(localStorage.getItem(k)===t)ef=BLLoad.pick(new Date(),course,'');else localStorage.setItem(k,t);}}catch(e){}
+  box.textContent='';box.classList.add('g-ld2');
+  LD=BLLoad.mount(box,{effect:ef,course:course});LD.progress(LDP);
+}
+function ldEnd(cb){if(!LD){cb();return;}var d=false,go=function(){if(d)return;d=true;try{LD.destroy();}catch(e){}LD=null;cb();};LD.finish(go);setTimeout(go,1700);}
 function loadingView(){
   var o=showOverlay();o.setAttribute('aria-label','Loading');o.setAttribute('aria-busy','true');
   o.append(el('div',{class:'g-ld',role:'status'},el('img',{src:(window.BL_BASE||'')+'img/britland-shield.png',alt:''}),el('div',{class:'bar'},el('i',{}))));
+  ldProg(.08);try{ldMount();}catch(e){}
 }
 function injectCss(){var s=document.createElement('style');s.textContent=CSS+CSS2+LDCSS+(COURSE.css||'');document.head.append(s);}
 
 function showOverlay(){
   if(!overlay){if(window.I18N&&I18N.def)I18N.def(COURSE.loginLang||'pt');overlay=el('div',{class:'g-ov',role:'dialog','aria-modal':'true','aria-label':'Sign in'});document.body.append(overlay);}
-  overlay.textContent='';overlay.removeAttribute('aria-busy');overlay.setAttribute('aria-label','Sign in');return overlay;
+  if(LD){try{LD.destroy();}catch(e){}LD=null;}overlay.textContent='';overlay.removeAttribute('aria-busy');overlay.setAttribute('aria-label','Sign in');return overlay;
 }
-function hideOverlay(){if(overlay){overlay.remove();overlay=null;if(window.I18N){if(I18N.after)I18N.after();else if(I18N.def)I18N.def(COURSE.uiLang||'en');}}}
+function hideOverlay(){if(LD){try{LD.destroy();}catch(e){}LD=null;}if(overlay){overlay.remove();overlay=null;if(window.I18N){if(I18N.after)I18N.after();else if(I18N.def)I18N.def(COURSE.uiLang||'en');}}}
 function langRow(){return window.I18N?el('div',{class:'g-langrow'},window.I18N.selector(true)):null;}
 function brand(){return el('p',{class:'g-hint'},'Student Area - Teacher Paulo Cruz');}
 
@@ -892,10 +908,13 @@ function enter(){
     if(!OPTS.admin&&upto()<1&&!(!BUS&&(prof.business_upto||0)>0&&(location.pathname.split('/').pop()||'index.html')==='index.html')){
       message('No lessons yet',['Your access is approved, but no lesson has been released to you yet. Talk to your teacher.'],[btn('Check again',route),btn('Sign out',signOut,true)]);return;
     }
-    return loadGates().then(function(){return loadContent(OPTS.kinds);}).then(function(){
+    try{sb.from('app_settings').select('value').eq('key','loading_fx').maybeSingle().then(function(r){if(r&&!r.error&&r.data&&r.data.value){try{localStorage.setItem('bl-fxcfg',JSON.stringify(r.data.value));}catch(e){}if(window.BLLoad)BLLoad.cfg=r.data.value;}},function(){});}catch(e){}
+    return loadGates().then(function(){ldProg(.68);return loadContent(OPTS.kinds);}).then(function(){ldProg(.82);
       return OPTS.attempts?(Array.isArray(OPTS.attempts)?Promise.all(OPTS.attempts.map(fetchAttempts)).then(function(x){return [].concat.apply([],x);}):fetchAttempts(OPTS.attempts)):[];
     }).then(function(att){
-      function fin(){
+      ldProg(.94);
+      function fin(){ldEnd(fin2);}
+      function fin2(){
         hideOverlay();applyServerPrefs();if(OFF)offBanner(true);else flushQ();if(!OPTS.bare){addBar();loadProfile(paintAvatars);try{thanksPay();}catch(e){}try{birthdayParty();}catch(e){}try{profilePrompts();}catch(e){}}
         /* the streak counts finished activities only (see saveAttempt) */
         CB({user:user,profile:prof,attempts:att,upto:upto()});
@@ -907,7 +926,7 @@ function enter(){
 function route(){
   if(navigator.onLine===false){var c0=cachedAcct();if(c0){user=c0.user;prof=c0.prof;OFF=true;Promise.resolve().then(enter).catch(function(e){message('Could not load',[niceError(e)],[btn('Try again',route)]);});return;}}
   sb.auth.getSession().then(function(r){
-    var s=r.data&&r.data.session;
+    ldProg(.35);var s=r.data&&r.data.session;
     if(!s){showLogin('in');return;}
     user=s.user;
     return sb.from('profiles').select('*').eq('id',user.id).maybeSingle().then(function(pr){
@@ -915,7 +934,7 @@ function route(){
       if(pr.error||!pr.data){
         message('Account not ready',['We could not read your account. Try again in a moment.'],[btn('Try again',route),btn('Sign out',signOut,true)]);return;
       }
-      prof=pr.data;cacheAcct();
+      prof=pr.data;cacheAcct();ldProg(.55);
       return enter();
     });
   }).catch(function(e){
@@ -938,6 +957,7 @@ function start(opts,cb){
   injectCss();
   loadingView();
   loadLib(0,function(err){
+    ldProg(.2);
     if(err){message('No connection',['Could not load the sign-in system. Check your internet and reload the page.'],[btn('Reload',function(){location.reload();})]);return;}
     sb=window.supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
     window.Gate.sb=sb;

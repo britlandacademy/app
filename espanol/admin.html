@@ -177,6 +177,7 @@ details.h{background:var(--surface);border:1px solid var(--line);border-radius:1
   <div class="tw"><table id="aulist" hidden></table></div>
 </section></div>
 <div class="sc" id="s-stats"><section class="card" aria-labelledby="h-st"><h2 id="h-st">Estatísticas</h2><div id="statsBox" data-noi18n="1"></div></section></div>
+<div class="sc" id="s-fx"><section class="card" aria-labelledby="h-fx"><h2 id="h-fx">Efeitos de carregamento</h2><div id="fxBox" data-noi18n="1"></div></section></div>
 <div class="sc" id="s-place"><section class="card" aria-labelledby="h-pl"><h2 id="h-pl">Placement test results</h2>
   <p class="hint">Public link to give to prospective students (no login needed): <b id="pllink"></b></p>
   <div class="tw"><table id="pltab"></table></div>
@@ -191,6 +192,8 @@ details.h{background:var(--surface);border:1px solid var(--line);border-radius:1
 <script src="../js/streak.js" charset="utf-8"></script>
 <script src="../js/contract-admin.js" charset="utf-8"></script>
 <script src="../js/stats-admin.js" charset="utf-8"></script>
+<script src="../js/loadfx.js"></script>
+<script src="../js/fx-admin.js" charset="utf-8"></script>
 <script src="../js/agenda.js" charset="utf-8"></script>
 <script>
 Gate.start({admin:true,kinds:[]},function(ctx){
@@ -672,8 +675,8 @@ async function xReview(uid,st,n,accept){
 /* ----- tabs and home ----- */
 const IC={stats:'M4 20V10M10 20V4M16 20v-7M22 20H2',home:'M3 11l9-8 9 8M5 10v10h14V10M10 20v-6h4v6',agenda:'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',students:'M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM2.5 20c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6M16 4.5a3.5 3.5 0 0 1 0 6.5M18 14.5c2 .7 3.5 2.5 3.5 5.5',grades:'M4 20V10M10 20V4M16 20v-7M22 20H2',more:'M5 12h.01M12 12h.01M19 12h.01',today:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3 2',exams:'M4 4h16v16H4zM8 12l3 3 5-6',pay:'M3 6h18v12H3zM3 10h18M7 15h3',content:'M12 6c-2-1.5-5-2-8-2v14c3 0 6 .5 8 2 2-1.5 5-2 8-2V4c-3 0-6 .5-8 2zM12 6v14',place:'M6 17V11a6 6 0 0 1 12 0v6l2 2H4zM10 21h4'};
 function ico(k){const d=document.createElement('div');d.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+IC[k]+'"/></svg>';return d.firstChild;}
-const TABS=[['home','Início'],['agenda','Agenda'],['today','Hoje'],['students','Alunos'],['grades','Notas'],['exams','Exames'],['pay','Pagamentos','payments.html'],['content','Conteúdo'],['place','Placement'],['stats','Estatísticas']];
-const BAR=['home','agenda','students','grades','more'],MORE=['more','today','exams','content','place','stats'];
+const TABS=[['home','Início'],['agenda','Agenda'],['today','Hoje'],['students','Alunos'],['grades','Notas'],['exams','Exames'],['pay','Pagamentos','payments.html'],['content','Conteúdo'],['place','Placement'],['stats','Estatísticas'],['fx','Efeitos']];
+const BAR=['home','agenda','students','grades','more'],MORE=['more','today','exams','content','place','stats','fx'];
 let OVERDUE=null,PLN=null,CUR='home';
 function markTabs(){
   document.querySelectorAll('#tpTabs .tp-tab').forEach(x=>x.classList.toggle('on',x.dataset.k===CUR||(x.dataset.k==='more'&&MORE.includes(CUR))));
@@ -684,6 +687,7 @@ function go(k){
   CUR=k;const sec=k==='agenda'?'home':k;
   document.querySelectorAll('.sc').forEach(x=>x.classList.toggle('on',x.id==='s-'+sec));
   markTabs();
+  if(k==='fx'&&window.FxTab)FxTab.mount($('fxBox'),{sb:sb,el:el});
   if(k==='stats'&&window.StatsTab)StatsTab.mount($('statsBox'),{sb:sb,el:el,profiles:()=>PROFILES,att:()=>ATT});
   try{history.replaceState(null,'','#'+k);}catch(e){}
   if(k==='agenda'){const b=$('agendaBox');if(b)b.scrollIntoView();}else scrollTo(0,0);
