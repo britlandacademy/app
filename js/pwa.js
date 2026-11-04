@@ -1,9 +1,11 @@
 /* Britland Academy: registers the service worker and tells the student when a new version is ready. */
 (function(){
 'use strict';
-/* o app sempre abre no modo normal: a cada nova abertura (sessão nova) desliga o Modo Jogo; ligar de novo vale até fechar o app */
-try{if(!sessionStorage.getItem('bl-boot')){sessionStorage.setItem('bl-boot','1');localStorage.setItem('bl-game','0');}}catch(e){}
-window.BL_VERSION='1.9.61'; /* keep equal to VERSION in sw.js */
+/* o app abre no modo normal: o Modo Jogo desliga se o app ficou parado por mais de 30 min; ligar vale enquanto o app estiver em uso
+   (nao usa sessionStorage: alguns navegadores/PWAs zeram a cada pagina e o jogo "voltava" para Lesson Checks) */
+try{var __n=Date.now(),__s=+localStorage.getItem('bl-seen')||0;if(!__s||__n-__s>30*60e3)localStorage.setItem('bl-game','0');localStorage.setItem('bl-seen',String(__n));
+  var __t=function(){try{localStorage.setItem('bl-seen',String(Date.now()));}catch(e){}};setInterval(__t,60000);addEventListener('pagehide',__t);document.addEventListener('visibilitychange',__t);}catch(e){}
+window.BL_VERSION='1.9.62'; /* keep equal to VERSION in sw.js */
 /* ---- error codes: erros são gravados em silêncio em app_errors (aba Estatísticas); o aluno não vê nada ---- */
 (function(){
 var V=window.BL_VERSION,seen={},sent=0,queue=[];
