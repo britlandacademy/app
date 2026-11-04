@@ -520,7 +520,7 @@ function addBar(){
     var es=COURSE.id==='es',other=es?'bl-has-en':'bl-has-es',has=localStorage.getItem(other)==='1',B=window.BL_BASE||'';
     localStorage.setItem(es?'bl-has-es':'bl-has-en','1');
     var lbl=es?(has?'Cambiar a English':'Conocer el curso de Inglés'):(has?'Switch to Español':'Discover the Spanish course');
-    var href=has?(es?B+'index.html':'espanol/index.html'):B+'curso.html?c='+(es?'en':'es');
+    var href=has?(es?B+'index.html':'espanol/index.html'):'https://www.britlandacademy.co.uk/';
     var it=el('a',{class:'g-mi',role:'menuitem',href:href},el('b',{style:'width:20px;text-align:center;font-size:11px;color:var(--accent,#c9a13b)'},es?'EN':'ES'),el('span',{},lbl));
     mn.append(it);
   }catch(e){}})();
