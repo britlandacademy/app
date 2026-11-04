@@ -507,6 +507,7 @@ function gameNav(){
   document.body.append(nav);document.body.classList.add('g-gamebody');
 }
 function addBar(){
+  try{var pf=(location.pathname.split('/').pop()||'index.html').replace(/\.html$/,'');if(prof&&prof.is_admin&&!OPTS.admin&&pf!=='index'&&pf!=='admin'&&pf!=='payments'&&pf!=='pagamentos'&&pf!=='loadtest')localStorage.setItem('bl-stay-student',String(Date.now()));}catch(e){}
   if(bar)bar.remove();
   var kids=[];
   var tabsNav=document.getElementById('tabs');
