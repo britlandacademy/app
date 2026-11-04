@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Britland Academy · English & Español</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="description" content="Aprenda inglês e espanhol com método próprio na Britland Academy. Aula experimental gratuita.">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="stylesheet" href="js/fonts.css">
+<style>
+:root{--navy:#0b1733;--navy2:#10224a;--gold:#c9a13b;--gold2:#e4c06a;--ink:#f2f5fa;--mut:#c3cde2;--uk1:#012169;--uk2:#c8102e;--es1:#aa151b;--es2:#f1bf00}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--navy);color:var(--ink);font-family:BLSans,Montserrat,Arial,sans-serif;overflow-x:hidden;line-height:1.55}
+h1,h2,h3{font-family:BLSerif,Lora,Georgia,serif;line-height:1.1;text-wrap:balance}
+a{color:inherit}
+#dust{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+/* ---------- hero ---------- */
+.hero{position:relative;height:100svh;min-height:560px;display:flex;overflow:hidden}
+.pane{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:90px 16px 40px;cursor:pointer;transition:flex .7s cubic-bezier(.2,.8,.2,1);overflow:hidden;text-decoration:none;color:#fff}
+.pane.uk{background:radial-gradient(120% 90% at 20% 10%,#2748c8 0,var(--uk1) 45%,#0a0f3a 100%)}
+.pane.es{background:radial-gradient(120% 90% at 80% 10%,#ffd23f 0,#e0482b 40%,var(--es1) 100%)}
+.hero:hover .pane{flex:.8}.hero .pane:hover{flex:1.5}
+.pane::before{content:"";position:absolute;inset:0;background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.28),transparent 60%);opacity:0;transition:opacity .3s}
+.pane:hover::before{opacity:1}
+.pane canvas{width:min(78%,360px);height:auto;aspect-ratio:2/1;filter:drop-shadow(0 18px 24px rgba(0,0,0,.45));transform:rotate(-3deg);transition:transform .6s}
+.pane:hover canvas{transform:rotate(0) scale(1.06)}
+.pane h2{font-size:clamp(40px,7vw,84px);letter-spacing:-.01em;text-shadow:0 4px 24px rgba(0,0,0,.35)}
+.pane p{font-size:clamp(14px,1.6vw,18px);max-width:30ch;text-align:center;opacity:.95}
+.go{margin-top:6px;display:inline-flex;gap:10px;align-items:center;font-weight:700;border:2px solid rgba(255,255,255,.85);padding:10px 22px;border-radius:999px;background:rgba(255,255,255,.12);backdrop-filter:blur(4px);transition:.3s}
+.pane:hover .go{background:#fff;color:#111}
+.pane.es .go{border-color:#fff}
+.top{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:5;display:flex;align-items:center;gap:10px;padding:8px 18px 8px 10px;border-radius:999px;background:rgba(11,23,51,.88);border:1px solid #27407a;pointer-events:none}
+.top img{height:38px}.top b{font:700 18px BLSerif,Georgia,serif;display:block;line-height:1}.top i{font:500 9.5px BLSans,Arial;letter-spacing:.14em;color:#ec4654;font-style:normal}
+.scrollhint{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:5;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#fff;opacity:.8;animation:bob 2s ease-in-out infinite;pointer-events:none}
+@keyframes bob{50%{transform:translate(-50%,8px)}}
+@media(max-width:700px){.hero{flex-direction:column}.pane{padding:76px 16px 20px;gap:10px}.pane canvas{width:min(54%,230px)}.hero:hover .pane,.hero .pane:hover{flex:1}.pane p{display:none}.scrollhint{display:none}}
+/* ---------- course sections ---------- */
+.course{position:relative;padding:clamp(70px,10vw,130px) max(18px,env(safe-area-inset-left)) clamp(60px,8vw,110px);overflow:hidden}
+.course.uk{background:linear-gradient(180deg,#0a0f3a 0,#12306e 55%,#0b1733 100%)}
+.course.es{background:linear-gradient(180deg,#0b1733 0,#5d1219 40%,#b0301c 100%)}
+.in{max-width:1080px;margin:0 auto;position:relative;z-index:2}
+.tag{display:inline-block;font-weight:700;letter-spacing:.22em;font-size:12px;text-transform:uppercase;padding:6px 14px;border-radius:999px}
+.uk .tag{background:var(--uk2);color:#fff}.es .tag{background:var(--es2);color:#3a0a0a}
+.course h2.big{font-size:clamp(38px,6.4vw,76px);margin:16px 0 14px}
+.course h2.big em{font-style:normal;background:linear-gradient(90deg,#fff,var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{font-size:clamp(16px,2vw,20px);color:var(--mut);max-width:46ch}
+.stage{display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,5vw,60px);align-items:center;margin-top:50px}
+@media(max-width:820px){.stage{grid-template-columns:1fr}}
+.mapbox{position:relative;max-width:440px;margin:0 auto;width:100%}
+.map{width:100%;height:auto;overflow:visible;filter:drop-shadow(0 20px 30px rgba(0,0,0,.4))}
+.map .land{fill:url(#g);fill-opacity:0;stroke:var(--gold2);stroke-width:3;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;transition:fill-opacity 1.4s 1.6s}
+.map.on .land{animation:draw 2.4s ease forwards;fill-opacity:.9}
+@keyframes draw{to{stroke-dashoffset:0}}
+.dot{cursor:pointer;outline:none}.dot circle.c{fill:#fff;stroke:var(--gold);stroke-width:3}
+.dot circle.p{fill:none;stroke:#fff;stroke-width:2;transform-origin:center;transform-box:fill-box;animation:ping 2.4s ease-out infinite}
+.dot.act circle.c{fill:var(--gold2);r:11}
+@keyframes ping{0%{transform:scale(.5);opacity:.9}100%{transform:scale(3);opacity:0}}
+.dot text{font:700 15px BLSans,Arial;fill:#fff;paint-order:stroke;stroke:rgba(0,0,0,.55);stroke-width:4px;pointer-events:none}
+.pop{position:absolute;z-index:20;width:min(280px,74vw);border-radius:18px;overflow:hidden;background:var(--navy2);border:2px solid var(--gold2);box-shadow:0 24px 50px rgba(0,0,0,.6);pointer-events:none;opacity:0;transform:translateY(12px) scale(.9);transition:opacity .25s,transform .35s cubic-bezier(.2,.8,.2,1)}
+.pop.on{opacity:1;transform:none}
+.pop .pi{aspect-ratio:16/10;background:linear-gradient(135deg,#1a3a82,#10224a) center/cover no-repeat;position:relative}
+.pop .pi::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.72))}
+.pop b{position:absolute;left:14px;bottom:36px;z-index:2;font:700 21px Lora,Georgia,serif;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+.pop small{display:block;padding:7px 14px;font-size:10.5px;color:var(--mut)}
+.cap{margin-top:18px;min-height:112px;background:rgba(255,255,255,.1);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:16px 20px;transition:.3s}
+.cap b{font:700 22px BLSerif,Georgia,serif;display:block;color:var(--gold2)}.cap span{font-size:15px}
+.facts{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.fact{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);border-radius:22px;padding:20px 16px;text-align:center;backdrop-filter:blur(6px)}
+.fact b{font:700 clamp(34px,5vw,52px) BLSerif,Georgia,serif;color:var(--gold2);display:block;line-height:1}.fact span{font-size:13.5px;color:var(--mut);display:block;margin-top:8px}
+.flagrow{display:flex;justify-content:center;margin:0 0 26px}
+.flagrow canvas{width:min(100%,300px);aspect-ratio:2/1;filter:drop-shadow(0 14px 18px rgba(0,0,0,.45))}
+/* ---------- método ---------- */
+.metodo{padding:clamp(70px,9vw,120px) max(18px,env(safe-area-inset-left));background:linear-gradient(180deg,#b0301c 0,#0b1733 30%)}
+.metodo h2,.app h2,.contato h2{font-size:clamp(32px,5vw,56px);text-align:center;margin-bottom:12px}
+.sub{text-align:center;color:var(--mut);max-width:56ch;margin:0 auto 44px;font-size:clamp(15px,1.8vw,18px)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;max-width:1080px;margin:0 auto}
+.step{position:relative;background:var(--navy2);border:1px solid #27407a;border-radius:24px;padding:26px 20px;overflow:hidden;transition:transform .3s,border-color .3s}
+.step:hover{transform:translateY(-6px);border-color:var(--gold)}
+.step i{font:700 56px BLSerif,Georgia,serif;font-style:normal;color:rgba(201,161,59,.28);position:absolute;right:14px;top:4px}
+.step h3{font-size:21px;margin-bottom:8px;color:var(--gold2)}.step p{font-size:15px;color:var(--mut)}
+/* ---------- app ---------- */
+.app{padding:clamp(60px,8vw,110px) max(18px,env(safe-area-inset-left));background:radial-gradient(80% 60% at 50% 0,#1a3a82 0,#0b1733 70%);overflow:hidden}
+.phones{display:flex;justify-content:center;gap:clamp(12px,3vw,34px);flex-wrap:wrap;perspective:1200px}
+.phone{width:216px;height:430px;border-radius:34px;background:var(--navy);border:3px solid #27407a;box-shadow:0 30px 50px rgba(0,0,0,.5),inset 0 0 0 2px #0b1733;padding:18px 14px;position:relative;overflow:hidden;transition:transform .5s}
+.phone:nth-child(1){transform:rotateY(14deg) rotateZ(-3deg)}.phone:nth-child(3){transform:rotateY(-14deg) rotateZ(3deg)}.phone:nth-child(2){margin-top:-18px}
+.phone:hover{transform:none;z-index:3}
+.phone .pill{width:62px;height:6px;border-radius:99px;background:#27407a;margin:0 auto 14px}
+.phone h4{font:700 15px BLSerif,Georgia,serif;color:var(--gold2);margin-bottom:10px;text-align:center}
+.q{background:var(--navy2);border:1px solid #27407a;border-radius:14px;padding:10px;font-size:12.5px;margin-bottom:8px}
+.ch{display:block;border-radius:999px;padding:8px;font-size:12px;font-weight:700;text-align:center;margin-bottom:7px;border:1px solid #27407a}
+.ch.ok{background:var(--gold);color:#1a1405;box-shadow:0 3px 0 #8a6d1f;border-color:var(--gold)}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px}.tiles div{height:64px;border-radius:14px;background:linear-gradient(135deg,#1a3a82,#10224a);border:1px solid #27407a;display:flex;align-items:center;justify-content:center;font-size:26px}
+.tiles div.m{background:linear-gradient(135deg,#c9a13b,#e4c06a);animation:glow 2s infinite}
+@keyframes glow{50%{filter:brightness(1.25)}}
+.cert{background:#faf8f3;color:#17202f;border-radius:12px;padding:14px 10px;text-align:center;border:3px double #c9a13b}
+.cert img{height:44px}.cert b{display:block;font:700 15px BLSerif,Georgia,serif;margin:6px 0 2px}.cert small{font-size:10px;color:#5a6577}
+.cert .ln{height:2px;background:#c9a13b;margin:10px 18px}
+.bar2{height:8px;border-radius:99px;background:#27407a;margin:12px 4px 0;overflow:hidden}.bar2 i{display:block;height:100%;width:62%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:99px}
+/* ---------- contato ---------- */
+.contato{padding:clamp(70px,9vw,130px) max(18px,env(safe-area-inset-left));text-align:center;background:linear-gradient(135deg,#012169 0,#7a1b3a 50%,#b0301c 100%);position:relative;overflow:hidden}
+.contato .sub{margin-bottom:28px}
+.cta{display:inline-flex;align-items:center;gap:12px;background:var(--gold);color:#1a1405;font-weight:700;font-size:clamp(16px,2.2vw,20px);padding:18px 38px;border-radius:999px;text-decoration:none;box-shadow:0 6px 0 #8a6d1f,0 18px 40px rgba(0,0,0,.35);transition:transform .15s,box-shadow .15s;position:relative;overflow:hidden}
+.cta:hover{transform:translateY(-3px)}.cta:active{transform:translateY(5px);box-shadow:0 1px 0 #8a6d1f}
+.cta::after{content:"";position:absolute;top:0;left:-70%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.65),transparent);transform:skewX(-20deg);animation:shine 3s infinite}
+@keyframes shine{0%,60%{left:-70%}100%{left:130%}}
+.two{display:flex;gap:12px;justify-content:center;margin-top:22px;flex-wrap:wrap}
+.two a{font-size:14px;color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.5);padding:8px 18px;border-radius:999px}
+.two a:hover{background:#fff;color:#111}
+footer{padding:26px 16px calc(26px + env(safe-area-inset-bottom,0px));text-align:center;font-size:13px;color:var(--mut);background:#070d20}
+/* reveal */
+.rv{opacity:0;transform:translateY(34px);transition:opacity .9s,transform .9s cubic-bezier(.2,.8,.2,1)}
+.rv.in2{opacity:1;transform:none}.rv.d1{transition-delay:.12s}.rv.d2{transition-delay:.24s}.rv.d3{transition-delay:.36s}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}.map .land{stroke-dashoffset:0;fill-opacity:.9}}
+</style>
+</head>
+<body>
+<canvas id="dust"></canvas>
+
+<header class="hero" id="top">
+  <div class="top"><img src="img/britland-shield.png" alt=""><div><b>Britland</b><i>ACADEMY</i></div></div>
+  <a class="pane uk" href="#english"><canvas class="flag" data-f="uk" width="600" height="300"></canvas><h2>English</h2><p>Londres, Oxford, Liverpool… o mundo inteiro fala inglês.</p><span class="go">Conhecer o curso <b>→</b></span></a>
+  <a class="pane es" href="#espanol"><canvas class="flag" data-f="es" width="600" height="300"></canvas><h2>Español</h2><p>Madrid, Sevilla, Barcelona… 500 milhões de pessoas falam espanhol.</p><span class="go">Conhecer o curso <b>→</b></span></a>
+  <div class="scrollhint">escolha seu idioma</div>
+</header>
+
+<section class="course uk" id="english"><div class="in">
+  <span class="tag rv">English course</span>
+  <h2 class="big rv d1">Fale inglês <em>de verdade</em></h2>
+  <p class="lead rv d2">Do primeiro dia à conversação fluente: 12 stages, com aulas online individuais ou em turmas pequenas.</p>
+  <div class="stage">
+    <div class="rv"><div class="mapbox">
+      <svg class="map" viewBox="0 0 520 785" data-city="uk" role="img" aria-label="Mapa do Reino Unido">
+        <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2748c8"/><stop offset="1" stop-color="#c8102e"/></linearGradient></defs>
+        <path class="land" pathLength="1" d="M48.5 325.0L48.0 326.7L58.6 326.9L62.7 319.1L63.3 313.7L74.2 315.3L88.8 308.9L101.1 312.5L107.3 311.7L111.7 316.2L110.4 324.6L114.9 326.5L114.4 332.9L119.6 336.6L124.1 347.4L128.5 350.8L124.2 345.3L126.7 344.2L129.9 349.9L127.8 355.7L119.4 360.8L117.5 364.4L118.5 366.8L126.8 360.1L135.9 360.1L137.9 362.1L141.4 374.9L143.4 377.7L140.4 388.1L141.1 389.1L139.7 390.8L135.8 385.1L137.5 380.1L135.9 373.7L130.8 369.4L129.2 369.3L128.5 373.0L133.2 374.9L130.9 375.8L132.5 376.7L133.2 381.6L131.4 387.2L128.9 389.7L135.6 386.8L137.7 391.9L135.7 396.5L131.7 400.7L127.4 398.9L120.9 400.6L119.2 412.0L111.5 418.1L108.7 418.1L107.8 416.9L109.2 416.3L102.6 412.5L96.6 412.6L95.1 411.4L93.9 415.7L80.7 417.6L78.5 415.2L80.2 406.2L77.3 403.5L74.7 404.8L72.5 403.1L67.5 396.4L68.9 395.0L67.7 390.6L60.4 384.2L51.3 391.2L50.4 394.9L53.7 398.7L53.4 401.2L48.4 403.6L48.5 406.3L46.7 410.0L45.8 410.0L45.9 406.5L44.0 407.9L45.2 411.0L40.7 410.4L39.7 408.3L35.1 410.1L29.5 408.8L24.5 403.3L16.6 402.3L15.4 395.5L11.7 394.3L9.0 389.1L6.1 388.4L0.9 381.8L0.0 379.8L5.3 377.5L9.0 372.4L15.0 373.4L24.4 366.9L24.2 365.1L17.1 364.5L12.8 358.6L17.1 355.5L21.1 357.8L27.4 354.3L33.0 354.6L33.0 349.9L37.6 343.6L40.2 331.0L42.8 327.6L48.5 325.0Z M288.0 636.1L277.9 642.5L273.5 642.8L271.9 640.9L261.5 650.8L262.2 652.8L260.9 655.8L242.3 655.8L235.9 648.8L232.0 647.4L230.3 640.9L226.5 635.7L219.5 636.5L218.2 638.4L219.6 640.9L216.9 641.8L211.9 640.7L207.8 643.1L203.1 641.6L203.1 636.1L206.0 633.6L206.7 635.5L213.5 634.0L214.6 630.8L201.8 630.6L198.4 626.2L202.0 625.6L199.3 624.7L199.1 620.6L197.4 623.0L194.9 622.0L195.9 624.3L194.1 625.4L184.5 625.7L182.8 627.0L181.0 633.1L173.1 633.6L169.0 637.9L163.6 635.2L163.3 632.5L159.7 630.5L174.1 627.4L172.3 623.0L175.1 620.0L169.4 621.8L171.2 623.0L170.6 627.0L158.1 627.0L156.4 629.6L156.5 628.0L152.9 625.6L160.2 621.5L159.4 614.5L154.4 612.6L149.7 613.8L150.4 609.6L159.7 605.3L161.3 603.7L162.3 599.2L174.2 600.2L174.4 597.2L177.6 595.7L180.6 591.4L183.0 592.8L182.9 590.1L184.9 589.1L192.0 589.1L198.1 583.2L201.7 582.1L207.9 576.4L212.5 568.7L215.3 553.9L221.0 552.1L215.5 552.7L211.7 547.2L215.3 538.4L218.9 535.4L215.7 536.6L210.4 528.4L212.1 526.7L211.4 521.5L214.2 518.1L197.0 521.2L193.1 524.9L192.0 527.1L192.7 529.2L191.2 530.4L187.1 528.0L178.4 530.4L187.1 517.9L199.5 508.9L200.4 501.3L201.5 502.3L208.9 491.9L227.1 485.4L224.6 481.1L230.3 482.7L233.1 485.6L239.0 485.4L253.3 479.8L265.9 490.3L266.1 486.7L260.8 476.1L267.5 472.3L269.9 473.9L273.0 482.3L276.7 485.5L282.3 484.5L286.2 479.8L281.0 482.6L274.5 479.9L265.2 461.2L269.4 452.7L275.8 445.2L271.3 445.2L268.0 442.1L267.6 429.8L278.0 424.3L277.4 423.3L279.4 419.9L276.0 421.2L274.8 418.3L281.2 410.1L278.1 403.9L280.4 402.3L281.2 399.0L273.7 407.4L270.6 407.0L269.7 402.3L268.0 401.4L267.3 406.8L262.9 412.4L262.9 415.6L257.9 411.3L257.5 405.7L259.3 405.2L259.7 397.7L258.4 399.1L258.4 403.1L254.5 404.1L249.2 396.4L248.9 390.5L237.4 375.2L243.9 356.4L247.5 352.8L250.2 341.8L257.2 340.3L253.9 338.5L256.1 336.4L259.4 335.4L264.1 337.4L269.4 335.4L265.8 335.4L269.4 333.5L244.3 332.0L243.0 333.3L240.7 331.7L240.1 341.8L228.1 344.3L227.1 343.3L227.8 341.5L225.7 345.3L227.5 347.1L217.6 352.2L215.3 350.9L214.9 346.5L213.5 348.4L213.9 351.4L211.8 351.7L207.3 346.9L207.8 343.3L204.1 345.8L199.6 343.4L197.2 339.6L196.4 345.2L200.2 349.8L200.0 358.1L198.2 360.1L192.3 358.3L187.0 351.5L173.3 343.3L168.3 348.9L172.9 359.2L173.3 364.4L168.4 361.9L168.3 355.7L157.7 342.2L156.5 335.4L157.0 330.5L159.9 328.4L162.3 332.5L162.8 337.5L166.2 338.5L163.3 328.9L165.5 318.6L172.9 311.2L174.7 301.5L179.1 294.0L184.2 290.9L185.9 286.6L184.2 282.9L182.3 282.3L183.4 280.6L182.0 276.8L175.5 273.9L175.9 272.4L170.1 267.4L173.2 263.1L171.9 248.4L176.4 245.0L193.1 247.7L183.0 244.6L177.3 239.6L175.1 234.1L174.1 234.6L174.4 236.6L177.5 241.9L173.7 242.3L173.0 235.2L178.7 222.6L173.7 231.0L172.2 230.4L171.5 225.5L170.1 226.1L171.9 233.9L171.0 236.3L171.6 242.1L168.3 241.5L170.5 244.6L166.8 252.8L163.7 251.6L162.3 244.9L159.5 240.3L158.7 240.9L161.4 250.1L157.0 247.0L156.5 244.0L153.3 250.8L155.4 256.4L150.4 254.5L148.3 249.9L148.3 241.5L155.3 230.4L160.5 227.5L163.7 221.7L170.1 216.2L162.6 220.5L160.3 225.5L147.9 236.6L146.7 240.3L142.7 238.7L142.2 245.2L145.0 250.8L144.7 253.2L149.3 260.7L143.3 266.3L140.3 273.2L142.2 278.0L140.4 280.0L139.2 287.6L135.4 292.8L137.5 294.6L138.5 299.0L133.7 303.7L125.0 303.0L124.6 295.4L128.5 290.9L128.2 280.4L130.7 273.6L130.3 270.5L142.2 255.1L134.6 262.4L131.4 259.4L130.7 255.1L136.1 247.1L130.8 251.4L129.5 248.8L136.1 237.8L133.2 239.0L129.8 246.8L129.0 246.4L129.5 242.8L135.8 232.5L138.2 233.4L136.7 229.4L139.3 224.2L134.3 228.6L136.7 220.5L140.2 217.7L135.0 218.7L136.0 211.6L137.5 209.4L142.5 208.8L137.8 208.8L142.1 201.5L155.0 200.9L162.6 190.3L155.4 199.6L146.2 199.8L144.5 195.8L142.2 198.9L143.6 192.7L147.3 194.4L153.3 190.3L146.5 193.4L144.3 192.1L150.3 183.0L149.3 181.6L166.2 176.7L157.6 178.5L153.5 176.6L159.7 167.5L153.7 172.7L151.9 176.9L143.2 183.3L130.7 196.4L125.7 192.7L126.8 189.7L124.4 192.2L121.3 191.6L113.5 185.4L113.2 183.3L117.1 182.2L122.1 184.7L120.7 181.6L126.2 178.1L132.1 179.8L137.5 178.5L132.7 179.1L126.7 176.8L119.1 180.4L108.5 178.4L105.2 180.1L101.3 176.4L104.2 173.2L115.5 170.5L121.4 173.9L119.6 170.5L126.4 170.5L121.4 166.5L131.4 162.5L127.0 164.2L125.0 163.7L127.5 160.6L117.8 160.6L121.4 160.1L119.9 158.1L122.5 151.4L126.5 148.7L131.5 152.9L138.6 151.4L133.1 151.8L130.1 150.2L130.4 147.8L129.2 147.1L125.2 146.4L128.5 140.3L145.0 141.5L137.7 141.5L130.3 136.9L133.2 131.6L132.3 130.1L135.7 127.1L144.7 130.4L139.7 126.1L142.9 122.3L135.7 126.1L127.8 124.2L131.7 119.2L133.9 120.3L139.7 117.7L142.5 113.1L136.5 118.4L132.5 117.4L134.2 116.0L133.3 113.6L129.0 118.7L124.9 119.7L122.8 115.6L123.5 111.3L121.0 110.3L120.3 106.6L123.0 98.6L132.5 105.1L131.8 103.2L139.1 102.3L135.2 100.6L131.4 102.0L129.6 100.1L130.3 98.9L123.8 93.2L124.6 88.4L129.7 88.8L130.7 87.2L123.9 84.1L123.5 76.0L125.3 72.9L130.7 73.6L131.4 79.7L134.3 81.7L133.2 79.7L135.4 80.4L135.3 76.2L131.8 70.5L133.9 67.4L137.2 68.6L136.9 71.1L140.5 74.0L142.2 74.2L144.3 69.3L154.4 74.8L145.4 68.4L146.8 66.1L150.4 69.3L155.6 70.2L162.3 76.0L160.9 72.6L154.4 68.1L155.8 66.8L155.3 64.6L150.7 62.7L146.8 58.4L143.6 58.2L144.3 56.3L142.6 53.4L143.6 52.2L147.9 54.2L151.5 53.2L151.5 49.5L150.4 48.9L153.3 47.0L150.0 46.4L145.5 37.5L150.6 39.3L159.2 36.5L169.4 40.9L166.9 38.4L169.8 37.2L163.3 37.6L158.8 33.5L156.9 29.1L157.9 29.1L158.5 23.6L165.1 26.0L163.0 23.0L160.8 23.6L161.5 22.3L160.4 21.7L163.3 20.1L166.2 21.7L160.4 17.1L160.4 15.5L164.5 12.0L166.6 4.4L174.5 6.5L176.2 10.6L175.5 13.7L176.8 12.2L177.6 6.3L183.7 10.9L178.5 20.6L186.2 13.7L187.7 9.3L193.4 10.0L195.9 11.8L195.9 13.7L192.3 20.5L200.3 12.4L206.0 13.7L205.2 13.1L206.7 11.3L214.0 10.4L216.7 7.4L218.0 9.6L223.7 10.0L239.3 4.5L242.7 6.8L251.5 6.9L252.2 5.1L248.9 1.9L250.9 0.0L252.7 2.6L259.9 1.4L269.5 3.3L263.8 14.8L264.3 17.4L267.7 19.0L263.7 27.7L259.0 33.5L250.4 37.2L243.6 45.8L228.2 56.3L226.0 60.7L218.7 64.6L218.1 66.8L213.8 64.2L218.9 69.3L217.8 72.9L202.6 73.4L197.7 69.3L202.1 74.4L207.4 73.7L216.2 77.4L219.1 75.2L222.7 78.3L228.8 73.0L229.8 74.0L218.9 88.4L217.0 88.2L217.4 85.9L216.0 84.7L209.4 89.0L202.8 89.8L195.8 99.1L207.7 90.3L213.2 91.8L217.8 89.1L212.0 97.7L212.8 98.9L209.3 99.7L208.6 101.7L204.5 101.4L207.4 102.6L205.2 106.3L208.1 106.8L216.4 100.9L213.9 98.3L226.7 97.7L237.8 91.5L236.8 93.3L239.6 93.3L238.6 90.9L242.5 91.5L244.8 86.8L249.1 85.9L255.6 86.2L268.7 90.9L274.9 87.8L300.2 90.9L307.4 88.4L311.8 90.2L317.2 87.6L322.9 87.8L331.7 95.8L333.3 103.7L335.3 106.3L334.3 107.8L335.4 108.4L323.8 122.3L319.2 135.4L319.1 138.9L320.2 140.4L313.0 152.5L313.1 158.8L306.1 169.0L300.5 173.5L295.9 187.9L286.2 195.8L284.8 198.9L267.4 200.5L258.1 208.1L253.6 208.2L258.5 209.1L276.5 199.9L280.8 202.6L279.0 208.2L280.8 210.1L287.4 211.6L292.7 215.6L288.9 220.6L280.7 224.2L272.4 222.7L263.9 230.1L262.0 235.4L252.6 238.7L235.4 236.6L226.7 231.6L236.2 240.3L253.2 241.7L266.4 246.0L273.7 244.0L278.0 240.3L277.3 238.4L279.8 235.8L289.6 236.0L293.0 239.0L292.3 240.9L296.3 240.3L306.7 247.0L315.6 248.9L332.4 274.3L334.2 273.1L336.0 275.5L334.9 276.1L342.1 278.6L342.1 282.9L344.5 287.7L345.4 306.1L348.5 313.7L348.0 317.1L353.5 331.3L356.1 334.5L356.5 339.9L360.7 354.0L366.1 358.2L365.0 359.3L366.5 362.6L364.5 365.0L367.1 366.1L367.9 363.1L386.2 370.9L398.0 378.4L404.0 387.8L408.0 399.1L412.9 401.8L415.2 406.9L423.4 411.3L418.8 413.9L415.9 419.3L419.5 430.5L434.4 453.6L435.2 456.6L434.2 459.8L433.1 460.8L434.5 456.5L433.7 455.8L429.2 453.3L422.6 454.6L413.8 445.2L398.9 447.6L394.1 445.5L389.4 448.4L391.2 449.6L395.0 447.3L399.7 450.4L412.8 447.8L417.5 455.6L435.3 468.6L438.9 473.7L445.3 491.1L446.0 498.3L444.6 503.7L435.8 510.7L427.9 521.7L432.9 521.4L440.3 529.9L444.4 529.2L447.5 532.3L447.2 530.3L450.3 525.8L452.8 517.5L457.2 514.2L463.2 512.7L478.0 516.2L480.4 515.1L477.9 513.8L494.0 517.9L513.4 531.7L516.1 535.7L518.7 545.2L518.8 553.6L520.0 557.8L512.6 577.2L512.7 583.6L510.1 594.2L504.4 596.5L497.1 607.0L493.5 602.1L487.9 599.0L493.8 603.2L493.8 605.5L483.3 605.8L494.4 606.4L490.1 612.6L493.5 613.8L494.7 612.2L494.1 615.6L488.5 620.5L483.1 621.8L478.6 615.7L477.7 618.3L473.8 621.2L473.1 624.3L463.9 626.8L467.2 629.3L476.0 624.7L477.2 630.5L475.0 635.5L477.2 636.1L475.7 638.7L467.7 644.1L461.4 643.4L451.2 646.1L447.5 650.8L455.4 647.4L463.7 648.7L465.2 651.4L457.3 653.9L456.4 654.5L457.5 656.2L464.7 657.1L464.0 654.7L465.4 653.9L467.4 658.8L478.5 660.2L501.8 656.3L503.1 657.2L502.5 660.7L499.4 662.3L501.3 671.7L499.8 678.0L489.7 684.2L483.2 685.9L477.9 693.2L478.6 699.0L467.3 697.9L460.0 704.4L446.5 708.0L441.6 714.4L413.3 706.9L387.7 711.8L386.1 716.0L380.1 712.2L382.2 708.9L378.3 705.8L374.0 705.8L372.2 711.2L370.8 711.4L369.7 710.1L371.5 705.8L366.5 705.8L368.6 708.0L368.6 710.7L367.2 711.4L350.7 699.0L358.2 707.4L358.5 709.7L347.7 713.2L345.8 717.0L338.9 715.1L330.3 716.3L326.0 719.5L325.5 717.5L320.8 715.1L318.5 718.8L321.0 717.5L322.7 720.4L325.3 720.8L326.3 723.7L324.6 727.5L319.4 728.1L302.0 723.6L298.8 727.1L298.5 729.0L300.4 731.5L299.1 734.2L297.5 728.6L286.6 719.3L277.6 715.7L256.9 721.0L255.1 724.3L251.3 726.2L248.5 725.1L246.2 720.6L247.9 726.8L244.1 734.8L245.0 740.4L241.4 742.8L245.0 745.3L243.0 750.2L240.7 749.7L237.5 753.6L236.0 761.9L229.3 762.6L220.3 752.7L215.4 754.7L212.6 751.4L212.8 748.4L209.3 747.3L208.2 744.1L209.9 740.4L207.8 740.4L206.0 742.3L206.3 746.0L203.1 746.0L208.1 747.8L206.3 748.4L208.8 749.7L208.1 752.7L200.6 748.4L192.3 752.2L183.0 753.3L181.9 750.8L178.3 752.7L176.4 761.1L168.7 763.8L165.8 768.8L164.9 764.5L163.2 764.1L162.6 767.5L163.7 768.8L159.4 773.1L162.3 773.7L163.0 776.3L156.0 785.4L153.1 782.4L150.0 774.5L141.1 770.0L137.7 771.5L138.0 774.3L136.5 776.4L129.1 777.0L128.9 769.8L130.2 767.2L139.2 762.0L143.1 764.3L145.7 760.1L149.5 758.9L158.1 750.2L157.9 745.8L163.3 743.1L165.1 733.3L168.7 731.1L169.4 734.9L174.1 735.4L170.0 731.8L170.1 728.7L176.8 728.1L178.9 721.4L188.1 712.0L189.5 708.8L190.7 690.3L200.6 692.0L207.4 684.8L204.9 678.0L207.0 678.0L206.3 674.3L230.3 669.4L247.8 672.8L250.4 674.9L269.0 671.8L269.4 674.3L270.5 670.7L269.4 662.6L270.9 662.7L272.6 657.9L271.9 657.1L274.7 656.1L281.1 648.2L285.4 646.7L293.7 632.3L302.5 624.1L302.0 621.2L300.8 623.8L297.6 624.7L288.0 636.1Z"/>
+        <g class="dot" tabindex="0" role="button" aria-label="Londres"><circle class="p" cx="421" cy="646" r="9"/><circle class="c" cx="421" cy="646" r="8"/><text x="437" y="651" text-anchor="start">Londres</text></g><g class="dot" tabindex="0" role="button" aria-label="Oxford"><circle class="p" cx="362" cy="624" r="9"/><circle class="c" cx="362" cy="624" r="8"/><text x="346" y="629" text-anchor="end">Oxford</text></g><g class="dot" tabindex="0" role="button" aria-label="Cambridge"><circle class="p" cx="434" cy="584" r="9"/><circle class="c" cx="434" cy="584" r="8"/><text x="450" y="589" text-anchor="start">Cambridge</text></g><g class="dot" tabindex="0" role="button" aria-label="Stratford-upon-Avon"><circle class="p" cx="338" cy="584" r="9"/><circle class="c" cx="338" cy="584" r="8"/><text x="322" y="589" text-anchor="end">Stratford</text></g><g class="dot" tabindex="0" role="button" aria-label="Liverpool"><circle class="p" cx="271" cy="475" r="9"/><circle class="c" cx="271" cy="475" r="8"/><text x="255" y="480" text-anchor="end">Liverpool</text></g><g class="dot" tabindex="0" role="button" aria-label="Edimburgo"><circle class="p" cx="261" cy="246" r="9"/><circle class="c" cx="261" cy="246" r="8"/><text x="277" y="251" text-anchor="start">Edimburgo</text></g>
+      </svg>
+      <div class="pop" data-pop="uk"><div class="pi"></div><b></b><small>Foto: Wikimedia Commons · domínio público</small></div><div class="cap" data-cap="uk"><b></b><span></span></div></div></div>
+    <div>
+      <div class="flagrow rv"><canvas class="flag" data-f="uk" width="600" height="300"></canvas></div>
+      <div class="facts rv d1">
+        <div class="fact"><b data-n="12">0</b><span>stages do curso</span></div>
+        <div class="fact"><b data-n="4">0</b><span>alunos por turma, no máximo</span></div>
+        <div class="fact"><b>1:1</b><span>ou aulas em grupo</span></div>
+        <div class="fact"><b>Grátis</b><span>a aula experimental</span></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<section class="course es" id="espanol"><div class="in">
+  <span class="tag rv">Curso de Español</span>
+  <h2 class="big rv d1">Hable español <em>con confianza</em></h2>
+  <p class="lead rv d2">Seis etapas, preparação para o DELE (A1 a C2) e um aplicativo feito para quem quer falar.</p>
+  <div class="stage">
+    <div class="rv"><div class="mapbox">
+      <svg class="map" viewBox="0 0 600 454" data-city="es" role="img" aria-label="Mapa da Espanha">
+        <defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f1bf00"/><stop offset="1" stop-color="#aa151b"/></linearGradient></defs>
+        <path class="land" pathLength="1" style="fill:url(#g2)" d="M330.1 23.7L330.0 26.3L331.8 27.7L332.1 29.3L336.2 28.9L337.7 31.8L339.2 31.6L340.4 29.7L346.0 30.8L347.3 32.0L346.3 38.3L343.6 41.5L344.9 43.6L348.9 44.3L349.7 40.8L352.4 39.9L351.2 41.4L352.1 43.0L358.4 45.9L363.8 47.0L367.5 49.3L375.6 49.3L376.5 52.9L380.5 55.0L384.0 59.5L385.5 58.8L385.6 57.4L390.4 58.4L394.9 55.4L398.7 58.7L402.0 58.1L402.1 60.2L403.8 62.7L407.4 64.6L416.5 62.2L419.6 63.1L421.2 65.5L424.7 62.7L427.1 64.7L437.4 64.6L438.4 63.8L438.1 62.0L437.0 61.1L437.7 60.0L438.0 55.6L441.0 55.2L444.9 56.0L449.6 58.8L450.9 58.1L457.0 59.5L459.8 63.3L468.2 63.2L468.0 64.0L472.0 69.8L471.0 73.6L472.0 73.5L472.9 75.1L471.0 76.1L472.8 79.1L475.8 79.4L481.2 77.3L481.9 75.5L484.2 75.2L493.9 79.0L495.5 83.1L496.9 84.2L499.4 83.9L503.1 80.2L509.3 79.5L515.7 82.1L516.7 84.0L519.8 85.5L521.2 83.9L526.3 84.7L525.3 82.7L528.3 80.4L531.8 80.5L538.2 77.1L542.1 77.3L544.9 79.6L549.1 79.3L548.6 81.4L549.4 84.1L555.1 85.7L552.7 90.5L548.6 89.3L546.4 91.7L546.5 96.3L550.6 100.5L549.8 102.5L551.4 107.6L547.7 113.5L544.6 114.6L544.2 116.2L538.2 121.2L534.1 122.3L531.4 125.1L510.2 135.6L504.3 143.7L499.8 146.7L476.8 151.8L462.7 156.6L460.7 159.3L457.4 158.6L453.9 159.7L440.5 173.5L439.7 175.2L442.1 176.4L442.8 176.1L442.1 175.2L442.8 175.2L447.5 178.6L446.8 181.0L443.6 182.5L438.9 188.0L436.2 188.7L435.1 187.1L438.3 187.5L441.3 184.1L435.5 185.2L433.9 186.6L424.5 204.4L418.1 211.0L415.4 216.4L412.0 219.1L407.8 226.7L405.0 229.8L394.8 249.1L394.6 254.1L395.8 260.5L399.6 268.6L398.4 269.5L399.1 272.7L402.1 279.1L404.4 282.9L408.6 286.8L415.8 289.1L417.2 290.7L416.6 291.1L419.1 292.6L419.4 294.2L412.7 299.0L412.6 300.7L407.2 301.8L405.7 306.0L401.3 306.8L394.6 310.1L391.7 313.4L390.9 316.2L386.6 317.8L386.9 325.4L383.0 326.4L381.6 328.0L380.7 330.7L380.3 338.1L377.4 340.8L375.7 345.4L375.6 349.3L374.4 347.8L373.3 350.9L371.4 352.5L373.4 356.9L375.8 358.4L377.1 357.8L378.0 359.6L368.3 363.3L366.2 362.1L361.2 361.9L359.8 363.2L360.4 364.7L354.4 362.0L353.5 363.2L350.8 363.0L344.3 367.6L343.2 370.8L335.5 374.6L329.3 383.7L325.2 396.4L325.4 399.1L321.5 401.5L317.9 408.8L315.4 411.1L312.1 411.0L308.6 406.8L305.1 405.2L302.0 406.4L299.8 405.6L296.3 406.3L293.8 411.5L292.0 413.5L289.4 414.2L287.7 414.3L284.9 412.4L283.7 413.2L279.9 410.2L277.5 411.0L267.0 410.0L262.5 410.6L258.7 413.4L256.0 413.4L254.3 412.0L252.8 412.5L250.5 410.7L244.8 411.8L240.1 410.2L234.7 411.6L230.5 410.4L223.1 412.5L215.2 411.8L213.9 412.6L209.9 420.1L207.1 420.5L205.9 423.1L203.9 424.4L201.2 425.2L193.2 424.5L189.2 427.3L180.7 430.0L177.8 436.7L176.2 437.8L174.0 445.7L170.2 443.5L169.5 445.3L169.6 450.3L162.0 453.6L161.2 451.8L158.6 450.1L153.9 449.0L148.6 443.2L143.3 442.9L140.3 437.6L137.9 436.2L136.8 432.4L131.3 422.9L133.6 424.0L134.7 426.4L137.0 424.0L135.0 424.2L134.6 420.4L132.5 418.3L127.5 416.9L125.8 410.2L129.7 407.7L130.0 402.5L131.5 401.1L135.1 401.4L136.3 399.7L129.7 401.5L129.7 406.2L127.8 406.9L122.9 398.1L105.6 386.0L104.5 383.2L107.4 378.5L103.9 382.1L102.5 382.1L104.1 385.7L96.5 382.7L95.3 383.2L97.1 383.7L86.5 384.0L84.1 385.2L82.7 384.5L80.3 368.0L77.6 363.3L78.3 360.7L80.1 358.6L81.4 353.2L87.4 346.2L88.9 338.8L93.9 337.7L95.5 335.1L99.8 336.1L103.2 326.0L99.7 325.8L96.3 327.4L93.5 321.6L86.9 312.7L85.1 311.5L86.1 310.1L85.7 308.7L86.9 305.1L89.0 301.5L88.0 299.2L89.0 294.5L94.3 289.7L98.4 287.7L98.0 284.8L102.1 278.4L101.5 275.3L99.2 272.9L95.3 273.5L93.5 272.6L94.0 270.4L93.5 269.3L90.2 267.8L89.2 265.7L89.9 263.5L87.7 260.7L86.3 258.1L87.1 252.6L83.3 250.5L78.2 244.6L76.4 239.6L99.3 239.1L100.5 237.5L101.2 231.7L104.1 229.0L104.2 225.7L106.2 220.4L102.9 215.0L100.2 214.0L99.0 210.4L100.2 207.8L106.3 205.5L106.6 203.8L110.0 200.2L107.4 197.1L107.2 195.2L109.2 191.0L107.5 187.1L109.1 183.3L108.0 176.8L108.1 172.0L109.0 171.1L103.5 162.5L104.1 159.9L108.9 159.6L111.3 156.4L111.7 153.5L116.5 147.1L123.1 145.5L128.2 140.7L128.2 139.6L130.8 138.8L132.6 133.8L135.9 129.5L132.9 126.1L128.8 124.1L124.6 123.3L122.8 124.7L121.1 124.3L119.5 119.6L121.8 112.2L119.6 111.3L119.8 107.8L118.1 106.7L117.5 107.9L112.9 108.5L108.6 105.4L108.3 107.1L107.3 107.8L103.3 107.8L101.2 106.4L98.6 107.8L94.5 105.2L92.1 106.6L92.2 110.2L91.3 111.5L83.6 113.7L81.4 115.8L80.2 113.1L78.2 112.3L76.8 114.2L74.2 114.6L73.5 113.7L74.2 111.9L69.1 110.3L61.4 112.7L61.0 109.5L59.3 112.2L57.2 112.4L54.7 115.2L49.0 115.5L49.1 113.2L47.2 112.1L46.7 110.0L52.7 102.1L50.8 100.2L47.9 100.4L47.9 97.0L47.1 95.5L41.6 98.5L29.3 101.5L27.3 104.5L18.1 110.7L17.5 97.5L20.5 96.9L19.6 95.1L29.4 86.9L29.5 84.2L27.2 87.0L22.3 89.3L18.7 89.5L19.3 86.7L20.5 87.2L20.3 84.6L22.9 84.5L28.0 78.8L23.5 80.7L19.7 81.0L17.8 77.9L15.4 77.1L18.1 75.5L19.0 76.2L18.4 77.1L20.5 77.6L21.1 75.2L20.6 71.3L22.7 69.2L24.7 64.4L22.3 67.2L19.9 64.7L18.6 68.5L17.1 68.0L15.7 69.1L16.3 69.9L14.2 70.7L13.7 72.4L12.3 73.6L11.7 72.8L11.4 70.8L9.7 69.7L11.5 63.2L17.3 58.3L17.8 56.1L16.9 55.6L16.7 56.9L15.0 58.2L10.7 58.2L9.8 60.2L8.4 60.3L6.9 57.1L8.4 55.9L6.6 54.5L6.9 51.0L4.2 49.2L4.2 50.5L3.0 49.7L0.8 52.4L0.0 50.4L1.8 45.2L0.5 43.0L3.3 39.6L4.5 40.3L8.1 38.0L3.7 38.2L3.3 37.2L6.8 34.5L10.5 34.8L12.3 32.3L15.8 32.5L16.6 31.9L13.4 29.7L20.3 26.3L22.3 28.0L26.4 29.1L30.8 27.3L32.3 28.0L39.8 23.7L41.3 25.9L42.3 22.6L45.1 23.7L47.6 28.0L47.6 23.5L49.2 22.0L45.2 21.3L43.4 19.9L49.0 18.6L49.5 17.6L42.2 18.8L42.9 15.8L44.0 15.2L43.1 13.2L46.7 12.7L53.1 8.0L54.6 8.8L53.6 6.7L54.3 4.9L57.7 4.4L60.9 1.6L62.1 1.8L63.6 4.4L62.7 4.4L62.4 6.3L60.9 7.2L63.1 7.3L62.7 5.6L64.8 5.6L65.2 4.1L69.5 1.9L70.7 0.0L71.5 1.2L70.3 2.8L70.5 3.9L72.7 2.4L73.8 6.1L77.1 3.6L84.7 6.6L87.5 11.4L89.6 12.3L89.0 13.5L99.0 13.6L99.5 15.2L98.5 17.3L98.9 18.3L100.8 13.8L103.4 13.2L113.9 13.7L116.4 12.5L122.5 14.3L124.5 13.9L124.3 12.7L131.1 13.1L135.1 11.5L137.1 12.7L141.9 13.0L143.9 11.9L149.0 11.9L149.0 9.1L150.9 8.9L151.4 7.6L153.6 8.3L157.7 13.1L158.3 12.3L159.1 13.5L171.6 13.9L170.7 16.7L173.2 14.8L175.7 14.9L181.1 17.7L190.0 19.5L191.5 18.7L200.6 21.9L210.6 22.8L211.8 23.9L213.9 22.8L216.3 23.9L217.2 22.9L224.7 22.6L232.4 19.9L233.8 20.7L235.6 18.4L240.6 17.3L243.1 18.3L239.8 20.3L241.3 21.4L243.0 19.9L244.2 20.7L243.7 18.7L244.9 19.1L244.9 18.3L251.5 16.0L254.7 18.3L258.0 19.0L258.1 20.2L256.3 19.8L254.9 21.1L256.7 22.2L257.3 21.1L265.2 22.7L271.2 25.5L273.1 24.8L276.6 27.5L275.7 24.3L279.6 21.9L279.3 21.1L287.2 19.9L289.5 21.5L290.6 24.8L291.9 22.2L299.7 24.6L304.8 27.8L312.4 27.9L315.4 29.5L322.8 26.2L324.6 27.5L325.2 27.1L324.3 26.3L329.3 23.2L330.1 23.7Z M479.8 273.9L480.5 277.5L479.2 278.0L475.5 283.3L471.3 285.6L470.8 289.0L465.6 286.5L464.5 287.5L462.6 285.9L462.7 281.9L466.3 281.1L466.0 277.3L468.8 274.7L476.1 272.3L479.8 273.9Z M556.7 233.5L562.0 235.5L561.1 240.8L558.8 242.9L559.0 244.7L555.4 248.7L552.3 256.7L543.8 263.5L539.3 258.1L531.7 257.3L529.5 252.3L530.3 249.9L529.8 248.7L527.1 246.7L526.0 246.3L522.2 248.3L520.0 251.7L518.8 251.8L517.8 249.7L518.3 249.1L517.1 247.9L513.9 248.4L512.8 246.7L512.9 243.6L522.2 237.7L524.9 234.4L532.9 228.4L538.2 225.9L549.0 222.8L550.6 223.6L545.4 226.0L545.3 227.9L550.2 227.2L549.4 229.4L546.7 230.8L547.1 233.3L551.0 235.5L554.0 235.5L556.7 233.5Z M598.5 225.3L600.0 228.7L598.5 227.5L598.4 231.3L596.1 231.7L584.3 224.7L577.7 224.7L578.6 221.9L576.5 220.2L577.3 218.2L588.0 217.5L589.8 216.3L591.4 219.5L592.7 217.2L593.0 218.7L596.8 221.8L597.2 223.6L596.4 223.9L598.3 224.3L598.5 225.3Z"/>
+        <g class="dot" tabindex="0" role="button" aria-label="Madrid"><circle class="p" cx="246" cy="197" r="9"/><circle class="c" cx="246" cy="197" r="8"/><text x="262" y="202" text-anchor="start">Madrid</text></g><g class="dot" tabindex="0" role="button" aria-label="Barcelona"><circle class="p" cx="505" cy="140" r="9"/><circle class="c" cx="505" cy="140" r="8"/><text x="489" y="145" text-anchor="end">Barcelona</text></g><g class="dot" tabindex="0" role="button" aria-label="Sevilla"><circle class="p" cx="146" cy="373" r="9"/><circle class="c" cx="146" cy="373" r="8"/><text x="130" y="378" text-anchor="end">Sevilla</text></g><g class="dot" tabindex="0" role="button" aria-label="Granada"><circle class="p" cx="251" cy="385" r="9"/><circle class="c" cx="251" cy="385" r="8"/><text x="267" y="390" text-anchor="start">Granada</text></g><g class="dot" tabindex="0" role="button" aria-label="Salamanca"><circle class="p" cx="160" cy="164" r="9"/><circle class="c" cx="160" cy="164" r="8"/><text x="144" y="169" text-anchor="end">Salamanca</text></g><g class="dot" tabindex="0" role="button" aria-label="Santiago"><circle class="p" cx="33" cy="53" r="9"/><circle class="c" cx="33" cy="53" r="8"/><text x="49" y="58" text-anchor="start">Santiago</text></g>
+      </svg>
+      <div class="pop" data-pop="es"><div class="pi"></div><b></b><small>Foto: Wikimedia Commons · domínio público</small></div><div class="cap" data-cap="es"><b></b><span></span></div></div></div>
+    <div>
+      <div class="flagrow rv"><canvas class="flag" data-f="es" width="600" height="300"></canvas></div>
+      <div class="facts rv d1">
+        <div class="fact"><b data-n="6">0</b><span>etapas do curso</span></div>
+        <div class="fact"><b data-n="4">0</b><span>alunos por turma, no máximo</span></div>
+        <div class="fact"><b>DELE</b><span>preparação de A1 a C2</span></div>
+        <div class="fact"><b>Grátis</b><span>a aula experimental</span></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<section class="metodo" id="metodo"><div class="in">
+  <h2 class="rv">Nosso método</h2>
+  <p class="sub rv d1">Você fala desde o primeiro minuto. O professor faz perguntas rápidas, só no idioma que você está aprendendo, e corrige na hora.</p>
+  <div class="steps">
+    <div class="step rv"><i>1</i><h3>Pergunta e resposta</h3><p>Um ritmo vivo de perguntas e respostas que treina a mente a pensar direto no idioma.</p></div>
+    <div class="step rv d1"><i>2</i><h3>Correção na hora</h3><p>Cada erro é corrigido no momento, e a frase certa é repetida até ficar natural.</p></div>
+    <div class="step rv d2"><i>3</i><h3>Sem tradução</h3><p>Nada de traduzir palavra por palavra. Você aprende a usar o idioma, não a decorar regras.</p></div>
+    <div class="step rv d3"><i>4</i><h3>Etapa por etapa</h3><p>Um caminho claro, com provas e certificado ao concluir cada etapa.</p></div>
+  </div>
+</div></section>
+
+<section class="app" id="app"><div class="in">
+  <h2 class="rv">O aplicativo da Britland</h2>
+  <p class="sub rv d1">Estude entre as aulas, no celular ou no computador. Cada erro vem com uma explicação.</p>
+  <div class="phones rv d2">
+    <div class="phone"><div class="pill"></div><h4>Lesson Check</h4><div class="q">Where do you live?</div><span class="ch">I live in Spain.</span><span class="ch ok">I live in Brazil.</span><span class="ch">He lives in London.</span><div class="bar2"><i></i></div></div>
+    <div class="phone"><div class="pill"></div><h4>Exercises</h4><div class="tiles"><div>🏠</div><div class="m">🌳</div><div>🚗</div><div>📚</div><div>☕</div><div>✈️</div></div><div class="bar2"><i style="width:40%"></i></div></div>
+    <div class="phone"><div class="pill"></div><h4>Certificate</h4><div class="cert"><img src="img/britland-shield.png" alt=""><b>Stage 1</b><small>Concluído com êxito</small><div class="ln"></div><small>Britland Academy</small></div><div class="bar2"><i style="width:100%"></i></div></div>
+  </div>
+</div></section>
+
+<section class="contato" id="contato"><div class="in">
+  <h2 class="rv">Comece com uma aula grátis</h2>
+  <p class="sub rv d1">Venha conhecer o método e conversar sobre o seu objetivo. Sem compromisso.</p>
+  <a class="cta rv d2" id="cta" href="#">Quero minha aula experimental <b>→</b></a>
+  <div class="two rv d3"><a href="index.html">Já sou aluno de English</a><a href="espanol/index.html">Ya soy alumno de Español</a></div>
+</div></section>
+<footer>Britland Academy · English &amp; Español</footer>
+
+<script>
+(function(){
+/* contato: troque pelo número do WhatsApp (só dígitos, com 55 e DDD) */
+var WHATSAPP='',EMAIL='academic@britlandacademy.co.uk';
+var msg=encodeURIComponent('Olá! Quero marcar minha aula experimental gratuita na Britland Academy.');
+document.getElementById('cta').href=WHATSAPP?('https://wa.me/'+WHATSAPP+'?text='+msg):('mailto:'+EMAIL+'?subject='+encodeURIComponent('Aula experimental')+'&body='+msg);
+var RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+/* ---- bandeiras tremulando ---- */
+var SV={
+uk:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30"><clipPath id="s"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#s)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg>',
+es:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30"><rect width="60" height="30" fill="#AA151B"/><rect y="7.5" width="60" height="15" fill="#F1BF00"/></svg>'};
+var IM={},flags=[].slice.call(document.querySelectorAll('canvas.flag'));
+Object.keys(SV).forEach(function(k){var i=new Image();i.onload=function(){IM[k]=i;};i.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(SV[k]);});
+function wave(c,img,t){
+  var x=c.getContext('2d'),W=c.width,H=c.height,A=H*.04,pad=A*1.5,S=4;
+  x.clearRect(0,0,W,H);
+  for(var i=0;i<W;i+=S){
+    var ph=i/W*Math.PI*2.3-t*2.2,y=Math.sin(ph)*A*(.35+.65*i/W),d=Math.cos(ph)*A*(.35+.65*i/W);
+    x.drawImage(img,i/W*img.width,0,S/W*img.width,img.height,i,pad+y,S+1,H-pad*2);
+    var sh=d*.9/A;x.fillStyle=sh>0?'rgba(0,0,0,'+(sh*.28)+')':'rgba(255,255,255,'+(-sh*.22)+')';
+    x.fillRect(i,pad+y,S+1,H-pad*2);
+  }
+}
+var vis=new Set();
+if('IntersectionObserver' in window){var fo=new IntersectionObserver(function(es){es.forEach(function(e){e.isIntersecting?vis.add(e.target):vis.delete(e.target);});});flags.forEach(function(c){fo.observe(c);});}
+function loop(ts){
+  var t=ts/1000;
+  flags.forEach(function(c){var im=IM[c.dataset.f];if(im&&(vis.has(c)||!vis.size&&!window.IntersectionObserver))wave(c,im,RM?0:t);});
+  if(!RM)requestAnimationFrame(loop);
+}
+requestAnimationFrame(function f(ts){loop(ts);if(RM)setTimeout(function(){requestAnimationFrame(loop)},300);});
+/* ---- luz seguindo o mouse nos painéis ---- */
+[].forEach.call(document.querySelectorAll('.pane'),function(p){p.addEventListener('pointermove',function(e){var r=p.getBoundingClientRect();p.style.setProperty('--mx',(e.clientX-r.left)+'px');p.style.setProperty('--my',(e.clientY-r.top)+'px');});});
+/* ---- poeira dourada ---- */
+var dc=document.getElementById('dust'),dx=dc.getContext('2d'),P=[];
+function rs(){dc.width=innerWidth;dc.height=innerHeight;}rs();addEventListener('resize',rs);
+for(var i=0;i<(innerWidth<700?34:70);i++)P.push({x:Math.random(),y:Math.random(),r:Math.random()*2+.6,v:Math.random()*.00035+.00012,o:Math.random()*.6+.2,p:Math.random()*6});
+(function dust(ts){if(RM)return;dx.clearRect(0,0,dc.width,dc.height);
+  P.forEach(function(q){q.y-=q.v;if(q.y<-.02){q.y=1.02;q.x=Math.random();}var x=(q.x+Math.sin(ts/2000+q.p)*.012)*dc.width,y=q.y*dc.height;
+    dx.beginPath();dx.fillStyle='rgba(228,192,106,'+(q.o*(.6+.4*Math.sin(ts/600+q.p)))+')';dx.shadowColor='#e4c06a';dx.shadowBlur=8;dx.arc(x,y,q.r,0,6.3);dx.fill();});
+  requestAnimationFrame(dust);})(0);
+/* ---- revelação ao rolar ---- */
+var rv=[].slice.call(document.querySelectorAll('.rv'));
+if('IntersectionObserver' in window){var ro=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in2');ro.unobserve(e.target);}});},{threshold:.15});rv.forEach(function(n){ro.observe(n);});}else rv.forEach(function(n){n.classList.add('in2');});
+/* ---- mapas: desenhar + cidades ---- */
+var CITY={
+uk:[['Londres','Big Ben, o Tâmisa e centenas de idiomas falados nas ruas da capital.'],['Oxford','Sede da mais antiga universidade do mundo de língua inglesa.'],['Cambridge','Universidade histórica e casa dos famosos exames Cambridge English.'],['Stratford-upon-Avon','Terra de William Shakespeare, o autor mais encenado do mundo.'],['Liverpool','A cidade dos Beatles, onde o rock britânico ganhou o planeta.'],['Edimburgo','Capital da Escócia, com um castelo no alto de um vulcão extinto.']],
+es:[['Madrid','A capital: Museo del Prado, Parque del Retiro e noites que começam tarde.'],['Barcelona','A cidade de Gaudí e da Sagrada Família, de frente para o Mediterrâneo.'],['Sevilla','Flamenco, laranjeiras nas ruas e o palácio do Real Alcázar.'],['Granada','Aos pés da Sierra Nevada, guarda a Alhambra, joia da arte islâmica.'],['Salamanca','Sua universidade, de 1218, é uma das mais antigas da Europa.'],['Santiago','Destino final do Caminho de Santiago, rota de peregrinos há mil anos.']]};
+var PH={"uk": ["https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Tower_Bridge_in_London_at_night.jpg/960px-Tower_Bridge_in_London_at_night.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Christ_Church_Oxford_from_St_Aldates.jpg/960px-Christ_Church_Oxford_from_St_Aldates.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/King%27s_College%2C_Cambridge%2C_England-LCCN2002696457.jpg/960px-King%27s_College%2C_Cambridge%2C_England-LCCN2002696457.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Trinity_Church_from_the_river%2C_Stratford-on-Avon%2C_England-LCCN2002708132.tif/lossy-page1-960px-Trinity_Church_from_the_river%2C_Stratford-on-Avon%2C_England-LCCN2002708132.tif.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Pier_Head_buildings_from_Albert_Dock.JPG/960px-Pier_Head_buildings_from_Albert_Dock.JPG", "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Sunny_view_of_Edinburgh_Castle.jpg/960px-Sunny_view_of_Edinburgh_Castle.jpg"], "es": ["https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Plaza_Mayor%2C_Madrid%2C_low_sun.jpg/960px-Plaza_Mayor%2C_Madrid%2C_low_sun.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Nave_of_Sagrada_Fam%C3%ADlia%2C_Barcelona%2C_2023.jpg/960px-Nave_of_Sagrada_Fam%C3%ADlia%2C_Barcelona%2C_2023.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Plaza_de_Espa%C3%B1a_-_Seville%2C_Spain_-_DSC07284.JPG/960px-Plaza_de_Espa%C3%B1a_-_Seville%2C_Spain_-_DSC07284.JPG", "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Dawn_Charles_V_Palace_Alhambra_Granada_Andalusia_Spain.jpg/960px-Dawn_Charles_V_Palace_Alhambra_Granada_Andalusia_Spain.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Salamanca_-_Plaza_Mayor%2C_nocturno_3.jpg/960px-Salamanca_-_Plaza_Mayor%2C_nocturno_3.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Catedral_de_Santiago_de_Compostela_%28Galicia%29.jpg/960px-Catedral_de_Santiago_de_Compostela_%28Galicia%29.jpg"]};
+[].forEach.call(document.querySelectorAll('svg.map'),function(sv){
+  var k=sv.dataset.city,cap=document.querySelector('[data-cap="'+k+'"]'),pop=document.querySelector('[data-pop="'+k+'"]'),box=sv.parentNode,dots=[].slice.call(sv.querySelectorAll('.dot')),i=0,tm,manual=false;
+  PH[k].forEach(function(u){var im=new Image();im.src=u;});
+  function place(n){
+    var d=dots[n].querySelector('circle.c').getBoundingClientRect(),b=box.getBoundingClientRect(),pw=pop.offsetWidth,ph=pop.offsetHeight;
+    var cx=d.left+d.width/2-b.left,cy=d.top+d.height/2-b.top;
+    var l=Math.max(0,Math.min(b.width-pw,cx-pw/2)),t=cy-ph-18;if(t<0)t=cy+22;
+    pop.style.left=l+'px';pop.style.top=t+'px';
+  }
+  function showPop(n){pop.querySelector('.pi').style.backgroundImage='url("'+PH[k][n]+'")';pop.querySelector('b').textContent=CITY[k][n][0];place(n);pop.classList.add('on');}
+  function hidePop(){pop.classList.remove('on');}
+  function show(n,withPop){i=n;dots.forEach(function(d,j){d.classList.toggle('act',j===n);});var c=CITY[k][n];cap.querySelector('b').textContent=c[0];cap.querySelector('span').textContent=c[1];if(withPop)showPop(n);}
+  dots.forEach(function(d,j){
+    d.addEventListener('pointerenter',function(e){manual=true;clearInterval(tm);show(j,true);});
+    d.addEventListener('pointerleave',function(e){if(e.pointerType==='mouse')hidePop();});
+    d.addEventListener('click',function(e){e.stopPropagation();manual=true;clearInterval(tm);show(j,true);});
+    d.addEventListener('focus',function(){manual=true;clearInterval(tm);show(j,true);});
+    d.addEventListener('blur',hidePop);
+  });
+  document.addEventListener('click',function(){if(manual)hidePop();});
+  show(0,false);
+  function start(){show(0,true);if(!RM)tm=setInterval(function(){show((i+1)%dots.length,true);},4200);}
+  if('IntersectionObserver' in window)new IntersectionObserver(function(es,o){if(es[0].isIntersecting){sv.classList.add('on');o.disconnect();setTimeout(start,2200);}},{threshold:.3}).observe(sv);else sv.classList.add('on');
+});
+/* ---- contadores ---- */
+[].forEach.call(document.querySelectorAll('[data-n]'),function(n){var to=+n.dataset.n;if('IntersectionObserver' in window)new IntersectionObserver(function(es,o){if(es[0].isIntersecting){o.disconnect();var s=performance.now();(function u(t){var p=Math.min(1,(t-s)/1200);n.textContent=Math.round(to*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(u);})(s);}}).observe(n);else n.textContent=to;});
+})();
+</script>
+</body>
+</html>
