@@ -338,7 +338,7 @@ function gameConfirm(turnOn){
   var no=['Cancel','Cancelar','Cancelar'],yes=['OK','OK','OK'];
   var ov=el('div',{class:'g-hov',role:'dialog','aria-modal':'true'});
   var close=function(){ov.remove();};
-  var okb=el('button',{type:'button',class:'btn primary',onclick:function(){try{localStorage.setItem('bl-game',turnOn?'1':'0');}catch(e){}if(turnOn){try{sessionStorage.setItem('bl-fx','in:'+Date.now());}catch(e){}}if(turnOn&&prof&&prof.is_admin&&/admin\.html$/.test(location.pathname)){location.href='index.html?aluno=1';return;}if(!turnOn&&window.Metro&&Metro.exitFx){close();Metro.exitFx(function(){location.reload();});return;}location.reload();}},gT(yes));
+  var okb=el('button',{type:'button',class:'btn primary',onclick:function(){try{localStorage.setItem('bl-game',turnOn?'1':'0');}catch(e){}if(turnOn){try{sessionStorage.setItem('bl-fx','in:'+Date.now());}catch(e){}}if(turnOn&&prof&&prof.is_admin&&/\/admin(\.html)?\/?$/.test(location.pathname)){location.href='index.html?aluno=1';return;}if(!turnOn&&window.Metro&&Metro.exitFx){close();Metro.exitFx(function(){location.reload();});return;}location.reload();}},gT(yes));
   var nob=el('button',{type:'button',class:'btn',onclick:close},gT(no));
   ov.append(el('div',{class:'g-hdlg','data-noi18n':'1'},el('h2',{style:'margin:0 0 16px'},gT(tt)),el('div',{style:'display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap'},nob,okb)));
   ov.addEventListener('click',function(e){if(e.target===ov)close();});
@@ -539,7 +539,7 @@ function addBar(){
     el('div',{class:'g-mr'},ico('tsize'),el('span',{},'Text size'),el('span',{class:'g-sz',role:'group','aria-label':'Text size'},minus,plus,lab)));
   if(window.I18N)mn.append(el('div',{class:'g-mr'},ico('globe'),el('span',{},'Language'),window.I18N.selector('ui')));
   (function(){try{localStorage.setItem(COURSE.id==='es'?'bl-has-es':'bl-has-en','1');}catch(e){}})();
-  if(prof.is_admin&&/admin\.html$/.test(location.pathname))mn.append(mi('home','Student home',{href:'index.html?aluno=1'}));
+  if(prof.is_admin&&/\/admin(\.html)?\/?$/.test(location.pathname))mn.append(mi('home','Student home',{href:'index.html?aluno=1'}));
   if(prof.is_admin)mn.append(mi('panel','Teacher panel',{href:'admin.html'}));
   if(prof.is_admin)mn.append(mi('panel','Loading test',{href:(window.BL_BASE||'')+'loadtest.html'}));
   mn.append(mi('help','Help',{onclick:function(){open(false);showHelp();}}),mi('out','Sign out',{class:'g-mi out',onclick:signOut}));
