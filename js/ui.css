@@ -32,6 +32,7 @@ input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus,.
 .g-bar:not(.gp){position:sticky;top:10px;z-index:60;max-width:calc(100% - 24px)!important;margin:10px auto 12px!important;padding:6px 10px!important;border-radius:999px;background:rgba(11,23,51,.93);border:1px solid #27407a;box-shadow:0 8px 24px rgba(0,0,0,.35);justify-content:space-between!important;color:#d6def0!important}
 .g-bar:not(.gp) b,.g-bar:not(.gp) .g-name{color:#fff!important}
 .g-bar:not(.gp) a{color:#e4c06a!important}
+.g-bar:not(.gp) .g-mn a.g-mi,.g-bar:not(.gp) .g-mn b{color:var(--ink)!important}.g-bar:not(.gp) .g-mn .g-mn-h small{color:var(--muted)!important}
 .g-logoc{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:8px;text-decoration:none;pointer-events:none}
 .g-logoc img{height:34px;width:auto}
 .g-logoc span{display:flex;flex-direction:column;line-height:1}

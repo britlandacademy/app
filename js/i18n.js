@@ -690,6 +690,7 @@ function tr(s){
   var m=/^(\s*)([\s\S]*?)(\s*)$/.exec(s),core=m[2];
   if(!core)return s;
   var e=MAP.hasOwnProperty(core)?MAP[core]:null,out=null;
+  if(/^Answer as each question asks:.*;/.test(core))return m[1]+['Answer the question.','Responda à pergunta.','Responde a la pregunta.'][IDX[lang]]+m[3];
   if(e)out=e[(FP&&!pref()&&e.f&&lang==='en')?1:IDX[lang]];
   else{
     for(var i=0;i<TPL.length;i++){
