@@ -516,14 +516,7 @@ function addBar(){
     COURSE.push===false?document.createComment(''):pushRow(open),
     el('div',{class:'g-mr'},el('b',{style:'width:20px;text-align:center'},'Aa'),el('span',{},'Text size'),el('span',{class:'g-sz',role:'group','aria-label':'Text size'},minus,plus,lab)));
   if(window.I18N)mn.append(el('div',{class:'g-mr'},el('b',{style:'width:20px;text-align:center'},'\uD83C\uDF10'),el('span',{},'Language'),window.I18N.selector('ui')));
-  (function(){try{
-    var es=COURSE.id==='es',other=es?'bl-has-en':'bl-has-es',has=localStorage.getItem(other)==='1',B=window.BL_BASE||'';
-    localStorage.setItem(es?'bl-has-es':'bl-has-en','1');
-    var lbl=es?(has?'Cambiar a English':'Conocer el curso de Inglés'):(has?'Switch to Español':'Discover the Spanish course');
-    var href=has?(es?B+'index.html':'espanol/index.html'):B+'curso.html?c='+(es?'en':'es');
-    var it=el('a',{class:'g-mi',role:'menuitem',href:href},el('b',{style:'width:20px;text-align:center;font-size:11px;color:var(--accent,#c9a13b)'},es?'EN':'ES'),el('span',{},lbl));
-    mn.append(it);
-  }catch(e){}})();
+  (function(){try{localStorage.setItem(COURSE.id==='es'?'bl-has-es':'bl-has-en','1');}catch(e){}})();
   if(prof.is_admin)mn.append(mi('panel','Teacher panel',{href:'admin.html'}));
   mn.append(mi('help','Help',{onclick:function(){open(false);showHelp();}}),mi('out','Sign out',{class:'g-mi out',onclick:signOut}));
   mn.querySelectorAll('a.g-mi').forEach(function(a){a.addEventListener('click',function(){open(false);});});
