@@ -99,10 +99,8 @@
     });
     det.append(dl);
     det.append(table(['Quando', 'Aluno', 'Tela', 'Versão', 'Aparelho'], g.rows.slice(0, 8).map(function (e) { return [fmt(e.created_at), nm(e.user_id), String(e.page || '').split('?')[0].split('/').pop(), parts(e.code).ver, devLabel(e.ua)]; })));
-    var msg = 'Olá! Sobre o erro ' + first.code + ': ' + o.fazer;
-    var b1 = el('button', { type: 'button', onclick: function (ev) { copyText(msg, ev.target); } }, 'Copiar mensagem para o aluno');
     var b2 = open ? el('button', { type: 'button', class: 'ghost', onclick: function (ev) { resolveGroup(g, ev.target); } }, 'Marcar como resolvido') : null;
-    det.append(el('div', { class: 'row' }, b1, b2));
+    det.append(el('div', { class: 'row' }, b2));
     return det;
   }
   function searchBlock() {
