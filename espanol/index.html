@@ -148,7 +148,7 @@ Gate.start({kinds:[],attempts:['check','ex']},function(ctx){
       rdone:function(id){return rv[id]!==undefined&&rv[id]>=.7;},rpct:function(id){return rv[id]===undefined?null:rv[id];},rstars:function(id){return rv[id]===undefined||rv[id]<.7?0:STR(rv[id]);},rlink:function(r){return 'check.html?rev='+r.from+'-'+r.to+'&rid='+r.id;}}]});};
     try{Gate.sb.from('review_results').select('tab,rid,score,total').then(function(r){((r&&r.data)||[]).forEach(function(x){var q=x.total?x.score/x.total:0;if(rv[x.rid]===undefined||q>rv[x.rid])rv[x.rid]=q;});go();},go);}catch(e){go();}}
   document.getElementById('stats').hidden=false;
-  if(window.Streak)Streak.mount(document.getElementById('streak'));
+  if(window.Streak)Streak.mount(document.getElementById('streak'),{head:document.querySelector('.head')});
   if(window.Agenda)Agenda.mount(document.getElementById('agenda'),ctx);
   document.getElementById('s1').textContent=upto;
   document.getElementById('s2').textContent=done;

@@ -172,7 +172,7 @@ Gate.start({kinds:[],attempts:['check','ex']},function(ctx){
     var mounted=false,go=function(){if(mounted)return;mounted=true;Metro.mount(ctx,{upto:upto,max:206,best:best,acts:acts,stages:STAGES,gate:Gate.gates(),raw:Gate.rawUpto()});};
     try{Gate.sb.from('review_results').select('tab,rid,score,total').then(function(r){((r&&r.data)||[]).forEach(function(x){var q=x.total?x.score/x.total:0,t=RV[x.tab];if(t&&(t[x.rid]===undefined||q>t[x.rid]))t[x.rid]=q;});go();},go);}catch(e){go();}}
   document.getElementById('stats').hidden=false;
-  if(window.Streak)Streak.mount(document.getElementById('streak'));
+  if(window.Streak)Streak.mount(document.getElementById('streak'),{head:document.querySelector('.head')});
   if(window.Agenda)Agenda.mount(document.getElementById('agenda'),ctx);
   document.getElementById('s1').textContent=upto;
   document.getElementById('s2').textContent=done;
