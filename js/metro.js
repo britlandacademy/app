@@ -301,7 +301,7 @@ function mount(c,o){
   function sheet(l){
     var s=h('div','sheet'),b=h('div'),p=h('p'),t=h('h4');p.textContent=stn(l-1)+(A.label?' · '+A.label:'');t.textContent=tx.lesson+' '+l;b.append(p,t);
     var sn=A.stars?A.stars(l):0;if(sn>0){var ss=h('div','ss'),pc=A.pct?A.pct(l):null;ss.setAttribute('aria-label',sn+' / 3');ss.innerHTML='<span class="on">'+'★'.repeat(sn)+'</span><span class="off">'+'★'.repeat(3-sn)+'</span>'+(pc!=null?'<em>'+Math.round(pc*100)+'%</em>':'');b.append(ss);}
-    var first=true;(A.links||[]).forEach(function(k){var a=h('a','mb'+(first?'':' alt'));a.href=k.href+(/[?&]lesson=/.test(k.href)?'':(k.href.indexOf('?')<0?'?':'&')+'lesson='+l);a.textContent=k.t;a.addEventListener('click',tick);b.append(a);first=false;});
+    var first=true;(A.links||[]).forEach(function(k){var a=h('a','mb'+(first?'':' alt'));var hr=k.href;if(!/course=/.test(hr)&&o.stages){var sg=0;o.stages.forEach(function(r,ix){if(l>=r[0]&&l<=r[1])sg=ix+1;});if(sg){hr=hr.replace(/([?&])stage=\d+&?/,'$1').replace(/[?&]$/,'');hr+=(hr.indexOf('?')<0?'?':'&')+'stage='+sg;}}a.href=hr+(/[?&]lesson=/.test(hr)?'':(hr.indexOf('?')<0?'?':'&')+'lesson='+l);a.textContent=k.t;a.addEventListener('click',tick);b.append(a);first=false;});
     s.append(b);s.addEventListener('click',function(e){if(e.target===s)s.remove();});root.append(s);
   }
   function tap(i){
