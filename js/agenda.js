@@ -51,6 +51,7 @@ var S={
  cxN:{en:'The time becomes free again. You cannot cancel less than 24 hours before the lesson.',pt:'O horário volta a ficar livre. Não dá para cancelar a menos de 24 horas da aula.',es:'El horario vuelve a quedar libre. No se puede cancelar a menos de 24 horas de la clase.'},
  cxYes:{en:'YES, CANCEL LESSON',pt:'SIM, CANCELAR AULA',es:'SÍ, CANCELAR CLASE'},
  newReq:{en:'New lesson',pt:'Aula nova',es:'Clase nueva'},
+ dis:{en:'Dismiss',pt:'Dispensar',es:'Descartar'},
  okMsg:{en:'Your request for {0} was approved.',pt:'Seu pedido para {0} foi aprovado.',es:'Tu pedido para {0} fue aprobado.'},
  noMsg:{en:'Your request for {0} was declined. Pick another time or message your teacher.',pt:'Seu pedido para {0} foi recusado. Escolha outro horário ou fale com o professor.',es:'Tu pedido para {0} fue rechazado. Elige otro horario o habla con tu profesor.'},
  eTaken:{en:'That time was just taken. Pick another one.',pt:'Esse horário acabou de ser ocupado. Escolha outro.',es:'Ese horario acaba de ocuparse. Elige otro.'},
@@ -128,7 +129,12 @@ function mount(box,ctx){
         var b=el('div','ag-ban');b.appendChild(el('b','',live?T('now'):T('soon',min)));b.appendChild(el('span','',fmtT(f.start_at)+' – '+fmtT(f.end_at)+' · '+(f.title||'')));
         if(f.meet_url){var a=el('a','ag-btn',T('join'));a.href=f.meet_url;a.target='_blank';a.rel='noopener';b.appendChild(a);}
         w.appendChild(b);}}
-    reqs.filter(function(q){return q.status==='approved'||q.status==='rejected';}).slice(0,2).forEach(function(q){var m=el('p','ag-s ag-soon',T(q.status==='approved'?'okMsg':'noMsg',fmtFull(q.new_start)));m.setAttribute('role','status');w.appendChild(m);});
+    /* answers to requests: approved ones stay 24 hours, declined ones 3 days; the student can dismiss either */
+    var dis={};try{dis=JSON.parse(localStorage.getItem('bl-ag-dis')||'{}')||{};}catch(e){}
+    reqs.filter(function(q){return (q.status==='approved'&&now-new Date(q.created_at)<24*HOUR||q.status==='rejected')&&!dis[q.id];}).slice(0,2).forEach(function(q){
+      var m=el('p','ag-s ag-soon',T(q.status==='approved'?'okMsg':'noMsg',fmtFull(q.new_start)));m.setAttribute('role','status');m.style.cssText+=';display:flex;gap:10px;align-items:flex-start';
+      var x=el('button','','\u00D7');x.type='button';x.setAttribute('aria-label',T('dis'));x.style.cssText='margin-left:auto;flex:none;min-width:32px;min-height:32px;border:0;background:transparent;color:inherit;font-size:1.3rem;line-height:1;cursor:pointer';
+      x.onclick=function(){dis[q.id]=1;try{localStorage.setItem('bl-ag-dis',JSON.stringify(dis));}catch(e){}m.remove();};m.appendChild(x);w.appendChild(m);});
     w.appendChild(el('h2','',T('next')));
     if(!rows.length)w.appendChild(el('p','ag-s',T('none')));
     rows.forEach(function(x){
