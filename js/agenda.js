@@ -114,7 +114,7 @@ function gcalLink(x){return 'https://calendar.google.com/calendar/render?action=
 function mount(box,ctx){
   if(!box||!window.Gate||!Gate.sb||!ctx||!ctx.user)return;
   css();var tm=null,sb=Gate.sb,uid=ctx.user.id,HOUR=3600000,ov=null;
-  function lessons(){return sb.from('lessons').select('id,title,start_at,end_at,meet_url,is_group').eq('user_id',uid).gte('end_at',new Date().toISOString()).order('start_at').limit(6).then(function(r){return (r&&r.data)||[];},function(){return [];});}
+  function lessons(){return sb.from('lessons').select('id,title,start_at,end_at,meet_url,is_group').eq('user_id',uid).gte('end_at',new Date().toISOString()).order('start_at').limit(6).then(function(r){return ((r&&r.data)||[]).map(function(x){x.meet_url=x.meet_url||'https://us06web.zoom.us/j/2447679341';return x;});},function(){return [];});}
   function requests(){var since=new Date(Date.now()-3*86400000).toISOString();return sb.from('lesson_requests').select('id,kind,lesson_id,new_start,status,created_at').eq('user_id',uid).neq('kind','cancel').gte('created_at',since).order('created_at',{ascending:false}).limit(10).then(function(r){return (r&&r.data)||[];},function(){return [];});}
   function reload(){return Promise.all([lessons(),requests()]).then(function(v){draw(v[0],v[1]);});}
   function isPend(q){return q.status==='pending'&&Date.now()-new Date(q.created_at)<24*HOUR;}
