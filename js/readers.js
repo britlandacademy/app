@@ -42,7 +42,7 @@ window.BL_READERS=[
   "title": "The Adventures of Tom Sawyer",
   "author": "Mark Twain",
   "year": "1876",
-  "text": "Tom Sawyer é um menino travesso que vive à beira do rio Mississippi. Com seu amigo Huck Finn, ele vive aventuras, testemunha um crime e se perde numa caverna com a Becky. Um clássico da literatura americana, contado em inglês bem simples.",
+  "text": "Tom Sawyer é um menino travesso que vive à beira do rio Mississippi. Com seu amigo Huck Finn, ele vive aventuras cheias de travessuras, segredos e perigos. Um clássico da literatura americana, contado em inglês bem simples.",
   "words": 5211,
   "uniq": 553,
   "min": 52,
@@ -102,7 +102,7 @@ window.BL_READERS=[
   "title": "The Crown",
   "author": "M. R. James",
   "year": "adaptado de um conto de terror",
-  "text": "Paxton passa as férias num hotel à beira-mar, em Seaburgh. Um homem na colina, uma sombra durante a noite e uma coroa antiga transformam as férias num pesadelo, que termina numa corrida pela praia. Uma história de suspense e fantasmas.",
+  "text": "Paxton passa as férias num hotel à beira-mar, em Seaburgh. Um homem na colina, uma sombra durante a noite e uma coroa antiga transformam as férias num pesadelo. Uma história de suspense e fantasmas.",
   "words": 6993,
   "uniq": 744,
   "min": 70,
@@ -166,7 +166,7 @@ window.BL_READERS=[
   "words": 13650,
   "uniq": 1214,
   "min": 136,
-  "cover": null
+  "cover": "img/readers/dante.jpg"
  },
  {
   "id": "quixote",
@@ -250,7 +250,7 @@ window.BL_READERS=[
   "words": 8410,
   "uniq": 987,
   "min": 84,
-  "cover": null
+  "cover": "img/readers/persuasion.jpg"
  },
  {
   "id": "pirates",
@@ -306,7 +306,7 @@ window.BL_READERS=[
   "title": "The Earthquake",
   "author": "Elizabeth Laird",
   "year": "2000",
-  "text": "Gabriel ama Silvia, mas Silvia ama Marco, que usa roupas caras e dirige um carro rápido. Numa noite, às 20h27, algo terrível muda a vida de toda a cidade. Onde estão Marco e Gabriel? E o que vai acontecer com Silvia? Uma história de amor em tempos perigosos.",
+  "text": "Gabriel ama Silvia, mas Silvia ama Marco, que usa roupas caras e dirige um carro rápido. Numa noite, às 20h27, algo terrível muda a vida de toda a cidade. Uma história de amor em tempos muito perigosos.",
   "words": 5979,
   "uniq": 796,
   "min": 60,
@@ -322,7 +322,7 @@ window.BL_READERS=[
   "words": 9206,
   "uniq": 979,
   "min": 92,
-  "cover": null
+  "cover": "img/readers/lady.jpg"
  },
  {
   "id": "mummy",
@@ -342,7 +342,7 @@ window.BL_READERS=[
   "title": "The Nightmare Before Christmas",
   "author": "adaptado do filme de Tim Burton",
   "year": "1993",
-  "text": "Jack Skellington, o rei de Halloweentown, está cansado de assustar todo mundo. Quando descobre o Natal, ele tem uma ideia: celebrá-lo no seu estilo, com vampiros, bruxas e esqueletos. Mas o resultado pode ser um desastre.",
+  "text": "Jack Skellington, o rei de Halloweentown, está cansado de assustar todo mundo. Quando descobre o Natal, ele tem uma ideia: celebrá-lo à sua maneira, com vampiros, bruxas e esqueletos. Mas nem tudo sai como ele espera.",
   "words": 10062,
   "uniq": 2390,
   "min": 101,
@@ -358,7 +358,7 @@ window.BL_READERS=[
   "words": 8981,
   "uniq": 912,
   "min": 90,
-  "cover": null
+  "cover": "img/readers/tower.jpg"
  },
  {
   "id": "seekers",
@@ -370,7 +370,7 @@ window.BL_READERS=[
   "words": 8539,
   "uniq": 841,
   "min": 85,
-  "cover": null
+  "cover": "img/readers/seekers.jpg"
  },
  {
   "id": "wave",
@@ -378,7 +378,7 @@ window.BL_READERS=[
   "title": "The Wave",
   "author": "Morton Rhue",
   "year": "1981",
-  "text": "Numa aula de história, o professor Ross cria um grupo chamado Wave, e a escola inteira entra na brincadeira. Mas Laurie começa a ver coisas que não gosta e a mulher do professor acha tudo perigoso. Uma história baseada numa experiência real numa escola americana.",
+  "text": "Numa aula de história, o professor Ross cria um grupo chamado Wave, e a escola inteira entra na brincadeira. Mas Laurie começa a ver coisas de que não gosta. Uma história baseada numa experiência real numa escola americana.",
   "words": 7860,
   "uniq": 717,
   "min": 79,
@@ -395,5 +395,317 @@ window.BL_READERS=[
   "uniq": 747,
   "min": 72,
   "cover": "img/readers/treasure.jpg"
+ },
+ {
+  "id": "britain",
+  "level": 3,
+  "title": "A History of Britain",
+  "author": "Fiona Beddall",
+  "year": "livro de não ficção",
+  "text": "Mais de dois mil anos de história em um só livro: dos romanos aos vikings e normandos, dos reis e rainhas às guerras, revoluções e religiões que moldaram o Reino Unido. Um panorama claro de como a Grã-Bretanha se tornou o país que é hoje.",
+  "words": 13602,
+  "uniq": 912,
+  "min": 136,
+  "cover": "img/readers/britain.jpg"
+ },
+ {
+  "id": "brlife",
+  "level": 3,
+  "title": "British Life",
+  "author": "Anne Collins",
+  "year": "2001",
+  "text": "Quem são os britânicos? São o mesmo que os ingleses? Um livro sobre a vida de verdade no país, e não sobre pontos turísticos: família, trabalho, casas, clima e costumes que parecem muito estranhos a quem vem de fora.",
+  "words": 8225,
+  "uniq": 791,
+  "min": 82,
+  "cover": "img/readers/brlife.jpg"
+ },
+ {
+  "id": "jekyll",
+  "level": 3,
+  "title": "Dr Jekyll and Mr Hyde",
+  "author": "Robert Louis Stevenson",
+  "year": "1886",
+  "text": "O advogado Utterson se preocupa com seu amigo, o bondoso Dr Jekyll, que se tornou amigo de um homem pequeno e assustador chamado Mr Hyde. Quem é esse homem e por que ele tem tanto poder sobre o doutor? Um clássico de mistério na Londres do século XIX.",
+  "words": 17290,
+  "uniq": 891,
+  "min": 173,
+  "cover": "img/readers/jekyll.jpg"
+ },
+ {
+  "id": "gump",
+  "level": 3,
+  "title": "Forrest Gump",
+  "author": "Winston Groom",
+  "year": "1986",
+  "text": "Forrest é um jovem do Alabama que todo mundo chama de idiota, mas que é mais esperto do que parece. Em sua vida ele vai à guerra, joga futebol, conhece presidentes e vive aventuras que ninguém imaginaria. Uma história calorosa e divertida, contada por ele mesmo.",
+  "words": 9775,
+  "uniq": 715,
+  "min": 98,
+  "cover": "img/readers/gump.jpg"
+ },
+ {
+  "id": "greyowl",
+  "level": 3,
+  "title": "Grey Owl",
+  "author": "Vicky Shipton",
+  "year": "livro de não ficção",
+  "text": "Nos anos 1930, um homem de aparência indígena percorre teatros do Canadá e da Europa para defender os castores e as florestas. Seu recado muda a opinião de muita gente. Mas quem era, de verdade, esse homem? A biografia de um ambientalista com um grande segredo.",
+  "words": 7058,
+  "uniq": 579,
+  "min": 71,
+  "cover": "img/readers/greyowl.jpg"
+ },
+ {
+  "id": "hamlet",
+  "level": 3,
+  "title": "Hamlet",
+  "author": "William Shakespeare",
+  "year": "por volta de 1600",
+  "text": "Hamlet, príncipe da Dinamarca, está triste e confuso: seu pai morreu, e a mãe se casou com o novo rei, Claudius. Só dois amigos conhecem o verdadeiro motivo da dor do príncipe. Ele será forte para agir? Está louco, ou tem um plano secreto? A peça mais famosa de Shakespeare, em versão resumida.",
+  "words": 17462,
+  "uniq": 1078,
+  "min": 175,
+  "cover": "img/readers/hamlet.jpg"
+ },
+ {
+  "id": "alien",
+  "level": 3,
+  "title": "How to be an Alien",
+  "author": "George Mikes",
+  "year": "1946",
+  "text": "Um estrangeiro conta, com muito humor, o que acha dos ingleses: por que falam tanto do tempo, por que tomam chá às cinco da tarde e por que fazem fila para tudo. Um guia divertido para entender os costumes da Inglaterra.",
+  "words": 8670,
+  "uniq": 711,
+  "min": 87,
+  "cover": "img/readers/alien.jpg"
+ },
+ {
+  "id": "manu",
+  "level": 3,
+  "title": "Manchester United",
+  "author": "Kevin Brophy",
+  "year": "2001",
+  "text": "A história do clube de futebol mais rico e vitorioso do mundo, com seus craques, treinadores, títulos e noites inesquecíveis, como a final europeia de 1998. Para quem gosta de futebol e quer ler sobre ele em inglês.",
+  "words": 6806,
+  "uniq": 619,
+  "min": 68,
+  "cover": "img/readers/manu.jpg"
+ },
+ {
+  "id": "heroic",
+  "level": 3,
+  "title": "More Heroic Failures",
+  "author": "Stephen Pile",
+  "year": "anos 1980",
+  "text": "Nem todo mundo é um gênio. Este livro reúne histórias reais e muito engraçadas das pessoas que fazem tudo errado: o time que perdeu de 21 a 0, o cantor mais desafinado e o amante mais azarado. Humor britânico em pequenas doses.",
+  "words": 7100,
+  "uniq": 731,
+  "min": 71,
+  "cover": "img/readers/heroic.jpg"
+ },
+ {
+  "id": "durrell",
+  "level": 3,
+  "title": "My Family and Other Animals",
+  "author": "Gerald Durrell",
+  "year": "1956",
+  "text": "Uma família inglesa vai morar na ilha grega de Corfu. Gerald, o filho mais novo, ama bichos e leva escorpiões, aranhas, aves e cobras para dentro de casa, para desespero dos irmãos. Memórias muito engraçadas de uma infância ao sol.",
+  "words": 9074,
+  "uniq": 769,
+  "min": 91,
+  "cover": "img/readers/durrell.jpg"
+ },
+ {
+  "id": "mysteries",
+  "level": 3,
+  "title": "Mysteries of the Unexplained",
+  "author": "Kathy Burke",
+  "year": "2003",
+  "text": "Desaparecimentos estranhos, monstros misteriosos, mundos antigos, fantasmas e vidas passadas. Um livro de fatos que a ciência ainda não explica. Você acredita? A decisão é sua.",
+  "words": 8402,
+  "uniq": 820,
+  "min": 84,
+  "cover": "img/readers/mysteries.jpg"
+ },
+ {
+  "id": "newyork",
+  "level": 3,
+  "title": "New York",
+  "author": "Vicky Shipton",
+  "year": "livro de não ficção",
+  "text": "Todos os anos, milhões de turistas visitam a cidade mais animada do mundo. História, prédios famosos, pessoas e curiosidades: por que Nova York é a cidade que nunca dorme?",
+  "words": 12459,
+  "uniq": 887,
+  "min": 125,
+  "cover": "img/readers/newyork.jpg"
+ },
+ {
+  "id": "sense",
+  "level": 3,
+  "title": "Sense and Sensibility",
+  "author": "Jane Austen",
+  "year": "1811",
+  "text": "Depois da morte do pai, a sra. Dashwood e as filhas têm de deixar a casa da família e viver com pouco dinheiro. Elinor é prudente e Marianne, apaixonada, e cada uma enfrenta o amor à sua maneira. Um clássico sobre razão e emoção.",
+  "words": 12266,
+  "uniq": 791,
+  "min": 123,
+  "cover": "img/readers/sense.jpg"
+ },
+ {
+  "id": "boscombe",
+  "level": 3,
+  "title": "Sherlock Holmes and the Mystery of Boscombe Pool",
+  "author": "Arthur Conan Doyle",
+  "year": "1892",
+  "text": "Quem matou Charles McCarthy, e por quê? A polícia acha que sabe, mas Sherlock Holmes, o famoso detetive, duvida. Com a ajuda do amigo Dr Watson, ele segue as pistas até a resposta. Um clássico policial.",
+  "words": 9836,
+  "uniq": 759,
+  "min": 98,
+  "cover": "img/readers/boscombe.jpg"
+ },
+ {
+  "id": "stargate",
+  "level": 3,
+  "title": "Stargate",
+  "author": "Dean Devlin e Roland Emmerich",
+  "year": "1994",
+  "text": "O StarGate ficou enterrado no Egito por dez mil anos. Quando um jovem arqueólogo descobre como abri-lo, ele e um grupo de soldados atravessam a passagem e chegam a outro mundo, onde um antigo deus egípcio é rei. Ficção científica baseada no filme.",
+  "words": 12421,
+  "uniq": 843,
+  "min": 124,
+  "cover": "img/readers/stargate.jpg"
+ },
+ {
+  "id": "beatles",
+  "level": 3,
+  "title": "The Beatles",
+  "author": "Paul Shipton",
+  "year": "livro de não ficção",
+  "text": "Em 1963, a Beatlemania estava apenas começando. Em poucos anos, a banda de Liverpool conquistou o mundo e mudou a música moderna para sempre. A história dos Beatles, dos primeiros shows ao fim do grupo.",
+  "words": 9512,
+  "uniq": 703,
+  "min": 95,
+  "cover": "img/readers/beatles.jpg"
+ },
+ {
+  "id": "montecristo",
+  "level": 3,
+  "title": "The Count of Monte Cristo",
+  "author": "Alexandre Dumas",
+  "year": "1844",
+  "text": "Edmond Dantès é um jovem marinheiro de sucesso, prestes a ser capitão e a se casar. Mas seus inimigos têm inveja, e a vida dele muda num só dia. Um clássico de aventura sobre injustiça, tesouros e vingança.",
+  "words": 14478,
+  "uniq": 795,
+  "min": 145,
+  "cover": "img/readers/montecristo.jpg"
+ },
+ {
+  "id": "izieu",
+  "level": 3,
+  "title": "The Ghosts of Izieu",
+  "author": "James Watson",
+  "year": "1998",
+  "text": "Elise viaja com o pai e a madrasta para uma pequena vila na França e começa a ver coisas que ninguém mais vê. Quem são essas crianças? A história mistura fantasmas com um fato real e triste da Segunda Guerra Mundial.",
+  "words": 8339,
+  "uniq": 669,
+  "min": 83,
+  "cover": "img/readers/izieu.jpg"
+ },
+ {
+  "id": "horse",
+  "level": 3,
+  "title": "The Horse Whisperer",
+  "author": "Nicholas Evans",
+  "year": "1995",
+  "text": "Depois de um grave acidente, uma menina e seu cavalo ficam machucados no corpo e na alma. Sua mãe procura Tom Booker, um homem que sabe falar com os cavalos, e viaja com eles até os campos do oeste americano. Drama e romance, também filme com Robert Redford.",
+  "words": 23662,
+  "uniq": 1106,
+  "min": 237,
+  "cover": "img/readers/horse.jpg"
+ },
+ {
+  "id": "journey",
+  "level": 3,
+  "title": "The Incredible Journey",
+  "author": "Sheila Burnford",
+  "year": "1961",
+  "text": "Dois cães e um gato precisam atravessar centenas de quilômetros de florestas selvagens do Canadá para voltar para a família que amam. Frio, fome e perigos pelo caminho. Uma aventura sobre amizade e lealdade.",
+  "words": 17592,
+  "uniq": 991,
+  "min": 176,
+  "cover": "img/readers/journey.jpg"
+ },
+ {
+  "id": "ladies",
+  "level": 3,
+  "title": "The No.1 Ladies' Detective Agency",
+  "author": "Alexander McCall Smith",
+  "year": "1998",
+  "text": "Mma Ramotswe é a única detetive particular de Botswana e dona da melhor agência do país. Com a ajuda da secretária e de um bom amigo, ela resolve casos difíceis, de um carro roubado a um marido desaparecido, do seu jeito muito especial.",
+  "words": 15748,
+  "uniq": 888,
+  "min": 157,
+  "cover": "img/readers/ladies.jpg"
+ },
+ {
+  "id": "redbadge",
+  "level": 3,
+  "title": "The Red Badge of Courage",
+  "author": "Stephen Crane",
+  "year": "1895",
+  "text": "Henry Fleming sonha em ser herói de guerra e acha que a guerra é uma aventura. Quando seu regimento entra na Guerra Civil americana, ele descobre o que é ter medo de verdade. Um clássico sobre coragem.",
+  "words": 14662,
+  "uniq": 774,
+  "min": 147,
+  "cover": "img/readers/redbadge.jpg"
+ },
+ {
+  "id": "romans",
+  "level": 3,
+  "title": "The Romans",
+  "author": "David Maule",
+  "year": "livro de não ficção",
+  "text": "Como viviam os romanos? De um pequeno povoado às margens do Tibre, Roma virou o maior império do mundo antigo. Um livro de informação sobre soldados, imperadores, cidades e a vida de todos os dias.",
+  "words": 16704,
+  "uniq": 1026,
+  "min": 167,
+  "cover": "img/readers/romans.jpg"
+ },
+ {
+  "id": "screw",
+  "level": 3,
+  "title": "The Turn of the Screw",
+  "author": "Henry James",
+  "year": "1898",
+  "text": "Uma jovem professora vai trabalhar numa casa grande no campo e cuidar de duas crianças lindas. Mas coisas estranhas começam a acontecer, e ela passa a temer um perigo que só ela parece ver. Uma clássica história de fantasmas.",
+  "words": 6258,
+  "uniq": 481,
+  "min": 63,
+  "cover": "img/readers/screw.jpg"
+ },
+ {
+  "id": "youngking",
+  "level": 3,
+  "title": "The Young King and Other Stories",
+  "author": "Oscar Wilde",
+  "year": "1888 e 1891",
+  "text": "Sete contos de fadas para todas as idades: reis, princesas, gigantes, anões e animais que falam. Em alguns, o jardim de um gigante egoísta fica sem primavera. Histórias engraçadas, tristes e cheias de beleza.",
+  "words": 20245,
+  "uniq": 919,
+  "min": 202,
+  "cover": "img/readers/youngking.jpg"
+ },
+ {
+  "id": "titanic",
+  "level": 3,
+  "title": "Titanic!",
+  "author": "Paul Shipton",
+  "year": "2001",
+  "text": "O maior navio do mundo, chamado de inquebrável, parte em sua primeira viagem em 1912. O livro conta como o Titanic foi construído, o que aconteceu naquela noite no Atlântico e o que o mundo sentiu depois, com a história de uma passageira.",
+  "words": 7261,
+  "uniq": 683,
+  "min": 73,
+  "cover": "img/readers/titanic.jpg"
  }
 ];
