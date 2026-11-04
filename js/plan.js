@@ -4,10 +4,10 @@
 (function(){
 'use strict';
 var T={
-  pt:{cdIn:'Faltam ',cdNow:'Começa em ',cdOn:'Sua aula começou',cdGo:'Entrar na aula',next:'Próxima aula',imp:'Importante',prep:'Prepare-se para a aula nº ',lastw:'Última palavra estudada:',rev:'Revisão das palavras ',nw:' e novas palavras ',again2:'toque para refazer',conv:'Aula de Conversation. Aproveite para praticar a fala!',miss:'Você faltou à aula nº ',missc:'Você faltou à aula de Conversation nº ',missr:'. Revise as palavras ',missl:' e ouça o Listening da Lição ',missx:'Aula perdida',act:'Atividade da aula: ',will:'Haverá ',dict:'ditado',read:'leitura',quiz:'Lesson Check',listen:'Listening · Lição ',again:'Ouça de novo antes da aula',
+  pt:{cdIn:'Faltam ',cdNow:'Começa em ',cdOn:'Sua aula começou',cdGo:'Entrar na aula',rsBtn:'Precisa remarcar?',rsQ:'Tem certeza que deseja remarcar essa aula?',rsNote:'Você vai escolher um novo horário e o professor precisa aprovar.',rsYes:'Sim, remarcar',rsNo:'Não, manter a aula',next:'Próxima aula',imp:'Importante',prep:'Prepare-se para a aula nº ',lastw:'Última palavra estudada:',rev:'Revisão das palavras ',nw:' e novas palavras ',again2:'toque para refazer',conv:'Aula de Conversation. Aproveite para praticar a fala!',miss:'Você faltou à aula nº ',missc:'Você faltou à aula de Conversation nº ',missr:'. Revise as palavras ',missl:' e ouça o Listening da Lição ',missx:'Aula perdida',act:'Atividade da aula: ',will:'Haverá ',dict:'ditado',read:'leitura',quiz:'Lesson Check',listen:'Listening · Lição ',again:'Ouça de novo antes da aula',
     rec:'Exercícios recomendados para você',lesson:'Lição ',lc:'Lesson Check · Lição ',gr:'Grammar · Lição ',wb:'Workbook · Lição ',done:'feito',doneL:'Concluído',recd:'Recomendado',
     all:'Tudo em dia! 🎉',allp:'Você fez todos os exercícios da Lição ',allp2:'. Parabéns pela dedicação!',redo:'Refazer o Lesson Check →',n:' de ',ex:' exercícios feitos',play:'Ouvir',pause:'Pausar'},
-  es:{cdIn:'Faltan ',cdNow:'Empieza en ',cdOn:'Tu clase ha empezado',cdGo:'Entrar en la clase',next:'Próxima clase',imp:'Importante',prep:'Prepárate para la clase n.º ',lastw:'Última palabra estudiada:',rev:'Repaso de las palabras ',nw:' y palabras nuevas ',again2:'toca para repetir',conv:'Clase de conversación. ¡Aprovecha para practicar el habla!',miss:'Faltaste a la clase n.º ',missc:'Faltaste a la clase de conversación n.º ',missr:'. Repasa las palabras ',missl:' y escucha el Listening de la Lección ',missx:'Clase perdida',act:'Actividad de la clase: ',will:'Habrá ',dict:'dictado',read:'lectura',quiz:'Lesson Check',listen:'Listening · Lección ',again:'Escúchalo de nuevo antes de la clase',
+  es:{cdIn:'Faltan ',cdNow:'Empieza en ',cdOn:'Tu clase ha empezado',cdGo:'Entrar en la clase',rsBtn:'¿Necesitas reprogramar?',rsQ:'¿Seguro que quieres reprogramar esta clase?',rsNote:'Vas a elegir un nuevo horario y el profesor debe aprobarlo.',rsYes:'Sí, reprogramar',rsNo:'No, mantener la clase',next:'Próxima clase',imp:'Importante',prep:'Prepárate para la clase n.º ',lastw:'Última palabra estudiada:',rev:'Repaso de las palabras ',nw:' y palabras nuevas ',again2:'toca para repetir',conv:'Clase de conversación. ¡Aprovecha para practicar el habla!',miss:'Faltaste a la clase n.º ',missc:'Faltaste a la clase de conversación n.º ',missr:'. Repasa las palabras ',missl:' y escucha el Listening de la Lección ',missx:'Clase perdida',act:'Actividad de la clase: ',will:'Habrá ',dict:'dictado',read:'lectura',quiz:'Lesson Check',listen:'Listening · Lección ',again:'Escúchalo de nuevo antes de la clase',
     rec:'Ejercicios recomendados para ti',lesson:'Lección ',lc:'Lesson Check · Lección ',gr:'Gramática · Lección ',wb:'Workbook · Lección ',done:'hecho',doneL:'Completado',recd:'Recomendado',
     all:'¡Todo al día! 🎉',allp:'Has hecho todos los ejercicios de la Lección ',allp2:'. ¡Felicidades por tu dedicación!',redo:'Repetir el Lesson Check →',n:' de ',ex:' ejercicios hechos',play:'Escuchar',pause:'Pausar'}
 };
@@ -19,29 +19,54 @@ var CSS='#plan{margin:0 0 16px;display:grid;gap:14px}#plan .pc{background:var(--
 +'#plan .bx{font-size:1.3rem;flex:none;color:var(--muted)}#plan .li.ok .bx{color:var(--hl)}#plan .tg{margin-left:auto;font-size:.72rem;background:var(--chip);border-radius:20px;padding:2px 10px;color:var(--muted)}#plan .go{margin-left:auto;color:var(--hl);font-style:normal;font-size:1.2rem}'
 +'#plan .pl{background:var(--chip);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:14px}#plan .pl button{flex:none;width:44px;height:44px;border-radius:99px;border:0;background:#c9a13b;color:#1a1405;font-size:1.1rem;box-shadow:0 3px 0 #8a6a14;cursor:pointer}#plan .pl button:active{transform:translateY(3px);box-shadow:none}'
 +'#plan .tr{height:6px;background:var(--line);border-radius:9px;margin-top:6px;overflow:hidden}#plan .tr div{height:100%;width:0;background:var(--hl)}#plan .full{display:flex;justify-content:center;margin-top:12px}'
-+'#plan .cdf{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem}#plan .cdf b{color:var(--hl);font-size:1.05rem}#plan .cdf .cz{margin-left:auto;background:var(--hl);color:var(--hli);font-weight:700;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;border-radius:10px;padding:10px 14px;text-decoration:none;min-height:44px;display:inline-flex;align-items:center}#plan .cdf [hidden]{display:none!important}#plan .cdf.soon b{text-shadow:0 0 10px rgba(245,197,66,.7)}';
++'#plan .cdf{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem;display:flex;flex-direction:column;gap:12px}#plan .cdf b{color:var(--hl);font-size:1.05rem}#plan .cdf.soon b{text-shadow:0 0 10px rgba(245,197,66,.7)}'
++'.bl-pill{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;box-sizing:border-box;min-height:54px;border:0;border-radius:999px;font:800 .95rem/1 system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;cursor:pointer;padding:0 18px;transition:transform .08s,box-shadow .08s}.bl-pill:active{transform:translateY(4px);box-shadow:0 0 0 transparent!important}.bl-pill[hidden]{display:none!important}'
++'.bl-red{background:#d6453b;color:#fff;box-shadow:0 4px 0 #8f2620}.bl-gold{background:#c9a13b;color:#1a1405;box-shadow:0 4px 0 #8a6a14,0 0 18px rgba(201,161,59,.45);animation:blglow 2.4s ease-in-out infinite}.bl-gold svg{flex:none}@keyframes blglow{50%{box-shadow:0 4px 0 #8a6a14,0 0 28px rgba(228,192,106,.8)}}@media(prefers-reduced-motion:reduce){.bl-gold{animation:none}}'
++'.bl-sh{position:fixed;inset:0;z-index:2147482000;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center}.bl-shb{width:100%;max-width:560px;box-sizing:border-box;background:var(--card,#10224a);color:var(--ink,#f3f4f6);border-radius:24px 24px 0 0;border-top:2px solid #c9a13b;padding:24px 18px max(24px,env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px;text-align:center}.bl-shb h3{margin:0;font:700 1.3rem/1.25 BLSerif,Georgia,serif;text-wrap:balance}.bl-shb .when{color:#c9a13b;font:700 1.15rem BLSerif,Georgia,serif}.bl-shb p{margin:0;color:var(--muted,inherit);font-size:.9rem;line-height:1.4}';
 var ZOOM='https://us06web.zoom.us/j/2447679341';
-/* Countdown strip at the foot of the "next class" card: next lesson of this student from the agenda (own time zone). The Zoom button shows from 10 minutes before the start until 1 hour after it. */
+/* Countdown strip at the foot of the "next class" card. Line 1: countdown. Line 2 (full width): red pill "needs to reschedule?" while there is more than 1 hour left, gold "join class" pill from 1 hour before until 1 hour after the start. */
+var VID='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="13" height="12" rx="3"/><path d="M15.5 10.5l6-3.5v10l-6-3.5"/></svg>';
+function cap(x){return x.charAt(0).toUpperCase()+x.slice(1);}
+function whenLong(t,loc){try{var d=new Date(t),f=function(o){return new Intl.DateTimeFormat(loc,o).format(d).replace('.','');};return cap(f({weekday:'short'}))+', '+f({day:'numeric'})+' '+f({month:'short'})+' · '+new Intl.DateTimeFormat(loc,{hour:'2-digit',minute:'2-digit',hour12:false}).format(d);}catch(e){return new Date(t).toLocaleString();}}
+function confirmSheet(L10,t0,loc,onYes){
+  var bk=el('div',{class:'bl-sh',role:'dialog','aria-modal':'true','aria-label':L10.rsQ}),bx=el('div',{class:'bl-shb'});
+  var yes=el('button',{type:'button',class:'bl-pill bl-red',text:L10.rsYes}),no=el('button',{type:'button',class:'bl-pill bl-gold',text:L10.rsNo});
+  no.style.animation='none';
+  function shut(){if(bk.parentNode)bk.parentNode.removeChild(bk);document.removeEventListener('keydown',kd);}
+  function kd(e){if(e.key==='Escape')shut();}
+  yes.onclick=function(){shut();onYes();};no.onclick=shut;bk.onclick=function(e){if(e.target===bk)shut();};
+  bx.append(el('h3',{text:L10.rsQ}),el('div',{class:'when',text:whenLong(t0,loc)}),el('p',{text:L10.rsNote}),yes,no);
+  bk.append(bx);document.body.append(bk);document.addEventListener('keydown',kd);no.focus();
+}
 function countdown(card,L10,es,uid){
-  Gate.sb.from('lessons').select('start_at,end_at').eq('user_id',uid).gte('end_at',new Date().toISOString()).order('start_at').limit(1).then(function(r){
+  Gate.sb.from('lessons').select('id,title,start_at,end_at,is_group').eq('user_id',uid).gte('end_at',new Date().toISOString()).order('start_at').limit(1).then(function(r){
     var row=r&&r.data&&r.data[0];if(!row)return;
     var t0=new Date(row.start_at).getTime(),t1=new Date(row.end_at).getTime();if(!(t0>0))return;
     var loc=es?'es':'pt-BR',when;
     try{when=new Date(t0).toLocaleString(loc,{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});}catch(e){when=new Date(t0).toLocaleString();}
-    var f=el('div',{class:'cdf'}),sp=el('span'),bt=el('b'),go=el('a',{class:'cz',href:ZOOM,target:'_blank',rel:'noopener',text:L10.cdGo});go.hidden=true;
-    f.append(sp,go);card.append(f);
+    var f=el('div',{class:'cdf'}),sp=el('span'),
+      go=el('a',{class:'bl-pill bl-gold',href:ZOOM,target:'_blank',rel:'noopener'}),
+      rs=el('button',{type:'button',class:'bl-pill bl-red',text:L10.rsBtn});
+    go.innerHTML=VID;go.append(el('span',{text:L10.cdGo}));go.hidden=true;rs.hidden=true;
+    f.append(sp,rs,go);card.append(f);
+    var canRs=!row.is_group;
+    if(canRs&&t0-Date.now()>3600000){
+      Gate.sb.from('lesson_requests').select('id').eq('user_id',uid).eq('lesson_id',row.id).eq('status','pending').gte('created_at',new Date(Date.now()-86400000).toISOString()).limit(1).then(function(q){if(q&&q.data&&q.data.length)canRs=false;},function(){});
+    }
+    rs.onclick=function(){confirmSheet(L10,t0,loc,function(){if(window.Agenda&&Agenda.reschedule)Agenda.reschedule(row);});};
     function p2(n){return String(n).padStart(2,'0');}
     function tick(){
       if(!f.isConnected){clearInterval(iv);return;}
       var now=Date.now(),d=t0-now;
       if(now>=t1){f.hidden=true;clearInterval(iv);return;}
-      go.hidden=!(now>=t0-600000&&now<=t0+3600000);
+      rs.hidden=!(canRs&&d>3600000&&window.Agenda&&Agenda.reschedule);
+      go.hidden=!(d<=3600000&&now<=t0+3600000);
       f.classList.toggle('soon',d<=3600000);
       sp.textContent='';
       if(d<=0){sp.append(el('b',{text:L10.cdOn}));return;}
       var days=Math.floor(d/86400000),h=Math.floor(d%86400000/3600000),m=Math.floor(d%3600000/60000),sc=Math.floor(d%60000/1000);
       if(d<=3600000){sp.append(document.createTextNode(L10.cdNow),el('b',{text:p2(m)+':'+p2(sc)}));}
-      else{var u=es?[' d ',' h ',' min']:[' d ',' h ',' min'];sp.append(document.createTextNode(L10.cdIn),el('b',{text:(days?days+u[0]:'')+(days||h?h+u[1]:'')+m+u[2]}),document.createTextNode(' · '+when));}
+      else{var u=[' d ',' h ',' min'];sp.append(document.createTextNode(L10.cdIn),el('b',{text:(days?days+u[0]:'')+(days||h?h+u[1]:'')+m+u[2]}),document.createTextNode(' · '+when));}
     }
     var iv=setInterval(tick,1000);tick();
   },function(){});
