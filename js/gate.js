@@ -338,7 +338,7 @@ function gameConfirm(turnOn){
   var no=['Cancel','Cancelar','Cancelar'],yes=['OK','OK','OK'];
   var ov=el('div',{class:'g-hov',role:'dialog','aria-modal':'true'});
   var close=function(){ov.remove();};
-  var okb=el('button',{type:'button',class:'btn primary',onclick:function(){try{localStorage.setItem('bl-game',turnOn?'1':'0');}catch(e){}location.reload();}},gT(yes));
+  var okb=el('button',{type:'button',class:'btn primary',onclick:function(){try{localStorage.setItem('bl-game',turnOn?'1':'0');}catch(e){}if(turnOn&&prof&&prof.is_admin&&/admin\.html$/.test(location.pathname)){location.href='index.html?aluno=1';return;}location.reload();}},gT(yes));
   var nob=el('button',{type:'button',class:'btn',onclick:close},gT(no));
   ov.append(el('div',{class:'g-hdlg','data-noi18n':'1'},el('h2',{style:'margin:0 0 16px'},gT(tt)),el('div',{style:'display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap'},nob,okb)));
   ov.addEventListener('click',function(e){if(e.target===ov)close();});
