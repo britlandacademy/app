@@ -118,6 +118,7 @@ var CSS=
 '#bl-metro .toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,20px);background:#fff;color:#10224a;font:700 13px sans-serif;padding:9px 14px;border-radius:12px;opacity:0;pointer-events:none;transition:all .3s;z-index:60;max-width:86vw;text-align:center}#bl-metro .toast.on{opacity:1;transform:translate(-50%,0)}'+
 '#bl-metro .sign{position:fixed;left:50%;bottom:84px;transform:translate(-50%,40px);opacity:0;transition:all .45s cubic-bezier(.3,1.4,.5,1);z-index:55;pointer-events:none;width:min(86vw,340px)}#bl-metro .sign.on{opacity:1;transform:translate(-50%,0)}'+
 '#bl-metro .plate{background:#fff;border-radius:14px;padding:12px 14px 10px;text-align:center;box-shadow:0 8px 0 rgba(0,0,0,.35);color:#10224a}#bl-metro .plate small{display:block;font:700 9.5px sans-serif;letter-spacing:.16em;color:#5a6a8c;margin-bottom:6px}'+
+'#bl-metro .plate .art.pho{height:150px;background-size:cover;background-position:center;transition:height .3s}#bl-metro .plate .cr{font:500 9px sans-serif;color:#8a96b3;margin-top:6px}'+
 '#bl-metro .plate .art{border-radius:9px;height:84px;display:flex;justify-content:center;overflow:hidden;margin-bottom:8px}#bl-metro .plate .art svg{height:84px;width:auto}'+
 '#bl-metro .pbar{background:#1d3f8a;border-radius:4px;color:#fff;font:700 15px sans-serif;padding:7px}#bl-metro .plate .ph{margin-top:8px;font:700 13px sans-serif}#bl-metro .plate .pt{font:500 11px sans-serif;color:#5a6a8c}'+
 '#bl-metro .wel{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;text-align:center;background:rgba(5,11,28,.94);animation:mt-fade .4s both;cursor:pointer}#bl-metro .wel.out{opacity:0;transition:opacity .5s;pointer-events:none}'+
@@ -245,11 +246,28 @@ function mount(c,o){
   var welDone=false,pend=null,wq=[];
   function onWel(fn){if(welDone)setTimeout(fn,350);else wq.push(fn);}
   function plateLater(i){if(welDone)plate(i);else pend=i;}
+  /* Photo of a lesson station: searched once on Wikimedia Commons (public domain / CC0 only), then remembered on this device. No photo found or no internet: the drawing stays. */
+  var STPH=(function(){try{return JSON.parse(localStorage.getItem('bl-stph')||'{}')||{};}catch(e){return {};}})();
+  function stPhoto(q,cb){
+    if(STPH[q]!==undefined){cb(STPH[q]||null);return;}
+    var u='https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrnamespace=6&gsrlimit=15&gsrsearch='+encodeURIComponent(q+' filetype:bitmap')+'&prop=imageinfo&iiprop=url|extmetadata|size|mime&iiurlwidth=640';
+    var save=function(v){STPH[q]=v;try{localStorage.setItem('bl-stph',JSON.stringify(STPH));}catch(e){}cb(v||null);};
+    try{fetch(u).then(function(r){return r.json();}).then(function(j){
+      var pg=j&&j.query&&j.query.pages,L=pg?Object.keys(pg).map(function(k){return pg[k];}):[],best=null;
+      L.sort(function(x,y){return (x.index||0)-(y.index||0);});
+      for(var n=0;n<L.length&&!best;n++){var ii=L[n].imageinfo&&L[n].imageinfo[0];if(!ii||ii.mime!=='image/jpeg'||ii.width<900||!ii.thumburl)continue;
+        var lic=((ii.extmetadata&&ii.extmetadata.LicenseShortName&&ii.extmetadata.LicenseShortName.value)||'').toLowerCase();
+        if(/^(public domain|pd[ -]|cc0)/.test(lic))best=ii.thumburl;}
+      save(best||0);
+    }).catch(function(){cb(null);});}catch(e){cb(null);}
+  }
   function plate(i){
     var sq=SEQ[i],isR=sq&&sq.t==='R';if(sq&&!isR)i=sq.l-1;else if(isR)i=0;
     var ink=C.ink==='#fff'?'#fff':'#1a1a1a',svg=ARTS[(C.arts&&C.arts[i%C.arts.length])||C.art].replace(/#fff/g,ink).replace(/@C/g,C.color),tr=C.tr[lang()]||C.tr.pt||'';
     signEl.innerHTML='<div class="plate"><small>'+C.city.toUpperCase()+' · '+tx.here+'</small><div class="art" style="background:'+C.color+'"><svg viewBox="0 0 150 150" aria-hidden="true">'+svg+'</svg></div><div class="pbar"></div><div class="ph"></div><div class="pt"></div></div>';
     signEl.querySelector('.pbar').textContent=isR?lmOf(sq).n:stn(i);var sp=!isR&&C.sp&&C.sp[i%C.stn.length];if(isR){signEl.querySelector('.ph').textContent='“'+tx.review+'”';tr=tx.rvPlate;}else if(sp){var L=lang();tr=L==='pt'?sp[1]:sp[2];signEl.querySelector('.ph').textContent='“'+sp[0]+'”';}else signEl.querySelector('.ph').textContent='“'+C.phrase+'”';signEl.querySelector('.pt').textContent=tr;
+    if(!isR){var nm0=stn(i),artEl=signEl.querySelector('.art'),mine=plate.k=(plate.k||0)+1;
+      stPhoto(nm0+' '+C.city,function(url){if(!url||mine!==plate.k||!artEl.isConnected)return;var im=h('img');im.alt=nm0;im.onload=function(){if(mine!==plate.k||!artEl.isConnected)return;artEl.textContent='';artEl.classList.add('pho');artEl.style.backgroundImage='url("'+url+'")';var cr=h('div','cr');cr.textContent=tx.photo;artEl.parentNode.appendChild(cr);};im.src=url;});}
     signEl.classList.add('on');clearTimeout(plate.t);plate.t=setTimeout(function(){signEl.classList.remove('on');},4200);
   }
   function pt(len){return pathEl.getPointAtLength(Math.max(0,Math.min(Ltot,len)));}
