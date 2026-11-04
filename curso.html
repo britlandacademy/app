@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Outro curso · Britland Academy</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="stylesheet" href="js/fonts.css">
+<style>
+*{box-sizing:border-box;margin:0}
+body{background:#F9F9F7;color:#0A192F;font-family:Montserrat,Arial,sans-serif;padding:24px max(16px,env(safe-area-inset-right)) 40px max(16px,env(safe-area-inset-left));min-height:100vh}
+.wrap{max-width:460px;margin:0 auto}
+.lk{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:20px}.lk img{height:56px;width:auto}
+.lk b{display:block;font:700 26px/1 Lora,Georgia,serif;color:#102C50}.lk i{display:block;font:500 14px/1 Montserrat,Arial,sans-serif;letter-spacing:.07em;color:#B11929;margin-top:5px;font-style:normal}
+.card{background:#fff;border:1px solid #d9d2c3;border-radius:16px;padding:24px 18px}
+h1{font:700 23px Lora,Georgia,serif;color:#102C50;text-align:center}
+.s{color:#4a5468;font-size:14.5px;margin:8px 0 16px;line-height:1.55;text-align:center}
+ul{list-style:none;padding:0;margin:0 0 18px;display:grid;gap:10px}
+li{font-size:14.5px;line-height:1.45;padding-left:22px;position:relative}li::before{content:"";position:absolute;left:0;top:.5em;width:9px;height:9px;border-radius:50%;background:#c9a13b}
+.btn{display:block;text-align:center;text-decoration:none;font-weight:700;font-size:15px;padding:13px 20px;border-radius:999px;background:#c9a13b;color:#1a1405;box-shadow:0 4px 0 #8a6d1f;margin-bottom:12px}
+.btn.g{background:transparent;color:#102C50;border:1px solid #d9d2c3;box-shadow:none}
+.f{font-size:12.5px;color:#4a5468;text-align:center;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="lk"><img src="img/britland-shield.png" alt=""><div><b>Britland</b><i>ACADEMY</i></div></div>
+<div class="card">
+<h1 id="h"></h1><p class="s" id="s"></p><ul id="l"></ul>
+<a class="btn" id="go" href="#"></a><a class="btn g" id="bk" href="index.html"></a>
+<p class="f" id="f"></p>
+</div></div>
+<script>
+(function(){
+var c=(location.search.match(/[?&]c=(es|en)/)||[])[1]||'es';
+var T={
+es:{h:'Curso de Español',s:'Além do inglês, a Britland Academy ensina espanhol com o mesmo método Callan, que você já conhece.',
+ l:['6 etapas, da primeira aula à conversação','Aulas online individuais ou em turmas de até 4 alunos','Aplicativo com exercícios, provas e certificado por etapa','Preparação para o DELE (A1 a C2)','Aula experimental gratuita'],
+ go:'Já tenho conta no Español',gh:'espanol/index.html',bk:'Voltar',f:'Quer começar? Fale com o seu professor e ele libera o seu acesso.'},
+en:{h:'Curso de Inglés',s:'Además del español, Britland Academy enseña inglés con el mismo método Callan que ya conoces.',
+ l:['12 etapas, de la primera clase a la conversación','Clases en línea individuales o en grupos de hasta 4 alumnos','Aplicación con ejercicios, exámenes y certificado por etapa','Clase de prueba gratuita'],
+ go:'Ya tengo cuenta en English',gh:'index.html',bk:'Volver',f:'¿Quieres empezar? Habla con tu profesor y él activará tu acceso.'}}[c];
+document.documentElement.lang=c==='es'?'pt-BR':'es';
+document.getElementById('h').textContent=T.h;document.getElementById('s').textContent=T.s;
+T.l.forEach(function(x){var li=document.createElement('li');li.textContent=x;document.getElementById('l').appendChild(li);});
+var g=document.getElementById('go');g.textContent=T.go;g.href=T.gh;
+var b=document.getElementById('bk');b.textContent=T.bk;b.href=c==='es'?'index.html':'espanol/index.html';
+document.getElementById('f').textContent=T.f;
+})();
+</script>
+</body></html>
