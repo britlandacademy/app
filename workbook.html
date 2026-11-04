@@ -195,6 +195,7 @@ textarea.wrt{width:100%;font:inherit;font-size:1rem;color:var(--ink);background:
 <script src="js/gate.js" charset="utf-8"></script>
 <script src="js/covers.js" charset="utf-8"></script>
 <script src="js/obra.js" charset="utf-8"></script>
+<script src="js/metro.js" charset="utf-8"></script>
 <script src="js/duo.js" charset="utf-8"></script>
 <script src="js/review.js" charset="utf-8"></script>
 <script>
@@ -553,7 +554,7 @@ function duoLesson(L,auto){
       save:(right)=>{const att={l:L.id,e:id,s:right,t:secTotal(L,s),at:Date.now()};me().attempts.push(att);return Gate.saveAttempt('ex',att);}});
   });
   if(!groups.length)return;
-  Duo.start({next:()=>{const n=LESSONS[LESSONS.indexOf(L)+1];return n?()=>showTab(String(n.id)):null;},groups:groups,onDone:()=>{secsOf(L).forEach(s=>place(L,s,false));updateLesson(L);renderTabs();renderHistory();setTimeout(()=>cvCele(Covers.stageOf(L.id)),700);}});
+  Duo.start({station:(window.Metro&&Metro.info)?Metro.info('New York',L.id,STAGES.map(t=>[t.from,t.to])):null,next:()=>{const n=LESSONS[LESSONS.indexOf(L)+1];return n?()=>showTab(String(n.id)):null;},groups:groups,onDone:()=>{secsOf(L).forEach(s=>place(L,s,false));updateLesson(L);renderTabs();renderHistory();setTimeout(()=>cvCele(Covers.stageOf(L.id)),700);}});
 }
 /* ---------- Review station (?rev=from-to&rid=n, js/review.js) ---------- */
 function revCands(l){

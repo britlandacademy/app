@@ -465,5 +465,10 @@ function mount(c,o){
   wel.addEventListener('click',function(){ctx();endWel();});
   if(reduced())setTimeout(endWel,1200);else{setTimeout(function(){dingdong();},150);setTimeout(endWel,2200);}
 }
-W.Metro={mount:mount,gameOn:function(){try{return localStorage.getItem('bl-game')==='1';}catch(e){return false;}}};
+W.Metro={mount:mount,gameOn:function(){try{return localStorage.getItem('bl-game')==='1';}catch(e){return false;}},
+  /* station, line and flag of a lesson in a city's metro (same order as the map, with the Review stations counted) */
+  info:function(city,l,stages){var ci=cityIdx(city);if(ci<0)return null;var c=CITIES[ci],idx=0,found=-1;
+    (stages&&stages.length?stages:[[1,206]]).forEach(function(r){var a=r[0],b=r[1];for(var x=a;x<=b&&found<0;x++){if(x===l){found=idx;break;}idx++;if((x-a+1)%4===0&&x<b)idx++;}});
+    if(found<0)found=Math.max(0,l-1);
+    return {city:c.city,line:c.line,color:c.color,ink:c.ink,flagHTML:flagHTML(c),station:c.stn[found%c.stn.length]};}};
 })();

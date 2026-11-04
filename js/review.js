@@ -26,7 +26,8 @@
     if(!N){save(o.tab,p.rid,1,1).then(function(){back({pass:true,pct:100});},function(){back(null);});return true;}
     groups.forEach(function(g){g.save=function(r,t){R+=r;T+=t;done++;if(done<N)return Promise.resolve();return save(o.tab,p.rid,R,T);};});
     var anySaved=false;
-    Duo.start({groups:groups,nolives:true,next:null,
+    var CT={check:'London',grammar:'Ireland',exercises:'Ireland',workbook:'New York'},inf=null;try{if(W.Metro&&Metro.info){inf=Metro.info(CT[o.tab]||'London',1)||Metro.info('Madrid',1);if(inf)inf.station='Review';}}catch(e){}
+    Duo.start({groups:groups,nolives:true,next:null,station:inf,passMin:.7,
       verdict:function(r,t){var ok=t&&r/t>=.7;return ok?'Review aprovada! A próxima estação está aberta.':'Você precisa de 70% para abrir a próxima estação. Volte e tente a Review de novo.';},
       onDone:function(saved){anySaved=saved;var pct=T?Math.round(100*R/T):0;back(done>=N?{pass:pct>=70,pct:pct}:null);}});
     return true;

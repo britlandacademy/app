@@ -173,6 +173,7 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 <script src="js/gate.js" charset="utf-8"></script>
 <script src="js/covers.js" charset="utf-8"></script>
 <script src="js/obra.js" charset="utf-8"></script>
+<script src="js/metro.js" charset="utf-8"></script>
 <script src="js/duo.js" charset="utf-8"></script>
 <script src="js/review.js" charset="utf-8"></script>
 <script>
@@ -480,7 +481,7 @@ function gameAuto(L){if(!L||!window.Duo||!Duo.game()||_auto[L.id]||(window.Revie
 function duoLesson(L,auto){
   const exs=auto?L.ex.filter(ex=>best(ex.id)===undefined):L.ex;
   if(!exs.length)return;
-  Duo.start({next:()=>{const n=LESSONS[LESSONS.indexOf(L)+1];return n?()=>showTab(String(n.id)):null;},groups:exs.map(ex=>{
+  Duo.start({station:(window.Metro&&Metro.info)?Metro.info('Ireland',L.id,STAGES.map(t=>[t.from,t.to])):null,next:()=>{const n=LESSONS[LESSONS.indexOf(L)+1];return n?()=>showTab(String(n.id)):null;},groups:exs.map(ex=>{
     const pool=ex.type==='match'?shuffle(ex.items.map(i=>i.a)):null;
     return {title:ex.title,
       pre:()=>[el('p',{class:'instr'},ex.instr),ex.facts?el('p',{class:'facts'},el('b',{},'Facts'),ex.facts):null],

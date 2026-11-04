@@ -55,6 +55,7 @@
   function tone(f,t0,d,type,g){var c=actx();if(!c)return;var o=c.createOscillator(),v=c.createGain(),t=c.currentTime+t0;
     o.type=type||'sine';o.frequency.value=f;v.gain.setValueAtTime(0.0001,t);v.gain.linearRampToValueAtTime(g,t+.012);v.gain.exponentialRampToValueAtTime(.0001,t+d);
     o.connect(v);v.connect(c.destination);o.start(t);o.stop(t+d+.05);}
+  function noise(t0,d,g,f0,f1){var c=actx();if(!c)return;var n=Math.max(1,Math.floor(c.sampleRate*d)),b=c.createBuffer(1,n,c.sampleRate),x=b.getChannelData(0),i;for(i=0;i<n;i++)x[i]=Math.random()*2-1;var s=c.createBufferSource();s.buffer=b;var f=c.createBiquadFilter();f.type='bandpass';var t=c.currentTime+t0;f.frequency.setValueAtTime(f0,t);f.frequency.exponentialRampToValueAtTime(f1,t+d);var v=c.createGain();v.gain.setValueAtTime(.0001,t);v.gain.exponentialRampToValueAtTime(g,t+d*.25);v.gain.exponentialRampToValueAtTime(.0001,t+d);s.connect(f);f.connect(v);v.connect(c.destination);s.start(t);}
 
   /* Short piano-style tunes played with the flag of the celebration character (melodies only, synthesised, no files) */
   var NT={G3:55,A3:57,B3:59,C4:60,D4:62,E4:64,F4:65,Fs4:66,G4:67,A4:69,B4:71,C5:72,D5:74,E5:76,G5:79,A5:81};
@@ -229,6 +230,38 @@
 '@keyframes dz-casc{from{transform:translateY(14px) scale(.85);opacity:0}to{transform:none;opacity:1}}'+
 '@keyframes dz-up{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}'+
 '@keyframes dz-shine{0%,100%{filter:brightness(1)}50%{filter:brightness(1.5) drop-shadow(0 0 8px #ffd54a)}}'+
+'#bl-duo .dz-card.tkc{background:transparent;border:0;box-shadow:none;max-width:360px;padding:6px 4px;animation:none;display:flex;flex-direction:column;align-items:center;gap:10px}'+
+'#bl-duo .tkc .tk-logo{display:flex;flex-direction:column;align-items:center;font:700 .8rem Georgia,serif;letter-spacing:.14em;color:#f3f4f6}#bl-duo .tkc .tk-logo i{font:700 .45rem system-ui;letter-spacing:.3em;color:#d6455a;font-style:normal}'+
+'#bl-duo .tkc .tk-w{width:100%;animation:tk-in .9s cubic-bezier(.2,.9,.25,1) both}#bl-duo .tkc .tk-x{position:relative}'+
+'#bl-duo .tkc .tk-x::before,#bl-duo .tkc .tk-x::after{content:"";position:absolute;top:100px;width:20px;height:20px;border-radius:50%;background:#0a1530;z-index:2}#bl-duo .tkc .tk-x::before{left:-11px}#bl-duo .tkc .tk-x::after{right:-11px}'+
+'#bl-duo .tkc .tk{position:relative;overflow:hidden;background:#fff;color:#14203f;border-radius:14px;padding:14px 14px 12px;text-align:left;animation:tk-shake .3s ease-out 2.05s both}'+
+'#bl-duo .tkc .tk-hd{display:flex;justify-content:space-between;align-items:center;font:800 .6rem system-ui;letter-spacing:.18em;color:#5a6b8c}#bl-duo .tkc .tk-ln{display:flex;align-items:center;gap:7px}'+
+'#bl-duo .tkc .tk-bdg{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;flex:none}#bl-duo .tkc .tk-bdg svg{width:15px;height:15px}'+
+'#bl-duo .tkc .tk-fl{width:36px;height:18px;border-radius:2px;overflow:hidden;box-shadow:0 0 0 1px rgba(10,21,48,.2);display:block}#bl-duo .tkc .tk-fl svg,#bl-duo .tkc .tk-fl img{width:100%;height:100%;display:block;object-fit:cover}'+
+'#bl-duo .tkc .tk-st{font:700 1.25rem/1.1 Georgia,serif;margin:8px 0 2px}'+
+'#bl-duo .tkc .tk-sp{display:inline-block;border:2px solid #1d7a36;color:#1d7a36;border-radius:6px;padding:2px 8px;font:800 .66rem system-ui;letter-spacing:.14em;margin-top:4px;position:relative;transform:rotate(-4deg);animation:tk-stamp .55s cubic-bezier(.2,.9,.3,1) 1.8s both}'+
+'#bl-duo .tkc .tk-sp.no{border-color:#9c2a22;color:#9c2a22}'+
+'#bl-duo .tkc .tk-sp::after{content:"";position:absolute;inset:-6px;border:2px solid currentColor;border-radius:10px;opacity:0;animation:tk-ink .7s ease-out 2.1s both}'+
+'#bl-duo .tkc .tk hr{border:0;border-top:2px dashed #b9c2d6;margin:22px -14px 12px}'+
+'#bl-duo .tkc .tk dl{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;margin:0}#bl-duo .tkc .tk dt{font:700 .56rem system-ui;letter-spacing:.14em;color:#5a6b8c;text-transform:uppercase}#bl-duo .tkc .tk dd{margin:0;font:700 1rem/1.2 Georgia,serif;font-variant-numeric:tabular-nums}'+
+'#bl-duo .tkc .tk-stars{display:flex;gap:3px;font-size:1.25rem;line-height:1}#bl-duo .tkc .tk-stars span{color:#c9d0e0}#bl-duo .tkc .tk-stars span.on{animation:tk-star .2s linear both}'+
+'#bl-duo .tkc .tk-sw{position:absolute;top:0;bottom:0;width:36%;left:-50%;background:linear-gradient(100deg,transparent,rgba(228,192,106,.75),transparent);transform:skewX(-18deg);pointer-events:none;opacity:0;animation:tk-sweep 1.1s ease-out 3.6s both}'+
+'#bl-duo .tkc .tk-vd{margin:8px 0 0;font-size:.78rem;font-weight:700;color:#14203f;line-height:1.3}'+
+'#bl-duo .tkc .tk-cur{display:flex;align-items:flex-start;gap:10px;width:100%;text-align:left;animation:tk-fade .9s ease-out 3.4s both}'+
+'#bl-duo .tkc .tk-pw{display:flex;flex-direction:column;align-items:center;gap:4px;width:92px;flex:none}'+
+'#bl-duo .tkc .tk-pt{width:58px;height:58px;border-radius:16px;border:3px solid #c9a13b;overflow:hidden;background:#cfe4e0}#bl-duo .tkc .tk-pt img{width:100%;height:100%;object-fit:cover;display:block}'+
+'#bl-duo .tkc .tk-who{display:flex;flex-direction:column;align-items:center;gap:1px;text-align:center;color:#f3f4f6}#bl-duo .tkc .tk-who b{font:700 .82rem Georgia,serif}#bl-duo .tkc .tk-who small{font-size:.62rem;color:#a9b6d6;line-height:1.25}#bl-duo .tkc .tk-who .c{display:flex;align-items:center;gap:5px;font-size:.62rem;color:#a9b6d6}#bl-duo .tkc .tk-who .c img{width:18px;height:12px;object-fit:cover;border-radius:2px}'+
+'#bl-duo .tkc .tk-say{flex:1;min-width:0;background:#fff;color:#14203f;border-radius:14px;padding:8px 12px;font-weight:600;font-size:.8rem;line-height:1.3}#bl-duo .tkc .tk-say em{display:block;margin-top:6px;padding-top:6px;border-top:1px solid #d5dbe8;font-style:normal;font-weight:500;font-size:.72rem;color:#5a6b8c}'+
+'#bl-duo .tkc .sv{font-size:.8rem;color:#a9b6d6;margin:0;animation:tk-fade .9s ease-out 4.3s both}'+
+'#bl-duo .tkc .dz-row{width:100%;animation:tk-fade .9s ease-out 4.3s both}'+
+'@keyframes tk-in{from{opacity:0;transform:translateY(120%)}to{opacity:1;transform:none}}'+
+'@keyframes tk-shake{0%,100%{transform:none}35%{transform:translateY(3px)}70%{transform:translateY(-1px)}}'+
+'@keyframes tk-stamp{0%{opacity:0;transform:rotate(-14deg) scale(2.6)}70%{opacity:1;transform:rotate(-4deg) scale(.92)}100%{opacity:1;transform:rotate(-4deg) scale(1)}}'+
+'@keyframes tk-ink{0%{opacity:.7;transform:scale(1)}100%{opacity:0;transform:scale(1.35)}}'+
+'@keyframes tk-star{from{color:#c9d0e0}to{color:#e8b923}}'+
+'@keyframes tk-sweep{0%{left:-50%;opacity:1}100%{left:130%;opacity:1}}'+
+'@keyframes tk-fade{from{opacity:0}to{opacity:1}}'+
+'@media (prefers-reduced-motion:reduce){#bl-duo .tkc *{animation:none!important}#bl-duo .tkc .tk-stars span.on{color:#e8b923}#bl-duo .tkc .tk-sw{display:none}}'+
 '@media (prefers-reduced-motion:reduce){#bl-duo .dz-life img,#bl-duo .dz-life::after,#bl-duo .dz-life .fire{animation:none!important}#bl-duo .dz-fill{transition:none}.dz-conf{display:none}#bl-duo .dz-lion,#bl-duo .dz-card,#bl-duo .dz-stars span,#bl-duo .dz-fam,#bl-duo .dz-fam .dz-cl,#bl-duo .dz-medal,#bl-duo.game .dz-q .opt,#bl-duo.game .dz-q .chip,#bl-duo.game .dz-q button.cho,#bl-duo.game .dz-q .pcell,#bl-duo.game .dz-peep,#bl-duo.game .dz-fb,#bl-duo .dz-stars .on,#bl-duo .dz-flag,#bl-duo .dz-flag::after{animation:none;opacity:1}.dz-spark{display:none}}';
     D.head.appendChild(s);
   }
@@ -254,7 +287,7 @@
    ['bolivar','es','flag-ve.png',[['Te liberaste de las dudas y la victoria es tuya. ¡Adelante!','Você se libertou das dúvidas e a vitória é sua. Adiante!'],['Vas ganando terreno. ¡Sigue la marcha!','Você está ganhando terreno. Siga em frente!'],['Toda libertad cuesta esfuerzo. ¡Vuelve a la batalla!','Toda liberdade exige esforço. Volte à batalha!']]],
    ['isabel','es','flag-es.png',[['¡Excelente! Tu esfuerzo merece un reino entero.','Excelente! Seu esforço merece um reino inteiro.'],['Buen rumbo, como el de las carabelas. ¡Sigue!','Bom rumo, como o das caravelas. Siga!'],['Todo reino se construye paso a paso. ¡Otra vez!','Todo reino se constrói passo a passo. De novo!']]],
    ['sanmartin','es','flag-ar.png',[['Cruzaste los Andes de las lecciones. ¡Felicitaciones!','Você atravessou os Andes das lições. Parabéns!'],['Ya estás subiendo la cordillera. ¡Un poco más!','Você já está subindo a cordilheira. Mais um pouco!'],['Hasta el mejor ejército se reagrupa. ¡Inténtalo otra vez!','Até o melhor exército se reagrupa. Tente de novo!']]]
-  ].map(function(c){return {img:B+'img/es/'+c[0]+'.jpg',flag:B+'img/es/'+c[2],say:c[3]};})
+  ].map(function(c){return {id:c[0],cc:c[2],img:B+'img/es/'+c[0]+'.jpg',flag:B+'img/es/'+c[2],say:c[3]};})
   :[
    ['shakespeare','england','A five-act triumph! Your English deserves a standing ovation.','Triunfo em cinco atos! Seu inglês merece aplausos de pé.','Well played! The next act will be even better.','Muito bem! O próximo ato será ainda melhor.','Every great play has a rough first draft. Try again!','Toda grande peça tem um primeiro rascunho difícil. Tente de novo!'],
    ['curie','poland','Radiant result! Your dedication glows.','Resultado radiante! Sua dedicação brilha.','Good reaction! A little more practice and you will glow.','Boa reação! Mais um pouco de prática e você vai brilhar.','Every experiment teaches something. Run it again!','Todo experimento ensina algo. Repita!'],
@@ -275,7 +308,7 @@
    ['joyce','ireland','Yes! Full marks, and not a word out of place.','Sim! Nota máxima e nenhuma palavra fora do lugar.','A fine chapter. The next one will flow even better.','Um ótimo capítulo. O próximo vai fluir ainda melhor.','Every long novel has many drafts. Try again!','Todo romance longo tem muitos rascunhos. Tente de novo!'],
    ['yeats','ireland','A poet of grammar! Your English shines like a golden apple.','Poeta da gramática! Seu inglês brilha como uma maçã dourada.','Lovely verses! A few more and the poem will be complete.','Belos versos! Mais alguns e o poema estará completo.','Every poem needs a few revisions. Try again!','Todo poema precisa de algumas revisões. Tente de novo!'],
    ['elizabeth2','uk','By royal decree: excellent work!','Por decreto real: excelente trabalho!','Very good indeed. A touch more practice and you will be a champion!','Muito bem! Um pouco mais de prática e você será campeão!','Keep calm and try again. You will get there!','Mantenha a calma e tente de novo. Você vai chegar lá!']
-  ].map(function(c){return {img:'img/people/'+c[0]+'.jpg',flag:'img/flags/'+c[1]+'.svg',say:[[c[2],c[3]],[c[4],c[5]],[c[6],c[7]]]};});
+  ].map(function(c){return {id:c[0],cc:c[1],img:'img/people/'+c[0]+'.jpg',flag:'img/flags/'+c[1]+'.svg',say:[[c[2],c[3]],[c[4],c[5]],[c[6],c[7]]]};});
   var lastCh=-1;
   function pickCh(){var k;do{k=Math.floor(Math.random()*CH.length);}while(k===lastCh&&CH.length>1);lastCh=k;return CH[k];}
   var lastPeep=-1;
@@ -607,7 +640,52 @@
       confetti();
       setTimeout(function(){if(root.parentNode)buildPop();},fly?2950:0);
     }
+    var TKT={en:{done:'STATION COMPLETE',no:'NOT YET',ok:'Correct',of:'of',xp:'XP earned',lv:'Level',up:'level up!',st:'Stars',map:'Back to map',close:'Close',next:'Next'},
+      es:{done:'ESTACIÓN COMPLETADA',no:'TODAVÍA NO',ok:'Aciertos',of:'de',xp:'XP ganado',lv:'Nivel',up:'¡subiste!',st:'Estrellas',map:'Volver al mapa',close:'Cerrar',next:'Siguiente'}};
+    var WHO={shakespeare:['William Shakespeare','Playwright and poet'],curie:['Marie Curie','Physicist and chemist'],newton:['Isaac Newton','Physicist and mathematician'],darwin:['Charles Darwin','Naturalist'],lincoln:['Abraham Lincoln','16th US president'],franklin:['Benjamin Franklin','Inventor and statesman'],mlk:['Martin Luther King Jr.','Civil rights leader'],austen:['Jane Austen','Novelist'],christie:['Agatha Christie','Crime novelist'],angelou:['Maya Angelou','Poet and author'],parks:['Rosa Parks','Civil rights activist'],alice:['Alice','Girl from Wonderland'],sherlock:['Sherlock Holmes','Fictional detective'],peter:['Peter Pan','The boy who never grew up'],arthur:['King Arthur','Legendary king of Britain'],wilde:['Oscar Wilde','Playwright and wit'],joyce:['James Joyce','Novelist'],yeats:['W. B. Yeats','Poet'],elizabeth2:['Queen Elizabeth II','Queen of the United Kingdom'],
+      cervantes:['Miguel de Cervantes','Escritor'],frida:['Frida Kahlo','Pintora'],goya:['Francisco de Goya','Pintor'],picasso:['Pablo Picasso','Pintor'],velazquez:['Diego Velázquez','Pintor'],bolivar:['Simón Bolívar','Libertador'],isabel:['Isabel la Católica','Reina de Castilla'],sanmartin:['José de San Martín','Libertador']};
+    var CTRY={usa:'USA',england:'England',poland:'Poland',scotland:'Scotland',wales:'Wales',ireland:'Ireland',uk:'UK','flag-es.png':'España','flag-mx.png':'México','flag-ve.png':'Venezuela','flag-ar.png':'Argentina'};
+    function buildTicketPop(){
+      var X=TKT[B?'es':'en'],pct=total?right/total:0,stars=pct>=.9?3:pct>=.6?2:1,passMin=typeof o.passMin==='number'?o.passMin:0,passed=pct>=passMin;
+      var nx=null;try{nx=o.next?o.next():null;}catch(e){}
+      var ch=pickCh(),who=WHO[ch.id]||[ch.id,''],ctry=CTRY[ch.cc]||'',inf=o.station||{};
+      var pop=el('div','dz-pop'),card=el('div','dz-card tkc');pop.setAttribute('role','alertdialog');pop.setAttribute('aria-label',X.done);
+      var lg=el('div','tk-logo');lg.appendChild(document.createTextNode('BRITLAND'));lg.appendChild(el('i','','ACADEMY'));card.appendChild(lg);
+      var w=el('div','tk-w'),xx=el('div','tk-x'),tk=el('div','tk');
+      var hd=el('div','tk-hd'),ln=el('span','tk-ln'),bd=el('span','tk-bdg');bd.style.background=inf.color||'#dc241f';
+      bd.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="2" width="14" height="15" rx="4" fill="'+(inf.ink||'#fff')+'"/><rect x="7.3" y="4.6" width="9.4" height="5" rx="1.3" fill="'+(inf.color||'#dc241f')+'"/><circle cx="8.8" cy="13.2" r="1.2" fill="'+(inf.color||'#dc241f')+'"/><circle cx="15.2" cy="13.2" r="1.2" fill="'+(inf.color||'#dc241f')+'"/><path d="M7.5 21l2.2-3.4M16.5 21l-2.2-3.4" stroke="'+(inf.ink||'#fff')+'" stroke-width="1.8" stroke-linecap="round"/></svg>';
+      ln.appendChild(bd);ln.appendChild(document.createTextNode(String(inf.line||'BRITLAND').toUpperCase()));hd.appendChild(ln);
+      if(inf.flagHTML){var fl=el('span','tk-fl');fl.innerHTML=inf.flagHTML;hd.appendChild(fl);}
+      tk.appendChild(hd);tk.appendChild(el('div','tk-st',inf.station||T('gdone')));
+      tk.appendChild(el('span','tk-sp'+(passed?'':' no'),passed?X.done:X.no));tk.appendChild(el('hr'));
+      var dl=el('dl');function cell(k,v){var d=el('div');d.appendChild(el('dt','',k));var dd=el('dd');if(typeof v==='string')dd.textContent=v;else dd.appendChild(v);d.appendChild(dd);dl.appendChild(d);}
+      var l1=lvlInfo(xp0),l2=lvlInfo(xp0+sessXP),lvTxt=sessXP>0?(l2.l+(l2.l>l1.l?' · '+X.up:'')):String(l1.l);
+      cell(X.ok,right+' '+X.of+' '+total);cell(X.xp,sessXP>0?'+'+sessXP:'—');cell(X.lv,lvTxt);
+      var sw=el('span','tk-stars');sw.setAttribute('aria-label',stars+' / 3');for(var i=0;i<3;i++){var sp=el('span',i<stars?'on':'','★');if(i<stars)sp.style.animationDelay=(2.7+i*.45)+'s';sw.appendChild(sp);}cell(X.st,sw);
+      tk.appendChild(dl);
+      if(o.verdict){try{var vt=o.verdict(right,total);if(vt)tk.appendChild(el('p','tk-vd',vt));}catch(e){}}
+      if(stars===3&&passed)tk.appendChild(el('div','tk-sw'));
+      xx.appendChild(tk);w.appendChild(xx);card.appendChild(w);
+      var cur=el('div','tk-cur'),pw=el('div','tk-pw'),pt=el('div','tk-pt'),im=el('img');im.src=ch.img;im.alt='';pt.appendChild(im);pw.appendChild(pt);
+      var wh=el('div','tk-who');wh.appendChild(el('b','',who[0]));var cc=el('div','c'),fi=el('img');fi.src=ch.flag;fi.alt='';cc.appendChild(fi);cc.appendChild(document.createTextNode(ctry));wh.appendChild(cc);if(who[1])wh.appendChild(el('small','',who[1]));pw.appendChild(wh);cur.appendChild(pw);
+      var say=ch.say[3-stars],sb=el('div','tk-say',say[0]);sb.appendChild(el('em','',say[1]));cur.appendChild(sb);card.appendChild(cur);
+      var sv=el('p','sv',T('saved'));card.appendChild(sv);
+      var row=el('div','dz-row');
+      if(nx){var nb=el('button','dz-btn',X.next);nb.type='button';nb.addEventListener('click',function(){close();setTimeout(nx,60);});row.appendChild(nb);}
+      var home=!/(^|\/)index\.html$|\/$/.test(W.location.pathname),mb=null;
+      if(home){mb=el('button','dz-btn',X.map);mb.type='button';mb.addEventListener('click',function(){mb.disabled=true;Promise.all(pending).then(function(){},function(){}).then(function(){W.location.href='index.html';});});row.insertBefore(mb,row.firstChild);if(nb)nb.className='dz-btn dz-ghost';}
+      var cb=el('button',nx||mb?'dz-btn dz-ghost':'dz-btn',X.close);cb.type='button';cb.addEventListener('click',close);row.appendChild(cb);
+      card.appendChild(row);pop.appendChild(card);root.appendChild(pop);
+      /* sounds: ticket whoosh, stamp thud, one chime per star, station ding-dong on 3 stars */
+      if(sndOn()){try{noise(0,.8,.16,500,3000);var v=stars===1?.28:.5;tone(110,1.8,.22,'sine',v);noise(1.8,.08,v*.7,1800,300);
+        for(var q=0;q<stars;q++)tone(1046.5*Math.pow(1.122,q*2),2.7+q*.45,.5,'sine',.14);
+        if(stars===3&&passed){tone(660,4.3,.5,'sine',.18);tone(523,4.75,.8,'sine',.18);[1760,2093,2637].forEach(function(x,i){tone(x,3.1+i*.07,.4,'triangle',.05);});}}catch(e){}}
+      if(right===total&&total>0)setTimeout(function(){if(root.parentNode)fireworks(root);},2700);
+      Promise.all(pending).then(function(){if(failed)sv.textContent=T('nosave');});
+      setTimeout(function(){try{(mb||nb||cb).focus();}catch(e){}},4300);
+    }
     function buildPop(){
+      if(game){buildTicketPop();return;}
       var pct=total?right/total:0,stars=pct>=.9?3:pct>=.6?2:1;
       var nx=null;try{nx=o.next?o.next():null;}catch(e){}
       var pop=el('div','dz-pop'),card=el('div','dz-card');pop.setAttribute('role','alertdialog');pop.setAttribute('aria-label',T('gdone'));
