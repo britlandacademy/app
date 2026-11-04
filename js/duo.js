@@ -451,7 +451,14 @@
 
   function xpKey(){return 'bl-xp'+((W.BL_COURSE&&W.BL_COURSE.id)?'-'+W.BL_COURSE.id:'');}
   function xpGet(){try{return parseInt(localStorage.getItem(xpKey()),10)||0;}catch(e){return 0;}}
-  function xpAdd(n){try{localStorage.setItem(xpKey(),String(xpGet()+n));}catch(e){}}
+  /* XP is kept on this device and mirrored in the student's row of game_xp (the larger value wins, so it never goes down) */
+  var xpT=null;
+  function xpSync(){try{if(!W.Gate||!Gate.sb)return;Gate.sb.auth.getSession().then(function(r){var u=r&&r.data&&r.data.session&&r.data.session.user;if(!u)return;
+    Gate.sb.from('game_xp').select('xp').eq('user_id',u.id).maybeSingle().then(function(q){var rem=(q&&q.data&&q.data.xp)||0,loc=xpGet(),m=Math.max(rem,loc);
+      if(m!==loc){try{localStorage.setItem(xpKey(),String(m));}catch(e){}}
+      if(m!==rem)Gate.sb.from('game_xp').upsert({user_id:u.id,xp:m,updated_at:new Date().toISOString()}).then(function(){},function(){});
+    },function(){});},function(){});}catch(e){}}
+  function xpAdd(n){try{localStorage.setItem(xpKey(),String(xpGet()+n));}catch(e){}clearTimeout(xpT);xpT=setTimeout(xpSync,1500);}
   function lvlOf(x){var l=1;while(x>=l*(l+1)*25)l++;return l;}
   function lvlInfo(x){var l=lvlOf(x),a=(l-1)*l*25,b=l*(l+1)*25;return {l:l,p:Math.round((x-a)/(b-a)*100)};}
 
@@ -462,7 +469,7 @@
     if(!groups.length)return;
     var steps=[];groups.forEach(function(g){g.right=0;g.n=0;g.pre_=null;g.items.forEach(function(it){steps.push({g:g,it:it});});});
     var total=steps.length,idx=0,right=0,cur=null,state='ask',anySaved=false,failed=false,pending=[];
-    var game=gameOn(),lives=3,combo=0,over=false,wrongs=[],rv=false,mainTotal=0,sessXP=0,xp0=xpGet(),rvOk=0,pill=null,lifeEls=[],comboEl=null,noLives=!!o.nolives;
+    xpSync();var game=gameOn(),lives=3,combo=0,over=false,wrongs=[],rv=false,mainTotal=0,sessXP=0,xp0=xpGet(),rvOk=0,pill=null,lifeEls=[],comboEl=null,noLives=!!o.nolives;
     var prevOverflow=D.body.style.overflow;D.body.style.overflow='hidden';
     var root=el('div');root.id='bl-duo';if(game)root.className='game';root.setAttribute('role','dialog');root.setAttribute('aria-modal','true');root.setAttribute('aria-label',T('cta'));
     var top=el('div','dz-top'),x=el('button','dz-x','✕');x.type='button';x.setAttribute('aria-label',T('close'));
