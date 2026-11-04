@@ -523,6 +523,7 @@ function addBar(){
   (function(){try{localStorage.setItem(COURSE.id==='es'?'bl-has-es':'bl-has-en','1');}catch(e){}})();
   if(prof.is_admin&&/admin\.html$/.test(location.pathname))mn.append(mi('home','Student home',{href:'index.html?aluno=1'}));
   if(prof.is_admin)mn.append(mi('panel','Teacher panel',{href:'admin.html'}));
+  if(prof.is_admin)mn.append(mi('panel','Loading test',{href:(window.BL_BASE||'')+'loadtest.html'}));
   mn.append(mi('help','Help',{onclick:function(){open(false);showHelp();}}),mi('out','Sign out',{class:'g-mi out',onclick:signOut}));
   mn.querySelectorAll('a.g-mi').forEach(function(a){a.addEventListener('click',function(){open(false);});});
   document.addEventListener('click',function(e){if(!mn.contains(e.target)&&e.target!==av)open(false);});
