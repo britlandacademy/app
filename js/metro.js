@@ -245,18 +245,19 @@ function mount(c,o){
   function say(t){toastEl.textContent=t;toastEl.classList.add('on');clearTimeout(say.t);say.t=setTimeout(function(){toastEl.classList.remove('on');},1900);}
   var welDone=false,pend=null,wq=[];
   function onWel(fn){if(welDone)setTimeout(fn,350);else wq.push(fn);}
-  function warm(i){try{var sq=SEQ[i];if(sq&&sq.t==='L')stPhoto(stn(sq.l-1)+' '+C.city,function(u){if(u){var m=new Image();m.src=u;}});}catch(e){}}
+  function warm(i){try{var sq=SEQ[i];if(sq&&sq.t==='L')stPhoto(stn(sq.l-1)+' '+C.city,function(u){if(u){var m=new Image();m.src=u;}},stn(sq.l-1));}catch(e){}}
   function plateLater(i){warm(i);if(welDone)plate(i);else pend=i;}
   /* Photo of a lesson station: searched once on Wikimedia Commons (public domain / CC0 only), then remembered on this device. No photo found or no internet: the drawing stays. */
-  var STPH=(function(){try{return JSON.parse(localStorage.getItem('bl-stph')||'{}')||{};}catch(e){return {};}})();
-  function stPhoto(q,cb){
+  var STPH=(function(){try{return JSON.parse(localStorage.getItem('bl-stph2')||'{}')||{};}catch(e){return {};}})();
+  function stPhoto(q,cb,nm){
+    var NW=String(nm||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').split(/[^a-z0-9]+/).filter(function(w){return w.length>2&&!/^(the|station|and|del|las|los|rue)$/.test(w);});
     if(STPH[q]!==undefined){cb(STPH[q]||null);return;}
     var u='https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrnamespace=6&gsrlimit=15&gsrsearch='+encodeURIComponent(q+' filetype:bitmap')+'&prop=imageinfo&iiprop=url|extmetadata|size|mime&iiurlwidth=640';
-    var save=function(v){STPH[q]=v;try{localStorage.setItem('bl-stph',JSON.stringify(STPH));}catch(e){}cb(v||null);};
+    var save=function(v){STPH[q]=v;try{localStorage.setItem('bl-stph2',JSON.stringify(STPH));}catch(e){}cb(v||null);};
     try{fetch(u).then(function(r){return r.json();}).then(function(j){
       var pg=j&&j.query&&j.query.pages,L=pg?Object.keys(pg).map(function(k){return pg[k];}):[],best=null;
       L.sort(function(x,y){return (x.index||0)-(y.index||0);});
-      for(var n=0;n<L.length&&!best;n++){var ii=L[n].imageinfo&&L[n].imageinfo[0];if(!ii||ii.mime!=='image/jpeg'||ii.width<1200||!ii.thumburl||/painting|drawing|map\b|poster|logo|plan\b|diagram|stamp|postcard|engraving|print\b|illustration|sketch|arms|ticket|sign\b|poem|album|cover|signature|portrait|statue|bust/i.test(L[n].title||''))continue;
+      for(var n=0;n<L.length&&!best;n++){var ii=L[n].imageinfo&&L[n].imageinfo[0];var ttl=String(L[n].title||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');if(NW.length&&!NW.every(function(w){return ttl.indexOf(w)>=0;}))continue;if(!ii||ii.mime!=='image/jpeg'||ii.width<1200||!ii.thumburl||/mall|shopping|subway|interior|inside|escalator|platform|postmark|obverse|reverse|strang|painting|drawing|map\b|poster|logo|plan\b|diagram|stamp|postcard|engraving|print\b|illustration|sketch|arms|ticket|sign\b|poem|album|cover|signature|portrait|statue|bust/i.test(L[n].title||''))continue;
         var lic=((ii.extmetadata&&ii.extmetadata.LicenseShortName&&ii.extmetadata.LicenseShortName.value)||'').toLowerCase();
         if(/^(public domain|pd[ -]|cc0)/.test(lic))best=ii.thumburl;}
       save(best||0);
@@ -268,7 +269,7 @@ function mount(c,o){
     signEl.innerHTML='<div class="plate"><small>'+C.city.toUpperCase()+' · '+tx.here+'</small><div class="art" style="background:'+C.color+'"><svg viewBox="0 0 150 150" aria-hidden="true">'+svg+'</svg></div><div class="pbar"></div><div class="ph"></div><div class="pt"></div></div>';
     signEl.querySelector('.pbar').textContent=isR?lmOf(sq).n:stn(i);var sp=!isR&&C.sp&&C.sp[i%C.stn.length];if(isR){signEl.querySelector('.ph').textContent='“'+tx.review+'”';tr=tx.rvPlate;}else if(sp){var L=lang();tr=L==='pt'?sp[1]:sp[2];signEl.querySelector('.ph').textContent='“'+sp[0]+'”';}else signEl.querySelector('.ph').textContent='“'+C.phrase+'”';signEl.querySelector('.pt').textContent=tr;
     if(!isR){var nm0=stn(i),artEl=signEl.querySelector('.art'),mine=plate.k=(plate.k||0)+1;
-      stPhoto(nm0+' '+C.city,function(url){if(!url||mine!==plate.k||!artEl.isConnected)return;var im=h('img');im.alt=nm0;im.onload=function(){if(mine!==plate.k||!artEl.isConnected)return;artEl.textContent='';artEl.classList.add('pho');artEl.style.backgroundImage='url("'+url+'")';var cr=h('div','cr');cr.textContent=tx.photo;artEl.parentNode.appendChild(cr);};im.src=url;});}
+      stPhoto(nm0+' '+C.city,function(url){if(!url||mine!==plate.k||!artEl.isConnected)return;var im=h('img');im.alt=nm0;im.onload=function(){if(mine!==plate.k||!artEl.isConnected)return;artEl.textContent='';artEl.classList.add('pho');artEl.style.backgroundImage='url("'+url+'")';var cr=h('div','cr');cr.textContent=tx.photo;artEl.parentNode.appendChild(cr);};im.src=url;},nm0);}
     signEl.classList.add('on');clearTimeout(plate.t);plate.t=setTimeout(function(){signEl.classList.remove('on');},4200);
   }
   function pt(len){return pathEl.getPointAtLength(Math.max(0,Math.min(Ltot,len)));}
