@@ -1,6 +1,66 @@
 /* Fichas dos readers Penguin (presente de aniversário). level = Level do Penguin Readers. Estatísticas aproximadas (incluem atividades). */
 window.BL_READERS=[
  {
+  "id": "carnival",
+  "level": 0,
+  "title": "Carnival",
+  "author": "Annette Keen",
+  "year": "história original",
+  "text": "Jake, de dezoito anos, chega sozinho a Londres num feriado e vai ao Carnaval de Notting Hill. Entre fantasias, música e carros alegóricos, ele vê uma garota que muda o seu dia. Uma história de amor curtinha, em frases bem simples.",
+  "words": 2334,
+  "uniq": 270,
+  "min": 23,
+  "cover": "img/readers/carnival.jpg"
+ },
+ {
+  "id": "moscow",
+  "level": 0,
+  "title": "April in Moscow",
+  "author": "Stephen Rabley",
+  "year": "história original",
+  "text": "April é bailarina em Leeds e vai dançar em Moscou com a sua companhia. Ela quer conhecer a cidade e as pessoas, mas não fala russo. Como será que ela vai se comunicar? Uma história leve sobre viagem e amizade.",
+  "words": 1223,
+  "uniq": 180,
+  "min": 12,
+  "cover": "img/readers/moscow.jpg"
+ },
+ {
+  "id": "whitestar",
+  "level": 0,
+  "title": "Marcel and the White Star",
+  "author": "Stephen Rabley",
+  "year": "história original",
+  "text": "Marcel é um ratinho francês que mora num barco em Paris e é um ótimo detetive secreto. Ladrões roubam o famoso anel White Star, da cantora de ópera Zaza Dupont. Marcel está decidido a recuperá-lo.",
+  "words": 1199,
+  "uniq": 184,
+  "min": 12,
+  "cover": "img/readers/whitestar.jpg"
+ },
+ {
+  "id": "newspaper",
+  "level": 0,
+  "title": "Newspaper Chase",
+  "author": "John Escott",
+  "year": "história original",
+  "text": "Harry Black é um ladrão. Ele rouba um quadro famoso e o esconde dentro de um jornal velho. Mas aí chega o caminhão de reciclagem... E onde foi parar o jornal do Harry? Uma perseguição divertida em poucas páginas.",
+  "words": 1144,
+  "uniq": 168,
+  "min": 11,
+  "cover": "img/readers/newspaper.jpg"
+ },
+ {
+  "id": "lastphoto",
+  "level": 0,
+  "title": "The Last Photo",
+  "author": "Bernard Smith",
+  "year": "história original",
+  "text": "Martin e sua irmã Pam passam um dia em Cambridge. Pam adora tirar fotos, mas elas nem sempre saem boas. Na última foto, um homem estranho com uma mochila passa na frente do irmão. Três dias depois, olhando as fotos, eles percebem algo importante.",
+  "words": 1296,
+  "uniq": 173,
+  "min": 13,
+  "cover": "img/readers/lastphoto.jpg"
+ },
+ {
   "id": "brown",
   "level": 1,
   "title": "Brown Eyes",
