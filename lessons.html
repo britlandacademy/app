@@ -205,6 +205,10 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 .say{margin:14px 0 4px;font-weight:700;font-size:.98rem;overflow-wrap:anywhere}
 .chartnote{margin:14px 0 0;font-style:italic;font-size:.92rem;color:var(--muted)}
 .chartnote::before{content:"▤ ";font-style:normal}
+.par{position:relative;padding-right:46px;margin:14px 0 0}
+.par::before{content:"";position:absolute;right:18px;top:4px;bottom:4px;width:2px;background:var(--line);border-radius:2px}
+.par .pn{position:absolute;right:0;top:0;width:38px;height:26px;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:700;color:#1a1405;background:#c9a13b;border-radius:6px;font-variant-numeric:tabular-nums}
+.par>:first-child{margin-top:0}
 .dict{margin:20px 0 0;padding:12px 14px;border:2px solid var(--line);border-radius:3px;background:var(--surface)}
 .dict summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}
 .dict .dtext{margin:8px 0 0;font-size:.95rem;line-height:1.6;overflow-wrap:anywhere}
@@ -236,6 +240,7 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 <script src="js/config.js" charset="utf-8"></script>
 <script src="js/gate.js" charset="utf-8"></script>
 <script src="js/protect.js" charset="utf-8"></script>
+<script src="js/paranums.js" charset="utf-8"></script>
 <script>
 Gate.start({kinds:['text'],noStageBox:true},function(ctx){
 if(window.Protect)Protect.on((ctx.profile&&ctx.profile.name||'')+' · '+(ctx.user&&ctx.user.email||''));
@@ -269,12 +274,19 @@ function player(label,path,lazy){
   if(!lazy)load();
   return sec;
 }
-function renderText(id,box){
+function renderText(id,box0){
   const data=(window.LESSON_TEXT||{})[id];
-  if(!data){box.append(el('p',{class:'missing'},'The text of this lesson is not available yet.'));return;}
+  if(!data){box0.append(el('p',{class:'missing'},'The text of this lesson is not available yet.'));return;}
   const n=stageOf(id).n,base='Stage '+n+'/';
-  data.forEach(b=>{
-    const k=b[0];
+  const fpb=b=>((b[0]==='v'?b[1].join(''):b[0]==='qa'?b[1]:b[0]==='c'?'See Chart '+b[1]:'')+'').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,28);
+  const pn=(!BUS&&window.PARANUM&&window.PARANUM[id])||[],at={},seen={};
+  data.forEach((b,i)=>{const t=b[0];if(t!=='v'&&t!=='qa'&&t!=='c')return;const key=t+'|'+fpb(b),o=seen[key]||0;seen[key]=o+1;at[key+'|'+o]=i;});
+  const open={};pn.forEach(r=>{const i=at[r[1]+'|'+r[2]+'|'+r[3]];if(i!=null&&!(i in open))open[i]=r[0];});
+  let cur=null;
+  data.forEach((b,i)=>{
+    const k=b[0],box=cur||box0;
+    if(k==='d')cur=null;
+    if(open[i]!=null){cur=el('section',{class:'par'},el('span',{class:'pn'},String(open[i])));box0.append(cur);}
     if(k==='v')box.append(el('div',{class:'vrow'},b[1].map(c=>el('span',{},c))));
     else if(k==='qa'){box.append(el('div',{class:'qa'},el('p',{class:'qq'},b[1]),b[2]?el('p',{class:'qa-a'},b[2]):null));}
     else if(k==='s')box.append(el('p',{class:'say'},b[1]));
