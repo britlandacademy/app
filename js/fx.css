@@ -31,3 +31,11 @@ html:not(.fx-off) .g-mn.on{visibility:visible;opacity:1;pointer-events:auto;tran
 html:not(.fx-off) .sk-hr{display:block!important;overflow:hidden;max-height:900px;opacity:1;transition:max-height .5s var(--fx-e),opacity .3s,margin .3s,padding .3s}
 html:not(.fx-off) .sk-hr[hidden]{max-height:0;opacity:0;margin:0;padding-top:0;border-top-width:0;visibility:hidden;transition:max-height .35s ease,opacity .2s,margin .3s,padding .3s,visibility 0s .35s}
 html:not(.fx-off) .sk-ov{animation:fxOv .3s}html:not(.fx-off) .sk-ov>*{animation:fxBox .5s var(--fx-e)}
+/* "Correct the mistake": tap the wrong word */
+.wdrow{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 4px}
+.wd{font:inherit;font-size:1.05rem;padding:8px 12px;min-height:44px;border:1.5px solid var(--line,#999);border-radius:12px;background:var(--card,#fff);color:var(--ink,#111);cursor:pointer}
+.wd.x{border-color:var(--bad,#9c2a22);background:var(--bad-bg,#fdecea);color:var(--bad,#9c2a22);text-decoration:line-through;text-decoration-thickness:2px}
+.wd:disabled{cursor:default}
+.wdhint,.wdlab{margin:4px 0;color:var(--muted,#555);font-size:.95rem}
+.wdbox{margin:6px 0}
+.wdalt{font:inherit;font-size:.9rem;background:none;border:0;color:var(--muted,#555);text-decoration:underline;padding:8px 0;min-height:40px;cursor:pointer}

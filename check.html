@@ -244,7 +244,27 @@ function sitEl(t){return t?el('p',{class:'sit'},'Situation: ',el('i',{},t)):null
 
 /* ---------- itens por tipo ---------- */
 // cada builder devolve {nodes, get(), lock()}; get() -> {ok,warn,msg,model}
+function bFix(it,id,n){
+  const words=it.shown.split(/\s+/).filter(Boolean),sel=new Set();
+  const A={type:'text',autocomplete:'off',autocapitalize:'off',autocorrect:'off',spellcheck:'false',enterkeyhint:'done'};
+  const inp=el('input',Object.assign({id:id,class:'txt'},A));
+  const full=el('input',Object.assign({id:id+'-f',class:'txt'},A));
+  const hint=el('p',{class:'wdhint'},'Tap the wrong word.');
+  const box=el('div',{class:'wdbox',hidden:true},el('label',{for:id,class:'wdlab'},'Write only the correct word:'),inp);
+  const fullBox=el('div',{class:'wdbox',hidden:true},el('label',{for:id+'-f',class:'wdlab'},'Write the whole sentence:'),full);
+  const row=el('div',{class:'wdrow',role:'group','aria-label':'Sentence'});
+  let mode='tap';
+  const btns=words.map((w,i)=>{const b=el('button',{type:'button',class:'wd','aria-pressed':'false'},w);
+    b.addEventListener('click',()=>{if(b.disabled)return;if(sel.has(i))sel.delete(i);else sel.add(i);b.setAttribute('aria-pressed',String(sel.has(i)));b.classList.toggle('x',sel.has(i));box.hidden=!sel.size;hint.hidden=!!sel.size;if(sel.size)inp.focus();});
+    row.append(b);return b;});
+  const alt=el('button',{type:'button',class:'wdalt'},'Type the whole sentence instead');
+  alt.addEventListener('click',()=>{mode='full';row.hidden=true;box.hidden=true;hint.hidden=true;fullBox.hidden=false;alt.hidden=true;full.focus();});
+  const nodes=[ctxEl(it.ctx),sitEl(it.sit),el('p',{class:'q'},it.q),hint,row,box,fullBox,alt];
+  const build=()=>{if(mode==='full')return full.value;const first=Math.min(...sel),out=[];words.forEach((w,i)=>{if(i===first)out.push(inp.value.trim());else if(!sel.has(i))out.push(w);});return out.join(' ').replace(/\s+/g,' ').trim();};
+  return {nodes,get:()=>{if(mode==='tap'&&!sel.size)return {ok:false,msg:'Tap the wrong word and write the correct one.',model:it.ans[0]};const r=evalAns(build(),it.ans);r.model=it.ans[0];return r;},lock:()=>{inp.disabled=true;full.disabled=true;alt.disabled=true;btns.forEach(b=>{b.disabled=true;});}};
+}
 function bType(it,id,n){
+  if(it.shown)return bFix(it,id,n);
   const inp=el('input',{type:'text',id:id,class:'txt',autocomplete:'off',autocapitalize:'off',autocorrect:'off',spellcheck:'false',enterkeyhint:'done'});
   const nodes=[ctxEl(it.ctx),sitEl(it.sit),el('label',{class:'q',for:id},it.q),
     it.shown?el('p',{class:'shown'},'Wrong answer shown: ',el('s',{},it.shown)):null,inp];

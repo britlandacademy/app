@@ -3,7 +3,7 @@
 'use strict';
 /* o app sempre abre no modo normal: a cada nova abertura (sessão nova) desliga o Modo Jogo; ligar de novo vale até fechar o app */
 try{if(!sessionStorage.getItem('bl-boot')){sessionStorage.setItem('bl-boot','1');localStorage.setItem('bl-game','0');}}catch(e){}
-window.BL_VERSION='1.9.37'; /* keep equal to VERSION in sw.js */
+window.BL_VERSION='1.9.38'; /* keep equal to VERSION in sw.js */
 /* ---- error codes: erros são gravados em silêncio em app_errors (aba Estatísticas); o aluno não vê nada ---- */
 (function(){
 var V=window.BL_VERSION,seen={},sent=0,queue=[];
