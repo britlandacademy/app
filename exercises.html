@@ -172,6 +172,7 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 <script src="js/config.js" charset="utf-8"></script>
 <script src="js/gate.js" charset="utf-8"></script>
 <script src="js/covers.js" charset="utf-8"></script>
+<script src="js/obra.js" charset="utf-8"></script>
 <script src="js/duo.js" charset="utf-8"></script>
 <script src="js/review.js" charset="utf-8"></script>
 <script>
@@ -599,7 +600,7 @@ function loadStudent(key){
   panelsEl.append(histPanel);
   let first=LESSONS.find(L=>!lessonStats(L).complete);
   curTab=first?String(first.id):'h';
-  try{const q=+new URLSearchParams(location.search).get('lesson');if(q&&BYID[q])curTab=String(q);}catch(e){}
+  try{const q=+new URLSearchParams(location.search).get('lesson');if(q&&BYID[q])curTab=String(q);;if(q&&!BYID[q]&&window.Obra&&q>(ctx.upto||0)){const S=(window.Covers&&Covers.STG)||[];Obra.screen({what:'lesson',lang:(window.I18N&&I18N.hint)||'pt',stage:Obra.stageOf(q,S),cur:Obra.stageOf(Math.max(ctx.upto||0,1),S),home:'index.html'});}}catch(e){}
   confirmDel=false;
   showTab(curTab);
 }

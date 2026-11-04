@@ -194,6 +194,7 @@ textarea.wrt{width:100%;font:inherit;font-size:1rem;color:var(--ink);background:
 <script src="js/config.js" charset="utf-8"></script>
 <script src="js/gate.js" charset="utf-8"></script>
 <script src="js/covers.js" charset="utf-8"></script>
+<script src="js/obra.js" charset="utf-8"></script>
 <script src="js/duo.js" charset="utf-8"></script>
 <script src="js/review.js" charset="utf-8"></script>
 <script>
@@ -664,7 +665,7 @@ function renderHistory(){
 whoEl.textContent=me().name;appEl.hidden=false;
 LESSONS.forEach(L=>panelsEl.append(mountLesson(L)));panelsEl.append(histPanel);
 const first=LESSONS.find(L=>!lessonStats(L).complete);
-let q0=first?String(first.id):'1';try{const q=+new URLSearchParams(location.search).get('lesson');if(q&&BYID[q])q0=String(q);}catch(e){}
+let q0=first?String(first.id):'1';try{const q=+new URLSearchParams(location.search).get('lesson');if(q&&BYID[q])q0=String(q);;if(q&&!BYID[q]&&window.Obra&&q>(ctx.upto||0)){const S=(window.Covers&&Covers.STG)||[];Obra.screen({what:'lesson',lang:(window.I18N&&I18N.hint)||'pt',stage:Obra.stageOf(q,S),cur:Obra.stageOf(Math.max(ctx.upto||0,1),S),home:'index.html'});}}catch(e){}
 showTab(q0);
 setTimeout(()=>cvCele(curStage),900);
 if(window.Review&&Review.params())setTimeout(revStart,500);

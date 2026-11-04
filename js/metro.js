@@ -306,7 +306,9 @@ function mount(c,o){
   }
   function tap(i){
     var l=i+1;if(busy)return;ctx();tick();
-    if(l>openN||(cur&&l>cur)){var g=mapEl.querySelector('[data-i="'+i+'"] .in');g.classList.remove('shk');void g.getBoundingClientRect();g.classList.add('shk');buzz();say(tx.locked);return;}
+    if(l>openN||(cur&&l>cur)){var g=mapEl.querySelector('[data-i="'+i+'"] .in');g.classList.remove('shk');void g.getBoundingClientRect();g.classList.add('shk');buzz();
+      if(l>openN&&W.Obra){var sq0=SEQ[i],ln=sq0.t==='L'?sq0.l:sq0.to;signEl.innerHTML='<div class="plate">'+W.Obra.card({what:'station',lang:lang(),line:C.city.toUpperCase(),name:sq0.t==='R'?lmOf(sq0).n:stn(sq0.l-1),stage:W.Obra.stageOf(ln,o.stages),cur:W.Obra.stageOf(Math.max(upto,1),o.stages)})+'</div>';signEl.classList.add('on');clearTimeout(plate.t);plate.t=setTimeout(function(){signEl.classList.remove('on');},6000);return;}
+      say(tx.locked);return;}
     var sq=SEQ[i];if(sq.t==='R')sheetR(sq);else sheet(sq.l);
   }
   function build(){
@@ -340,6 +342,7 @@ function mount(c,o){
       var X=function(txt,y,sz,w,col,ls){var t=el('text',{x:lx,y:y,'text-anchor':an,'font-size':sz,'font-weight':w,fill:col,'letter-spacing':ls||0},inn);t.textContent=txt;};
       if(isCur){var tw=ES?104:96,rx=right?lx:lx-tw;el('rect',{x:rx,y:-34,width:tw,height:16,rx:8,fill:'#e8b923'},inn);var tg=el('text',{x:rx+tw/2,y:-22.5,'text-anchor':'middle','font-size':9,'font-weight':700,fill:'#2a2000','letter-spacing':'.8'},inn);tg.textContent=tx.here;}
       X(isR?tx.review.toUpperCase():tx.lesson+' '+sq.l,-6,13.5,700,dim?'#7d8db3':(isR?'#e8b923':'#f4f1e8'),isR?'.8':0);
+      if(l>openN){var sg=el('g',{transform:'translate('+(right?-(rr+20):(rr+20))+' -2)','class':'obra'},inn);el('rect',{x:-12,y:-9,width:24,height:18,rx:3,fill:'#f7c41f',stroke:'#1a1a1a','stroke-width':1.6},sg);el('path',{d:'M-12 -9L-4 -9L-12 -1ZM0 -9L8 -9L-12 9L-12 8ZM12 -9L12 -5L-4 9L-8 9Z',fill:'#1a1a1a',opacity:.85},sg);}
       X(nm.toUpperCase(),12,9,700,dim?'#5f6f96':(C.color==='#E3001B'||C.color==='#dc241f'?'#ff8a80':C.color),'.4');
       g.addEventListener('click',function(e){tap(+e.currentTarget.getAttribute('data-i'));});
       g.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();tap(+e.currentTarget.getAttribute('data-i'));}});
