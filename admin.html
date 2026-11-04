@@ -673,7 +673,7 @@ const IC={stats:'M4 20V10M10 20V4M16 20v-7M22 20H2',home:'M3 11l9-8 9 8M5 10v10h
 function ico(k){const d=document.createElement('div');d.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+IC[k]+'"/></svg>';return d.firstChild;}
 const TABS=[['home','Início'],['agenda','Agenda'],['today','Hoje'],['students','Alunos'],['grades','Notas'],['exams','Exames'],['pay','Pagamentos','payments.html'],['content','Conteúdo'],['place','Placement'],['stats','Estatísticas']];
 const BAR=['home','agenda','students','grades','more'],MORE=['more','today','exams','content','place','stats'];
-let OVERDUE=null,PLN=null,CUR='home';
+let OVERDUE=null,PLN=null,LREQ=null,CUR='home';
 function markTabs(){
   document.querySelectorAll('#tpTabs .tp-tab').forEach(x=>x.classList.toggle('on',x.dataset.k===CUR||(x.dataset.k==='more'&&MORE.includes(CUR))));
   document.querySelectorAll('#tpSide .tp-tab').forEach(x=>x.classList.toggle('on',x.dataset.k===CUR));
@@ -705,7 +705,7 @@ function homeStats(){
   let rev=0,done=0;(typeof XRES!=='undefined'?XRES:[]).forEach(r=>{if(r.submitted_at){done++;const n=Object.values(r.review||{}).reduce((s,x)=>s+x.length,0);if(n)rev++;}});
   const last={};ATT.forEach(a=>{if(!last[a.user_id]||a.created_at>last[a.user_id])last[a.user_id]=a.created_at;});
   const lim=Date.now()-7*864e5,idle=stu.filter(p=>!last[p.id]||new Date(last[p.id]).getTime()<lim).length;
-  return {stu:stu.length,pend,rev,done,idle,over:OVERDUE};
+  return {stu:stu.length,pend,rev,done,idle,over:OVERDUE,lreq:LREQ||0};
 }
 function renderToday(){
   const box=$('todayBox');if(!box)return;
@@ -769,13 +769,14 @@ function renderHome(){
   const TI=k=>TABS.findIndex(t=>t[0]===k);TABS[TI('students')][3]=()=>h.pend;TABS[TI('exams')][3]=()=>h.rev;TABS[TI('pay')][3]=()=>h.over||0;renderToday();
   buildTabs();markTabs();renderRings(h);renderMore(h);
   const rows=[];
+  if(h.lreq)rows.push([h.lreq+' pedido(s) de aula para responder','__agenda']);
   if(h.pend)rows.push([h.pend+' pedido(s) de acesso para aprovar','students']);
   if(h.rev)rows.push([h.rev+' prova(s) com respostas para você revisar','exams']);
   if(h.over)rows.push([h.over+' parcela(s) vencida(s)','payments.html']);
   if(h.idle)rows.push([h.idle+' aluno(s) sem fazer exercícios há mais de 7 dias','grades']);
   ul.textContent='';
   if(!rows.length)ul.append(el('li',{},el('span',{},'Nada pendente. Tudo em dia!')));
-  rows.forEach(r=>ul.append(el('li',{},el('span',{},r[0]),el('button',{type:'button',onclick:()=>{if(/\.html$/.test(r[1]))location.href=r[1];else go(r[1]);}},'Ver'))));
+  rows.forEach(r=>ul.append(el('li',{},el('span',{},r[0]),el('button',{type:'button',onclick:()=>{if(r[1]==='__agenda'){const b=$('agendaBox');if(b)b.scrollIntoView({behavior:'smooth',block:'start'});}else if(/\.html$/.test(r[1]))location.href=r[1];else go(r[1]);}},'Ver'))));
   const C=[['students',String(h.stu),'Alunos','Aprovar, liberar lessons, ver progresso',h.pend?h.pend+' pedido(s)':''],
     ['grades','','Notas','Lesson Checks, exercises e workbook',''],
     ['exams',String(h.done),'Exames','Liberar provas, notas e correções',h.rev?h.rev+' para revisar':''],
@@ -789,8 +790,10 @@ function renderHome(){
 function loadHomeExtras(){
   const today=new Date().toISOString().slice(0,10);
   sb.from('charges').select('id',{count:'exact',head:true}).is('paid_on',null).lt('due_date',today).then(r=>{OVERDUE=r.error?null:(r.count||0);renderHome();}).catch(()=>{});
+  sb.from('lesson_requests').select('id',{count:'exact',head:true}).eq('status','pending').neq('kind','cancel').gte('created_at',new Date(Date.now()-864e5).toISOString()).then(r=>{LREQ=r.error?null:(r.count||0);renderHome();}).catch(()=>{});
   sb.from('placement').select('id',{count:'exact',head:true}).then(r=>{PLN=r.error?null:(r.count||0);renderHome();}).catch(()=>{});
 }
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&typeof loadHomeExtras==='function')loadHomeExtras();});
 buildTabs();go((location.hash||'#home').slice(1));
 {const lb=t=>{if(!t)return;const hs=[...t.querySelectorAll('th')].map(x=>x.textContent);t.querySelectorAll('tr').forEach(r=>[...r.children].forEach((c,i)=>{if(c.tagName==='TD'&&hs[i]&&c.dataset.l!==hs[i])c.dataset.l=hs[i];}));};
 ['pend','stu'].forEach(id=>{const e=$(id);if(!e)return;const t=e.tagName==='TABLE'?e:null;const root=t||e;lb(root);new MutationObserver(()=>lb(root.tagName==='TABLE'?root:root.querySelector('table'))).observe(root,{childList:true,subtree:true});});}
