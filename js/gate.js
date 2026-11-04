@@ -617,7 +617,7 @@ function prefetch(lo,hi){
       try{localStorage.setItem(tag,String(now));}catch(e){}
     },function(){});
     var b=window.BL_BASE||'',own=window.BL_COURSE?['dele.html']:['exercises.html','workbook.html'];
-    ['index.html','lessons.html','check.html'].concat(own,['js/gate.js','js/config.js','js/i18n.js','js/theme.css','js/wm.css','js/fonts.css','js/brand.css','js/ui.css','js/protect.js','js/covers.js','js/profile.js','js/push.js','js/streak.js','js/avatars.js','js/facts.js','js/facts_i18n.js','js/pwa.js']).forEach(function(u){try{fetch(b+u,{credentials:'same-origin'}).catch(function(){});}catch(e){}});
+    ['index.html','lessons.html','check.html'].concat(own,['js/gate.js','js/config.js','js/i18n.js','js/theme.css','js/wm.css','js/fonts.css','js/brand.css','js/ui.css','js/protect.js','js/lsearch.js','js/paranums.js','js/covers.js','js/profile.js','js/push.js','js/streak.js','js/avatars.js','js/facts.js','js/facts_i18n.js','js/pwa.js']).forEach(function(u){try{fetch(b+u,{credentials:'same-origin'}).catch(function(){});}catch(e){}});
   },2500);
 }
 function loadContent(kinds){

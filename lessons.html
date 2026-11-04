@@ -241,6 +241,7 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 <script src="js/gate.js" charset="utf-8"></script>
 <script src="js/protect.js" charset="utf-8"></script>
 <script src="js/paranums.js" charset="utf-8"></script>
+<script src="js/lsearch.js" charset="utf-8"></script>
 <script>
 Gate.start({kinds:['text'],noStageBox:true},function(ctx){
 if(window.Protect)Protect.on((ctx.profile&&ctx.profile.name||'')+' · '+(ctx.user&&ctx.user.email||''));
@@ -274,19 +275,25 @@ function player(label,path,lazy){
   if(!lazy)load();
   return sec;
 }
-function renderText(id,box0){
-  const data=(window.LESSON_TEXT||{})[id];
-  if(!data){box0.append(el('p',{class:'missing'},'The text of this lesson is not available yet.'));return;}
-  const n=stageOf(id).n,base='Stage '+n+'/';
+function parOpen(id,data){
   const fpb=b=>((b[0]==='v'?b[1].join(''):b[0]==='qa'?b[1]:b[0]==='c'?'See Chart '+b[1]:'')+'').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,28);
   const pn=(!BUS&&window.PARANUM&&window.PARANUM[id])||[],at={},seen={};
   data.forEach((b,i)=>{const t=b[0];if(t!=='v'&&t!=='qa'&&t!=='c')return;const key=t+'|'+fpb(b),o=seen[key]||0;seen[key]=o+1;at[key+'|'+o]=i;});
   const open={};pn.forEach(r=>{const i=at[r[1]+'|'+r[2]+'|'+r[3]];if(i!=null&&!(i in open))open[i]=r[0];});
+  return open;
+}
+function parList(id,data){const o=parOpen(id,data),r=[];let c=null;data.forEach((b,i)=>{if(o[i]!=null)c=o[i];r.push(b[0]==='d'?null:c);});return r;}
+function renderText(id,box0){
+  const data=(window.LESSON_TEXT||{})[id];
+  if(!data){box0.append(el('p',{class:'missing'},'The text of this lesson is not available yet.'));return;}
+  const n=stageOf(id).n,base='Stage '+n+'/';
+  const open=parOpen(id,data);
   let cur=null;
   data.forEach((b,i)=>{
-    const k=b[0],box=cur||box0;
+    const k=b[0];
     if(k==='d')cur=null;
     if(open[i]!=null){cur=el('section',{class:'par'},el('span',{class:'pn'},String(open[i])));box0.append(cur);}
+    const box=cur||box0;
     if(k==='v')box.append(el('div',{class:'vrow'},b[1].map(c=>el('span',{},c))));
     else if(k==='qa'){box.append(el('div',{class:'qa'},el('p',{class:'qq'},b[1]),b[2]?el('p',{class:'qa-a'},b[2]):null));}
     else if(k==='s')box.append(el('p',{class:'say'},b[1]));
@@ -297,6 +304,7 @@ function renderText(id,box0){
       det.addEventListener('toggle',()=>{if(det.open)dp.load();});
       box.append(det);
     }
+    const lastEl=box.lastElementChild;if(lastEl&&!lastEl.dataset.bi&&!lastEl.classList.contains('pn'))lastEl.dataset.bi=String(i);
   });
 }
 const stSel=document.getElementById('st'),lsSel=document.getElementById('ls'),out=document.getElementById('out'),ttl=document.getElementById('ttl');
@@ -344,12 +352,19 @@ function show(id,noscroll){
   prevs.forEach(b=>{b.disabled=id<=LO;});nexts.forEach(b=>{b.disabled=id>=HI;});
   try{localStorage.setItem((BUS?'bus-lesson-last':'callan-lesson-last'),String(id));}catch(e){}
   if(!noscroll)window.scrollTo({top:0});
+  if(window.LSearch)LSearch.after();
 }
 stSel.addEventListener('change',()=>show(STAGES.find(t=>t.n===+stSel.value).from));
 lsSel.addEventListener('change',()=>show(+lsSel.value));
 prevs.forEach(b=>b.addEventListener('click',()=>{if(cur>LO)show(cur-1);}));
 nexts.forEach(b=>b.addEventListener('click',()=>{if(cur<HI)show(cur+1);}));
 show(cur,true);
+let ALLP=null;
+if(window.LSearch)LSearch.init({out:out,cur:()=>cur,show:show,stageOf:id=>stageOf(id).n,stages:ALL.filter(t=>t.from<=UPTO),lessonWord:'Lesson',parWord:'parágrafo',para:parList,
+  fetchAll:()=>{if(ALLP)return ALLP;const lo=BUS?1001:1,hi=BUS?1000+UPTO:UPTO;
+    ALLP=Gate.sb.from('content').select('lesson,body').eq('kind','text').gte('lesson',lo).lte('lesson',hi).order('lesson',{ascending:true}).then(r=>{if(r.error||!r.data)throw r.error;const m={};r.data.forEach(x=>{m[BUS?x.lesson-1000:x.lesson]=x.body;});return m;}).catch(()=>{ALLP=null;return Object.assign({},window.LESSON_TEXT||{});});
+    return ALLP;},
+  t:{open:'Buscar no texto',ph:'Buscar nas lições',close:'Fechar',back:'Voltar',list:'Lista',all:'Buscar em todas as lições',none:'Nada encontrado nesta lição',inLesson:(i,n)=>i+' de '+n+' nesta lição',type2:'Digite pelo menos 2 letras.',loading:'Carregando as lições…',noRes:'Nenhum resultado.',res:n=>n+(n===1?' resultado':' resultados'),first:n=>'mostrando os '+n+' primeiros',of:(i,n)=>'Resultado '+i+' de '+n,fAll:'Todas',fWords:'Palavras',fQs:'Perguntas',fText:'Textos',fDict:'Ditados',allStages:'Todos os Stages',prev:'Resultado anterior',next:'Próximo resultado',end:'Encerrar a busca'}});
 });
 </script>
 </body></html>
