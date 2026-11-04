@@ -42,6 +42,7 @@ td.g{background:var(--ok-bg)}td.m{background:var(--warn-bg)}td.r{background:var(
 .tp-tab.on{border-color:var(--accent);background:var(--chip,var(--card));color:var(--ink);font-weight:700}
 .tp-n{background:var(--bad);color:#fff;border-radius:99px;font-size:.72rem;padding:1px 7px;margin-left:6px;font-weight:700}
 .sc{display:none}.sc.on{display:block}
+.tp-alert{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;box-sizing:border-box;margin:0 0 14px;padding:12px 14px;border:0;border-radius:14px;background:#ff8a3d;color:#111;font:700 1rem var(--font-body);text-align:left;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}.tp-alert[hidden]{display:none}.tp-alert b{font-weight:700}.tp-alert i{font-style:normal;background:#111;color:#fff;border-radius:99px;padding:4px 12px;font-size:.85rem;flex:none}
 .tp-attn{border:2px solid var(--accent);border-left-width:6px;border-radius:12px;padding:14px 16px;margin:0 0 18px;background:var(--card)}
 .tp-attn h2{margin:0 0 8px}
 .tp-attn ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
@@ -128,6 +129,7 @@ details.h{background:var(--surface);border:1px solid var(--line);border-radius:1
 <nav class="tp-tabs" id="tpTabs" data-noi18n="1" aria-label="Menu"></nav>
 <main>
 <section class="sc on" id="s-home" aria-label="Início">
+  <button type="button" class="tp-alert" id="tpAlert" data-noi18n="1" hidden></button>
   <div class="rings" id="tpRings" data-noi18n="1"></div>
   <div class="tp-attn" id="tpAttn" data-noi18n="1"><h2>Precisa de atenção hoje</h2><ul id="tpAttnList"><li style="list-style:none"><span class="bl-sk" style="height:22px;width:70%"></span></li><li style="list-style:none;margin-top:8px"><span class="bl-sk" style="height:22px;width:50%"></span></li></ul></div>
   <div class="tp-grid" id="tpCards" data-noi18n="1"></div>
@@ -673,7 +675,7 @@ const IC={stats:'M4 20V10M10 20V4M16 20v-7M22 20H2',home:'M3 11l9-8 9 8M5 10v10h
 function ico(k){const d=document.createElement('div');d.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+IC[k]+'"/></svg>';return d.firstChild;}
 const TABS=[['home','Início'],['agenda','Agenda'],['today','Hoje'],['students','Alunos'],['grades','Notas'],['exams','Exames'],['pay','Pagamentos','payments.html'],['content','Conteúdo'],['place','Placement'],['stats','Estatísticas']];
 const BAR=['home','agenda','students','grades','more'],MORE=['more','today','exams','content','place','stats'];
-let OVERDUE=null,PLN=null,LREQ=null,CUR='home';
+let OVERDUE=null,PLN=null,LREQ=null,LCAN=null,CUR='home';
 function markTabs(){
   document.querySelectorAll('#tpTabs .tp-tab').forEach(x=>x.classList.toggle('on',x.dataset.k===CUR||(x.dataset.k==='more'&&MORE.includes(CUR))));
   document.querySelectorAll('#tpSide .tp-tab').forEach(x=>x.classList.toggle('on',x.dataset.k===CUR));
@@ -705,7 +707,7 @@ function homeStats(){
   let rev=0,done=0;(typeof XRES!=='undefined'?XRES:[]).forEach(r=>{if(r.submitted_at){done++;const n=Object.values(r.review||{}).reduce((s,x)=>s+x.length,0);if(n)rev++;}});
   const last={};ATT.forEach(a=>{if(!last[a.user_id]||a.created_at>last[a.user_id])last[a.user_id]=a.created_at;});
   const lim=Date.now()-7*864e5,idle=stu.filter(p=>!last[p.id]||new Date(last[p.id]).getTime()<lim).length;
-  return {stu:stu.length,pend,rev,done,idle,over:OVERDUE,lreq:LREQ||0};
+  return {stu:stu.length,pend,rev,done,idle,over:OVERDUE,lreq:LREQ||0,lcan:LCAN||0};
 }
 function renderToday(){
   const box=$('todayBox');if(!box)return;
@@ -766,10 +768,11 @@ function renderMore(h){
 }
 function renderHome(){
   const h=homeStats(),ul=$('tpAttnList'),cards=$('tpCards');if(!ul)return;
-  const TI=k=>TABS.findIndex(t=>t[0]===k);TABS[TI('students')][3]=()=>h.pend;TABS[TI('exams')][3]=()=>h.rev;TABS[TI('pay')][3]=()=>h.over||0;renderToday();
+  const TI=k=>TABS.findIndex(t=>t[0]===k);TABS[TI('students')][3]=()=>h.pend;TABS[TI('exams')][3]=()=>h.rev;TABS[TI('pay')][3]=()=>h.over||0;TABS[TI('agenda')][3]=()=>h.lreq+h.lcan;renderToday();
   buildTabs();markTabs();renderRings(h);renderMore(h);
+  {const al=$('tpAlert');if(al){const parts=[];if(h.lreq)parts.push(h.lreq+(h.lreq===1?' pedido':' pedidos'));if(h.lcan)parts.push(h.lcan+(h.lcan===1?' cancelamento':' cancelamentos'));
+    al.hidden=!parts.length;al.textContent='';if(parts.length){al.append(el('b',{},'\uD83D\uDD14 '+parts.join(' \u00B7 ')),el('i',{},'Ver'));al.onclick=()=>{const b=$('agendaBox');if(b)b.scrollIntoView({behavior:'smooth',block:'start'});};}}}
   const rows=[];
-  if(h.lreq)rows.push([h.lreq+' pedido(s) de aula para responder','__agenda']);
   if(h.pend)rows.push([h.pend+' pedido(s) de acesso para aprovar','students']);
   if(h.rev)rows.push([h.rev+' prova(s) com respostas para você revisar','exams']);
   if(h.over)rows.push([h.over+' parcela(s) vencida(s)','payments.html']);
@@ -791,6 +794,7 @@ function loadHomeExtras(){
   const today=new Date().toISOString().slice(0,10);
   sb.from('charges').select('id',{count:'exact',head:true}).is('paid_on',null).lt('due_date',today).then(r=>{OVERDUE=r.error?null:(r.count||0);renderHome();}).catch(()=>{});
   sb.from('lesson_requests').select('id',{count:'exact',head:true}).eq('status','pending').neq('kind','cancel').gte('created_at',new Date(Date.now()-864e5).toISOString()).then(r=>{LREQ=r.error?null:(r.count||0);renderHome();}).catch(()=>{});
+  sb.from('lesson_requests').select('id',{count:'exact',head:true}).eq('kind','cancel').gte('created_at',new Date(Date.now()-864e5).toISOString()).then(r=>{LCAN=r.error?null:(r.count||0);renderHome();}).catch(()=>{});
   sb.from('placement').select('id',{count:'exact',head:true}).then(r=>{PLN=r.error?null:(r.count||0);renderHome();}).catch(()=>{});
 }
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&typeof loadHomeExtras==='function')loadHomeExtras();});
