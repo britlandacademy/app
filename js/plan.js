@@ -33,12 +33,12 @@ function mount(ctx,o){
     var items=[];
     if(L>1)items.push({t:L10.lc+(L-1),d:!!done.lc[L-1],h:'check.html?stage='+Covers.stageOf(L-1)+'&lesson='+(L-1)});
     items.push({t:L10.lc+L,d:!!done.lc[L],h:'check.html?stage='+St+'&lesson='+L});
-    items.push({t:L10.gr+L,d:!!done.gr[L],h:(es?'exercicios.html':'exercises.html')+'?lesson='+L});
-    items.push({t:L10.wb+L,d:!!done.wb[L],h:'workbook.html?lesson='+L});
+    if(!es){items.push({t:L10.gr+L,d:!!done.gr[L],h:'exercises.html?lesson='+L});
+    items.push({t:L10.wb+L,d:!!done.wb[L],h:'workbook.html?lesson='+L});}
     var seenM={},extra=[];
     ms.slice().reverse().forEach(function(m){var M=m.lesson;if(!M||m.conversation||M>=L||seenM[M]||(up>0&&M>up))return;seenM[M]=1;
-      if(!done.gr[M])extra.push({t:L10.gr+M,d:false,h:(es?'exercicios.html':'exercises.html')+'?lesson='+M,x:L10.missx});
-      if(!done.wb[M])extra.push({t:L10.wb+M,d:false,h:'workbook.html?lesson='+M,x:L10.missx});});
+      if(!es&&!done.gr[M])extra.push({t:L10.gr+M,d:false,h:'exercises.html?lesson='+M,x:L10.missx});
+      if(!es&&!done.wb[M])extra.push({t:L10.wb+M,d:false,h:'workbook.html?lesson='+M,x:L10.missx});});
     items=extra.concat(items);
     var pend=items.filter(function(x){return!x.d;}),first=pend[0];
     sec.textContent='';
