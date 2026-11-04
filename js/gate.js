@@ -4,6 +4,7 @@
 (function(){
 'use strict';
 var CFG=window.CALLAN_CFG||{};
+(function(){try{var B=window.BL_BASE||'',h=document.head,l=document.createElement('link');l.rel='stylesheet';l.href=B+'js/fx.css';h.appendChild(l);var sc=document.createElement('script');sc.src=B+'js/fx.js';h.appendChild(sc);}catch(e){}})();
 var COURSE=window.BL_COURSE||{};
 try{var _u=document.createElement('link');_u.rel='stylesheet';_u.href=(window.BL_BASE||'')+'js/ui.css?v='+(window.BL_VERSION||'1');document.head.appendChild(_u);}catch(e){} /* per-course settings (Spanish sets its own in espanol/js/config.js) */
 var LIB=['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js',
@@ -506,6 +507,8 @@ function addBar(){
   var minus=el('button',{type:'button','aria-label':'Smaller text',onclick:function(){setSize(fsIdx-1);}},'A−');
   var plus=el('button',{type:'button','aria-label':'Larger text',onclick:function(){setSize(fsIdx+1);}},'A+');
   var gameSw=gameSwitch();
+  var fxOn=function(){return window.BLFX?window.BLFX.on():(function(){try{return localStorage.getItem('bl-fx')!=='0';}catch(e){return true;}})();};
+  var fxSw=el('button',{type:'button',class:'g-sw'+(fxOn()?' on':''),role:'switch','aria-checked':String(fxOn()),'aria-label':'Animations and sounds',onclick:function(){var v=!fxOn();if(window.BLFX)window.BLFX.set(v);else{try{localStorage.setItem('bl-fx',v?'1':'0');}catch(e){}document.documentElement.classList.toggle('fx-off',!v);}fxSw.classList.toggle('on',v);fxSw.setAttribute('aria-checked',String(v));}},el('u'));
   var lab=el('span',{style:'display:none','aria-live':'polite'});
   sizeUi={minus:minus,plus:plus,lab:lab};updateSizeUi();
   mn.append(head,
@@ -513,6 +516,7 @@ function addBar(){
     COURSE.profile===false?document.createComment(''):mi('edit','Change picture',{href:'account.html#picture'}),
     el('div',{class:'g-mr'},ico('moon'),el('span',{},'Dark mode'),themeSw),
     el('div',{class:'g-mr'},el('b',{style:'width:20px;text-align:center'},'\uD83C\uDFAE'),el('span',{},'Game mode'),gameSw),
+    el('div',{class:'g-mr'},el('b',{style:'width:20px;text-align:center'},'\u2728'),el('span',{},'Animations and sounds'),fxSw),
     COURSE.push===false?document.createComment(''):pushRow(open),
     el('div',{class:'g-mr'},el('b',{style:'width:20px;text-align:center'},'Aa'),el('span',{},'Text size'),el('span',{class:'g-sz',role:'group','aria-label':'Text size'},minus,plus,lab)));
   if(window.I18N)mn.append(el('div',{class:'g-mr'},el('b',{style:'width:20px;text-align:center'},'\uD83C\uDF10'),el('span',{},'Language'),window.I18N.selector('ui')));

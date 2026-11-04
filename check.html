@@ -413,6 +413,7 @@ function buildEx(L,ex,k){
   form.append(el('div',{class:'btnrow'},verify,retry),score);
   form.addEventListener('submit',e=>{
     e.preventDefault();if(verify.disabled)return;
+    const wasDone=lessonStats(L).done===L.ex.length;
     let right=0;
     built.forEach(o=>{
       const r=o.b.get();
@@ -431,6 +432,7 @@ function buildEx(L,ex,k){
     me().attempts.push(att);
     Gate.saveAttempt('check',att).then(()=>{score.textContent='Score: '+right+' of '+ex.items.length+' · saved';warnEl.hidden=true;},
       ()=>{score.textContent='Score: '+right+' of '+ex.items.length+' · NOT saved';warnEl.hidden=false;});
+    try{const st=lessonStats(L);if(!wasDone&&st.done===st.n&&st.pct>=60&&window.BLFX)BLFX.celebrate(1);}catch(e){}
     refreshAfterAttempt(L);
   });
   return form;

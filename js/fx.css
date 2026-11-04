@@ -1,0 +1,33 @@
+/* Britland UI animations (style 3: elegant, soft blur). Disabled by html.fx-off */
+:root{--fx-e:cubic-bezier(.16,1,.3,1);--fx-d:.8s}
+@keyframes fxIn{from{opacity:0;transform:translateY(22px) scale(.96);filter:blur(10px)}to{opacity:1;transform:none;filter:none}}
+@keyframes fxFwd{from{opacity:0;transform:translateX(44px) scale(.98);filter:blur(10px)}to{opacity:1;transform:none;filter:none}}
+@keyframes fxBack{from{opacity:0;transform:translateX(-44px) scale(.98);filter:blur(10px)}to{opacity:1;transform:none;filter:none}}
+@keyframes fxOutL{to{opacity:0;transform:translateX(-44px) scale(.98);filter:blur(10px)}}
+@keyframes fxGood{0%{box-shadow:0 0 0 0 rgba(61,179,122,.7);transform:scale(.97)}40%{transform:scale(1.025)}100%{box-shadow:0 0 0 18px rgba(61,179,122,0);transform:none}}
+@keyframes fxBad{0%,100%{transform:translateX(0)}15%{transform:translateX(-9px)}35%{transform:translateX(8px)}55%{transform:translateX(-5px)}75%{transform:translateX(3px)}}
+@keyframes fxSpark{from{transform:translate(0,0) scale(1);opacity:1}to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
+@keyframes fxPop{0%{transform:scale(0) rotate(-90deg)}100%{transform:none}}
+@keyframes fxOv{from{opacity:0}to{opacity:1}}
+@keyframes fxBox{from{opacity:0;transform:translateY(16px) scale(.92)}to{opacity:1;transform:none}}
+html:not(.fx-off) main{animation:fxFwd var(--fx-d) var(--fx-e) backwards}
+html:not(.fx-off).fx-back main{animation-name:fxBack}
+html:not(.fx-off).fx-out main{animation:fxOutL .22s ease-in forwards;pointer-events:none}
+html:not(.fx-off) .grid>.card,html:not(.fx-off) .stats>.st,html:not(.fx-off) .today,html:not(.fx-off) .cont{animation:fxIn var(--fx-d) var(--fx-e) backwards}
+html:not(.fx-off) .grid>.card:nth-child(1){animation-delay:.05s}html:not(.fx-off) .grid>.card:nth-child(2){animation-delay:.16s}html:not(.fx-off) .grid>.card:nth-child(3){animation-delay:.27s}html:not(.fx-off) .grid>.card:nth-child(4){animation-delay:.38s}html:not(.fx-off) .grid>.card:nth-child(5){animation-delay:.49s}html:not(.fx-off) .grid>.card:nth-child(6){animation-delay:.6s}
+html:not(.fx-off) .card,html:not(.fx-off) .btn,html:not(.fx-off) .g-mi{transition:transform .35s var(--fx-e),box-shadow .35s,background-color .2s,border-color .2s}
+@media (hover:hover){html:not(.fx-off) .card:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.28)}}
+html:not(.fx-off) .card:active,html:not(.fx-off) .btn:active{transform:scale(.98)}
+html:not(.fx-off) .item.ok{animation:fxGood .7s var(--fx-e)}
+html:not(.fx-off) .item.bad{animation:fxBad .5s}
+.fx-spark{position:fixed;width:7px;height:7px;border-radius:50%;pointer-events:none;z-index:99998;animation:fxSpark var(--t) cubic-bezier(.2,.7,.3,1) forwards}
+.fx-chk{position:absolute;right:10px;top:8px;color:#3db37a;font-weight:700;animation:fxPop .45s var(--fx-e)}
+.fx-fw{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:99999}
+/* profile menu: soft open and close */
+html:not(.fx-off) .g-mn{display:block;visibility:hidden;opacity:0;pointer-events:none;transform:translateY(-10px) scale(.92);transform-origin:top right;transition:opacity .25s,transform .35s var(--fx-e),visibility 0s .35s}
+html:not(.fx-off) .g-mn.on{visibility:visible;opacity:1;pointer-events:auto;transform:none;transition:opacity .25s,transform .45s var(--fx-e),visibility 0s}
+@media(max-width:560px){html:not(.fx-off) .g-mn{transform:translateY(28px) scale(.96);transform-origin:bottom center}}
+/* class ranking: soft expand and collapse */
+html:not(.fx-off) .sk-hr{display:block!important;overflow:hidden;max-height:900px;opacity:1;transition:max-height .5s var(--fx-e),opacity .3s,margin .3s,padding .3s}
+html:not(.fx-off) .sk-hr[hidden]{max-height:0;opacity:0;margin:0;padding-top:0;border-top-width:0;visibility:hidden;transition:max-height .35s ease,opacity .2s,margin .3s,padding .3s,visibility 0s .35s}
+html:not(.fx-off) .sk-ov{animation:fxOv .3s}html:not(.fx-off) .sk-ov>*{animation:fxBox .5s var(--fx-e)}
