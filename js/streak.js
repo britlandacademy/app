@@ -1,15 +1,15 @@
 /* Streak ("ofensiva") card + admin panel. Needs Gate.sb and the streak.sql functions. */
 (function(){
 var L={
- pt:{wk1:'Semana completa!',wkN:'{w} semanas seguidas!',m30:'Um mês de ofensiva!',m100:'100 dias de ofensiva!',m365:'Um ano inteiro!',ndays:'{n} dias seguidos',ph:['Continue assim!','Você é imparável!','Que constância!','O leão está orgulhoso!','Hábito de campeão!','Ninguém segura você!','Mais uma semana na conta!'],t:'Ofensiva',d:'dias seguidos',d1:'dia seguido',best:'Recorde',fz:'Congelamento disponível esta semana',nofz:'Congelamento já usado esta semana',
+ pt:{wk1:'Semana completa!',wkN:'{w} semanas seguidas!',m30:'Um mês de ofensiva!',m100:'100 dias de ofensiva!',m365:'Um ano inteiro!',ndays:'{n} dias seguidos',ph:['Continue assim!','Você é imparável!','Que constância!','O leão está orgulhoso!','Hábito de campeão!','Ninguém segura você!','Mais uma semana na conta!'],z:'Estude hoje para começar sua ofensiva!',t:'Ofensiva',d:'dias seguidos',d1:'dia seguido',best:'Recorde',fz:'Congelamento disponível esta semana',nofz:'Congelamento já usado esta semana',
   go:'Estude hoje para manter sua ofensiva!',ok:'Hoje está feito. Volte amanhã!',rank:'Ranking da turma',me:'você',
   w:['S','T','Q','Q','S','S','D'],ms:'Ofensiva de {n} dias!',ms2:'Continue assim!',close:'Continuar',none:'Ninguém com ofensiva ainda.',
   at:'Painel de ofensivas',an:'Aluno',ac:'Atual',ab:'Recorde',al:'Último dia',ad:'Dias',ae:'Nenhum aluno ainda.'},
- en:{wk1:'Week complete!',wkN:'{w} weeks in a row!',m30:'A month-long streak!',m100:'100-day streak!',m365:'A whole year!',ndays:'{n} days in a row',ph:['Keep it up!','You are unstoppable!','What consistency!','The lion is proud of you!','Champion habits!','Nothing can stop you!','Another week in the bank!'],t:'Streak',d:'day streak',d1:'day streak',best:'Best',fz:'Freeze available this week',nofz:'Freeze already used this week',
+ en:{wk1:'Week complete!',wkN:'{w} weeks in a row!',m30:'A month-long streak!',m100:'100-day streak!',m365:'A whole year!',ndays:'{n} days in a row',ph:['Keep it up!','You are unstoppable!','What consistency!','The lion is proud of you!','Champion habits!','Nothing can stop you!','Another week in the bank!'],z:'Estude hoje para começar sua ofensiva!',t:'Streak',d:'day streak',d1:'day streak',best:'Best',fz:'Freeze available this week',nofz:'Freeze already used this week',
   go:'Study today to keep your streak!',gos:['Hi{c}! Your next exercise is ready. Just 10 minutes today.','Small steps every day build fluent English{c}. Ready for yours?','Your English is waiting for you{c}. Come and practise!','A few minutes now will make tomorrow\u2019s class easier{c}.','You\u2019re closer than you think{c}. Let\u2019s do today\u2019s exercise!'],gok:['Keep your streak alive{c}! One exercise is all it takes.','Don\u2019t break the chain{c}: {d} days in a row so far!'],gom:['We miss you{c}! Come back and pick up where you left off.','No pressure{c}. Just one short exercise to get going again.'],ok:'Done for today. See you tomorrow!',rank:'Class ranking',me:'you',
   w:['M','T','W','T','F','S','S'],ms:'{n}-day streak!',ms2:'Keep it up!',close:'Continue',none:'Nobody has a streak yet.',
   at:'Streak panel',an:'Student',ac:'Current',ab:'Best',al:'Last day',ad:'Days',ae:'No students yet.'},
- es:{wk1:'¡Semana completa!',wkN:'¡{w} semanas seguidas!',m30:'¡Un mes de racha!',m100:'¡100 días de racha!',m365:'¡Un año entero!',ndays:'{n} días seguidos',ph:['¡Sigue así!','¡Imparable!','¡Qué constancia!','¡El león está orgulloso!','¡Hábito de campeón!','¡Nadie te detiene!','¡Otra semana más!'],t:'Racha',d:'días seguidos',d1:'día seguido',best:'Récord',fz:'Congelación disponible esta semana',nofz:'Congelación ya usada esta semana',
+ es:{wk1:'¡Semana completa!',wkN:'¡{w} semanas seguidas!',m30:'¡Un mes de racha!',m100:'¡100 días de racha!',m365:'¡Un año entero!',ndays:'{n} días seguidos',ph:['¡Sigue así!','¡Imparable!','¡Qué constancia!','¡El león está orgulloso!','¡Hábito de campeón!','¡Nadie te detiene!','¡Otra semana más!'],z:'¡Estudia hoy para empezar tu racha!',t:'Racha',d:'días seguidos',d1:'día seguido',best:'Récord',fz:'Congelación disponible esta semana',nofz:'Congelación ya usada esta semana',
   go:'¡Estudia hoy para mantener tu racha!',ok:'Listo por hoy. ¡Hasta mañana!',rank:'Ranking del grupo',me:'tú',
   w:['L','M','X','J','V','S','D'],ms:'¡Racha de {n} días!',ms2:'¡Sigue así!',close:'Continuar',none:'Nadie tiene racha todavía.',
   at:'Panel de rachas',an:'Alumno',ac:'Actual',ab:'Récord',al:'Último día',ad:'Días',ae:'Aún no hay alumnos.'}
@@ -104,8 +104,11 @@ function mount(box,opts){
   var sk0=!hd&&!!(Gate.skel&&box.hidden);if(sk0){box.hidden=false;Gate.skel(box,2,72);}
   var undo=function(){if(sk0&&box.querySelector('.bl-sk')){box.textContent='';box.hidden=true;}};
   Promise.all([sb.rpc('my_streak'),sb.rpc('streak_board')]).then(function(r){
-    var s=r[0].data;if(r[0].error||!s){undo();return;}var rows=(r[1]&&r[1].data)||[];
+    var s=r[0].data;
+    if(hd&&(r[0].error||!s||typeof s!=='object'))s={cur:0,best:0,active_today:false,freeze_left:0,week:[]};
+    if(r[0].error||!s){undo();return;}var rows=(r[1]&&r[1].data)||[];if(!Array.isArray(rows))rows=[];
     var cur=s.cur||0,wk=s.week||[];
+    if(hd&&wk.length!==7){var td=(new Date().getDay()+6)%7;wk=[0,1,2,3,4,5,6].map(function(i){return {today:i===td};});}
     var h='<div class="sk-top">'+lion(cur)+'<div class="sk-m"><div class="sk-n">'+cur+'</div><div class="sk-l">'+esc(cur===1?t.d1:t.d)+'</div></div><div class="sk-b">'+esc(t.best)+'<b>'+(s.best||0)+'</b></div></div>';
     h+='<div class="sk-w">'+wk.map(function(d,i){return '<div class="sk-d'+(d.on?' on':'')+(d.fz?' fz':'')+(d.today?' td':'')+'">'+esc(t.w[i])+'<i>'+(d.on?'✓':d.fz?'❄':'')+'</i></div>';}).join('')+'</div>';
     h+='<div class="sk-i"><span>'+(s.active_today?esc(t.ok):esc(nudge(t,s,cur)))+'</span><span>'+(s.freeze_left>0?'❄ '+esc(t.fz):esc(t.nofz))+'</span></div>';
@@ -115,8 +118,8 @@ function mount(box,opts){
       var el=document.createElement('div');el.className='sk-hd';
       var hh=lion(cur)+'<div class="sk-hn"><div class="sk-hnn">'+cur+'</div><div class="sk-hl">'+esc(cur===1?t.d1:t.d)+(s.best>cur?' \u00b7 '+esc(t.best)+' '+s.best:'')+'</div></div>';
       hh+='<div class="sk-hm"><div class="sk-w">'+wk.map(function(d,i){return '<div class="sk-d'+(d.on?' on':'')+(d.fz?' fz':'')+(d.today?' td':'')+'">'+esc(t.w[i])+'<i>'+(d.on?'\u2713':d.fz?'\u2744':'')+'</i></div>';}).join('')+'</div>';
-      hh+='<div class="sk-hi"><span>'+(s.active_today?esc(t.ok):esc(nudge(t,s,cur)))+(s.freeze_left>0?' <b>\u00b7</b> \u2744 '+esc(t.fz):'')+'</span>'+(rows.length?'<button type="button" class="sk-rb" aria-expanded="false">\uD83C\uDFC6 '+esc(t.rank)+' \u25B8</button>':'')+'</div></div>';
-      if(rows.length)hh+='<div class="sk-hr" hidden><ol aria-label="'+esc(t.rank)+'">'+rows.map(function(x,i){var pos=i<3?['\uD83E\uDD47','\uD83E\uDD48','\uD83E\uDD49'][i]:(i+1);return '<li'+(x.me?' class="me" aria-current="true"':'')+'><span class="sk-p" aria-label="'+(i+1)+'">'+pos+'</span>'+(window.Profile?'<span class="sk-av" data-av="'+esc(x.avatar||'')+'" data-uid="'+esc(x.uid||'')+'"></span>':'')+'<span class="sk-nm">'+esc(x.name)+(x.me?' ('+esc(t.me)+')':'')+'</span><span>\uD83D\uDD25 '+x.cur+'</span></li>';}).join('')+'</ol></div>';
+      hh+='<div class="sk-hi"><span>'+(s.active_today?esc(t.ok):(cur===0&&t.z?esc(t.z):esc(nudge(t,s,cur))))+(s.freeze_left>0?' <b>\u00b7</b> \u2744 '+esc(t.fz):'')+'</span>'+('<button type="button" class="sk-rb" aria-expanded="false">\uD83C\uDFC6 '+esc(t.rank)+' \u25B8</button>')+'</div></div>';
+      hh+='<div class="sk-hr" hidden>'+(rows.length?'':'<div class="sk-hl">'+esc(t.none)+'</div>')+'<ol aria-label="'+esc(t.rank)+'">'+rows.map(function(x,i){var pos=i<3?['\uD83E\uDD47','\uD83E\uDD48','\uD83E\uDD49'][i]:(i+1);return '<li'+(x.me?' class="me" aria-current="true"':'')+'><span class="sk-p" aria-label="'+(i+1)+'">'+pos+'</span>'+(window.Profile?'<span class="sk-av" data-av="'+esc(x.avatar||'')+'" data-uid="'+esc(x.uid||'')+'"></span>':'')+'<span class="sk-nm">'+esc(x.name)+(x.me?' ('+esc(t.me)+')':'')+'</span><span>\uD83D\uDD25 '+x.cur+'</span></li>';}).join('')+'</ol></div>';
       el.innerHTML=hh;var lg=hd.querySelector('.logo');hd.insertBefore(el,lg||null);
       var rb=el.querySelector('.sk-rb'),rl=el.querySelector('.sk-hr');
       if(rb&&rl)rb.onclick=function(){var o=rl.hidden;rl.hidden=!o;rb.setAttribute('aria-expanded',o?'true':'false');};
