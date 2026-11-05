@@ -223,7 +223,14 @@ function mount(c,o){
   D.body.classList.add('bl-mg');
   var main=D.querySelector('main')||D.body,root=h('div');root.id='bl-metro';main.append(root);
   var firstCity=-1;
-  function curOf(a){for(var j=0;j<openN;j++){if(!sDone(a,SEQ[j]))return j+1;}return 0;}
+  /* current station = first one not done, searched from the start of the Stage the student is working in
+     (the Stage of the last lesson done; or, with nothing done yet, the Stage of the last released lesson), so a student the teacher
+     placed straight in a later Stage is not sent back to Lesson 1 */
+  function lnOf(sq){return sq.t==='L'?sq.l:sq.to;}
+  function curOf(a){var mx=-1,j;for(j=0;j<openN;j++){if(sDone(a,SEQ[j]))mx=j;}
+    var ref=mx>=0?mx:openN-1,from=0;
+    if(ref>=0&&o.stages&&o.stages.length){var ln=lnOf(SEQ[ref]);for(var k=0;k<o.stages.length;k++){var r=o.stages[k];if(ln>=r[0]&&ln<=r[1]){for(j=0;j<SEQ.length;j++){if(lnOf(SEQ[j])>=r[0]){from=j;break;}}break;}}}
+    for(j=from;j<openN;j++){if(!sDone(a,SEQ[j]))return j+1;}return 0;}
   function useAct(i){
     ai=i;A=acts[i];var ci=A.city?cityIdx(A.city):-1;if(ci<0){if(firstCity<0)firstCity=pickCity();ci=firstCity;}
     C=CITIES[ci];dn=A.done;cur=curOf(A);root.style.setProperty('--lc',C.color);
