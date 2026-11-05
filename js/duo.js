@@ -21,7 +21,7 @@
     score:['You got {r} of {t} right','Você acertou {r} de {t}','Has acertado {r} de {t}'],
     qtitle:['Almost there!','Quase lá!','¡Casi lo logras!'],
     qprog:['{a} of {b} questions done','{a} de {b} perguntas feitas','{a} de {b} preguntas hechas'],
-    qleft:['{n} to go. Your progress is saved.','Faltam {n}. Seu progresso está salvo.','Faltan {n}. Tu progreso está guardado.'],
+    qleft:['Questions left: {n}','Perguntas restantes: {n}','Preguntas restantes: {n}'],
     qkeep:['Keep going','Continuar','Continuar'],
     saved:['Your score was saved.','Sua pontuação foi salva.','Tu puntuación se guardó.'],
     nosave:['Your score could not be saved. Check your connection.','Não foi possível salvar. Verifique sua conexão.','No se pudo guardar. Revisa tu conexión.'],
