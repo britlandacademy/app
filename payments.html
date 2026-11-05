@@ -36,6 +36,50 @@ td.g{background:var(--ok-bg)}td.m{background:var(--warn-bg)}td.r{background:var(
 .msg{font-weight:700;min-height:1.4em}
 .msg.bad{color:var(--bad)}.msg.ok{color:var(--ok)}
 .sm{font-size:.85rem}
+
+.mrow{gap:10px}.mnav{display:inline-flex;align-items:center;background:var(--surface);border:2px solid var(--line);border-radius:999px;overflow:hidden}
+.mnav b{min-width:11.5em;text-align:center}
+.mnav .mb{min-height:40px;width:44px;padding:0;justify-content:center;border:0;border-radius:0!important;background:transparent;color:var(--accent);font-size:1.4rem;box-shadow:none!important}
+.gst{display:inline-flex;gap:8px;flex-wrap:wrap}.gst i{font-style:normal;background:var(--chip,var(--card));border-radius:999px;padding:3px 12px;font-size:.88rem}
+.gst .o{color:var(--ok)}.gst .w{color:var(--warn)}
+#tb td.nm small.lt{color:var(--bad)}
+/* totais e grupos */
+.kp.k4{grid-template-columns:repeat(4,1fr)}.kp .pc{display:block;font-size:.8rem;color:var(--muted);margin-top:2px}
+.kp .lt b{color:var(--bad)}
+@media (max-width:700px){.kp.k4{grid-template-columns:1fr 1fr}}
+#tb tr.gh td{background:var(--card);border:0;border-top:2px solid var(--line);padding:8px 10px;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase}
+#tb tr.gh .gn{margin-left:8px;color:var(--muted);font-weight:400}
+#tb tr.gh.late td{color:var(--bad)}#tb tr.gh.soon td{color:var(--warn)}#tb tr.gh.done td{color:var(--ok)}
+@media (max-width:700px){#tb tr.gh{display:block;border:0;background:none;padding:8px 2px 2px;margin:0}#tb tr.gh td{display:block;border:0;padding:0;background:none}}
+/* mensalidades do mês compactas */
+#tb td{padding:5px 8px}
+#tb input[type=number]{min-height:32px;padding:3px 8px}
+#tb tr.pd td.nm,#tb tr.pd td.n,#tb tr.pd td.c,#tb tr.pd td{text-decoration:none!important}
+#tb tr.pd td.nm b,#tb tr.pd td.nm>*:first-child{color:var(--muted)}
+#tb tr.pd td.n{color:var(--ok);font-weight:700}
+#tb td.nm small{display:block;color:var(--muted);font-size:.8rem}#tb tr.pd td.nm small{color:var(--ok)}
+#tb td.ck input{width:20px;height:20px}
+/* tabela de assinaturas compacta */
+#subs td{padding:5px 6px}
+#subs input[type=number]{width:4.4em;min-height:36px;padding:4px 8px}
+#subs input[type=text]{width:100%;min-width:6em;max-width:11em;min-height:36px;padding:4px 8px}
+#subs select{min-height:36px;padding:4px 6px}
+#subs td.nm{min-width:9em}
+.mny{display:inline-flex;align-items:center;border:2px solid var(--line);border-radius:999px;background:var(--surface);white-space:nowrap;overflow:hidden}
+.mny:focus-within{border-color:var(--ui-gold,#c9a13b)}
+.mny select,.mny span{border:0!important;border-radius:0!important;background:transparent;font-weight:700;color:var(--accent);padding:0 4px 0 14px!important;min-height:32px;display:inline-flex;align-items:center}
+.mny select{padding-right:22px!important}
+.mny input[type=number]{border:0!important;border-radius:0!important;box-shadow:none!important;width:5.4em!important;min-height:32px!important;padding:0 14px 0 6px!important;background:transparent}
+.ib{min-height:36px;width:36px;padding:0;justify-content:center;border-radius:50%;background:transparent;color:var(--accent);border-width:2px}
+.ib svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ib.danger{color:var(--bad);border-color:var(--bad)}
+.ib.go{background:var(--accent);color:var(--accent-ink)}
+.ab{display:flex;gap:6px;flex-wrap:nowrap}
+#subs tr.pend td{background:var(--warn-bg)}
+.pt{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:99px;background:var(--warn);color:var(--warn-bg);font-size:.72rem;font-weight:700;vertical-align:middle}
+.msg.warn{background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn);border-radius:3px;padding:8px 12px}
+.msg.warn:empty,.msg.ok:empty,.msg.bad:empty{display:none}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:var(--ok)}.dot.off{background:var(--muted)}
 </style>
 <link rel="stylesheet" href="js/theme.css">
 </head>
@@ -88,8 +132,9 @@ td input[type=number]{width:7em}
 <div class="band"><p>Britland Academy</p><h1>Pagamentos dos alunos</h1><p style="margin-top:8px"><a href="admin.html" style="color:#fff">← Painel do professor</a></p></div>
 
 <section class="card"><h2>Resumo do mês</h2>
-  <div class="row"><label for="mes">Mês</label><input type="month" id="mes"><button type="button" id="gen">Gerar mensalidades do mês</button><span class="msg" id="gmsg" aria-live="polite"></span></div>
-  <p class="hint">O mês é o do vencimento. Tudo aparece em reais: os valores em euro são convertidos pela cotação do dia. Marque a caixinha quando o aluno pagar.</p>
+  <div class="row mrow"><input type="month" id="mes" hidden><div class="mnav"><button type="button" class="mb" id="mprev" aria-label="Mês anterior">‹</button><b id="mlbl" aria-live="polite"></b><button type="button" class="mb" id="mnext" aria-label="Próximo mês">›</button></div><span id="gst" class="gst"></span><button type="button" class="ghost" id="gen" hidden>Gerar a que falta</button><span class="msg" id="gmsg" aria-live="polite"></span></div>
+  <p class="hint">As mensalidades são geradas automaticamente todo dia 1, às 9h. O botão só aparece quando falta alguma (um aluno novo, por exemplo).</p>
+  <p class="hint">O mês é o do vencimento. Atrasos de meses anteriores aparecem em Atrasados. Tudo aparece em reais: os valores em euro são convertidos pela cotação do dia. Marque a caixinha quando o aluno pagar.</p>
   <div id="sum" data-noi18n="1"></div>
 </section>
 
@@ -155,7 +200,7 @@ function fillStudents(){
   const s=$('f-st');s.textContent='';s.append(el('option',{value:''},'— sem conta —'));
   PROF.filter(p=>!SUBS.some(x=>x.user_id===p.id)).forEach(p=>s.append(el('option',{value:p.id},(p.name||p.email))));
 }
-function renderAll(){renderSum();renderTable();renderLate();renderChart();renderSubs();}
+function renderAll(){renderHead();renderSum();renderTable();renderLate();renderChart();renderSubs();}
 
 function monthCh(m){const [a,b]=monthRange(m);return CH.filter(c=>c.due_date>=a&&c.due_date<b);}
 function totals(list){const t={};list.forEach(c=>{const o=t[c.currency]||(t[c.currency]={paid:0,open:0});if(c.paid_on)o.paid+=+c.amount;else o.open+=+c.amount;});return t;}
@@ -177,7 +222,7 @@ function rowForOld(c,showMonth){
   sv.addEventListener('click',()=>upd(c.id,{amount:parseFloat(inp.value)||0}));
   const pay=c.paid_on?el('button',{type:'button',class:'ghost'},'Desfazer'):el('button',{type:'button'},'Marcar como pago');
   pay.addEventListener('click',()=>upd(c.id,{paid_on:c.paid_on?null:today()}));
-  const del=el('button',{type:'button',class:'danger'},'Excluir');
+  const del=ib('del','Excluir','danger');
   del.addEventListener('click',()=>{if(confirm('Excluir esta mensalidade?'))sb.from('charges').delete().eq('id',c.id).then(loadAll);});
   return el('tr',{class:(!c.paid_on&&c.due_date<today())?'late':''},
     el('td',{},s.student_name||'?'),el('td',{},s.plan||''),el('td',{class:'c'},br(c.due_date)),
@@ -214,6 +259,8 @@ function renderChart(){
 const PMS=['Pix','Cartão','Transferência','PayPal','Dinheiro','Outro'];
 function pmSel(v){const s=el('select',{'aria-label':'Forma de pagamento'},el('option',{value:''},'—'));
   const l=PMS.slice();if(v&&!l.includes(v))l.push(v);l.forEach(x=>s.append(el('option',{value:x,selected:x===v?'selected':null},x)));return s;}
+const IC={save:'<svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>',pause:'<svg viewBox="0 0 24 24"><path d="M9 6v12M15 6v12"/></svg>',play:'<svg viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z"/></svg>',del:'<svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>'};
+function ib(k,label,cls){const b=el('button',{type:'button',class:'ib'+(cls?' '+cls:''),title:label,'aria-label':label});b.innerHTML=IC[k];return b;}
 function renderSubs(){
   const t=$('subs');t.textContent='';t.append(th(['Aluno','Plano','Valor mensal','Vence dia','Forma de pagamento','Observações','Desde','Ativo','Ações']));const b=el('tbody');
   const pend=PROF.filter(p=>p.status==='approved'&&!p.is_admin&&!SUBS.some(x=>x.user_id===p.id));
@@ -223,30 +270,39 @@ function renderSubs(){
     const am=el('input',{type:'number',min:'0',step:'0.01',placeholder:'0,00','aria-label':'Valor mensal'});
     const dd=el('input',{type:'number',min:'1',max:'28',value:'5','aria-label':'Dia do vencimento'});
     const pm=pmSel(''),ob=el('input',{type:'text','aria-label':'Observações'});
-    const sv=el('button',{type:'button'},'Salvar');
+    const sv=el('button',{type:'button',class:'go'},'Salvar');
     sv.addEventListener('click',()=>{const v=parseFloat(am.value);if(isNaN(v)||v<0){msg('fmsg','Digite o valor mensal de '+(p.name||p.email)+'.','bad');am.focus();return;}
       sb.from('subs').insert({user_id:p.id,student_name:p.name||p.email,plan:pl.value,currency:cu.value,amount:v,due_day:Math.max(1,Math.min(28,parseInt(dd.value,10)||5)),
         start_month:today().slice(0,7)+'-01',pay_method:pm.value||null,notes:ob.value.trim()||null}).then(r=>{msg('fmsg',r.error?r.error.message:'Dados de '+(p.name||p.email)+' salvos.',r.error?'bad':'ok');if(!r.error)loadAll();});});
-    b.append(el('tr',{},el('td',{},el('b',{},p.name||p.email),' ',el('span',{class:'hint'},'(preencher)')),el('td',{},pl),el('td',{},cu,am),el('td',{},dd),el('td',{},pm),el('td',{},ob),
+    b.append(el('tr',{class:'pend'},el('td',{class:'nm'},el('b',{},p.name||p.email),el('span',{class:'pt'},'preencher')),el('td',{},pl),el('td',{},el('div',{class:'mny'},cu,am)),el('td',{},dd),el('td',{},pm),el('td',{},ob),
       el('td',{class:'c'},'—'),el('td',{class:'c'},'—'),el('td',{},sv)));});
-  if(pend.length)msg('fmsg',pend.length+' aluno(s) aprovado(s) ainda sem dados de cobrança. Preencha as linhas marcadas "(preencher)" abaixo.','ok');
+  if(pend.length)msg('fmsg',pend.length+' aluno(s) aprovado(s) ainda sem dados de cobrança. Preencha as linhas marcadas "preencher" abaixo.','warn');
   SUBS.forEach(s=>{
     const am=el('input',{type:'number',min:'0',step:'0.01',value:String(s.amount),'aria-label':'Valor mensal'});
     const dd=el('input',{type:'number',min:'1',max:'28',value:String(s.due_day),'aria-label':'Dia do vencimento'});
     const pm=pmSel(s.pay_method||''),ob=el('input',{type:'text',value:s.notes||'','aria-label':'Observações'});
-    const sv=el('button',{type:'button',class:'ghost'},'Salvar');
+    const sv=ib('save','Salvar');
     sv.addEventListener('click',()=>sb.from('subs').update({amount:parseFloat(am.value)||0,due_day:Math.max(1,Math.min(28,parseInt(dd.value,10)||5)),pay_method:pm.value||null,notes:ob.value.trim()||null}).eq('id',s.id).then(r=>{msg('fmsg',r.error?r.error.message:'Salvo. Vale para as próximas mensalidades geradas.',r.error?'bad':'ok');loadAll();}));
-    const ac=el('button',{type:'button',class:'ghost'},s.active?'Pausar':'Reativar');
+    const ac=ib(s.active?'pause':'play',s.active?'Pausar':'Reativar');
     ac.addEventListener('click',()=>sb.from('subs').update({active:!s.active}).eq('id',s.id).then(loadAll));
-    const del=el('button',{type:'button',class:'danger'},'Excluir');
+    const del=ib('del','Excluir','danger');
     del.addEventListener('click',()=>{if(confirm('Excluir este aluno e TODAS as mensalidades dele?'))sb.from('subs').delete().eq('id',s.id).then(loadAll);});
-    b.append(el('tr',{},el('td',{},s.student_name+(s.user_id?'':' (sem conta)')),el('td',{},s.plan),
-      el('td',{},el('span',{},SYM[s.currency]+' '),am),el('td',{},dd),el('td',{},pm),el('td',{},ob),el('td',{class:'c'},s.start_month.slice(5,7)+'/'+s.start_month.slice(0,4)),
-      el('td',{class:'c'},s.active?'Sim':'Não'),el('td',{},el('div',{class:'row'},sv,ac,del))));});
+    b.append(el('tr',{},el('td',{class:'nm'},s.student_name+(s.user_id?'':' (sem conta)')),el('td',{},s.plan),
+      el('td',{},el('div',{class:'mny'},el('span',{},SYM[s.currency]),am)),el('td',{},dd),el('td',{},pm),el('td',{},ob),el('td',{class:'c'},s.start_month.slice(5,7)+'/'+s.start_month.slice(0,4)),
+      el('td',{class:'c'},el('span',{class:'dot'+(s.active?'':' off')}),s.active?'Sim':'Não'),el('td',{},el('div',{class:'ab'},sv,ac,del))));});
   t.append(b);
 }
 function upd(id,patch){sb.from('charges').update(patch).eq('id',id).then(r=>{if(r.error)msg('tmsg',r.error.message,'bad');else loadAll();});}
 
+const MN=m=>{const [y,mo]=m.split('-').map(Number);return new Date(y,mo-1,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'});};
+function missingRows(){const m=$('mes').value,have=new Set(CH.map(c=>c.sub_id+'|'+c.due_date)),rows=[];
+  SUBS.filter(s=>s.active&&s.start_month.slice(0,7)<=m).forEach(s=>{const d=m+'-'+String(s.due_day).padStart(2,'0');if(!have.has(s.id+'|'+d))rows.push({sub_id:s.id,due_date:d,currency:s.currency,amount:s.amount});});return rows;}
+function renderHead(){const m=$('mes').value,miss=missingRows(),n=monthCh(m).filter(c=>c.sub_id).length;
+  $('mlbl').textContent=MN(m).replace(/^./,x=>x.toUpperCase());const g=$('gst');g.textContent='';
+  g.append(el('i',{class:'o'},'● '+n+' gerada'+(n===1?'':'s')));if(miss.length)g.append(el('i',{class:'w'},'● '+miss.length+' faltando'));
+  const b=$('gen');b.hidden=!miss.length;b.textContent=miss.length>1?'Gerar as '+miss.length+' que faltam':'Gerar a que falta';}
+$('mprev').addEventListener('click',()=>{$('mes').value=addM($('mes').value,-1);renderAll();});
+$('mnext').addEventListener('click',()=>{$('mes').value=addM($('mes').value,1);renderAll();});
 $('mes').addEventListener('change',renderAll);
 $('f-pl').addEventListener('change',()=>{const v=PRESET[$('f-pl').value];if(v!==undefined&&$('f-cu').value==='EUR')$('f-am').value=v;});
 $('f-cu').addEventListener('change',()=>{if($('f-cu').value==='BRL'&&PRESET[$('f-pl').value]!==undefined&&+$('f-am').value===PRESET[$('f-pl').value])$('f-am').value='';});
@@ -261,9 +317,7 @@ $('f-add').addEventListener('click',()=>{
     if(r.error){msg('fmsg',r.error.message,'bad');return;}msg('fmsg','Aluno adicionado.','ok');$('f-nm').value='';$('f-am').value='';$('f-st').value='';loadAll();});
 });
 $('gen').addEventListener('click',async()=>{
-  const m=$('mes').value,have=new Set(CH.map(c=>c.sub_id+'|'+c.due_date)),rows=[];
-  SUBS.filter(s=>s.active&&s.start_month.slice(0,7)<=m).forEach(s=>{const d=m+'-'+String(s.due_day).padStart(2,'0');
-    if(!have.has(s.id+'|'+d))rows.push({sub_id:s.id,due_date:d,currency:s.currency,amount:s.amount});});
+  const rows=missingRows();
   if(!rows.length){msg('gmsg','Nada a gerar: todos já têm mensalidade neste mês.','ok');return;}
   const r=await sb.from('charges').insert(rows);
   if(r.error){msg('gmsg',r.error.message,'bad');return;}msg('gmsg',rows.length+' mensalidade(s) criada(s).','ok');loadAll();
@@ -286,11 +340,15 @@ async function loadRate(force){
 function renderSum(){
   const box=$('sum');box.textContent='';const L=monthCh($('mes').value);
   if(!L.length){box.append(el('p',{class:'hint'},'Nenhuma mensalidade neste mês. Cadastre os alunos e clique em "Gerar mensalidades do mês".'));return;}
-  let tot=0,rec=0;L.forEach(c=>{const v=toBRL(c);if(v==null)return;tot+=v;if(c.paid_on)rec+=v;});
-  box.append(el('div',{class:'kp big'},
-    el('div',{},el('small',{},'Total esperado'),el('b',{},fmBRL(tot))),
-    el('div',{class:'rc'},el('small',{},'Já recebido'),el('b',{},fmBRL(rec))),
-    el('div',{class:'wt'},el('small',{},'Pendente'),el('b',{},fmBRL(tot-rec)))));
+  const td=today(),m0=$('mes').value,prior=CH.filter(c=>!c.paid_on&&c.due_date<m0+'-01'),isLate=c=>!c.paid_on&&c.due_date<td;
+  const sumBRL=l=>l.reduce((n,c)=>n+(toBRL(c)||0),0);
+  const perCur=l=>{const o={};l.forEach(c=>{o[c.currency]=(o[c.currency]||0)+ +c.amount;});const p=['EUR','BRL'].filter(k=>o[k]).map(k=>money(o[k],k));return p.length?p.join(' · '):'—';};
+  const card=(cls,t,l)=>el('div',{class:cls},el('small',{},t),el('b',{},fmBRL(sumBRL(l))),el('span',{class:'pc'},perCur(l)));
+  box.append(el('div',{class:'kp big k4'},
+    card('lt','Em atraso',L.filter(isLate).concat(prior)),
+    card('wt','A receber',L.filter(c=>!c.paid_on&&!isLate(c))),
+    card('rc','Já recebido',L.filter(c=>c.paid_on)),
+    card('','Total do mês',L)));
   const b=el('button',{type:'button',class:'ghost'},'Atualizar');b.addEventListener('click',()=>{b.disabled=true;loadRate(true).then(()=>{b.disabled=false;});});
   box.append(el('div',{class:'rate'},el('span',{class:'sm'},'Cotação automática'),
     el('b',{},RATE?'1 € = '+money(RATE,'BRL'):'indisponível agora'),
@@ -301,20 +359,26 @@ function rowFor(c){
   inp.addEventListener('change',()=>upd(c.id,{amount:parseFloat(inp.value)||0}));
   const ck=el('input',{type:'checkbox','aria-label':'Pago'});ck.checked=!!c.paid_on;
   ck.addEventListener('change',()=>upd(c.id,{paid_on:ck.checked?today():null}));
-  const del=el('button',{type:'button',class:'danger'},'Excluir');
+  const del=ib('del','Excluir','danger');
   del.addEventListener('click',()=>{if(confirm('Excluir esta cobrança?'))sb.from('charges').delete().eq('id',c.id).then(loadAll);});
   const s=subOf(c.sub_id),late=!c.paid_on&&c.due_date<today();
   return el('tr',{class:c.paid_on?'pd':(late?'late':'')},
     el('td',{class:'ck c'},ck),
-    el('td',{class:'nm'},nm(c),el('small',{},c.paid_on?'Pago em '+br(c.paid_on):(s.plan||c.note||'Avulsa'),/^Baixa autom/.test(c.note||'')?el('span',{class:'tag'},'automático'):null)),
-    el('td',{class:'vl'},el('span',{},SYM[c.currency]+' '),inp),
+    el('td',{class:'nm'},nm(c),el('small',{class:(!c.paid_on&&late)?'lt':''},c.paid_on?'Pago em '+br(c.paid_on):(late?'venceu '+br(c.due_date).slice(0,5)+' · '+Math.floor((new Date(today())-new Date(c.due_date))/864e5)+' dia(s) de atraso · '+(s.plan||c.note||'Avulsa'):(s.plan||c.note||'Avulsa')),/^Baixa autom/.test(c.note||'')?el('span',{class:'tag'},'automático'):null)),
+    el('td',{class:'vl'},el('div',{class:'mny'},el('span',{},SYM[c.currency]),inp)),
     el('td',{class:'dd c'},String(+c.due_date.slice(8))),
     el('td',{class:'n'},fmBRL(toBRL(c))),
     el('td',{class:'ac'},del));
 }
 function renderTable(){
   const t=$('tb');t.textContent='';t.append(th(['Pago','Aluno / descrição','Valor','Vence dia','Em reais','']));
-  const b=el('tbody');monthCh($('mes').value).sort((x,y)=>x.due_date<y.due_date?-1:1).forEach(c=>b.append(rowFor(c)));t.append(b);
+  const m0=$('mes').value,L=monthCh(m0).concat(CH.filter(c=>!c.paid_on&&c.due_date<m0+'-01')).sort((x,y)=>x.due_date<y.due_date?-1:1),td=today();
+  const G=[['late','Atrasados',L.filter(c=>!c.paid_on&&c.due_date<td)],['soon','A vencer',L.filter(c=>!c.paid_on&&c.due_date>=td)],['done','Pagos',L.filter(c=>c.paid_on)]];
+  const b=el('tbody');
+  G.forEach(g=>{if(!g[2].length)return;
+    b.append(el('tr',{class:'gh '+g[0]},el('td',{colspan:'6'},el('b',{},g[1]),el('span',{class:'gn'},String(g[2].length)))));
+    g[2].forEach(c=>b.append(rowFor(c)));});
+  t.append(b);
 }
 (function(){
   const box=$('avl'),btn=$('avbtn');if(!box||!btn)return;
