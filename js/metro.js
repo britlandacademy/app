@@ -754,25 +754,27 @@ function mount(c,o){
     function dingS(t0){tone(784,t0,.9,'sine',.17);tone(1568,t0,.4,'sine',.05);tone(587.3,t0+.42,1.1,'sine',.17);}
     function chimeS(t0){[784,988,1318].forEach(function(f,i){tone(f,t0+i*.12,.6,'triangle',.13);});}
     function clacksS(t0,d){var t=0,iv;while(t<d){iv=.12+.55*(t/d)*(t/d);noise(t0+t,.06,.1,900,1000);tone(85,t0+t,.09,'sine',.12);noise(t0+t+.1,.06,.08,1200,1300);tone(95,t0+t+.1,.08,'sine',.09);t+=iv;}}
-    function speak(str,at){var lang=ES?'es-ES':'en-GB';if(!sndOn()||!W.speechSynthesis)return;later(function(){if(fin)return;try{var u=new SpeechSynthesisUtterance(str);u.lang=lang;u.rate=.92;u.pitch=1.05;u.volume=.9;W.speechSynthesis.speak(u);}catch(e){}},at*1000);}
-    function sounds(){if(kind==='in'){rumble(1.9);clacksS(0,1.8);later(function(){noise(0,.8,.08,4200,1800);},1200);beepS(1.95);dingS(2.25);speak(ES?'Próxima parada, '+name+'. Cuidado con el hueco.':'Next stop, '+name+'. Mind the gap.',2.5);chimeS(3.95);}
+    var spDone=true;
+    function speak(str,at){var lang=ES?'es-ES':'en-GB';if(!sndOn()||!W.speechSynthesis)return;spDone=false;later(function(){if(fin)return;try{var u=new SpeechSynthesisUtterance(str);u.lang=lang;u.rate=.95;u.pitch=1.05;u.volume=.9;u.onend=u.onerror=function(){spDone=true;};W.speechSynthesis.speak(u);}catch(e){spDone=true;}},at*1000);later(function(){spDone=true;},at*1000+7000);}
+    function sounds(){if(kind==='in'){rumble(1.9);clacksS(0,1.8);later(function(){noise(0,.8,.08,4200,1800);},1200);beepS(1.95);dingS(2.25);speak(ES?'Próxima parada, '+name+'. Cuidado con el hueco.':'Next stop, '+name+'. Mind the gap.',2.2);chimeS(3.95);}
       else{beepS(0);speak(ES?'Atención, se cierran las puertas.':'Stand clear of the doors, please.',.2);later(function(){rumble(2.4);},1000);clacksS(1.0,2.0);chimeS(3.0);}}
     function end(){if(fin)return;fin=true;sT.forEach(clearTimeout);try{W.speechSynthesis&&W.speechSynthesis.cancel();}catch(e){}
       if(kind==='in'){ov.style.transition='opacity 450ms';ov.style.opacity='0';setTimeout(function(){ov.remove();if(done)done();},490);}else{if(done)done();}}
     var dur=kind==='in'?4.6:3.5;
     sounds();
     if(MIN){(kind==='in'?function(){drawIn(2.9);}:function(){drawOut(0);})();
-      if(kind==='in'){setTimeout(end,1300);}else{setTimeout(function(){fin=false;end();},1000);}
+      var tm0=Date.now();(function chk(){if(Date.now()-tm0>1300&&(spDone||Date.now()-tm0>9000))end();else setTimeout(chk,200);})();
       ov.addEventListener('click',function(){if(kind==='in')end();});return;}
-    var t0=null,nF=0,slow=0,tPrev=0;
+    var t0=null,nF=0,slow=0,tPrev=0,rel=false,ro=0;
     function f(ts){if(fin)return;try{fr(ts);}catch(e){fin=true;try{ov.remove();}catch(e2){}if(done)done();}}
     function fr(ts){if(t0===null){t0=ts;tPrev=ts;}var t=(ts-t0)/1000;
       if(t>.15){nF++;if(ts-tPrev>50)slow++;}tPrev=ts;if(t>.9&&nF>8&&slow/nF>.5){fxDown(lv);end();return;}
-      if(kind==='in'){drawIn(Math.min(t,4.6));if(t>3.95&&!fadeOn){fadeOn=true;ov.style.transition='opacity 500ms';ov.style.opacity='0';}}else drawOut(Math.min(t,3.5));
-      if(t<dur)requestAnimationFrame(f);else end();}
+      var hp=kind==='in'?3.2:2.9,te;if(!rel){if(t>=hp&&(spDone||t>hp+6)){rel=true;ro=t-hp;}}te=rel?t-ro:Math.min(t,hp);
+      if(kind==='in'){drawIn(Math.min(te,4.6));if(te>3.95&&!fadeOn){fadeOn=true;ov.style.transition='opacity 500ms';ov.style.opacity='0';}}else drawOut(Math.min(te,3.5));
+      if(te<dur&&t<20)requestAnimationFrame(f);else end();}
     if(kind==='in')drawIn(0);else{drawOut(0);ov.style.opacity='0';ov.style.transition='opacity .25s';requestAnimationFrame(function(){ov.style.opacity='1';});}
     ov.addEventListener('click',function(){if(kind==='in')end();});
-    setTimeout(end,7000);requestAnimationFrame(f);}
+    setTimeout(end,22000);requestAnimationFrame(f);}
   function fxRunV(kind,done){var off=false;try{off=localStorage.getItem('bl-fx2')==='0';}catch(e){}
     if(!off){try{fxCan(kind,done,fxStation());return;}catch(e){var o=D.getElementById('bl-fx');if(o)o.remove();}}
     fxRun(kind,done);}
