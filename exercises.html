@@ -479,7 +479,7 @@ function refreshAfterAttempt(L){updateLesson(L);renderTabs();renderHistory();}
 const _auto={};
 function gameAuto(L){if(!L||!window.Duo||!Duo.game()||_auto[L.id]||(window.Review&&Review.params()))return;_auto[L.id]=1;setTimeout(()=>duoLesson(L,true),300);}
 function duoLesson(L,auto){
-  const exs=auto?L.ex.filter(ex=>best(ex.id)===undefined):L.ex;
+  let exs=auto?L.ex.filter(ex=>best(ex.id)===undefined):L.ex;if(!exs.length)exs=L.ex;
   if(!exs.length)return;
   Duo.start({station:(window.Metro&&Metro.info)?Metro.info('Ireland',L.id,STAGES.map(t=>[t.from,t.to])):null,next:()=>{const n=LESSONS[LESSONS.indexOf(L)+1];return n?()=>showTab(String(n.id)):null;},groups:exs.map(ex=>{
     const pool=ex.type==='match'?shuffle(ex.items.map(i=>i.a)):null;
