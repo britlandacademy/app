@@ -19,6 +19,10 @@
     q:['Question {a} of {b}','Pergunta {a} de {b}','Pregunta {a} de {b}'],
     done:['Well done!','Muito bem!','¡Muy bien!'],
     score:['You got {r} of {t} right','Você acertou {r} de {t}','Has acertado {r} de {t}'],
+    qtitle:['Almost there!','Quase lá!','¡Casi lo logras!'],
+    qprog:['{a} of {b} questions done','{a} de {b} perguntas feitas','{a} de {b} preguntas hechas'],
+    qleft:['{n} to go. Your progress is saved.','Faltam {n}. Seu progresso está salvo.','Faltan {n}. Tu progreso está guardado.'],
+    qkeep:['Keep going','Continuar','Continuar'],
     saved:['Your score was saved.','Sua pontuação foi salva.','Tu puntuación se guardó.'],
     nosave:['Your score could not be saved. Check your connection.','Não foi possível salvar. Verifique sua conexão.','No se pudo guardar. Revisa tu conexión.'],
     quit:['Leave this practice? Finished exercises are already saved.','Sair desta prática? Os exercícios concluídos já estão salvos.','¿Salir de esta práctica? Los ejercicios terminados ya están guardados.'],
@@ -133,6 +137,8 @@
 '#bl-duo .dz-end .big{font-size:1.4rem;color:var(--ink,#111)}'+
 '#bl-duo .dz-pop{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(5,10,25,.7)}'+
 '#bl-duo .dz-card{width:100%;max-width:380px;text-align:center;padding:22px 20px 20px;border-radius:20px;background:var(--surface,#fff);color:var(--ink,#111);border:2px solid var(--accent,#c9a233);box-shadow:0 20px 60px rgba(0,0,0,.45);animation:dz-in .35s ease-out both}'+
+'#bl-duo .dz-xq .dz-lion{width:90px;animation:none}'+
+'#bl-duo .dz-xpb{height:12px;border-radius:99px;background:var(--chip,#ddd);margin:10px 0;overflow:hidden}#bl-duo .dz-xpb i{display:block;height:100%;border-radius:99px;background:#58cc02}'+
 '#bl-duo .dz-card h2{margin:6px 0 4px;font-size:1.6rem}'+
 '#bl-duo .dz-card p{margin:4px 0}#bl-duo .dz-card .big{font-size:1.2rem;font-weight:700}#bl-duo .dz-card .sv{font-size:.85rem;color:var(--muted,#555)}'+
 '#bl-duo .dz-lion{width:150px;height:auto;max-width:60%;animation:dz-roar 1.6s ease-in-out .15s both;transform-origin:50% 80%}'+
@@ -553,7 +559,21 @@
       D.body.style.overflow=prevOverflow;
       Promise.all(pending).then(function(){if(o.onDone)o.onDone(anySaved);},function(){if(o.onDone)o.onDone(anySaved);});
     }
-    function quit(){var done=idx>=total;if(done||W.confirm(T('quit')))close();}
+    function leave(){close();var nv=function(){W.location.href='index.html';};Promise.all(pending).then(nv,nv);}
+    function quit(){var done=idx>=total;if(done)return close();
+      if(!game){if(W.confirm(T('quit')))close();return;}
+      var made=idx+(state==='ask'?0:1);if(made<1)return leave();
+      if(root.querySelector('.dz-xq'))return;
+      var pop=el('div','dz-pop dz-xq'),card=el('div','dz-card');pop.setAttribute('role','alertdialog');pop.setAttribute('aria-label',T('qtitle'));
+      var img=el('img','dz-lion');img.src='img/lion-off.png';img.alt='';img.width=90;img.height=105;card.appendChild(img);
+      card.appendChild(el('h2','',T('qtitle')));
+      card.appendChild(el('p','big',T('qprog',{a:made,b:total})));
+      var pb=el('div','dz-xpb'),pf=el('i');pf.style.width=Math.round(made/total*100)+'%';pb.appendChild(pf);card.appendChild(pb);
+      card.appendChild(el('p','sv',T('qleft',{n:total-made})));
+      var kb=el('button','dz-btn',T('qkeep'));kb.type='button';kb.addEventListener('click',function(){if(pop.parentNode)pop.parentNode.removeChild(pop);});
+      var mb=el('button','dz-btn dz-ghost',T('map'));mb.type='button';mb.addEventListener('click',function(){mb.disabled=true;leave();});
+      var row=el('div','dz-row');row.appendChild(kb);row.appendChild(mb);card.appendChild(row);pop.appendChild(card);root.appendChild(pop);
+      try{kb.focus();}catch(e){}}
     x.addEventListener('click',quit);
     sb.addEventListener('click',function(){var on=!sndOn();try{localStorage.setItem('bl-duo-snd',on?'1':'0');}catch(e){}sb.className='dz-snd'+(on?'':' off');if(on)bell();});
 
