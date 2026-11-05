@@ -116,7 +116,7 @@ body{padding-bottom:104px}
 .sd.rel{border-color:#c9a13b;color:#c9a13b}.sd.prog{background:var(--warn-bg);border-color:var(--warn);color:var(--warn)}.sd.done{background:var(--ok);border-color:var(--ok);color:var(--bg)}.sd.cert{background:#c9a13b;border-color:#c9a13b;color:#1a1305}.sd.cur{outline:2px solid var(--ink);outline-offset:2px}
 .sv{color:var(--ok);font-weight:700;font-size:.85rem}
 .tg{background:transparent;border:0;font-size:1.1rem;min-height:0;padding:4px 8px;transition:transform .22s ease}.tg.up{transform:rotate(180deg)}
-#stt button:active{transform:none!important;box-shadow:none!important}#stt .tg.up:active{transform:rotate(180deg)!important}
+#stt,#stt *:not(.dg):not(.tg){transition:none!important}#stt *:active,#stt:active,.tw:active{transform:none!important;box-shadow:none!important;filter:none!important;animation:none!important}#stt .tg.up:active{transform:rotate(180deg)!important}#stt tr,#stt td,#stt button{-webkit-tap-highlight-color:transparent}
 @keyframes dgin{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}@keyframes dgout{from{opacity:1}to{opacity:0;transform:translateY(-10px)}}
 .dg.in{animation:dgin .24s ease both}.dg.out{animation:dgout .18s ease both}
 .dg .ec{margin:0}
@@ -269,7 +269,8 @@ function renderPend(){
   box.append(el('div',{class:'tw'},el('table',{},th(['Nome','E-mail','Pedido em','Ação']),tb)));
 }
 let PLAN={links:{},cols:{},prog:{},tabs:{}},OPEN=new Set(),EXS={},SAVED={};
-function flash(id){SAVED[id]=1;renderStu();setTimeout(()=>{delete SAVED[id];renderStu();},2200);}
+function upd(p,patch,ok){return sb.from('profiles').update(patch).eq('id',p.id).then(r=>{if(r.error){setMsg('xmsg','Erro ao salvar: '+r.error.message,'bad');return;}Object.assign(p,patch);if(ok)ok();});}
+function okTag(sp){sp.textContent='✓ salvo';clearTimeout(sp._t);sp._t=setTimeout(()=>{sp.textContent='';},2000);}
 function exStat(uid,st){
   const res=XRES.find(x=>x.user_id===uid&&x.stage===st),rel=XREL.find(x=>x.user_id===uid&&x.stage===st),cert=certOf(uid,st);
   if(cert&&!cert.revoked)return 'cert';if(res&&res.submitted_at)return 'done';if(res)return 'prog';if(rel)return 'rel';return 'none';
@@ -310,7 +311,7 @@ function planBlock(p){
     el('div',{class:'fr'},el('label',{},'Última leitura'),el('span',{class:'sm'},last)),m);
 }
 function renderStu(){
-  const t=$('stt');if(!t)return;t.textContent='';
+  const t=$('stt');if(!t)return;const sy=window.scrollY;
   const list=PROFILES.filter(p=>p.status!=='pending'&&!p.is_admin);
   const CON=!!(window.ContractAdmin&&ContractAdmin.on());
   const gst=parseInt(($('xst')||{}).value,10)||1;
@@ -319,23 +320,24 @@ function renderStu(){
   list.forEach(p=>{
     const open=OPEN.has(p.id),sst=EXS[p.id]||gst;
     const n=el('input',{type:'number',min:'0',max:String(MAXL),value:String(p.lessons_upto),'aria-label':'Liberado até, '+p.name});
-    let tm=null;const sv=()=>{const v=clampN(n.value);if(v===p.lessons_upto)return;update(p.id,{lessons_upto:v}).then(()=>flash(p.id));};
+    const okS=el('span',{class:'sv'});let tm=null;const sv=()=>{const v=clampN(n.value);if(v===p.lessons_upto)return;upd(p,{lessons_upto:v},()=>okTag(okS));};
     n.addEventListener('input',()=>{clearTimeout(tm);tm=setTimeout(sv,700);});n.addEventListener('change',()=>{clearTimeout(tm);sv();});
     const stop=e=>e.stopPropagation();
-    const lim=el('div',{class:'lim',onclick:stop},n,stageSel(n),SAVED[p.id]?el('span',{class:'sv'},'✓ salvo'):null);
+    const lim=el('div',{class:'lim',onclick:stop},n,stageSel(n),okS);
     const strip=el('div',{class:'sdw',onclick:stop});
     if(XOK)for(let i=1;i<=XSTG.length;i++){
       const k=exStat(p.id,i);
       strip.append(el('button',{type:'button',class:'sd '+k+(open&&i===sst?' cur':''),title:'Stage '+i+(k==='cert'?' · certificado':k==='done'?' · concluída':k==='prog'?' · em andamento':k==='rel'?' · liberada':' · sem prova liberada'),'aria-label':'Stage '+i,
-        onclick:()=>{EXS[p.id]=i;OPEN.add(p.id);renderStu();}},k==='cert'?'★':String(i)));
+        onclick:()=>{EXS[p.id]=i;strip.querySelectorAll('.sd').forEach((x,j)=>x.classList.toggle('cur',j+1===i));if(!OPEN.has(p.id)){OPEN.add(p.id);tgb.classList.add('up');tgb.setAttribute('aria-expanded','true');tr.classList.add('op');}showDetail(false);}},k==='cert'?'★':String(i)));
     }
+    const showDetail=anim=>{const c=tr.nextElementSibling;if(c&&c.classList.contains('dr'))c.remove();const d=detail();if(anim)d.querySelector('.dg').classList.add('in');tr.after(d);};
     const tgb=el('button',{type:'button',class:'tg'+(open?' up':''),'aria-label':'Abrir ou fechar detalhes','aria-expanded':String(open)},'▾');
     tgb.addEventListener('click',()=>{
       const cur=tr.nextElementSibling,isOpen=OPEN.has(p.id);
       if(isOpen){OPEN.delete(p.id);tgb.classList.remove('up');tgb.setAttribute('aria-expanded','false');tr.classList.remove('op');
         if(cur&&cur.classList.contains('dr')){const g=cur.querySelector('.dg');if(g){g.classList.add('out');setTimeout(()=>cur.remove(),200);}else cur.remove();}}
       else{OPEN.add(p.id);tgb.classList.add('up');tgb.setAttribute('aria-expanded','true');tr.classList.add('op');
-        const d=detail();d.querySelector('.dg').classList.add('in');tr.after(d);}
+        showDetail(true);}
     });
     const tr=el('tr',{class:'sr'+(open?' op':''),'data-q':((p.name||'')+' '+(p.email||'')).toLowerCase()},
       el('td',{class:'nmc'},el('span',{style:'display:flex;align-items:center'},cvThumb(n,''),el('span',{},el('b',{},p.name||'(sem nome)'),el('small',{},p.email)))),
@@ -345,11 +347,12 @@ function renderStu(){
     tb.append(tr);
     const detail=()=>{
       const box=el('div',{class:'dg'});
+      const autoOk=el('span',{class:'sv',style:'margin-left:8px'});
       const left=el('div',{},el('h4',{},'Liberação'),
-        el('label',{style:'display:block;font-size:.88rem',title:'Libera só até a lição em que o aluno está na planilha'},el('input',{type:'checkbox',checked:p.auto_release!==false,onchange:e=>update(p.id,{auto_release:e.target.checked}).then(()=>flash(p.id))}),' Auto pela planilha'+(p.lessons_auto!=null?' (lição '+p.lessons_auto+')':' (sem dados)')),
+        el('label',{style:'display:block;font-size:.88rem',title:'Libera só até a lição em que o aluno está na planilha'},el('input',{type:'checkbox',checked:p.auto_release!==false,onchange:e=>upd(p,{auto_release:e.target.checked},()=>okTag(autoOk))}),' Auto pela planilha'+(p.lessons_auto!=null?' (lição '+p.lessons_auto+')':' (sem dados)')),autoOk,
         el('div',{style:'height:12px'}),planBlock(p));
       box.append(left);
-      box.append(XOK?el('div',{},examCard(p,sst)):el('div',{},el('p',{class:'hint'},'Provas indisponíveis.')));
+      box.append(XOK?el('div',{},examCard(p,EXS[p.id]||gst)):el('div',{},el('p',{class:'hint'},'Provas indisponíveis.')));
       const foot=el('div',{class:'dfoot'},
         el('div',{},CON?ContractAdmin.cell({el:el,sb:sb,profile:p,reload:loadProfiles}):null),
         p.status==='blocked'
@@ -360,7 +363,8 @@ function renderStu(){
     };
     if(open)tb.append(detail());
   });
-  t.append(el('thead',{},el('tr',{},['Aluno','','Liberado até a Lesson','Stages','Prova (Stage '+gst+')',''].map(h=>el('th',{scope:'col'},h)))),tb);
+  t.replaceChildren(el('thead',{},el('tr',{},['Aluno','','Liberado até a Lesson','Stages','Prova (Stage '+gst+')',''].map(h=>el('th',{scope:'col'},h)))),tb);
+  window.scrollTo(0,sy);
   const q=$('stq');if(q&&q.value.trim())q.dispatchEvent(new Event('input'));
 }
 $('bulkstage').append(stageSel($('bulk')));
