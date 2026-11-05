@@ -422,7 +422,7 @@ function mount(c,o){
     var prev=0,pk=posKey();try{prev=parseInt(localStorage.getItem(pk),10)||0;localStorage.setItem(pk,String(cur||openN));}catch(e){}
     var ci=cur?cur-1:Math.max(0,Math.min(openN,N)-1);
     var qk=quick&&!reduced();quick=false;
-    var tourK='bl-metro-tour-'+A.key,tourD=new Date().toISOString().slice(0,10),tourLast='';try{tourLast=localStorage.getItem(tourK)||'';}catch(e){}
+    var tourK='bl-metro-tour3-'+A.key,tourD=new Date().toISOString().slice(0,10),tourLast='';try{tourLast=localStorage.getItem(tourK)||'';}catch(e){}
     var tr=!reduced()&&ci>=6&&!(cur&&prev&&prev<cur)&&tourLast!==tourD;
     var startAt=tr?0:(qk?0:((cur&&prev&&prev<cur&&!reduced())?prev-1:ci));
     if(tr){fillEl.style.transition='none';setProg(lens[0]);}
