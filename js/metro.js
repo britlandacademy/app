@@ -333,6 +333,20 @@ function mount(c,o){
     var ym=0;route.forEach(function(p){if(p[1]>ym)ym=p[1];});VHL=Math.ceil(Math.max(ym,Ltot*.6)+40);
     mapEl.setAttribute('viewBox','0 0 340 '+VHL);mapEl.setAttribute('height',Math.round(VHL*(mapEl.clientWidth||340)/340));
     lens=[];for(var i=0;i<N;i++)lens.push(40+S*i);
+    /* Stage zones, like fare zones on a metro map: a tinted band per Stage with a label */
+    (function(){var ST=o.stages;if(!ST||ST.length<2)return;
+      var sOf=function(sq){var n=sq.t==='L'?sq.l:sq.to;for(var z=0;z<ST.length;z++)if(n>=ST[z][0]&&n<=ST[z][1])return z;return ST.length-1;};
+      var first=[],last=[];for(var i0=0;i0<N;i0++){var z0=sOf(SEQ[i0]);if(first[z0]===undefined)first[z0]=i0;last[z0]=i0;}
+      var zs=[];for(var z1=0;z1<ST.length;z1++)if(first[z1]!==undefined)zs.push(z1);
+      var edge=function(k){return(pt(lens[last[zs[k]]]).y+pt(lens[first[zs[k+1]]]).y)/2+8;};
+      zs.forEach(function(zi,k){
+        var y0=k===0?0:edge(k-1),y1=k===zs.length-1?VHL:edge(k);
+        el('rect',{x:0,y:y0,width:340,height:Math.max(0,y1-y0),fill:k%2?'#10224a':C.color,opacity:.1},mapEl);
+        if(k>0)el('line',{x1:0,x2:340,y1:y0,y2:y0,stroke:'#10224a','stroke-width':1.2,'stroke-dasharray':'5 4',opacity:.55},mapEl);
+        var ly=Math.max(y0+16,pt(lens[first[zi]]).y-30),g0=el('g',{},mapEl);
+        el('rect',{x:8,y:ly-9,width:68,height:18,rx:9,fill:k%2?'#10224a':C.color},g0);
+        var t0=el('text',{x:42,y:ly+4,'text-anchor':'middle',fill:C.ink==='#fff'||k%2?'#fff':'#1a1a1a','font-family':'system-ui,sans-serif','font-size':9.5,'font-weight':800,'letter-spacing':1},g0);t0.textContent=(tx.stage+' '+(zi+1)).toUpperCase();
+      });})();
     el('path',{d:pathD(route),fill:'none',stroke:'#d8d2bd','stroke-width':12,'stroke-linecap':'round','stroke-linejoin':'round'},mapEl);
     fillEl=el('path',{d:pathD(route),fill:'none',stroke:C.color,'stroke-width':12,'stroke-linecap':'round','stroke-linejoin':'round'},mapEl);
     fillEl.style.strokeDasharray=Ltot+' '+Ltot;fillEl.style.strokeDashoffset=Ltot;
