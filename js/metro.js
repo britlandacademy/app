@@ -413,7 +413,7 @@ function mount(c,o){
       if(A.stars){var got=0,pos=0;for(var z=1;z<=max;z++){var zz=A.stars(z);if(zz>0){got+=zz;pos+=3;}}
         if(pos){var sm=h('div','sum');sm.innerHTML='<b>★ '+got+'</b> / '+pos+' '+tx.stars;box.append(sm);}}
     }
-    var gb=gateBox();if(gb)box.append(gb);
+    /* the long "next Stage is locked" notice was removed from the map: it covered the stations (teacher's request) */
     if(!cur&&upto>0){var m=h('p');m.style.cssText='margin:6px 2px;font:600 13px sans-serif;color:#cdd6ea';m.textContent=tx.all;box.append(m);}
     var sc=h('div','mapscroll');scEl=sc;box.append(sc);
     var svg=el('svg',{'class':'map',width:'100%',viewBox:'0 0 340 '+(N*S+120),role:'group','aria-label':C.city});mapEl=svg;sc.append(svg);
