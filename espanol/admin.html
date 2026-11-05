@@ -100,7 +100,7 @@ body{padding-bottom:104px}
 #stt{width:100%;border-collapse:separate;border-spacing:0}
 #stt th{text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:6px 10px;border-bottom:2px solid var(--line);white-space:nowrap}
 #stt tr.sr td{vertical-align:middle;padding:8px 10px;border-bottom:1px solid var(--line)}
-#stt tr.sr{cursor:pointer}#stt tr.sr.op td{background:var(--surface);border-bottom-color:transparent}
+#stt tr.sr.op td{background:var(--surface);border-bottom-color:transparent}
 #stt tr.dr td{padding:0 10px 14px;background:var(--surface);border-bottom:2px solid var(--line)}
 #stt .nmc small{display:block;color:var(--muted);font-size:.78rem}
 #stt .lim{display:flex;gap:6px;align-items:center;flex-wrap:nowrap}#stt .lim input[type=number]{width:74px}
@@ -114,7 +114,10 @@ body{padding-bottom:104px}
 .sd{width:20px;height:20px;min-height:0!important;min-width:0!important;padding:0!important;border-radius:50%!important;border:2px solid var(--line);background:transparent;font-size:.6rem;font-weight:700;color:var(--muted);line-height:1;display:inline-flex;align-items:center;justify-content:center}
 .sd.rel{border-color:#c9a13b;color:#c9a13b}.sd.prog{background:var(--warn-bg);border-color:var(--warn);color:var(--warn)}.sd.done{background:var(--ok);border-color:var(--ok);color:var(--bg)}.sd.cert{background:#c9a13b;border-color:#c9a13b;color:#1a1305}.sd.cur{outline:2px solid var(--ink);outline-offset:2px}
 .sv{color:var(--ok);font-weight:700;font-size:.85rem}
-.tg{background:transparent;border:0;font-size:1.1rem;min-height:0;padding:4px 8px}
+.tg{background:transparent;border:0;font-size:1.1rem;min-height:0;padding:4px 8px;transition:transform .22s ease}.tg.up{transform:rotate(180deg)}
+#stt button:active{transform:none!important;box-shadow:none!important}#stt .tg.up:active{transform:rotate(180deg)!important}
+@keyframes dgin{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}@keyframes dgout{from{opacity:1}to{opacity:0;transform:translateY(-10px)}}
+.dg.in{animation:dgin .24s ease both}.dg.out{animation:dgout .18s ease both}
 .dg .ec{margin:0}
 @media (max-width:900px){.dg{grid-template-columns:1fr}}
 
@@ -325,14 +328,21 @@ function renderStu(){
       strip.append(el('button',{type:'button',class:'sd '+k+(open&&i===sst?' cur':''),title:'Etapa '+i+(k==='cert'?' · certificado':k==='done'?' · concluída':k==='prog'?' · em andamento':k==='rel'?' · liberada':' · sem prova liberada'),'aria-label':'Etapa '+i,
         onclick:()=>{EXS[p.id]=i;OPEN.add(p.id);renderStu();}},k==='cert'?'★':String(i)));
     }
-    const tog=()=>{if(open)OPEN.delete(p.id);else OPEN.add(p.id);renderStu();};
-    const tr=el('tr',{class:'sr'+(open?' op':''),'data-q':((p.name||'')+' '+(p.email||'')).toLowerCase(),onclick:tog},
+    const tgb=el('button',{type:'button',class:'tg'+(open?' up':''),'aria-label':'Abrir ou fechar detalhes','aria-expanded':String(open)},'▾');
+    tgb.addEventListener('click',()=>{
+      const cur=tr.nextElementSibling,isOpen=OPEN.has(p.id);
+      if(isOpen){OPEN.delete(p.id);tgb.classList.remove('up');tgb.setAttribute('aria-expanded','false');tr.classList.remove('op');
+        if(cur&&cur.classList.contains('dr')){const g=cur.querySelector('.dg');if(g){g.classList.add('out');setTimeout(()=>cur.remove(),200);}else cur.remove();}}
+      else{OPEN.add(p.id);tgb.classList.add('up');tgb.setAttribute('aria-expanded','true');tr.classList.add('op');
+        const d=detail();d.querySelector('.dg').classList.add('in');tr.after(d);}
+    });
+    const tr=el('tr',{class:'sr'+(open?' op':''),'data-q':((p.name||'')+' '+(p.email||'')).toLowerCase()},
       el('td',{class:'nmc'},el('span',{style:'display:flex;align-items:center'},cvThumb(n,''),el('span',{},el('b',{},p.name||'(sem nome)'),el('small',{},p.email)))),
       el('td',{},p.status==='approved'?null:el('span',{class:'st '+p.status},STATUS[p.status])),
       el('td',{},lim),el('td',{},XOK?strip:null),el('td',{},XOK?exPill(p,gst):null),
-      el('td',{},el('button',{type:'button',class:'tg','aria-label':open?'Fechar detalhes':'Abrir detalhes','aria-expanded':String(open)},open?'▴':'▾')));
+      el('td',{},tgb));
     tb.append(tr);
-    if(open){
+    const detail=()=>{
       const box=el('div',{class:'dg'});
       const left=el('div',{},el('h4',{},'Liberação'),
         el('label',{style:'display:block;font-size:.88rem',title:'Libera só até a lição em que o aluno está na planilha'},el('input',{type:'checkbox',checked:p.auto_release!==false,onchange:e=>update(p.id,{auto_release:e.target.checked}).then(()=>flash(p.id))}),' Auto pela planilha'+(p.lessons_auto!=null?' (lição '+p.lessons_auto+')':' (sem dados)')),
@@ -345,8 +355,9 @@ function renderStu(){
           ?el('button',{type:'button',onclick:()=>update(p.id,{status:'approved'})},'Reativar aluno')
           :el('button',{type:'button',class:'danger',onclick:()=>{if(confirm('Bloquear '+(p.name||p.email)+'?'))update(p.id,{status:'blocked'});}},'Bloquear aluno'));
       box.append(foot);
-      tb.append(el('tr',{class:'dr','data-q':tr.dataset.q},el('td',{colspan:6},box)));
-    }
+      return el('tr',{class:'dr','data-q':tr.dataset.q},el('td',{colspan:6},box));
+    };
+    if(open)tb.append(detail());
   });
   t.append(el('thead',{},el('tr',{},['Aluno','','Liberado até a Lección','Etapas','Prova (Etapa '+gst+')',''].map(h=>el('th',{scope:'col'},h)))),tb);
   const q=$('stq');if(q&&q.value.trim())q.dispatchEvent(new Event('input'));
