@@ -112,7 +112,11 @@ html:not(.fx-off) section.card:hover,html:not(.fx-off) section.card:active,html:
 .dg .fr{display:grid;grid-template-columns:110px 1fr;gap:6px 10px;align-items:center;margin:6px 0}.dg .fr label{font-size:.82rem;color:var(--muted)}
 .dg .fr select{width:100%}.dg .pr{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.dg .pr select{flex:1;min-width:150px;min-height:38px}.dg .lr{margin-top:4px;color:var(--muted)}
 .dfoot{display:flex;flex-direction:column;gap:10px;align-items:stretch;justify-content:flex-start}.dfoot .sm{font-size:.85rem}
-.sdw{display:inline-flex;gap:3px;flex-wrap:nowrap}
+.sdw{display:flex;justify-content:space-between;gap:2px;flex-wrap:nowrap;width:100%}
+#xchips{display:none!important}
+#stt th:nth-child(1){width:21%}#stt th:nth-child(2){width:30%}#stt th:nth-child(3){width:41%}
+#stt .lim{gap:10px}#stt .lim input[type=number]{width:120px!important;height:46px;font-size:1.05rem}#stt .lim select{flex:1;width:auto!important;min-width:150px;height:46px;font-size:1rem}
+#stt tr.sr .sd{width:34px;height:34px;font-size:.85rem}
 .sd{width:20px;height:20px;min-height:0!important;min-width:0!important;padding:0!important;border-radius:50%!important;border:2px solid var(--line);background:transparent;font-size:.6rem;font-weight:700;color:var(--muted);line-height:1;display:inline-flex;align-items:center;justify-content:center}
 .sd.rel{border-color:#c9a13b;color:#c9a13b}.sd.prog{background:var(--warn-bg);border-color:var(--warn);color:var(--warn)}.sd.done{background:var(--ok);border-color:var(--ok);color:var(--bg)}.sd.cert{background:#c9a13b;border-color:#c9a13b;color:#1a1305}.sd.cur{outline:2px solid var(--ink);outline-offset:2px}
 .sv{color:var(--ok);font-weight:700;font-size:.85rem}
@@ -319,7 +323,7 @@ function renderStu(){
   const tb=el('tbody',{});
   if(!list.length)tb.append(el('tr',{},el('td',{colspan:5},'Nenhum aluno ainda.')));
   list.forEach(p=>{
-    const open=true,sst=EXS[p.id]||gst;
+    const open=true,sst=EXS[p.id]||(()=>{const i=STG_END.findIndex(e=>p.lessons_upto<=e);return i<0?XSTG.length:i+1;})()||gst;
     const n=el('input',{type:'number',min:'0',max:String(MAXL),value:String(p.lessons_upto),'aria-label':'Liberado até, '+p.name});
     const okS=el('span',{class:'sv'});let tm=null;const sv=()=>{const v=clampN(n.value);if(v===p.lessons_upto)return;upd(p,{lessons_upto:v},()=>okTag(okS));};
     n.addEventListener('input',()=>{clearTimeout(tm);tm=setTimeout(sv,700);});n.addEventListener('change',()=>{clearTimeout(tm);sv();});
@@ -363,7 +367,7 @@ function renderStu(){
     };
     if(open)tb.append(detail());
   });
-  t.replaceChildren(el('thead',{},el('tr',{},['Aluno','Liberado até a Lesson','Stages','Prova (Stage '+gst+')'].map(h=>el('th',{scope:'col'},h)))),tb);
+  t.replaceChildren(el('thead',{},el('tr',{},['Aluno','Liberado até a Lesson','Stages','Prova'].map(h=>el('th',{scope:'col'},h)))),tb);
   window.scrollTo(0,sy);
   const q=$('stq');if(q&&q.value.trim())q.dispatchEvent(new Event('input'));
 }
@@ -691,8 +695,8 @@ function renderExam(){
   const st=parseInt($('xst').value,10)||1;xchips();
   const studs=PROFILES.filter(p=>p.status!=='pending'&&!p.is_admin);
   let nRel=0,nPro=0,nDone=0,nRev=0;
-  studs.forEach(p=>{const rel=XREL.find(x=>x.user_id===p.id&&x.stage===st),res=XRES.find(x=>x.user_id===p.id&&x.stage===st);
-    if(rel&&!res)nRel++;if(res&&!res.submitted_at)nPro++;if(res&&res.submitted_at){nDone++;if(Object.values(res.review||{}).reduce((q,x)=>q+x.length,0))nRev++;}});
+  studs.forEach(p=>{XREL.filter(x=>x.user_id===p.id).forEach(rel=>{const res=XRES.find(x=>x.user_id===p.id&&x.stage===rel.stage);
+    if(!res)nRel++;else if(!res.submitted_at)nPro++;else{nDone++;if(Object.values(res.review||{}).reduce((q,x)=>q+x.length,0))nRev++;}});});
   const k=$('xkp');k.textContent='';[['Liberadas',nRel],['Em andamento',nPro],['Concluídas',nDone],['Para revisar',nRev]].forEach(x=>k.append(el('div',{},el('small',{},x[0]),el('b',{},String(x[1])))));
   renderStu();
 }
