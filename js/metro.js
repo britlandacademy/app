@@ -642,8 +642,8 @@ function mount(c,o){
     ov.addEventListener('click',function(){if(kind==='in')end();});
     setTimeout(end,6500);requestAnimationFrame(f);}
   fxExit=function(cb){if(reduced()||D.getElementById('bl-tfx')){cb();return;}try{localStorage.setItem('bl-tfx','out:'+Date.now());}catch(e){}fxRun('out',cb);};
-  var fxIn=false;try{var fv=localStorage.getItem('bl-tfx')||'';localStorage.removeItem('bl-tfx');fxIn=/^in:\d+$/.test(fv)&&Date.now()-(+fv.slice(3))<20000;}catch(e){}
-  if(fxIn&&!reduced()&&!fxOff()){fxRun('in');return;}
+  var fxIn=false;try{var fv=localStorage.getItem('bl-tfx')||'';localStorage.removeItem('bl-tfx');fxIn=/^in:\d+$/.test(fv)&&Date.now()-(+fv.slice(3))<20000;if(!fxIn&&!localStorage.getItem('bl-gm-intro1'))fxIn=true;}catch(e){}
+  if(fxIn&&!reduced()&&!fxOff()){try{localStorage.setItem('bl-gm-intro1','1');}catch(e){}fxRun('in');return;}
   /* welcome banner: flag + city, 2 seconds */
   var wel=h('div','wel','<div><div class="fw">'+flagHTML(C)+'</div><small>'+tx.next+'</small><h2></h2><div class="ln"><i></i><span></span></div></div>');
   wel.querySelector('h2').innerHTML=tx.welcome+'<br>';wel.querySelector('h2').append(D.createTextNode(C.welcome));wel.querySelector('.ln span').textContent=C.line;
