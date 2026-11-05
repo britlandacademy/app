@@ -105,11 +105,11 @@ body{padding-bottom:104px}
 #stt .nmc small{display:block;color:var(--muted);font-size:.78rem}
 #stt .lim{display:flex;gap:6px;align-items:center;flex-wrap:nowrap}#stt .lim input[type=number]{width:74px}
 #stt .lim select{width:118px}.dg>*{min-width:0}#stt tr.dr td{max-width:0}
-.dg{display:grid;grid-template-columns:minmax(260px,1fr) minmax(340px,1.5fr);gap:16px;padding-top:6px}
+.dg{display:grid;grid-template-columns:minmax(280px,1.2fr) minmax(340px,1.6fr) minmax(190px,.7fr);gap:18px;padding:2px 0 4px}
 .dg h4{margin:0 0 8px;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
 .dg .fr{display:grid;grid-template-columns:110px 1fr;gap:6px 10px;align-items:center;margin:6px 0}.dg .fr label{font-size:.82rem;color:var(--muted)}
-.dg .fr select{width:100%}
-.dfoot{grid-column:1/-1;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--line);padding-top:10px}
+.dg .fr select{width:100%}.dg .pr{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.dg .pr select{flex:1;min-width:150px;min-height:38px}.dg .lr{margin-top:4px;color:var(--muted)}
+.dfoot{display:flex;flex-direction:column;gap:10px;align-items:stretch;justify-content:flex-start}.dfoot .sm{font-size:.85rem}
 .sdw{display:inline-flex;gap:3px;flex-wrap:nowrap}
 .sd{width:20px;height:20px;min-height:0!important;min-width:0!important;padding:0!important;border-radius:50%!important;border:2px solid var(--line);background:transparent;font-size:.6rem;font-weight:700;color:var(--muted);line-height:1;display:inline-flex;align-items:center;justify-content:center}
 .sd.rel{border-color:#c9a13b;color:#c9a13b}.sd.prog{background:var(--warn-bg);border-color:var(--warn);color:var(--warn)}.sd.done{background:var(--ok);border-color:var(--ok);color:var(--bg)}.sd.cert{background:#c9a13b;border-color:#c9a13b;color:#1a1305}.sd.cur{outline:2px solid var(--ink);outline-offset:2px}
@@ -119,7 +119,9 @@ body{padding-bottom:104px}
 @keyframes dgin{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}@keyframes dgout{from{opacity:1}to{opacity:0;transform:translateY(-10px)}}
 .dg.in{animation:dgin .24s ease both}.dg.out{animation:dgout .18s ease both}
 .dg .ec{margin:0}
-@media (max-width:900px){.dg{grid-template-columns:1fr}}
+@media (max-width:1100px){.dg{grid-template-columns:1fr 1fr}}@media (max-width:700px){.dg{grid-template-columns:1fr}}
+#stt tr.dr td{padding:0 10px 8px 56px}#stt tr.sr td{padding:6px 10px 2px}#stt tr.sr td{border-bottom-color:transparent}
+.dg .ec{padding:10px 12px}.dg .ec .bar2{margin:6px 0 2px}.dg .ec .act{margin-top:8px}
 
 .chp{min-height:40px;padding:6px 14px;border:2px solid var(--line);border-radius:99px!important;background:var(--card);color:var(--ink);font-weight:700}
 .chp.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
@@ -166,7 +168,7 @@ details.h{background:var(--surface);border:1px solid var(--line);border-radius:1
   <div class="row"><input type="text" id="stq" placeholder="Buscar aluno pelo nome…" aria-label="Buscar aluno" style="flex:1;min-width:200px;margin:0">
   <details class="h" id="bulkd" style="margin:0"><summary>Liberar lecciones para todos</summary><div class="row"><label for="bulk">Liberar até a Lección</label><input type="number" id="bulk" min="0" max="206" value="12"><span id="bulkstage"></span><button type="button" id="bulkgo">Aplicar a todos os alunos aprovados</button><span class="msg" id="bulkmsg" aria-live="polite"></span></div></details></div>
   <div class="tw"><table id="stt"></table></div><table id="xtab" hidden></table>
-  <p class="hint">Clique na linha (▾) para abrir planilha, prova do Etapa escolhida e contrato. As bolinhas são as 6 Etapas: cinza = sem prova, dourado = liberada, amarelo = em andamento, verde = concluída, ★ = certificado. Clique numa bolinha para ver aquela Etapa. "Liberado até" é a última Lección que o aluno pode abrir (0 a 206). Bloquear fecha o acesso na hora (o áudio já aberto pode tocar por até 2 horas).</p>
+  <p class="hint">Cada aluno mostra a planilha, a prova do Etapa escolhida e o contrato logo abaixo. As bolinhas são as 6 Etapas: cinza = sem prova, dourado = liberada, amarelo = em andamento, verde = concluída, ★ = certificado. Clique numa bolinha para ver aquela Etapa. "Liberado até" é a última Lección que o aluno pode abrir (0 a 206). Bloquear fecha o acesso na hora (o áudio já aberto pode tocar por até 2 horas).</p>
   <div class="row"><button type="button" class="ghost" id="xall">Liberar a nota de todos os que já enviaram esta Etapa</button></div>
   <div id="xdet"></div>
 </section>
@@ -305,9 +307,7 @@ function planBlock(p){
   cl.addEventListener('change',save);
   const g=PLAN.prog[p.id];
   const last=g?('Stage '+(g.stage||'?')+' · Lição '+(g.lesson||'?')+(g.last_word?' · '+g.last_word:'')+' · '+new Date(g.updated_at).toLocaleString('pt-BR')):(cur?'aguardando a próxima leitura':'—');
-  return el('div',{},el('h4',{},'Planos de Aula (planilha)'),
-    el('div',{class:'fr'},el('label',{},'Aba'),ab),el('div',{class:'fr'},el('label',{},'Coluna (turmas)'),cl),
-    el('div',{class:'fr'},el('label',{},'Última leitura'),el('span',{class:'sm'},last)),m);
+  return el('div',{},el('div',{class:'pr'},ab,cl,m),el('div',{class:'sm lr'},'Última leitura: '+last));
 }
 function renderStu(){
   const t=$('stt');if(!t)return;const sy=window.scrollY;
@@ -315,9 +315,9 @@ function renderStu(){
   const CON=!!(window.ContractAdmin&&ContractAdmin.on());
   const gst=parseInt(($('xst')||{}).value,10)||1;
   const tb=el('tbody',{});
-  if(!list.length)tb.append(el('tr',{},el('td',{colspan:6},'Nenhum aluno ainda.')));
+  if(!list.length)tb.append(el('tr',{},el('td',{colspan:5},'Nenhum aluno ainda.')));
   list.forEach(p=>{
-    const open=OPEN.has(p.id),sst=EXS[p.id]||gst;
+    const open=true,sst=EXS[p.id]||gst;
     const n=el('input',{type:'number',min:'0',max:String(MAXL),value:String(p.lessons_upto),'aria-label':'Liberado até, '+p.name});
     const okS=el('span',{class:'sv'});let tm=null;const sv=()=>{const v=clampN(n.value);if(v===p.lessons_upto)return;upd(p,{lessons_upto:v},()=>okTag(okS));};
     n.addEventListener('input',()=>{clearTimeout(tm);tm=setTimeout(sv,700);});n.addEventListener('change',()=>{clearTimeout(tm);sv();});
@@ -327,7 +327,7 @@ function renderStu(){
     if(XOK)for(let i=1;i<=XSTG.length;i++){
       const k=exStat(p.id,i);
       strip.append(el('button',{type:'button',class:'sd '+k+(open&&i===sst?' cur':''),title:'Etapa '+i+(k==='cert'?' · certificado':k==='done'?' · concluída':k==='prog'?' · em andamento':k==='rel'?' · liberada':' · sem prova liberada'),'aria-label':'Etapa '+i,
-        onclick:()=>{EXS[p.id]=i;strip.querySelectorAll('.sd').forEach((x,j)=>x.classList.toggle('cur',j+1===i));if(!OPEN.has(p.id)){OPEN.add(p.id);tgb.classList.add('up');tgb.setAttribute('aria-expanded','true');tr.classList.add('op');}showDetail(false);}},k==='cert'?'★':String(i)));
+        onclick:()=>{EXS[p.id]=i;strip.querySelectorAll('.sd').forEach((x,j)=>x.classList.toggle('cur',j+1===i));showDetail(false);}},k==='cert'?'★':String(i)));
     }
     const showDetail=anim=>{const c=tr.nextElementSibling;if(c&&c.classList.contains('dr'))c.remove();const d=detail();if(anim)d.querySelector('.dg').classList.add('in');tr.after(d);};
     const tgb=el('button',{type:'button',class:'tg'+(open?' up':''),'aria-label':'Abrir ou fechar detalhes','aria-expanded':String(open)},'▾');
@@ -339,17 +339,16 @@ function renderStu(){
         showDetail(true);}
     });
     const tr=el('tr',{class:'sr'+(open?' op':''),'data-q':((p.name||'')+' '+(p.email||'')).toLowerCase()},
-      el('td',{class:'nmc'},el('span',{style:'display:flex;align-items:center'},cvThumb(n,''),el('span',{},el('b',{},p.name||'(sem nome)'),el('small',{},p.email)))),
-      el('td',{},p.status==='approved'?null:el('span',{class:'st '+p.status},STATUS[p.status])),
-      el('td',{},lim),el('td',{},XOK?strip:null),el('td',{},XOK?exPill(p,gst):null),
-      el('td',{},tgb));
+      el('td',{class:'nmc'},el('span',{style:'display:flex;align-items:center'},cvThumb(n,''),el('span',{},el('b',{},p.name||'(sem nome)',p.status==='approved'?null:el('span',{class:'st '+p.status,style:'margin-left:8px'},STATUS[p.status])),el('small',{},p.email)))),
+            el('td',{},lim),el('td',{},XOK?strip:null),el('td',{},XOK?exPill(p,gst):null),
+      null);
     tb.append(tr);
     const detail=()=>{
       const box=el('div',{class:'dg'});
       const autoOk=el('span',{class:'sv',style:'margin-left:8px'});
-      const left=el('div',{},el('h4',{},'Liberação'),
-        el('label',{style:'display:block;font-size:.88rem',title:'Libera só até a lição em que o aluno está na planilha'},el('input',{type:'checkbox',checked:p.auto_release!==false,onchange:e=>upd(p,{auto_release:e.target.checked},()=>okTag(autoOk))}),' Auto pela planilha'+(p.lessons_auto!=null?' (lição '+p.lessons_auto+')':' (sem dados)')),autoOk,
-        el('div',{style:'height:12px'}),planBlock(p));
+      const left=el('div',{},
+        el('label',{style:'display:block;font-size:.88rem;margin:0',title:'Libera só até a lição em que o aluno está na planilha'},el('input',{type:'checkbox',checked:p.auto_release!==false,onchange:e=>upd(p,{auto_release:e.target.checked},()=>okTag(autoOk))}),' Auto pela planilha'+(p.lessons_auto!=null?' (lição '+p.lessons_auto+')':' (sem dados)')),autoOk,
+        el('div',{style:'height:6px'}),planBlock(p));
       box.append(left);
       box.append(XOK?el('div',{},examCard(p,EXS[p.id]||gst)):el('div',{},el('p',{class:'hint'},'Provas indisponíveis.')));
       const foot=el('div',{class:'dfoot'},
@@ -358,11 +357,11 @@ function renderStu(){
           ?el('button',{type:'button',onclick:()=>update(p.id,{status:'approved'})},'Reativar aluno')
           :el('button',{type:'button',class:'danger',onclick:()=>{if(confirm('Bloquear '+(p.name||p.email)+'?'))update(p.id,{status:'blocked'});}},'Bloquear aluno'));
       box.append(foot);
-      return el('tr',{class:'dr','data-q':tr.dataset.q},el('td',{colspan:6},box));
+      return el('tr',{class:'dr','data-q':tr.dataset.q},el('td',{colspan:5},box));
     };
     if(open)tb.append(detail());
   });
-  t.replaceChildren(el('thead',{},el('tr',{},['Aluno','','Liberado até a Lección','Etapas','Prova (Etapa '+gst+')',''].map(h=>el('th',{scope:'col'},h)))),tb);
+  t.replaceChildren(el('thead',{},el('tr',{},['Aluno','Liberado até a Lección','Etapas','Prova (Etapa '+gst+')'].map(h=>el('th',{scope:'col'},h)))),tb);
   window.scrollTo(0,sy);
   const q=$('stq');if(q&&q.value.trim())q.dispatchEvent(new Event('input'));
 }
