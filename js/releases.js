@@ -2,6 +2,7 @@
    Newest first. Written for students (no technical terms). Each entry: v, d [pt, es], t [pt, es] short title, p [pt, es] one sentence,
    show:1 = also shown once in the notice after the update, c:'en'|'es' = only that course (omit = both). */
 window.BL_RELEASES=[
+{v:'1.11.0',d:['5 de novembro','5 de noviembre'],t:['Novo trem no Modo Jogo','Nuevo tren en el Modo Juego'],p:['A chegada e a saída do metrô ficaram mais reais, com o trem em movimento, passageiros e sons.','La llegada y la salida del metro son más reales, con el tren en movimiento, pasajeros y sonidos.']},
 {v:'1.10.3',d:['5 de novembro','5 de noviembre'],t:['Abertura do Modo Jogo garantida','Apertura del Modo Juego garantizada'],p:['Na primeira vez que abrir o mapa do Modo Jogo, a animação de abertura sempre aparece.','La primera vez que abras el mapa del Modo Juego, la animación de apertura siempre aparece.']},
 {v:'1.10.2',d:['5 de novembro','5 de noviembre'],t:['Aviso de saída mais simples','Aviso de salida más simple'],p:['O aviso ao sair da prática mostra só quantas perguntas você fez e quantas faltam.','El aviso al salir de la práctica muestra solo cuántas preguntas hiciste y cuántas faltan.']},
 {v:'1.10.1',d:['5 de novembro','5 de noviembre'],show:1,t:['Sair da prática ficou melhor','Salir de la práctica es mejor'],p:['Ao tocar no X, você vê quantas perguntas já fez e volta direto para o mapa do jogo.','Al tocar la X, ves cuántas preguntas hiciste y vuelves directo al mapa del juego.']},
