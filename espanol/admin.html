@@ -97,6 +97,27 @@ body{padding-bottom:104px}
  #pend .tw,#stu+*{overflow:visible}
 }
 
+#stt{width:100%;border-collapse:separate;border-spacing:0}
+#stt th{text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:6px 10px;border-bottom:2px solid var(--line);white-space:nowrap}
+#stt tr.sr td{vertical-align:middle;padding:8px 10px;border-bottom:1px solid var(--line)}
+#stt tr.sr{cursor:pointer}#stt tr.sr.op td{background:var(--surface);border-bottom-color:transparent}
+#stt tr.dr td{padding:0 10px 14px;background:var(--surface);border-bottom:2px solid var(--line)}
+#stt .nmc small{display:block;color:var(--muted);font-size:.78rem}
+#stt .lim{display:flex;gap:6px;align-items:center;flex-wrap:nowrap}#stt .lim input[type=number]{width:74px}
+#stt .lim select{width:118px}.dg>*{min-width:0}#stt tr.dr td{max-width:0}
+.dg{display:grid;grid-template-columns:minmax(260px,1fr) minmax(340px,1.5fr);gap:16px;padding-top:6px}
+.dg h4{margin:0 0 8px;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.dg .fr{display:grid;grid-template-columns:110px 1fr;gap:6px 10px;align-items:center;margin:6px 0}.dg .fr label{font-size:.82rem;color:var(--muted)}
+.dg .fr select{width:100%}
+.dfoot{grid-column:1/-1;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between;border-top:1px solid var(--line);padding-top:10px}
+.sdw{display:inline-flex;gap:3px;flex-wrap:nowrap}
+.sd{width:20px;height:20px;min-height:0!important;min-width:0!important;padding:0!important;border-radius:50%!important;border:2px solid var(--line);background:transparent;font-size:.6rem;font-weight:700;color:var(--muted);line-height:1;display:inline-flex;align-items:center;justify-content:center}
+.sd.rel{border-color:#c9a13b;color:#c9a13b}.sd.prog{background:var(--warn-bg);border-color:var(--warn);color:var(--warn)}.sd.done{background:var(--ok);border-color:var(--ok);color:var(--bg)}.sd.cert{background:#c9a13b;border-color:#c9a13b;color:#1a1305}.sd.cur{outline:2px solid var(--ink);outline-offset:2px}
+.sv{color:var(--ok);font-weight:700;font-size:.85rem}
+.tg{background:transparent;border:0;font-size:1.1rem;min-height:0;padding:4px 8px}
+.dg .ec{margin:0}
+@media (max-width:900px){.dg{grid-template-columns:1fr}}
+
 .chp{min-height:40px;padding:6px 14px;border:2px solid var(--line);border-radius:99px!important;background:var(--card);color:var(--ink);font-weight:700}
 .chp.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 #xchips{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}
@@ -136,16 +157,16 @@ details.h{background:var(--surface);border:1px solid var(--line);border-radius:1
 <div class="sc" id="s-more"><div id="moreBox" data-noi18n="1"></div></div>
 <div class="sc" id="s-today"><section class="card" aria-labelledby="h-today"><h2 id="h-today">Hoje</h2><div id="todayBox"></div></section></div>
 <div class="sc" id="s-students"><section class="card" id="sec-pend" aria-labelledby="h-pend"><h2 id="h-pend">Pedidos de acesso</h2><div id="pend"></div></section>
-<section class="card" aria-labelledby="h-stu"><h2 id="h-stu">Alunos e liberação das lecciones</h2>
-  <p class="hint">"Liberado até" é o número da última Lección que o aluno pode abrir (0 a 112). Vale para texto, áudio, e Ejercicios de repaso.</p>
-  <div class="row"><label for="bulk">Liberar até a Lección</label><input type="number" id="bulk" min="0" max="112" value="16"><span id="bulkstage"></span><button type="button" id="bulkgo">Aplicar a todos os alunos aprovados</button><span class="msg" id="bulkmsg" aria-live="polite"></span></div>
-  <input type="text" id="stq" placeholder="Buscar aluno pelo nome…" aria-label="Buscar aluno">
-  <div class="tw"><table id="stu"></table></div>
-  <p class="hint">Bloquear fecha o acesso na hora (o áudio já aberto pode tocar por até 2 horas). Para apagar uma conta de vez: Supabase, Authentication, Users, Delete.</p>
+<section class="card" aria-labelledby="h-stu"><h2 id="h-stu">Alunos</h2>
+  <select id="xst" hidden aria-hidden="true"></select><div id="xchips" role="group" aria-label="Escolher Stage"></div><span class="msg" id="xmsg" aria-live="polite"></span>
+  <div class="kpr" id="xkp"></div>
+  <div class="row"><input type="text" id="stq" placeholder="Buscar aluno pelo nome…" aria-label="Buscar aluno" style="flex:1;min-width:200px;margin:0">
+  <details class="h" id="bulkd" style="margin:0"><summary>Liberar lecciones para todos</summary><div class="row"><label for="bulk">Liberar até a Lección</label><input type="number" id="bulk" min="0" max="206" value="12"><span id="bulkstage"></span><button type="button" id="bulkgo">Aplicar a todos os alunos aprovados</button><span class="msg" id="bulkmsg" aria-live="polite"></span></div></details></div>
+  <div class="tw"><table id="stt"></table></div><table id="xtab" hidden></table>
+  <p class="hint">Clique na linha (▾) para abrir planilha, prova do Etapa escolhida e contrato. As bolinhas são as 6 Etapas: cinza = sem prova, dourado = liberada, amarelo = em andamento, verde = concluída, ★ = certificado. Clique numa bolinha para ver aquela Etapa. "Liberado até" é a última Lección que o aluno pode abrir (0 a 206). Bloquear fecha o acesso na hora (o áudio já aberto pode tocar por até 2 horas).</p>
+  <div class="row"><button type="button" class="ghost" id="xall">Liberar a nota de todos os que já enviaram esta Etapa</button></div>
+  <div id="xdet"></div>
 </section>
-<section class="card" aria-labelledby="h-plan"><h2 id="h-plan">Planos de Aula (planilha)</h2>
-  <p class="hint">Digite o nome exato da aba da planilha "Planos de Aula" de cada aluno. A cada 30 minutos o app lê só essa aba e mostra as recomendações na Home do aluno. Deixe em branco para desligar.</p>
-  <div class="tw"><table id="planTbl"></table></div></section>
 <div id="streakBox" hidden></div></div>
 <div class="sc" id="s-grades"><section class="card" aria-labelledby="h-sc"><h2 id="h-sc">Notas</h2>
   <div class="row"><label for="kind">Mostrar</label><select id="kind"><option value="check">Ejercicios de repaso (nº = repaso)</option><option value="dele">DELE (nº 1–6 = A1…C2)</option></select>
@@ -155,14 +176,6 @@ details.h{background:var(--surface);border:1px solid var(--line);border-radius:1
   <div class="tw"><table id="mat"></table></div>
   <div class="row"><label for="who">Detalhe de um aluno</label><select id="who"></select></div>
   <div class="tw"><table id="det"></table></div>
-</section></div>
-<div class="sc" id="s-exams"><section class="card" aria-labelledby="h-ex"><h2 id="h-ex">Exames</h2>
-  <select id="xst" hidden aria-hidden="true"></select><div id="xchips" role="group" aria-label="Escolher Etapa"></div><span class="msg" id="xmsg" aria-live="polite"></span>
-  <div class="kpr" id="xkp"></div>
-  <details class="h"><summary>Como funciona</summary><p class="hint">A prova dura 40 minutos, só pode ser feita uma vez e só abre para o aluno depois que você liberar aqui. A coluna Ejercicios de repaso mostra o que falta; se faltar algo, o sistema avisa antes de liberar. Você lê o ditado e as perguntas orais ao vivo.</p></details>
-  <div id="xcards"></div><table id="xtab" hidden></table>
-  <div class="row"><button type="button" class="ghost" id="xall">Liberar a nota de todos os que já enviaram esta Etapa</button></div>
-  <div id="xdet"></div>
 </section></div>
 <div class="sc" id="s-content"><section class="card" aria-labelledby="h-ct"><h2 id="h-ct">Conteúdo (texto, checks e exercícios)</h2>
   <p class="hint" id="ctinfo"></p>
@@ -251,25 +264,92 @@ function renderPend(){
   });
   box.append(el('div',{class:'tw'},el('table',{},th(['Nome','E-mail','Pedido em','Ação']),tb)));
 }
+let PLAN={links:{},cols:{},prog:{},tabs:{}},OPEN=new Set(),EXS={},SAVED={};
+function flash(id){SAVED[id]=1;renderStu();setTimeout(()=>{delete SAVED[id];renderStu();},2200);}
+function exStat(uid,st){
+  const res=XRES.find(x=>x.user_id===uid&&x.stage===st),rel=XREL.find(x=>x.user_id===uid&&x.stage===st),cert=certOf(uid,st);
+  if(cert&&!cert.revoked)return 'cert';if(res&&res.submitted_at)return 'done';if(res)return 'prog';if(rel)return 'rel';return 'none';
+}
+function exPill(p,st){
+  const def=XDEF[st],rel=XREL.find(x=>x.user_id===p.id&&x.stage===st),res=XRES.find(x=>x.user_id===p.id&&x.stage===st);
+  if(!def)return el('span',{class:'pl bad'},'Prova não cadastrada');
+  if(res&&res.submitted_at){const sc=res.scores||{},mx=res.maxes||{};let T=0,M=0;Object.keys(mx).forEach(k=>{T+=sc[k]||0;M+=mx[k];});
+    return el('span',{class:'pl '+(res.score_visible?'ok':'wt')},'Concluída · '+T+'/'+M+(res.score_visible?'':' · oculta'));}
+  if(res)return el('span',{class:'pl wt'},'Em andamento');
+  if(rel)return el('span',{class:'pl ok'},'Liberada');
+  return el('span',{class:'pl gr'},'Não liberada');
+}
+function loadPlan(){
+  return Promise.all([sb.from('plan_links').select('user_id,sheet_name,student_col'),sb.from('plan_progress').select('user_id,stage,lesson,class_number,last_word,updated_at'),sb.from('plan_tabs').select('sheet_name,students').order('sheet_name')]).then(function(rs){
+    const P={links:{},cols:{},prog:{},tabs:{}};
+    ((rs[0]&&rs[0].data)||[]).forEach(x=>{P.links[x.user_id]=x.sheet_name;P.cols[x.user_id]=x.student_col||'';});
+    ((rs[1]&&rs[1].data)||[]).forEach(x=>{P.prog[x.user_id]=x;});
+    ((rs[2]&&rs[2].data)||[]).forEach(x=>{P.tabs[x.sheet_name]=x.students||[];});
+    PLAN=P;renderStu();
+  }).catch(()=>{});
+}
+function renderPlan(){loadPlan();}
+function planBlock(p){
+  const names=Object.keys(PLAN.tabs),cur=PLAN.links[p.id]||'',col=PLAN.cols[p.id]||'';
+  const fill=(sel,vals,c,empty)=>{sel.textContent='';sel.append(el('option',{value:''},empty));const all=vals.slice();if(c&&all.indexOf(c)<0)all.unshift(c);all.forEach(v=>sel.append(el('option',{value:v},v)));sel.value=c||'';};
+  const ab=el('select',{'aria-label':'Aba de '+(p.name||p.email)}),cl=el('select',{'aria-label':'Coluna de '+(p.name||p.email)}),m=el('span',{class:'sv'});
+  fill(ab,names,cur,'— sem planilha —');fill(cl,PLAN.tabs[cur]||[],col,'individual (sem turma)');
+  const save=()=>{const v=ab.value.trim();m.textContent='…';
+    const q=v?sb.from('plan_links').upsert({user_id:p.id,sheet_name:v,student_col:cl.value.trim()||null}):sb.from('plan_links').delete().eq('user_id',p.id);
+    q.then(r=>{if(r.error){m.textContent='Erro: '+r.error.message;m.className='msg bad';return;}PLAN.links[p.id]=v;PLAN.cols[p.id]=v?cl.value:'';m.className='sv';m.textContent=v?'✓ salvo':'✓ removido';});};
+  ab.addEventListener('change',()=>{fill(cl,PLAN.tabs[ab.value]||[],'','individual (sem turma)');save();});
+  cl.addEventListener('change',save);
+  const g=PLAN.prog[p.id];
+  const last=g?('Stage '+(g.stage||'?')+' · Lição '+(g.lesson||'?')+(g.last_word?' · '+g.last_word:'')+' · '+new Date(g.updated_at).toLocaleString('pt-BR')):(cur?'aguardando a próxima leitura':'—');
+  return el('div',{},el('h4',{},'Planos de Aula (planilha)'),
+    el('div',{class:'fr'},el('label',{},'Aba'),ab),el('div',{class:'fr'},el('label',{},'Coluna (turmas)'),cl),
+    el('div',{class:'fr'},el('label',{},'Última leitura'),el('span',{class:'sm'},last)),m);
+}
 function renderStu(){
-  const t=$('stu');t.textContent='';
+  const t=$('stt');if(!t)return;t.textContent='';
   const list=PROFILES.filter(p=>p.status!=='pending'&&!p.is_admin);
   const CON=!!(window.ContractAdmin&&ContractAdmin.on());
+  const gst=parseInt(($('xst')||{}).value,10)||1;
   const tb=el('tbody',{});
-  if(!list.length)tb.append(el('tr',{},el('td',{colspan:(BIZ?6:5)+(CON?1:0)},'Nenhum aluno ainda.')));
+  if(!list.length)tb.append(el('tr',{},el('td',{colspan:6},'Nenhum aluno ainda.')));
   list.forEach(p=>{
+    const open=OPEN.has(p.id),sst=EXS[p.id]||gst;
     const n=el('input',{type:'number',min:'0',max:String(MAXL),value:String(p.lessons_upto),'aria-label':'Liberado até, '+p.name});
-    const bn=el('input',{type:'number',min:'0',max:'17',value:String(p.business_upto||0),'aria-label':'Business liberado até, '+p.name});
-    tb.append(el('tr',{},el('td',{},cvThumb(n,p.name||'(sem nome)')),el('td',{},p.email),
-      el('td',{},el('span',{class:'st '+p.status},STATUS[p.status])),
-      el('td',{},n,' ',stageSel(n),' ',el('button',{type:'button',class:'ghost',onclick:()=>update(p.id,{lessons_upto:clampN(n.value)})},'Salvar'),el('label',{style:'display:block;font-size:.8em;margin-top:4px',title:'Libera só até a lição em que o aluno está na planilha'},el('input',{type:'checkbox',checked:p.auto_release!==false,onchange:e=>update(p.id,{auto_release:e.target.checked})}),' Auto pela planilha'+(p.lessons_auto!=null?' (lição '+p.lessons_auto+')':' (sem dados)'))),
-      BIZ?el('td',{},bn,' ',el('button',{type:'button',class:'ghost',onclick:()=>update(p.id,{business_upto:Math.max(0,Math.min(17,parseInt(bn.value,10)||0))})},'Salvar')):null,
-      el('td',{},p.status==='blocked'
-        ?el('button',{type:'button',onclick:()=>update(p.id,{status:'approved'})},'Reativar')
-        :el('button',{type:'button',class:'danger',onclick:()=>{if(confirm('Bloquear '+(p.name||p.email)+'?'))update(p.id,{status:'blocked'});}},'Bloquear')),
-      CON?el('td',{},ContractAdmin.cell({el:el,sb:sb,profile:p,reload:loadProfiles})):null));
+    let tm=null;const sv=()=>{const v=clampN(n.value);if(v===p.lessons_upto)return;update(p.id,{lessons_upto:v}).then(()=>flash(p.id));};
+    n.addEventListener('input',()=>{clearTimeout(tm);tm=setTimeout(sv,700);});n.addEventListener('change',()=>{clearTimeout(tm);sv();});
+    const stop=e=>e.stopPropagation();
+    const lim=el('div',{class:'lim',onclick:stop},n,stageSel(n),SAVED[p.id]?el('span',{class:'sv'},'✓ salvo'):null);
+    const strip=el('div',{class:'sdw',onclick:stop});
+    if(XOK)for(let i=1;i<=XSTG.length;i++){
+      const k=exStat(p.id,i);
+      strip.append(el('button',{type:'button',class:'sd '+k+(open&&i===sst?' cur':''),title:'Etapa '+i+(k==='cert'?' · certificado':k==='done'?' · concluída':k==='prog'?' · em andamento':k==='rel'?' · liberada':' · sem prova liberada'),'aria-label':'Etapa '+i,
+        onclick:()=>{EXS[p.id]=i;OPEN.add(p.id);renderStu();}},k==='cert'?'★':String(i)));
+    }
+    const tog=()=>{if(open)OPEN.delete(p.id);else OPEN.add(p.id);renderStu();};
+    const tr=el('tr',{class:'sr'+(open?' op':''),'data-q':((p.name||'')+' '+(p.email||'')).toLowerCase(),onclick:tog},
+      el('td',{class:'nmc'},el('span',{style:'display:flex;align-items:center'},cvThumb(n,''),el('span',{},el('b',{},p.name||'(sem nome)'),el('small',{},p.email)))),
+      el('td',{},p.status==='approved'?null:el('span',{class:'st '+p.status},STATUS[p.status])),
+      el('td',{},lim),el('td',{},XOK?strip:null),el('td',{},XOK?exPill(p,gst):null),
+      el('td',{},el('button',{type:'button',class:'tg','aria-label':open?'Fechar detalhes':'Abrir detalhes','aria-expanded':String(open)},open?'▴':'▾')));
+    tb.append(tr);
+    if(open){
+      const box=el('div',{class:'dg'});
+      const left=el('div',{},el('h4',{},'Liberação'),
+        el('label',{style:'display:block;font-size:.88rem',title:'Libera só até a lição em que o aluno está na planilha'},el('input',{type:'checkbox',checked:p.auto_release!==false,onchange:e=>update(p.id,{auto_release:e.target.checked}).then(()=>flash(p.id))}),' Auto pela planilha'+(p.lessons_auto!=null?' (lição '+p.lessons_auto+')':' (sem dados)')),
+        el('div',{style:'height:12px'}),planBlock(p));
+      box.append(left);
+      box.append(XOK?el('div',{},examCard(p,sst)):el('div',{},el('p',{class:'hint'},'Provas indisponíveis.')));
+      const foot=el('div',{class:'dfoot'},
+        el('div',{},CON?ContractAdmin.cell({el:el,sb:sb,profile:p,reload:loadProfiles}):null),
+        p.status==='blocked'
+          ?el('button',{type:'button',onclick:()=>update(p.id,{status:'approved'})},'Reativar aluno')
+          :el('button',{type:'button',class:'danger',onclick:()=>{if(confirm('Bloquear '+(p.name||p.email)+'?'))update(p.id,{status:'blocked'});}},'Bloquear aluno'));
+      box.append(foot);
+      tb.append(el('tr',{class:'dr','data-q':tr.dataset.q},el('td',{colspan:6},box)));
+    }
   });
-  t.append(th(['Nome','E-mail','Situação','Liberado até a Lección'].concat(BIZ?['Business (0–17)']:[],[''],CON?['Contrato']:[])),tb);
+  t.append(el('thead',{},el('tr',{},['Aluno','','Liberado até a Lección','Etapas','Prova (Etapa '+gst+')',''].map(h=>el('th',{scope:'col'},h)))),tb);
+  const q=$('stq');if(q&&q.value.trim())q.dispatchEvent(new Event('input'));
 }
 $('bulkstage').append(stageSel($('bulk')));
 $('bulkgo').addEventListener('click',()=>{
@@ -302,40 +382,6 @@ const STG=C.stages||[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[
 function fillEtapas(){
   const s=$('mst');if(s.options.length)return;
   STG.forEach((r,k)=>s.append(el('option',{value:String(k)},r[0]>1000?'Business (Lecciones 1 a 17)':'Etapa '+(k+1)+' (Lecciones '+r[0]+' a '+r[1]+')')));
-}
-function renderPlan(){
-  const t=$('planTbl');if(!t)return;
-  Promise.all([sb.from('plan_links').select('user_id,sheet_name,student_col'),sb.from('plan_progress').select('user_id,stage,lesson,class_number,last_word,updated_at'),sb.from('plan_tabs').select('sheet_name,students').order('sheet_name')]).then(function(rs){
-    const links={},cols={},prog={},tabs={};
-    ((rs[0]&&rs[0].data)||[]).forEach(x=>{links[x.user_id]=x.sheet_name;cols[x.user_id]=x.student_col||'';});
-    ((rs[1]&&rs[1].data)||[]).forEach(x=>{prog[x.user_id]=x;});
-    ((rs[2]&&rs[2].data)||[]).forEach(x=>{tabs[x.sheet_name]=x.students||[];});
-    const names=Object.keys(tabs);
-    t.textContent='';
-    const hd=document.createElement('tr');['Aluno','Aba da planilha','Coluna do aluno (turmas)','','Última leitura'].forEach(h=>{const th=document.createElement('th');th.textContent=h;hd.append(th);});t.append(hd);
-    const fill=(sel,vals,cur,empty)=>{sel.textContent='';const o0=document.createElement('option');o0.value='';o0.textContent=empty;sel.append(o0);const all=vals.slice();if(cur&&all.indexOf(cur)<0)all.unshift(cur);all.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;sel.append(o);});sel.value=cur||'';};
-    PROFILES.filter(p=>p.status!=='pending'&&!p.is_admin).forEach(p=>{
-      const tr=document.createElement('tr'),c1=document.createElement('td'),c2=document.createElement('td'),c3=document.createElement('td'),c4=document.createElement('td'),c5=document.createElement('td');
-      c1.textContent=p.name||p.email;
-      const inp=document.createElement('select');inp.setAttribute('aria-label','Aba de '+(p.name||p.email));inp.style.minWidth='220px';
-      const ic=document.createElement('select');ic.setAttribute('aria-label','Coluna de '+(p.name||p.email));ic.style.minWidth='170px';
-      fill(inp,names,links[p.id]||'','— sem planilha —');
-      const refill=()=>fill(ic,tabs[inp.value]||[],ic.value||cols[p.id]||'','individual (sem turma)');
-      fill(ic,tabs[inp.value]||[],cols[p.id]||'','individual (sem turma)');
-      inp.onchange=()=>{fill(ic,tabs[inp.value]||[],'','individual (sem turma)');};
-      c2.append(inp);c3.append(ic);
-      const b=document.createElement('button');b.type='button';b.textContent='Salvar';const m=document.createElement('span');m.className='msg';m.setAttribute('aria-live','polite');
-      b.onclick=function(){
-        const v=inp.value.trim();m.textContent='…';
-        const q=v?sb.from('plan_links').upsert({user_id:p.id,sheet_name:v,student_col:ic.value.trim()||null}):sb.from('plan_links').delete().eq('user_id',p.id);
-        q.then(function(r){m.textContent=r.error?'Erro: '+r.error.message:(v?'Salvo ✓':'Removido ✓');});
-      };
-      c4.append(b,m);
-      const g=prog[p.id];c5.textContent=g?('Stage '+(g.stage||'?')+' · Lição '+(g.lesson||'?')+(g.last_word?' · '+g.last_word:'')+' · '+new Date(g.updated_at).toLocaleString('pt-BR')):(links[p.id]?'aguardando a próxima leitura':'—');
-      tr.append(c1,c2,c3,c4,c5);t.append(tr);
-    });
-    if(!names.length){const n=document.createElement('p');n.className='hint';n.textContent='A lista de abas aparece depois da próxima sincronização do Apps Script.';t.parentNode.append(n);}
-  });
 }
 function renderMat(){
   fillEtapas();
@@ -515,7 +561,7 @@ function xChecks(uid,st){
 let XUN=[],CERTS=[],CERT_OK=false;
 async function loadExams(){
   const a=await sb.from('exam_release').select('*'),b=await sb.from('exam_results').select('*'),c=await sb.from('exam_defs').select('stage,minutes');
-  if(a.error||b.error||c.error){XOK=false;setMsg('xmsg','Tabelas da prova ainda não existem no Supabase. Rode o arquivo exam_setup.sql (e exam_data_stage1-2.sql) no SQL Editor.','bad');$('xtab').textContent='';return;}
+  if(a.error||b.error||c.error){XOK=false;setMsg('xmsg','Tabelas da prova ainda não existem no Supabase. Rode o arquivo exam_setup.sql (e exam_data_stage1-2.sql) no SQL Editor.','bad');if($('xtab'))$('xtab').textContent='';renderStu();return;}
   {const d=await sb.from('stage_unlock').select('*');XUN=(d&&!d.error&&d.data)||[];}
   {const d=await sb.from('certificates').select('*');CERT_OK=!!(d&&!d.error);CERTS=CERT_OK?(d.data||[]):[];}
   XOK=true;XREL=a.data||[];XRES=b.data||[];XDEF={};(c.data||[]).forEach(x=>{XDEF[x.stage]=x;});
@@ -538,7 +584,7 @@ function certOf(uid,st){return CERTS.find(x=>x.user_id===uid&&x.stage===st);}
 const HRS=[35,45,50,60,65,65,60,70,80,100,135,155];
 function xchips(){const w=$('xchips');if(!w)return;w.textContent='';const sel=$('xst');
   for(let i=1;i<=XSTG.length;i++){const b=el('button',{type:'button',class:'chp'+(String(i)===sel.value?' on':'')},'Etapa '+i);
-    b.addEventListener('click',()=>{sel.value=String(i);$('xdet').textContent='';renderExam();});w.append(b);}}
+    b.addEventListener('click',()=>{sel.value=String(i);EXS={};$('xdet').textContent='';renderExam();});w.append(b);}}
 document.addEventListener('click',e=>{if(!e.target.closest('.mn,.mnb'))document.querySelectorAll('.mn.open').forEach(x=>x.classList.remove('open'));});
 function xbtn(t,cls,fn){const b=el('button',{type:'button',class:cls||''},t);b.addEventListener('click',fn);return b;}
 function certDialog(p,st,c,res,cert){
@@ -579,17 +625,11 @@ function certDialog(p,st,c,res,cert){
     const r=await sb.from('certificates').update({revoked:true}).eq('id',cert.id);if(r.error){msg.textContent='Erro: '+r.error.message;msg.className='msg bad';return;}close();loadExams();}));
   row.append(xbtn('Cancelar','ghost',close),go);d.append(row);document.body.append(ov);
 }
-function renderExam(){
-  if(!XOK)return;
-  const st=parseInt($('xst').value,10)||1,def=XDEF[st];xchips();
-  const studs=PROFILES.filter(p=>p.status!=='pending'&&!p.is_admin),box=$('xcards');box.textContent='';
-  let nRel=0,nPro=0,nDone=0,nRev=0;
-  if(!studs.length)box.append(el('p',{class:'hint'},'Nenhum aluno ainda.'));
-  studs.forEach(p=>{
+function examCard(p,st){
+  const def=XDEF[st];
     const rel=XREL.find(x=>x.user_id===p.id&&x.stage===st),res=XRES.find(x=>x.user_id===p.id&&x.stage===st),c=xChecks(p.id,st),un=XUN.find(x=>x.user_id===p.id&&x.stage===st),cert=certOf(p.id,st);
     const sub=!!(res&&res.submitted_at),prog=!!(res&&!res.submitted_at);
     const nrev=sub?Object.values(res.review||{}).reduce((s,x)=>s+x.length,0):0;
-    if(rel&&!res)nRel++;if(prog)nPro++;if(sub){nDone++;if(nrev)nRev++;}
     let T=0,M=0;if(sub){const sc=res.scores||{},mx=res.maxes||{};Object.keys(mx).forEach(k=>{T+=sc[k]||0;M+=mx[k];});}
     let pill;
     if(!def)pill=el('span',{class:'pl bad'},'Prova não cadastrada');
@@ -627,10 +667,18 @@ function renderExam(){
       sb.from('exam_results').delete().eq('user_id',p.id).eq('stage',st).then(r=>{if(!fail(r)){$('xdet').textContent='';loadExams();}});});
     const mb=el('button',{type:'button',class:'ghost mnb'},'⋯ Mais');mb.addEventListener('click',()=>{const o=mn.classList.contains('open');document.querySelectorAll('.mn.open').forEach(x=>x.classList.remove('open'));if(!o)mn.classList.add('open');});
     act.append(mb,mn);
-    box.append(el('div',{class:'ec'},el('div',{class:'t'},el('div',{class:'av'},((p.name||p.email||'?')[0]||'?').toUpperCase()),el('div',{class:'nm'},el('b',{},p.name||p.email),el('small',{},'Etapa '+st)),pill),
-      el('div',{class:'bar2'},el('i',{style:'width:'+pc+'%'})),el('div',{class:'m'},m1,el('span',{},bits.join(' · '))),act));
-  });
+    return el('div',{class:'ec'},el('div',{class:'t'},el('div',{class:'nm'},el('b',{},'Prova · Etapa '+st)),pill),
+      el('div',{class:'bar2'},el('i',{style:'width:'+pc+'%'})),el('div',{class:'m'},m1,el('span',{},bits.join(' · '))),act);
+}
+function renderExam(){
+  if(!XOK)return;
+  const st=parseInt($('xst').value,10)||1;xchips();
+  const studs=PROFILES.filter(p=>p.status!=='pending'&&!p.is_admin);
+  let nRel=0,nPro=0,nDone=0,nRev=0;
+  studs.forEach(p=>{const rel=XREL.find(x=>x.user_id===p.id&&x.stage===st),res=XRES.find(x=>x.user_id===p.id&&x.stage===st);
+    if(rel&&!res)nRel++;if(res&&!res.submitted_at)nPro++;if(res&&res.submitted_at){nDone++;if(Object.values(res.review||{}).reduce((q,x)=>q+x.length,0))nRev++;}});
   const k=$('xkp');k.textContent='';[['Liberadas',nRel],['Em andamento',nPro],['Concluídas',nDone],['Para revisar',nRev]].forEach(x=>k.append(el('div',{},el('small',{},x[0]),el('b',{},String(x[1])))));
+  renderStu();
 }
 async function showExam(p,st){
   const box=$('xdet');box.textContent='';
@@ -675,14 +723,15 @@ async function xReview(uid,st,n,accept){
 /* ----- tabs and home ----- */
 const IC={stats:'M4 20V10M10 20V4M16 20v-7M22 20H2',home:'M3 11l9-8 9 8M5 10v10h14V10M10 20v-6h4v6',agenda:'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',students:'M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM2.5 20c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6M16 4.5a3.5 3.5 0 0 1 0 6.5M18 14.5c2 .7 3.5 2.5 3.5 5.5',grades:'M4 20V10M10 20V4M16 20v-7M22 20H2',more:'M5 12h.01M12 12h.01M19 12h.01',today:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3 2',exams:'M4 4h16v16H4zM8 12l3 3 5-6',pay:'M3 6h18v12H3zM3 10h18M7 15h3',content:'M12 6c-2-1.5-5-2-8-2v14c3 0 6 .5 8 2 2-1.5 5-2 8-2V4c-3 0-6 .5-8 2zM12 6v14',place:'M6 17V11a6 6 0 0 1 12 0v6l2 2H4zM10 21h4'};
 function ico(k){const d=document.createElement('div');d.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+IC[k]+'"/></svg>';return d.firstChild;}
-const TABS=[['home','Início'],['agenda','Agenda'],['today','Hoje'],['students','Alunos'],['grades','Notas'],['exams','Exames'],['pay','Pagamentos','payments.html'],['content','Conteúdo'],['place','Placement'],['stats','Estatísticas'],['fx','Efeitos']];
-const BAR=['home','agenda','students','grades','more'],MORE=['more','today','exams','content','place','stats','fx'];
+const TABS=[['home','Início'],['agenda','Agenda'],['today','Hoje'],['students','Alunos'],['grades','Notas'],['pay','Pagamentos','payments.html'],['content','Conteúdo'],['place','Placement'],['stats','Estatísticas'],['fx','Efeitos']];
+const BAR=['home','agenda','students','grades','more'],MORE=['more','today','content','place','stats','fx'];
 let OVERDUE=null,PLN=null,CUR='home';
 function markTabs(){
   document.querySelectorAll('#tpTabs .tp-tab').forEach(x=>x.classList.toggle('on',x.dataset.k===CUR||(x.dataset.k==='more'&&MORE.includes(CUR))));
   document.querySelectorAll('#tpSide .tp-tab').forEach(x=>x.classList.toggle('on',x.dataset.k===CUR));
 }
 function go(k){
+  if(k==='exams')k='students';
   if(k!=='more'&&!TABS.some(t=>t[0]===k&&!t[2]))k='home';
   CUR=k;const sec=k==='agenda'?'home':k;
   document.querySelectorAll('.sc').forEach(x=>x.classList.toggle('on',x.id==='s-'+sec));
@@ -771,7 +820,7 @@ function renderMore(h){
 }
 function renderHome(){
   const h=homeStats(),ul=$('tpAttnList'),cards=$('tpCards');if(!ul)return;
-  const TI=k=>TABS.findIndex(t=>t[0]===k);TABS[TI('students')][3]=()=>h.pend;TABS[TI('exams')][3]=()=>h.rev;TABS[TI('pay')][3]=()=>h.over||0;renderToday();
+  const TI=k=>TABS.findIndex(t=>t[0]===k);TABS[TI('students')][3]=()=>h.pend+h.rev;TABS[TI('pay')][3]=()=>h.over||0;renderToday();
   buildTabs();markTabs();renderRings(h);renderMore(h);
   const rows=[];
   if(h.pend)rows.push([h.pend+' pedido(s) de acesso para aprovar','students']);
@@ -799,7 +848,7 @@ function loadHomeExtras(){
 buildTabs();go((location.hash||'#home').slice(1));
 {const lb=t=>{if(!t)return;const hs=[...t.querySelectorAll('th')].map(x=>x.textContent);t.querySelectorAll('tr').forEach(r=>[...r.children].forEach((c,i)=>{if(c.tagName==='TD'&&hs[i]&&c.dataset.l!==hs[i])c.dataset.l=hs[i];}));};
 ['pend','stu'].forEach(id=>{const e=$(id);if(!e)return;const t=e.tagName==='TABLE'?e:null;const root=t||e;lb(root);new MutationObserver(()=>lb(root.tagName==='TABLE'?root:root.querySelector('table'))).observe(root,{childList:true,subtree:true});});}
-{const q=$('stq');if(q)q.addEventListener('input',()=>{const v=q.value.trim().toLowerCase();document.querySelectorAll('#stu tr').forEach((r,i)=>{if(!i)return;r.hidden=!!v&&!r.textContent.toLowerCase().includes(v);});});}
+{const q=$('stq');if(q)q.addEventListener('input',()=>{const v=q.value.trim().toLowerCase();document.querySelectorAll('#stt tr.sr,#stt tr.dr').forEach(r=>{r.hidden=!!v&&!(r.dataset.q||'').includes(v);});});}
 window.addEventListener('hashchange',()=>go((location.hash||'#home').slice(1)));
 
 loadPlacement();
