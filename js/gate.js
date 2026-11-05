@@ -315,7 +315,10 @@ function pushRow(closeMenu){
   if(can&&Notification.permission==='granted'){var t=setInterval(function(){var p=P();if(!p)return;clearInterval(t);p.current().then(function(s){set(!!s);if(s)p.sync(sb);}).catch(function(){});},300);setTimeout(function(){clearInterval(t);},6000);}
   return el('div',{class:'g-mr'},ico('bell'),el('span',{},'Notifications'),sw);
 }
-function showHelp(){
+function helpCtx(){return {prof:prof,user:user,course:COURSE.id==='es'?'es':'en',getSb:function(){return window.Gate&&window.Gate.sb;},insta:function(){return ico('insta');},tour:function(){if(document.getElementById('today'))startTour(true);else location.href='index.html#tour';}};}
+function loadHelp(cb,fail){if(window.BLHelp)return cb();var s=document.createElement('script');s.src=(window.BL_BASE||'')+'js/help.js';s.onload=function(){window.BLHelp?cb():fail();};s.onerror=fail;document.head.appendChild(s);}
+function showHelp(){loadHelp(function(){window.BLHelp.open(helpCtx());},showHelpOld);}
+function showHelpOld(){
   var ov=el('div',{class:'g-hov'}),close=function(){document.removeEventListener('keydown',kd);ov.remove();},kd=function(e){if(e.key==='Escape')close();};
   var nm=(prof&&prof.name)||'';
   var wa=el('a',{class:'g-btn',href:'https://wa.me/5511914881274?text='+encodeURIComponent('Hello! This is '+nm+', a Britland Academy student. I need help.'),target:'_blank',rel:'noopener',style:'text-decoration:none;display:inline-flex;align-items:center'},'Talk to the school');
@@ -922,7 +925,7 @@ function enter(){
         hideOverlay();applyServerPrefs();if(OFF)offBanner(true);else flushQ();if(!OPTS.bare){addBar();loadProfile(paintAvatars);try{thanksPay();}catch(e){}try{birthdayParty();}catch(e){}try{profilePrompts();}catch(e){}}
         /* the streak counts finished activities only (see saveAttempt) */
         CB({user:user,profile:prof,attempts:att,upto:upto()});
-        setTimeout(function(){a11yPass();if(!(OPTS.admin||OPTS.bare||OFF||prof.is_admin)&&document.getElementById('today'))tourMaybe();pushNudge();},600);
+        setTimeout(function(){a11yPass();if(!(OPTS.admin||OPTS.bare||OFF||prof.is_admin)&&document.getElementById('today'))tourMaybe();pushNudge();loadHelp(function(){window.BLHelp.whatsNew(helpCtx());},function(){});},600);
       }
       fin();
     });

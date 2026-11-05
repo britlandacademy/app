@@ -1,0 +1,12 @@
+/* Britland Academy: release notes shown in Help > Novidades and in the "O que há de novo" notice.
+   Newest first. Written for students (no technical terms). Each entry: v, d [pt, es], t [pt, es] short title, p [pt, es] one sentence,
+   show:1 = also shown once in the notice after the update, c:'en'|'es' = only that course (omit = both). */
+window.BL_RELEASES=[
+{v:'1.9.82',d:['4 de novembro','4 de noviembre'],show:1,t:['Ajuda renovada','Ayuda renovada'],p:['Agora a Ajuda tem perguntas frequentes, atalhos, as novidades de cada versão e um botão para avisar o professor de um problema.','Ahora la Ayuda tiene preguntas frecuentes, atajos, las novedades de cada versión y un botón para avisar al profesor de un problema.']},
+{v:'1.9.81',d:['4 de novembro','4 de noviembre'],show:1,t:['Ligar palavras ficou mais fácil','Unir palabras es más fácil'],p:['Nos exercícios de ligar, toque direto no botão com a letra e a palavra, sem abrir menu.','En los ejercicios de unir, toca directamente el botón con la letra y la palabra, sin abrir un menú.']},
+{v:'1.9.80',d:['4 de novembro','4 de noviembre'],show:1,t:['Mapa com zonas de Stage','Mapa con zonas de Stage'],p:['No Modo Jogo, cada Stage tem uma faixa de cor com o nome, para você ver onde ele começa e termina.','En el Modo Juego, cada Stage tiene una franja de color con su nombre, para ver dónde empieza y termina.']},
+{v:'1.9.79',d:['4 de novembro','4 de noviembre'],c:'en',t:['Enunciados mais claros','Enunciados más claros'],p:['No Modo Jogo, os enunciados dos exercícios ficaram mais curtos e em português.','']},
+{v:'1.9.78',d:['4 de novembro','4 de noviembre'],show:1,t:['Refazer lições','Rehacer lecciones'],p:['No Modo Jogo, uma lição já concluída abre inteira para você refazer e tentar ganhar mais estrelas.','En el Modo Juego, una lección ya terminada se abre completa para que la rehagas e intentes ganar más estrellas.']},
+{v:'1.9.77',d:['4 de novembro','4 de noviembre'],c:'en',t:['Fotos novas na Irlanda','Fotos nuevas en Irlanda'],p:['Galway, Bray e Kilkenny ganharam fotos novas no mapa do Modo Jogo.','']},
+{v:'1.9.75',d:['novembro de 2026','noviembre de 2026'],c:'en',show:1,t:['Estações com fotos reais','Estaciones con fotos reales'],p:['As estações do Modo Jogo mostram uma foto do lugar, o nome do ponto turístico e uma curiosidade ou expressão do país. Toque em OK para seguir viagem.','']}
+];
