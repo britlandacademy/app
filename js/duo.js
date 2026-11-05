@@ -661,13 +661,14 @@
       confetti();
       setTimeout(function(){if(root.parentNode)buildPop();},fly?2950:0);
     }
-    var TKT={en:{done:'STATION COMPLETE',no:'NOT YET',ok:'Correct',of:'of',xp:'XP earned',lv:'Level',up:'level up!',st:'Stars',map:'Back to map',close:'Close',next:'Next'},
+    var TKT={pt:{done:'ESTAÇÃO COMPLETA',no:'AINDA NÃO',ok:'Acertos',of:'de',xp:'XP ganho',lv:'Nível',up:'subiu de nível!',st:'Estrelas',map:'Voltar ao mapa',close:'Fechar',next:'Próximo'},
+      en:{done:'STATION COMPLETE',no:'NOT YET',ok:'Correct',of:'of',xp:'XP earned',lv:'Level',up:'level up!',st:'Stars',map:'Back to map',close:'Close',next:'Next'},
       es:{done:'ESTACIÓN COMPLETADA',no:'TODAVÍA NO',ok:'Aciertos',of:'de',xp:'XP ganado',lv:'Nivel',up:'¡subiste!',st:'Estrellas',map:'Volver al mapa',close:'Cerrar',next:'Siguiente'}};
     var WHO={shakespeare:['William Shakespeare','Playwright and poet'],curie:['Marie Curie','Physicist and chemist'],newton:['Isaac Newton','Physicist and mathematician'],darwin:['Charles Darwin','Naturalist'],lincoln:['Abraham Lincoln','16th US president'],franklin:['Benjamin Franklin','Inventor and statesman'],mlk:['Martin Luther King Jr.','Civil rights leader'],austen:['Jane Austen','Novelist'],christie:['Agatha Christie','Crime novelist'],angelou:['Maya Angelou','Poet and author'],parks:['Rosa Parks','Civil rights activist'],alice:['Alice','Girl from Wonderland'],sherlock:['Sherlock Holmes','Fictional detective'],peter:['Peter Pan','The boy who never grew up'],arthur:['King Arthur','Legendary king of Britain'],wilde:['Oscar Wilde','Playwright and wit'],joyce:['James Joyce','Novelist'],yeats:['W. B. Yeats','Poet'],elizabeth2:['Queen Elizabeth II','Queen of the United Kingdom'],
       cervantes:['Miguel de Cervantes','Escritor'],frida:['Frida Kahlo','Pintora'],goya:['Francisco de Goya','Pintor'],picasso:['Pablo Picasso','Pintor'],velazquez:['Diego Velázquez','Pintor'],bolivar:['Simón Bolívar','Libertador'],isabel:['Isabel la Católica','Reina de Castilla'],sanmartin:['José de San Martín','Libertador']};
     var CTRY={usa:'USA',england:'England',poland:'Poland',scotland:'Scotland',wales:'Wales',ireland:'Ireland',uk:'UK','flag-es.png':'España','flag-mx.png':'México','flag-ve.png':'Venezuela','flag-ar.png':'Argentina'};
     function buildTicketPop(){
-      var X=TKT[B?'es':'en'],pct=total?right/total:0,stars=pct>=.9?3:pct>=.6?2:1,passMin=typeof o.passMin==='number'?o.passMin:0,passed=pct>=passMin;
+      var X=TKT[B?'es':(ix()===1?'pt':'en')],pct=total?right/total:0,stars=pct>=.9?3:pct>=.6?2:1,passMin=typeof o.passMin==='number'?o.passMin:0,passed=pct>=passMin;
       var nx=null;try{nx=o.next?o.next():null;}catch(e){}
       var ch=pickCh(),who=WHO[ch.id]||[ch.id,''],ctry=CTRY[ch.cc]||'',inf=o.station||{};
       var pop=el('div','dz-pop'),card=el('div','dz-card tkc');pop.setAttribute('role','alertdialog');pop.setAttribute('aria-label',X.done);

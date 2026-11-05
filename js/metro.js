@@ -784,10 +784,12 @@ function mount(c,o){
   /* welcome banner: flag + city, 2 seconds */
   var wel=h('div','wel','<div><div class="fw">'+flagHTML(C)+'</div><small>'+tx.next+'</small><h2></h2><div class="ln"><i></i><span></span></div></div>');
   wel.querySelector('h2').innerHTML=tx.welcome+'<br>';wel.querySelector('h2').append(D.createTextNode(C.welcome));wel.querySelector('.ln span').textContent=C.line;
-  wel.setAttribute('role','status');root.append(wel);
+  wel.setAttribute('role','status');
+  var welSeen=false;try{welSeen=sessionStorage.getItem('bl-wel')===C.city;sessionStorage.setItem('bl-wel',C.city);}catch(e){}
+  if(!welSeen)root.append(wel);
   function endWel(){welDone=true;wq.splice(0).forEach(function(f){setTimeout(f,650);});if(pend!==null){var q=pend;pend=null;var gq=pendG;pendG=false;setTimeout(function(){plate(q,gq);},750);}wel.classList.add('out');setTimeout(function(){wel.remove();},600);}
   wel.addEventListener('click',function(){ctx();endWel();});
-  if(reduced())setTimeout(endWel,1200);else{setTimeout(function(){dingdong();},150);setTimeout(endWel,2200);}
+  if(welSeen)endWel();else if(reduced())setTimeout(endWel,1200);else{setTimeout(function(){dingdong();},150);setTimeout(endWel,2200);}
 }
 var fxExit=null;
 W.Metro={mount:mount,exitFx:function(cb){if(fxExit)fxExit(cb);else cb();},gameOn:function(){try{return localStorage.getItem('bl-game')==='1';}catch(e){return false;}},

@@ -623,7 +623,7 @@ function reportText(){
   lines.push('');
   LESSONS.forEach(L=>{const st=lessonStats(L);if(st.done)lines.push(L.title+': '+st.pts+' of '+st.tot+' ('+st.pct+'%) · '+(st.complete?'completed':'pending'));});
   lines.push('','History:');
-  s.attempts.slice().reverse().forEach(a=>{const L=BYID[a.l];lines.push(fmt(a.at)+' · '+(L?L.title:'Lesson '+a.l)+' · '+a.s+'/'+a.t);});
+  s.attempts.slice().reverse().forEach(a=>{const L=BYID[a.l];lines.push(fmt(a.at)+' · '+(L?L.title:(window.I18N&&I18N.ptx?I18N.ptx('Lesson '+a.l+' Check'):'Lesson '+a.l))+' · '+a.s+'/'+a.t);});
   return lines.join('\n');
 }
 let confirmDel=false;
@@ -639,7 +639,7 @@ function renderHistory(){
   const tbl=el('table',{},el('caption',{class:'hint'},'All attempts, newest first'),
     el('thead',{},el('tr',{},['Date and time','Lesson','Score','%'].map(h=>el('th',{scope:'col'},h)))),
     el('tbody',{},rows.length?rows.map(a=>{const L=BYID[a.l];
-      return el('tr',{},el('td',{},fmt(a.at)),el('td',{},L?L.title:'Lesson '+a.l),el('td',{},a.s+' / '+a.t),el('td',{},Math.round(a.s/a.t*100)+'%'));})
+      return el('tr',{},el('td',{},fmt(a.at)),el('td',{},L?L.title:(window.I18N&&I18N.ptx?I18N.ptx('Lesson '+a.l+' Check'):'Lesson '+a.l)),el('td',{},a.s+' / '+a.t),el('td',{},Math.round(a.s/a.t*100)+'%'));})
       :[el('tr',{},el('td',{colspan:'4'},'No attempts yet.'))]));
   const ta=el('textarea',{class:'rep',readonly:true,rows:'6','aria-label':'Report to send to the teacher',hidden:true});
   ta.value=reportText();
