@@ -307,10 +307,23 @@ function bTf(it,id,n){
     return {ok:ok,model:model,tf:true,right:it.ok,msg:ok?'':(it.ok?'This answer is right.':'This answer is wrong.')};
   },lock:()=>rs.forEach(r=>{r.disabled=true;})};
 }
+function pickOf(id,label,opts,badge){
+  if(!document.getElementById('pk-css')){const st=document.createElement('style');st.id='pk-css';
+    st.textContent='.pk{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0 10px}.pk button{display:flex;align-items:center;gap:10px;min-height:48px;padding:10px 14px;border-radius:14px;border:2px solid var(--line,#bbb);background:var(--surface,#fff);color:var(--ink,inherit);font:700 1.02rem/1.2 inherit;font-family:inherit;text-align:left;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.18)}.pk button b{flex:none;width:26px;height:26px;border-radius:50%;background:#e8b923;color:#10224a;display:grid;place-items:center;font-size:.85rem}.pk button.on{border-color:#e8b923;box-shadow:0 0 0 2px #e8b923 inset,0 3px 0 rgba(0,0,0,.18)}.pk button:disabled{opacity:.75;cursor:default}';
+    document.head.appendChild(st);}
+  const box=document.createElement('div');box.className='pk';box.id=id;box.setAttribute('role','group');box.setAttribute('aria-label',label);
+  let val='',dis=false;const bs=[];
+  opts.forEach(o=>{const b=document.createElement('button');b.type='button';b.setAttribute('aria-pressed','false');b.dataset.v=o[0];
+    if(badge){const l=document.createElement('b');l.textContent=o[0];b.appendChild(l);}
+    b.appendChild(document.createTextNode(o[1]));
+    b.addEventListener('click',()=>{if(dis)return;val=o[0];bs.forEach(x=>{const on=x===b;x.classList.toggle('on',on);x.setAttribute('aria-pressed',on?'true':'false');});box.dispatchEvent(new Event('change',{bubbles:true}));});
+    bs.push(b);box.appendChild(b);});
+  Object.defineProperty(box,'value',{get:()=>val,set:v=>{val=v;bs.forEach(x=>x.classList.toggle('on',x.dataset.v===v));}});
+  Object.defineProperty(box,'disabled',{get:()=>dis,set:v=>{dis=!!v;bs.forEach(x=>{x.disabled=dis;});}});
+  return box;
+}
 function bMatch(it,id,n,pool){
-  const sel=el('select',{id:id,'aria-label':'Answer for: '+it.q});
-  sel.append(el('option',{value:''},'— choose the answer —'));
-  pool.forEach((t,i)=>sel.append(el('option',{value:String(i)},t)));
+  const sel=pickOf(id,'Answer for: '+it.q,pool.map((t,i)=>[String(i),t]),false);
   return {nodes:[ctxEl(it.ctx),el('label',{class:'q',for:id},it.q),sel],get:()=>{
     if(sel.value==='')return {ok:false,msg:'Choose an answer.',model:it.a};
     return pool[+sel.value]===it.a?{ok:true,model:it.a}:{ok:false,msg:'Check the model answer.',model:it.a};
