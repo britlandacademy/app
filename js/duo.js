@@ -108,6 +108,7 @@
 '#bl-duo.game .dz-nm{display:block;margin:0 0 3px;font:700 .68rem/1.2 system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#c99a0c}'+
 '#bl-duo.game .dz-scene.rev{flex-direction:row-reverse;margin-top:-4px}#bl-duo.game .dz-scene.rev .dz-bub::before{left:auto;right:-10px;border-right:0;border-left:10px solid var(--line,#bbb)}#bl-duo.game .dz-scene.rev .dz-bub::after{left:auto;right:-7px;border-right:0;border-left:8px solid var(--surface,#fff)}'+
 '#bl-duo.game .dz-bub .cloze{margin:0;font-weight:700;font-size:1.15rem;line-height:1.35}'+
+'#bl-duo.game .dz-pre .dz-gram{margin:8px 0 0;font-size:.78rem;font-weight:500;color:var(--mu,#8a93a8)}'+
 '#bl-duo.game .dz-pre{margin:14px 0 4px;text-align:center}#bl-duo.game .dz-pre .instr{margin:0;font-weight:700;font-size:1.25rem;line-height:1.25;color:var(--ink,inherit)}#bl-duo.game .dz-pre .instr::after{content:"";display:block;width:50px;height:3px;margin:12px auto 0;border-radius:2px;background:#f5c542}'+
 '#bl-duo .dz-q{margin-top:8px;font-size:1.1rem}'+
 '#bl-duo .dz-q .q{font-size:1.3rem;line-height:1.3}'+
@@ -564,7 +565,7 @@
       if(game){var sc=el('div','dz-scene'),pw=el('div','dz-peep'),pi=el('img');pi.src=nextPeep();pi.alt='';pw.style.background=PBG[Math.floor(Math.random()*PBG.length)];if(Math.random()<.5)pi.style.transform='scaleX(-1)';pw.appendChild(pi);
       var bub=el('div','dz-bub'),chip=el('div','dz-chip',((rv?T('rvTitle'):(g.title?g.title+' · ':''))+(rv?' · ':'')+T('q',{a:idx+1,b:total})).toUpperCase());
       sc.appendChild(pw);sc.appendChild(bub);inn.appendChild(chip);}else inn.appendChild(el('p','dz-lab',(g.title?g.title+' · ':'')+T('q',{a:idx+1,b:total})));
-      if(g.pre){if(!g.pre_)g.pre_=g.pre()||[];if(g.pre_.length){var pw=el('div','dz-pre');g.pre_.forEach(function(n){if(n)pw.appendChild(n);});inn.appendChild(pw);}}
+      if(g.pre){if(!g.pre_){g.pre_=g.pre()||[];if(game&&W.I18N&&W.I18N.ptx){var pn=[];g.pre_.forEach(function(n){pn.push(n);if(n&&n.className==='instr'){var tt=W.I18N.ptx(n.textContent),mm=/^([\s\S]*?)\s*(?:Gramática|Grammar):\s*([\s\S]+)$/.exec(tt);if(mm){n.textContent=mm[1];var gl=el('p','dz-gram','Gramática: '+mm[2]);pn.push(gl);}else n.textContent=tt;}});g.pre_=pn;}}if(g.pre_.length){var pw=el('div','dz-pre');g.pre_.forEach(function(n){if(n)pw.appendChild(n);});inn.appendChild(pw);}}
       if(game)inn.appendChild(sc);
       cur=s.it.make();var skipN=null;
       if(game){var qe=null,ns=cur.nodes||[];for(var qi=0;qi<ns.length&&!qe;qi++){var nn=ns[qi];if(!nn||!nn.querySelector)continue;qe=(nn.classList&&nn.classList.contains('q'))?nn:nn.querySelector('.q');}

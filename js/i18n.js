@@ -522,6 +522,7 @@ var X=[ /* forced Portuguese in the English course: [English, Português, Españ
 ["Type the whole sentence instead","Prefiro escrever a frase inteira","Type the whole sentence instead"],
 ["Tap the wrong word and write the correct one.","Toque na palavra errada e escreva a correta.","Tap the wrong word and write the correct one."],
 ["Correct the sentence.","Qual é a frase correta?","Correct the sentence."],
+["Tap the wrong word.","Toque na palavra errada.","Tap the wrong word."],
 ["Complete the sentence","Complete a frase","Complete the sentence"],
 ["Type the missing word. Grammar: {0}","Complete a lacuna. Gramática: {0}","Type the missing word. Grammar: {0}"],
 ["Choose the correct word","Escolha a palavra correta","Elige la palabra correcta"],
@@ -540,7 +541,7 @@ var X=[ /* forced Portuguese in the English course: [English, Português, Españ
 ["Words","Palavras","Palabras"],
 ["Picture {0}","Figura {0}","Imagen {0}"],
 ["— choose —","— escolha —","— elige —"],
-["Each sentence has a mistake. Type the correct sentence. Grammar: {0}","Cada frase tem um erro: corrija-a. Gramática: {0}","Each sentence has a mistake. Type the correct sentence. Grammar: {0}"],
+["Each sentence has a mistake. Type the correct sentence. Grammar: {0}","Cada frase tem um erro. Corrija a frase. Gramática: {0}","Each sentence has a mistake. Type the correct sentence. Grammar: {0}"],
 ["Dictation. Listen and write.","Ditado. Ouça e escreva.","Dictation. Listen and write."],
 ["Match the pictures with the words. Draw a line.","Ligue as figuras às palavras. Trace uma linha.","Match the pictures with the words. Draw a line."],
 ["Match the beginnings (1–6) with the endings (A–F). Write the letter.","Una os começos (1–6) aos finais (A–F). Escreva a letra.","Match the beginnings (1–6) with the endings (A–F). Write the letter."],
@@ -815,5 +816,5 @@ function start(){
   obs.observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:ATTRS});
 }
 if(document.body)start();else document.addEventListener('DOMContentLoaded',start);
-window.I18N={pt:function(s){var c=String(s||'').trim();return MAP.hasOwnProperty(c)?MAP[c][1]:s;},flag:function(l){return flagSVG(l,++FLAGN);},def:defLang,t:tr,selector:selector,set:setLang,setUi:setUi,after:after,mode:MODE,get lang(){return lang;},get hasPref(){return !!pref();},get hint(){return MODE==='why'?hint:lang;}};
+window.I18N={ptx:function(s){if(UI!=='en')return s;var m=/^(\s*)([\s\S]*?)(\s*)$/.exec(String(s||'')),c=m[2];if(!c)return s;if(MAP.hasOwnProperty(c))return m[1]+MAP[c][1]+m[3];for(var i=0;i<TPL.length;i++){var r=TPL[i].re.exec(c);if(r)return m[1]+TPL[i].entry[1].replace(/\{(\d)\}/g,function(_,n){return r[+n+1]!==undefined?r[+n+1]:'';})+m[3];}return s;},pt:function(s){var c=String(s||'').trim();return MAP.hasOwnProperty(c)?MAP[c][1]:s;},flag:function(l){return flagSVG(l,++FLAGN);},def:defLang,t:tr,selector:selector,set:setLang,setUi:setUi,after:after,mode:MODE,get lang(){return lang;},get hasPref(){return !!pref();},get hint(){return MODE==='why'?hint:lang;}};
 })();
