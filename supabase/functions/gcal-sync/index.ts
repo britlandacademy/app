@@ -44,8 +44,8 @@ Deno.serve(async (req) => {
     for (const e of ev) {
       if (e.status === "cancelled" || !e.start?.dateTime) continue; // ignora cancelados e eventos de dia inteiro
       const ids = new Set<string>();
-      const man = manual.get(e.id);
-      if (man && man.length) for (const u of man) ids.add(u);
+      const man = manual.get(e.id) || manual.get(String(e.id).replace(/_\d{8}T\d{6}Z$/, "")); // aula avulsa tem prioridade; senão vale a série
+      if (man && man.length) for (const u of man) if ((profs || []).some((p: any) => p.id === u)) ids.add(u);
       for (const a of e.attendees || []) { const id = byMail.get((a.email || "").toLowerCase()); if (id) ids.add(id); }
       let viaGroup = false;
       if (!ids.size) { // turmas: nome da turma contido no titulo

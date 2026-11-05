@@ -333,13 +333,15 @@ function admin(box,lg){
     var box2=el('div','ag-info');
     gr.students.forEach(function(p){var l=el('label','ag-ck'),c=document.createElement('input');c.type='checkbox';c.checked=!!chosen[p.id];c.onchange=function(){chosen[p.id]=c.checked;};l.appendChild(c);l.appendChild(document.createTextNode(' '+(p.name||p.email)));box2.appendChild(l);});
     body.appendChild(box2);
+    var sm=/^(.+)_\d{8}T\d{6}Z$/.exec(x.k),serie=sm?sm[1]:null,allSer=true;
+    if(serie){var sl=el('label','ag-ck'),sc=document.createElement('input');sc.type='checkbox';sc.checked=true;sc.onchange=function(){allSer=sc.checked;};sl.appendChild(sc);sl.appendChild(document.createTextNode(' Aplicar a todas as aulas desta série'));body.appendChild(sl);}
     var m=el('p','ag-s ag-m','');m.setAttribute('role','status');body.appendChild(m);body.appendChild(el('div','ag-sp'));
     var save=el('button','ag-btn ag-go','Salvar'),auto=el('button','ag-btn alt','Voltar ao automático');save.type=auto.type='button';
     function fin(){Gate.sb.functions.invoke('gcal-sync',{body:{force:true}}).then(function(){close();},function(){close();});}
     save.onclick=function(){var ids=Object.keys(chosen).filter(function(i){return chosen[i];});if(!ids.length){m.textContent='Marque ao menos um aluno (ou use "Voltar ao automático").';return;}
       save.disabled=auto.disabled=true;m.textContent=T('busy');
-      Gate.sb.from('lesson_assign').upsert({event_id:x.k,user_ids:ids,updated_at:new Date().toISOString()}).then(function(q){if(q&&q.error){save.disabled=auto.disabled=false;m.textContent=T('fail');}else fin();},function(){save.disabled=auto.disabled=false;m.textContent=T('fail');});};
-    auto.onclick=function(){save.disabled=auto.disabled=true;m.textContent=T('busy');Gate.sb.from('lesson_assign').delete().eq('event_id',x.k).then(fin,fin);};
+      Gate.sb.from('lesson_assign').upsert({event_id:(serie&&allSer)?serie:x.k,user_ids:ids,updated_at:new Date().toISOString()}).then(function(q){if(q&&q.error){save.disabled=auto.disabled=false;m.textContent=T('fail');}else fin();},function(){save.disabled=auto.disabled=false;m.textContent=T('fail');});};
+    auto.onclick=function(){save.disabled=auto.disabled=true;m.textContent=T('busy');Gate.sb.from('lesson_assign').delete().in('event_id',serie&&allSer?[x.k,serie]:[x.k]).then(fin,fin);};
     body.appendChild(save);body.appendChild(auto);sheet('Aluno da aula',body);
   }
   function requestsUI(gr){
