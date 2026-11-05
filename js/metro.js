@@ -422,8 +422,8 @@ function mount(c,o){
       var pick=[],K=Math.min(5,sx.length);
       for(k=0;k<K;k++){var pj=sx[Math.max(0,Math.min(sx.length-1,Math.round((k+.5)*sx.length/K-.5)))];if(pick.indexOf(pj)<0)pick.push(pj);}
       var a=lens[0],b=lens[ci],TAB=[],T0=0,NN=600;
-      for(k=0;k<=NN;k++){var d0=a+(b-a)*k/NN,sp=1;pick.forEach(function(s){var dd=Math.abs(d0-lens[s]);if(dd<60)sp=Math.min(sp,.3+.7*dd/60);});sp*=Math.min(1,.25+Math.min(d0-a,b-d0)/70);TAB.push([T0,d0]);T0+=((b-a)/NN)/sp;}
-      var dur=Math.min(8500,5000+ci*50),cards={},lit=0,over=false,raf=0,cur0=-1;
+      for(k=0;k<=NN;k++){var d0=a+(b-a)*k/NN,sp=1;pick.forEach(function(s){var dd=Math.abs(d0-lens[s]);if(dd<120)sp=Math.min(sp,.14+.86*dd/120);});sp*=Math.min(1,.25+Math.min(d0-a,b-d0)/70);TAB.push([T0,d0]);T0+=((b-a)/NN)/sp;}
+      var dur=Math.min(16000,10000+ci*70),cards={},lit=0,over=false,raf=0,cur0=-1;
       var sk=h('button');sk.type='button';sk.textContent=(ES?'Saltar':'Pular')+' ⏭';
       sk.style.cssText='position:fixed;z-index:9999;font:800 12px system-ui,sans-serif;background:rgba(255,250,240,.95);color:#1d2a48;border:2px solid #c9bd9c;border-radius:14px;padding:5px 12px;cursor:pointer';
       function place(){var r=scEl.getBoundingClientRect();sk.style.top=(r.top+8)+'px';sk.style.right='12px';}
@@ -445,7 +445,7 @@ function mount(c,o){
         var tt=ms/dur*T0,lo=0,hi=TAB.length-1;while(lo<hi){var m=(lo+hi)>>1;if(TAB[m][0]<tt)lo=m+1;else hi=m;}
         var len=TAB[lo][1];setProg(len);camY(pt(len).y,false);place();
         while(lit<=ci&&len>=lens[lit]-4){var g=mapEl.querySelector('[data-i="'+lit+'"] .in');if(g)g.style.filter='drop-shadow(0 0 7px #e8b923)';lit++;}
-        var near=-1;pick.forEach(function(s){if(Math.abs(len-lens[s])<50)near=s;});
+        var near=-1;pick.forEach(function(s){if(Math.abs(len-lens[s])<95)near=s;});
         if(near!==cur0){if(cur0>=0&&cards[cur0])cards[cur0].style.opacity=0;cur0=near;}
         if(near>=0){var c=cards[near],ge=mapEl.querySelector('[data-i="'+near+'"] .in');if(ge){var r=ge.getBoundingClientRect(),cx=r.left+r.width/2,left=cx>W.innerWidth/2;
           var x=left?r.left-132-14:r.right+14;x=Math.max(6,Math.min(W.innerWidth-138,x));var sr=scEl.getBoundingClientRect(),y=Math.max(sr.top+40,Math.min(sr.bottom-110,r.top-100));
