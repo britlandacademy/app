@@ -720,10 +720,10 @@ function mount(c,o){
       if(o.sign>0){var ga0=c.globalAlpha;c.globalAlpha=ga0*o.sign;
         c.save();c.shadowColor='rgba(0,0,0,.3)';c.shadowBlur=10;rr(24,86,266,70,14);c.fillStyle=P.cream;c.fill();c.restore();
         c.strokeStyle=P.red;c.lineWidth=4;circ(62,121,17);c.stroke();c.fillStyle=P.n1;rr(40,114,44,14,2);c.fill();txt('BL',62,125,10,'#fff',{ls:1});
-        txt('NEXT STOP',96,108,10,'#b58a10',{a:'left',ls:2});txt(nmU,96,138,fit(nmU,184,20,{f:SERIF}),P.navy,{a:'left',f:SERIF});
+        txt(ES?'PRÓXIMA PARADA':'NEXT STOP',96,108,10,'#b58a10',{a:'left',ls:2});txt(nmU,96,138,fit(nmU,184,20,{f:SERIF}),P.navy,{a:'left',f:SERIF});
         c.save();c.shadowColor='rgba(0,0,0,.3)';c.shadowBlur=10;rr(24,478,342,100,16);c.fillStyle=P.cream;c.fill();c.restore();
         c.fillStyle=P.red;c.fillRect(24,478,342,8);if(R){var pg=c.createLinearGradient(0,478,0,578);pg.addColorStop(0,'rgba(255,255,255,.35)');pg.addColorStop(.1,'rgba(255,255,255,0)');pg.addColorStop(1,'rgba(0,0,0,.18)');c.fillStyle=pg;rr(24,478,342,100,16);c.fill();c.strokeStyle='#bfb59a';c.lineWidth=2;rr(24,478,342,100,16);c.stroke();}
-        txt('MIND THE GAP',195,540,34,P.navy,{ls:2});c.globalAlpha=ga0;}
+        var gapT=ES?'CUIDADO CON EL HUECO':'MIND THE GAP';txt(gapT,195,540,fit(gapT,310,34,{ls:2}),P.navy,{ls:2});c.globalAlpha=ga0;}
     }
     function ghosts(o){if(R&&o.blur>.1){[-1,-2].forEach(function(gh){c.globalAlpha=.16*o.blur;var o2={};for(var kk in o)o2[kk]=o[kk];o2.X=o.X+gh*34*o.blur*2*(kind==='out'?-1:1);o2.sign=0;o2.sparks=0;closeup(o2);});c.globalAlpha=1;}}
     function stationWall(){var x0=-offx/s-EXT,x1=x0+vw/s+2*EXT,y0=-offy/s-EXT,y1=y0+vh/s+2*EXT;
@@ -754,9 +754,9 @@ function mount(c,o){
     function dingS(t0){tone(784,t0,.9,'sine',.17);tone(1568,t0,.4,'sine',.05);tone(587.3,t0+.42,1.1,'sine',.17);}
     function chimeS(t0){[784,988,1318].forEach(function(f,i){tone(f,t0+i*.12,.6,'triangle',.13);});}
     function clacksS(t0,d){var t=0,iv;while(t<d){iv=.12+.55*(t/d)*(t/d);noise(t0+t,.06,.1,900,1000);tone(85,t0+t,.09,'sine',.12);noise(t0+t+.1,.06,.08,1200,1300);tone(95,t0+t+.1,.08,'sine',.09);t+=iv;}}
-    function speak(str,at){if(!sndOn()||!W.speechSynthesis)return;later(function(){if(fin)return;try{var u=new SpeechSynthesisUtterance(str);u.lang='en-GB';u.rate=.92;u.pitch=1.05;u.volume=.9;W.speechSynthesis.speak(u);}catch(e){}},at*1000);}
-    function sounds(){if(kind==='in'){rumble(1.9);clacksS(0,1.8);later(function(){noise(0,.8,.08,4200,1800);},1200);beepS(1.95);dingS(2.25);speak('Mind the gap.',2.5);chimeS(3.95);}
-      else{beepS(0);speak('Stand clear of the doors, please.',.2);later(function(){rumble(2.4);},1000);clacksS(1.0,2.0);chimeS(3.0);}}
+    function speak(str,at){var lang=ES?'es-ES':'en-GB';if(!sndOn()||!W.speechSynthesis)return;later(function(){if(fin)return;try{var u=new SpeechSynthesisUtterance(str);u.lang=lang;u.rate=.92;u.pitch=1.05;u.volume=.9;W.speechSynthesis.speak(u);}catch(e){}},at*1000);}
+    function sounds(){if(kind==='in'){rumble(1.9);clacksS(0,1.8);later(function(){noise(0,.8,.08,4200,1800);},1200);beepS(1.95);dingS(2.25);speak(ES?'Cuidado con el hueco.':'Mind the gap.',2.5);chimeS(3.95);}
+      else{beepS(0);speak(ES?'Atención, se cierran las puertas.':'Stand clear of the doors, please.',.2);later(function(){rumble(2.4);},1000);clacksS(1.0,2.0);chimeS(3.0);}}
     function end(){if(fin)return;fin=true;sT.forEach(clearTimeout);try{W.speechSynthesis&&W.speechSynthesis.cancel();}catch(e){}
       if(kind==='in'){ov.style.transition='opacity 450ms';ov.style.opacity='0';setTimeout(function(){ov.remove();if(done)done();},490);}else{if(done)done();}}
     var dur=kind==='in'?4.6:3.5;
