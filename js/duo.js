@@ -743,7 +743,7 @@
     var d=el('div','duo-cta');
     if(!gameOn()){
       var a=el('button','btn primary','▶ '+T('ctaOn'));a.type='button';
-      a.addEventListener('click',function(){try{localStorage.setItem('bl-game','1');localStorage.setItem('bl-fx','in:'+Date.now());}catch(e){}location.reload();});
+      a.addEventListener('click',function(){try{localStorage.setItem('bl-game','1');localStorage.setItem('bl-tfx','in:'+Date.now());}catch(e){}location.reload();});
       d.appendChild(a);d.appendChild(el('p','',T('ctaOnHint')));return d;
     }
     var b=el('button','btn primary','▶ '+T('cta'));b.type='button';b.addEventListener('click',function(){actx();onclick();});

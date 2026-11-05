@@ -5,7 +5,13 @@
    (nao usa sessionStorage: alguns navegadores/PWAs zeram a cada pagina e o jogo "voltava" para Lesson Checks) */
 try{var __n=Date.now(),__s=+localStorage.getItem('bl-seen')||0;if(!__s||__n-__s>30*60e3)localStorage.setItem('bl-game','0');localStorage.setItem('bl-seen',String(__n));
   var __t=function(){try{localStorage.setItem('bl-seen',String(Date.now()));}catch(e){}};setInterval(__t,60000);addEventListener('pagehide',__t);document.addEventListener('visibilitychange',__t);}catch(e){}
-window.BL_VERSION='1.9.72'; /* keep equal to VERSION in sw.js */
+window.BL_VERSION='1.9.73';
+/* leaving Game Mode: the empty platform stays over the page (and the loading screen) until the normal home is ready */
+try{var __o=localStorage.getItem('bl-tfx')||'';if(/^out:\d+$/.test(__o)){localStorage.removeItem('bl-tfx');if(Date.now()-(+__o.slice(4))<20000){
+  var __v=document.createElement('div'),__h=Math.max(640,390*innerHeight/innerWidth),__f=((470+(__h-640)/2)/__h*100).toFixed(2);__v.style.cssText='position:fixed;inset:0;z-index:2147483000;pointer-events:none;background:#f1ead6 linear-gradient(180deg,transparent 0 '+__f+'%,#e4dcc3 '+__f+'%);';
+  __v.innerHTML='<div style="position:absolute;left:0;right:0;top:calc('+__f+'% + '+(16/__h*innerHeight).toFixed(1)+'px);height:'+(10/__h*innerHeight).toFixed(1)+'px;background:#e8b923"></div>';
+  document.documentElement.appendChild(__v);var __t0=Date.now(),__iv=setInterval(function(){var ld=document.querySelector('.g-ld');if((Date.now()-__t0>700&&!ld&&document.body&&document.body.children.length>1)||Date.now()-__t0>7000){clearInterval(__iv);__v.style.transition='opacity .5s';__v.style.opacity='0';setTimeout(function(){__v.remove();},600);}},120);}}}catch(e){}
+ /* keep equal to VERSION in sw.js */
 /* ---- error codes: erros são gravados em silêncio em app_errors (aba Estatísticas); o aluno não vê nada ---- */
 (function(){
 var V=window.BL_VERSION,seen={},sent=0,queue=[];
