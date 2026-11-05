@@ -2,15 +2,16 @@
 (function(){
 var L={
  pt:{wk1:'Semana completa!',wkN:'{w} semanas seguidas!',m30:'Um mês de ofensiva!',m100:'100 dias de ofensiva!',m365:'Um ano inteiro!',ndays:'{n} dias seguidos',ph:['Continue assim!','Você é imparável!','Que constância!','O leão está orgulhoso!','Hábito de campeão!','Ninguém segura você!','Mais uma semana na conta!'],z:'Estude hoje para começar sua ofensiva!',t:'Ofensiva',d:'dias seguidos',d1:'dia seguido',best:'Recorde',fz:'Congelamento disponível esta semana',nofz:'Congelamento já usado esta semana',
-  go:'Estude hoje para manter sua ofensiva!',ok:'Hoje está feito. Volte amanhã!',rank:'Ranking da turma',me:'você',
+  go:'Estude hoje para manter sua ofensiva!',ok:'Hoje está feito. Volte amanhã!',rank:'Ranking da turma',game:'Modo Jogo',me:'você',
   w:['S','T','Q','Q','S','S','D'],ms:'Ofensiva de {n} dias!',ms2:'Continue assim!',close:'Continuar',none:'Ninguém com ofensiva ainda.',
   at:'Painel de ofensivas',an:'Aluno',ac:'Atual',ab:'Recorde',al:'Último dia',ad:'Dias',ae:'Nenhum aluno ainda.'},
  en:{wk1:'Week complete!',wkN:'{w} weeks in a row!',m30:'A month-long streak!',m100:'100-day streak!',m365:'A whole year!',ndays:'{n} days in a row',ph:['Keep it up!','You are unstoppable!','What consistency!','The lion is proud of you!','Champion habits!','Nothing can stop you!','Another week in the bank!'],z:'Estude hoje para começar sua ofensiva!',t:'Streak',d:'day streak',d1:'day streak',best:'Best',fz:'Freeze available this week',nofz:'Freeze already used this week',
+  game:'Game Mode',
   go:'Study today to keep your streak!',gos:['Hi{c}! Your next exercise is ready. Just 10 minutes today.','Small steps every day build fluent English{c}. Ready for yours?','Your English is waiting for you{c}. Come and practise!','A few minutes now will make tomorrow\u2019s class easier{c}.','You\u2019re closer than you think{c}. Let\u2019s do today\u2019s exercise!'],gok:['Keep your streak alive{c}! One exercise is all it takes.','Don\u2019t break the chain{c}: {d} days in a row so far!'],gom:['We miss you{c}! Come back and pick up where you left off.','No pressure{c}. Just one short exercise to get going again.'],ok:'Done for today. See you tomorrow!',rank:'Class ranking',me:'you',
   w:['M','T','W','T','F','S','S'],ms:'{n}-day streak!',ms2:'Keep it up!',close:'Continue',none:'Nobody has a streak yet.',
   at:'Streak panel',an:'Student',ac:'Current',ab:'Best',al:'Last day',ad:'Days',ae:'No students yet.'},
  es:{wk1:'¡Semana completa!',wkN:'¡{w} semanas seguidas!',m30:'¡Un mes de racha!',m100:'¡100 días de racha!',m365:'¡Un año entero!',ndays:'{n} días seguidos',ph:['¡Sigue así!','¡Imparable!','¡Qué constancia!','¡El león está orgulloso!','¡Hábito de campeón!','¡Nadie te detiene!','¡Otra semana más!'],z:'¡Estudia hoy para empezar tu racha!',t:'Racha',d:'días seguidos',d1:'día seguido',best:'Récord',fz:'Congelación disponible esta semana',nofz:'Congelación ya usada esta semana',
-  go:'¡Estudia hoy para mantener tu racha!',ok:'Listo por hoy. ¡Hasta mañana!',rank:'Ranking del grupo',me:'tú',
+  go:'¡Estudia hoy para mantener tu racha!',ok:'Listo por hoy. ¡Hasta mañana!',rank:'Ranking del grupo',game:'Modo Juego',me:'tú',
   w:['L','M','X','J','V','S','D'],ms:'¡Racha de {n} días!',ms2:'¡Sigue así!',close:'Continuar',none:'Nadie tiene racha todavía.',
   at:'Panel de rachas',an:'Alumno',ac:'Actual',ab:'Récord',al:'Último día',ad:'Días',ae:'Aún no hay alumnos.'}
 };
@@ -18,6 +19,7 @@ var SPECIAL=[30,100,365];
 function milestone(cur){var m=Math.floor(cur/7)*7;SPECIAL.forEach(function(x){if(cur>=x&&x>m)m=x;});return m>=7?m:0;}
 function lang(){var l=(window.I18N&&window.I18N.lang)||'';if(/\/espanol(\/|$)/.test(location.pathname))return 'es';return L[l]?l:'en';}
 function T(){return L[lang()];}
+function gameOff(){try{return localStorage.getItem('bl-game')!=='1';}catch(e){return false;}}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 var css='.sk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px}'+
 '.sk-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap}'+
@@ -42,6 +44,7 @@ var css='.sk{background:var(--card);border:1px solid var(--line);border-radius:1
 '.sk-hm{flex:1 1 280px;min-width:0}.sk-hd .sk-w{margin:0 0 10px;gap:6px;justify-content:flex-start}.sk-hd .sk-d{flex:0 0 auto;width:34px;color:#b4bfd6}.sk-hd .sk-d.td{color:#fff}.sk-hd .sk-d i{border-color:rgba(255,255,255,.28)}.sk-hd .sk-d.on i{background:#ff9f1c;border-color:#ff9f1c;box-shadow:0 0 10px rgba(255,159,28,.45)}.sk-hd .sk-d.fz i{background:#7cc4f5;border-color:#7cc4f5}.sk-hd .sk-d.td i{box-shadow:0 0 0 3px rgba(255,159,28,.35),0 0 12px rgba(255,159,28,.55)}'+
 '.sk-hi{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;color:#b4bfd6;font-size:.84rem}.sk-hi b{color:#e4c06a;font-weight:500}'+
 '.sk-rb{font:inherit;font-weight:700;font-size:.84rem;color:#fff;background:rgba(255,255,255,.07);border:1px solid #2a3f63;border-radius:999px;padding:6px 13px;cursor:pointer}.sk-rb:hover,.sk-rb:focus-visible{border-color:#e4c06a}'+
+'.sk-gb{font:inherit;font-weight:800;font-size:.84rem;color:#1a1405;background:#c9a13b;border:1px solid #e3c36a;border-radius:999px;padding:6px 13px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;box-shadow:0 2px 0 #8a6d1f}.sk-gb:hover,.sk-gb:focus-visible{background:#d6b04a}.sk-gb svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}'+
 '.sk-hr{flex:1 1 100%;margin:2px 0 0;border-top:1px solid #2a3f63;padding-top:8px}.sk-hr ol{margin:0;padding:0;list-style:none}.sk-hr li{display:flex;gap:10px;align-items:center;padding:5px 0;font-size:.9rem;color:#fff}.sk-hr li .sk-p{width:24px;text-align:center}.sk-hr li .sk-nm{flex:1;min-width:0}.sk-hr li.me{font-weight:800;color:#e4c06a}.sk-hr .sk-av{border-color:#e4c06a;background:transparent}'+
 'html .head>.sk-hd{order:1}html .head>.logo{order:2}@media(max-width:760px){html .head>.logo{order:1}html .head>.sk-hd{order:3;flex-basis:100%}}'+
 '.sk-at{width:100%;border-collapse:collapse;font-size:.9rem}.sk-at th,.sk-at td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left}.sk-at td.n,.sk-at th.n{text-align:right}';
@@ -123,9 +126,10 @@ function mount(box,opts){
       var el=document.createElement('div');el.className='sk-hd';
       var hh=lion(cur)+'<div class="sk-hn"><div class="sk-hnn">'+cur+'</div><div class="sk-hl">'+esc(cur===1?t.d1:t.d)+(s.best>cur?' \u00b7 '+esc(t.best)+' '+s.best:'')+'</div></div>';
       hh+='<div class="sk-hm"><div class="sk-w">'+wk.map(function(d,i){return '<div class="sk-d'+(d.on?' on':'')+(d.fz?' fz':'')+(d.today?' td':'')+'">'+esc(t.w[i])+'<i>'+(d.on?'\u2713':d.fz?IC.sn:'')+'</i></div>';}).join('')+'</div>';
-      hh+='<div class="sk-hi"><span>'+(s.active_today?esc(t.ok):(cur===0&&t.z?esc(t.z):esc(nudge(t,s,cur))))+(s.freeze_left>0?' <b>\u00b7</b> '+IC.sn+' '+esc(t.fz):'')+'</span>'+('<button type="button" class="sk-rb" aria-expanded="false">'+IC.tr+' '+esc(t.rank)+' \u25B8</button>')+'</div></div>';
+      hh+='<div class="sk-hi"><span>'+(s.active_today?esc(t.ok):(cur===0&&t.z?esc(t.z):esc(nudge(t,s,cur))))+(s.freeze_left>0?' <b>\u00b7</b> '+IC.sn+' '+esc(t.fz):'')+'</span>'+('<button type="button" class="sk-rb" aria-expanded="false">'+IC.tr+' '+esc(t.rank)+' \u25B8</button>')+(gameOff()?'<button type="button" class="sk-gb"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="7" width="19" height="11" rx="5"/><path d="M7.5 10.5v4M5.5 12.5h4M15.5 11.5h.01M18 13.5h.01"/></svg> '+esc(t.game)+'</button>':'')+'</div></div>';
       hh+='<div class="sk-hr" hidden>'+(rows.length?'':'<div class="sk-hl">'+esc(t.none)+'</div>')+'<ol aria-label="'+esc(t.rank)+'">'+rows.map(function(x,i){var pos=i<3?[IC.md('#E4C06A'),IC.md('#B8C2D6'),IC.md('#C98A5B')][i]:(i+1);return '<li'+(x.me?' class="me" aria-current="true"':'')+'><span class="sk-p" aria-label="'+(i+1)+'">'+pos+'</span>'+(window.Profile?'<span class="sk-av" data-av="'+esc(x.avatar||'')+'" data-uid="'+esc(x.uid||'')+'"></span>':'')+'<span class="sk-nm">'+esc(x.name)+(x.me?' ('+esc(t.me)+')':'')+'</span><span>'+IC.fl+' '+x.cur+'</span></li>';}).join('')+'</ol></div>';
       el.innerHTML=hh;var lg=hd.querySelector('.logo');hd.insertBefore(el,lg||null);
+      var gb=el.querySelector('.sk-gb');if(gb)gb.onclick=function(){try{localStorage.setItem('bl-game','1');localStorage.setItem('bl-tfx','in:'+Date.now());}catch(e){}location.reload();};
       var rb=el.querySelector('.sk-rb'),rl=el.querySelector('.sk-hr');
       if(rb&&rl)rb.onclick=function(){var o=rl.hidden;rl.hidden=!o;rb.setAttribute('aria-expanded',o?'true':'false');};
       paintAv(el);
