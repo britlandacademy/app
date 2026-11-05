@@ -703,7 +703,7 @@ function examCard(p,st){
       ltRow.append(el('span',{class:'pl ok'},'Teste liberado'));
       ltRow.append(xbtn('Cancelar','ghost',()=>sb.from('level_tests').delete().eq('user_id',p.id).eq('stage',st).then(reload)));
     }else{
-      ltRow.append(el('span',{class:'hint',style:'margin:0'},'Nota mínima 80% · 20 perguntas'));
+      ltRow.append(el('span',{class:'hint',style:'margin:0'},'Precisa acertar todas · 20 perguntas'));
       ltRow.append(xbtn('Liberar teste','',()=>ltDo('level_test_release',{p_user:p.id,p_stage:st},'Teste liberado para '+p.name+'.')));
     }
     return el('div',{class:'ec'},el('div',{class:'t'},el('div',{class:'nm'},el('b',{},'Prova · Stage '+st)),pill),

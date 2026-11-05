@@ -1,4 +1,4 @@
-/* Level test: ?lt=<stage> on check.html. Draws 20 random Lesson Check questions from the whole Stage; 80% or more passes the Stage
+/* Level test: ?lt=<stage> on check.html. Draws 20 random Lesson Check questions from the whole Stage; all correct passes the Stage
    (server side: level_test_submit moves "Liberado até" to the next Stage). LevelTest.run({groups:[{title,pre,items:[{why,ans,make}]}]}) */
 (function(){
   var W=window;
@@ -16,8 +16,8 @@
     groups.forEach(function(g){g.save=function(r,t){R+=r;T+=t;done++;if(done<N)return Promise.resolve();
       return W.Gate.sb.rpc('level_test_submit',{p_stage:S,p_score:R,p_total:T}).then(function(x){if(x.error)throw x.error;res=x.data;});};});
     var inf=null;try{if(W.Metro&&Metro.info){inf=Metro.info('London',1)||Metro.info('Madrid',1);if(inf)inf.station='Test';}}catch(e){}
-    Duo.start({groups:groups,nolives:true,next:null,station:inf,passMin:.8,
-      verdict:function(r,t){return t&&r/t>=.8?'80% ou mais: você passou neste Stage! / ¡80 % o más: pasaste esta Etapa!':'Você precisa de 80% para passar. / Necesitas 80 % para pasar.';},
+    Duo.start({groups:groups,nolives:true,next:null,station:inf,passMin:1,
+      verdict:function(r,t){return t&&r===t?'Acertou todas: você passou neste Stage! / ¡Acertaste todas: pasaste esta Etapa!':'Você precisa acertar todas para passar. / Necesitas acertar todas para pasar.';},
       onDone:function(){if(res&&res.ok)back({pass:!!res.passed,pct:res.pct,next:res.next,stage:S});else back(null);}});
     return true;
   }
