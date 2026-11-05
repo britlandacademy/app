@@ -188,6 +188,7 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 <script src="js/metro.js" charset="utf-8"></script>
 <script src="js/duo.js" charset="utf-8"></script>
 <script src="js/review.js" charset="utf-8"></script>
+<script src="js/leveltest.js" charset="utf-8"></script>
 <script>
 Gate.start({kinds:['check'],attempts:'check'},function(ctx){
 if(window.Protect)Protect.on((ctx.profile&&ctx.profile.name||'')+' · '+(ctx.user&&ctx.user.email||''));
@@ -670,5 +671,6 @@ function loadStudent(key){
 }
 loadStudent(store.current);
 if(window.Review&&Review.params())setTimeout(revStart,500);
+if(window.LevelTest&&LevelTest.stage())setTimeout(()=>LevelTest.run({groups:[].concat(...LESSONS.map(L=>L.ex.map(revGroup)))}),500);
 });
 </script>

@@ -628,6 +628,8 @@ function loadContent(kinds){
   window.CHECKS=[];window.LESSON_TEXT={};window.EXLESSONS=[];
   window.LESSONS_UPTO=upto();
   if(!kinds||!kinds.length)return Promise.resolve();
+  var LTs=0;try{LTs=BUS?0:(parseInt(new URLSearchParams(location.search).get('lt'),10)||0);}catch(e){}
+  if(LTs&&kinds.indexOf('check')>=0){window.CALLAN_STAGE=LTs;return sb.rpc('level_test_items',{p_stage:LTs}).then(function(r){if(r.error)throw r.error;(r.data||[]).forEach(function(b){window.CHECKS.push(b);});});}
   var st=BUS?1:curStage(),lo=BUS?1001:STG[st-1][0],hi=BUS?1000+Math.max(upto(),1):Math.min(STG[st-1][1],Math.max(upto(),1));
   window.CALLAN_STAGE=st;
   function one(tries){

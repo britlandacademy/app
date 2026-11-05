@@ -577,11 +577,12 @@ function xChecks(uid,st){
   const vals=Object.values(done);
   return {total:r[1]-r[0]+1,done:vals.length,miss:miss,avg:vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null};
 }
-let XUN=[],CERTS=[],CERT_OK=false;
+let XUN=[],XLT=[],CERTS=[],CERT_OK=false;
 async function loadExams(){
   const a=await sb.from('exam_release').select('*'),b=await sb.from('exam_results').select('*'),c=await sb.from('exam_defs').select('stage,minutes');
   if(a.error||b.error||c.error){XOK=false;setMsg('xmsg','Tabelas da prova ainda não existem no Supabase. Rode o arquivo exam_setup.sql (e exam_data_stage1-2.sql) no SQL Editor.','bad');if($('xtab'))$('xtab').textContent='';renderStu();return;}
   {const d=await sb.from('stage_unlock').select('*');XUN=(d&&!d.error&&d.data)||[];}
+  {const d=await sb.from('level_tests').select('*');XLT=(d&&!d.error&&d.data)||[];}
   {const d=await sb.from('certificates').select('*');CERT_OK=!!(d&&!d.error);CERTS=CERT_OK?(d.data||[]):[];}
   XOK=true;XREL=a.data||[];XRES=b.data||[];XDEF={};(c.data||[]).forEach(x=>{XDEF[x.stage]=x;});
   const sel=$('xst');if(!sel.options.length){for(let i=1;i<=XSTG.length;i++)sel.append(el('option',{value:String(i)},'Etapa '+i));sel.addEventListener('change',()=>{$('xdet').textContent='';renderExam();});}
@@ -686,8 +687,26 @@ function examCard(p,st){
       sb.from('exam_results').delete().eq('user_id',p.id).eq('stage',st).then(r=>{if(!fail(r)){$('xdet').textContent='';loadExams();}});});
     const mb=el('button',{type:'button',class:'ghost mnb'},'⋯ Mais');mb.addEventListener('click',()=>{const o=mn.classList.contains('open');document.querySelectorAll('.mn.open').forEach(x=>x.classList.remove('open'));if(!o)mn.classList.add('open');});
     act.append(mb,mn);
+    const lt=XLT.find(x=>x.user_id===p.id&&x.stage===st);
+    const ltRow=el('div',{class:'act',style:'margin-top:8px;padding-top:8px;border-top:1px solid var(--line)'});
+    ltRow.append(el('b',{style:'font-size:.92rem'},'🎯 Teste de nível · Stage '+st));
+    const ltDo=(fn,args,okMsg)=>sb.rpc(fn,args).then(r=>{if(r.error){setMsg('xmsg','Erro: '+r.error.message,'bad');return;}const d=r.data||{};
+      if(d.ok===false){setMsg('xmsg',d.why==='passed'?'Esse aluno já passou neste teste.':d.why==='wait'?'Nova tentativa só a partir de '+fmt(d.until)+'.':'Não foi possível.','bad');return;}
+      setMsg('xmsg',okMsg||'','ok');loadExams();});
+    if(lt&&lt.taken_at&&!lt.reverted){
+      const pc2=lt.total?Math.round(lt.score/lt.total*100):0;
+      ltRow.append(el('span',{class:'pl '+(lt.passed?'ok':'bad')},lt.score+'/'+lt.total+' · '+pc2+'% · '+(lt.passed?'Aprovado':'Reprovado')+' · '+fmt(lt.taken_at)));
+      if(lt.passed)ltRow.append(xbtn('Reverter','ghost',()=>{if(!confirm('Reverter o teste de '+p.name+'? O "Liberado até" volta ao valor de antes.'))return;ltDo('level_test_revert',{p_user:p.id,p_stage:st},'Teste revertido.');}));
+      else ltRow.append(xbtn('Liberar de novo','ghost',()=>ltDo('level_test_release',{p_user:p.id,p_stage:st},'Teste liberado para '+p.name+'.')));
+    }else if(lt){
+      ltRow.append(el('span',{class:'pl ok'},'Teste liberado'));
+      ltRow.append(xbtn('Cancelar','ghost',()=>sb.from('level_tests').delete().eq('user_id',p.id).eq('stage',st).then(reload)));
+    }else{
+      ltRow.append(el('span',{class:'hint',style:'margin:0'},'Nota mínima 80% · 20 perguntas'));
+      ltRow.append(xbtn('Liberar teste','',()=>ltDo('level_test_release',{p_user:p.id,p_stage:st},'Teste liberado para '+p.name+'.')));
+    }
     return el('div',{class:'ec'},el('div',{class:'t'},el('div',{class:'nm'},el('b',{},'Prova · Etapa '+st)),pill),
-      el('div',{class:'bar2'},el('i',{style:'width:'+pc+'%'})),el('div',{class:'m'},m1,el('span',{},bits.join(' · '))),act);
+      el('div',{class:'bar2'},el('i',{style:'width:'+pc+'%'})),el('div',{class:'m'},m1,el('span',{},bits.join(' · '))),act,ltRow);
 }
 function renderExam(){
   if(!XOK)return;
