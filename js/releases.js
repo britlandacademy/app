@@ -2,6 +2,7 @@
    Newest first. Written for students (no technical terms). Each entry: v, d [pt, es], t [pt, es] short title, p [pt, es] one sentence,
    show:1 = also shown once in the notice after the update, c:'en'|'es' = only that course (omit = both). */
 window.BL_RELEASES=[
+{v:'1.11.3',d:['5 de novembro','5 de noviembre'],t:['Voz anuncia a estação','La voz anuncia la estación'],p:['Na chegada do metrô, a voz agora diz o nome da próxima estação.','A la llegada del metro, la voz ahora dice el nombre de la próxima estación.']},
 {v:'1.11.2',d:['5 de novembro','5 de noviembre'],t:['Botão do Modo Jogo na home','Botón del Modo Juego en el inicio'],p:['Agora você liga o Modo Jogo direto na home, ao lado do Ranking da turma.','Ahora activas el Modo Juego directamente en el inicio, junto al Ranking del grupo.'],show:1},
 {v:'1.11.1',c:'es',d:['5 de novembro','5 de noviembre'],t:['Metrô em espanhol','Metro en español'],p:['Os textos do trem e o aviso de voz agora aparecem em espanhol.','Los textos del tren y el aviso de voz ahora aparecen en español.']},
 {v:'1.11.0',d:['5 de novembro','5 de noviembre'],t:['Novo trem no Modo Jogo','Nuevo tren en el Modo Juego'],p:['A chegada e a saída do metrô ficaram mais reais, com o trem em movimento, passageiros e sons.','La llegada y la salida del metro son más reales, con el tren en movimiento, pasajeros y sonidos.']},

@@ -755,7 +755,7 @@ function mount(c,o){
     function chimeS(t0){[784,988,1318].forEach(function(f,i){tone(f,t0+i*.12,.6,'triangle',.13);});}
     function clacksS(t0,d){var t=0,iv;while(t<d){iv=.12+.55*(t/d)*(t/d);noise(t0+t,.06,.1,900,1000);tone(85,t0+t,.09,'sine',.12);noise(t0+t+.1,.06,.08,1200,1300);tone(95,t0+t+.1,.08,'sine',.09);t+=iv;}}
     function speak(str,at){var lang=ES?'es-ES':'en-GB';if(!sndOn()||!W.speechSynthesis)return;later(function(){if(fin)return;try{var u=new SpeechSynthesisUtterance(str);u.lang=lang;u.rate=.92;u.pitch=1.05;u.volume=.9;W.speechSynthesis.speak(u);}catch(e){}},at*1000);}
-    function sounds(){if(kind==='in'){rumble(1.9);clacksS(0,1.8);later(function(){noise(0,.8,.08,4200,1800);},1200);beepS(1.95);dingS(2.25);speak(ES?'Cuidado con el hueco.':'Mind the gap.',2.5);chimeS(3.95);}
+    function sounds(){if(kind==='in'){rumble(1.9);clacksS(0,1.8);later(function(){noise(0,.8,.08,4200,1800);},1200);beepS(1.95);dingS(2.25);speak(ES?'Próxima parada, '+name+'. Cuidado con el hueco.':'Next stop, '+name+'. Mind the gap.',2.5);chimeS(3.95);}
       else{beepS(0);speak(ES?'Atención, se cierran las puertas.':'Stand clear of the doors, please.',.2);later(function(){rumble(2.4);},1000);clacksS(1.0,2.0);chimeS(3.0);}}
     function end(){if(fin)return;fin=true;sT.forEach(clearTimeout);try{W.speechSynthesis&&W.speechSynthesis.cancel();}catch(e){}
       if(kind==='in'){ov.style.transition='opacity 450ms';ov.style.opacity='0';setTimeout(function(){ov.remove();if(done)done();},490);}else{if(done)done();}}
