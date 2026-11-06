@@ -347,7 +347,7 @@
     }
 
     /* ---------- vídeos: logo no canto e tarja ---------- */
-    var TJ = { kind: 'in', mode: 'alpha', l1: '', l2: '', tab: 0 };
+    var TJ = { kind: 'in', mode: 'alpha', l1: '', l2: '', tab: 0, handle: false };
     function tarjaSection() {
       var T = window.TarjaFx; if (!T) return el('span');
       if (window.BL_BASE == null) window.BL_BASE = BASE;
@@ -364,20 +364,20 @@
         var mime = TJ.mode === 'alpha' ? 'video/webm;codecs=vp9' : (MediaRecorder.isTypeSupported('video/mp4;codecs=avc1') ? 'video/mp4;codecs=avc1' : 'video/webm;codecs=vp9'), ext = mime.indexOf('mp4') > 0 ? 'mp4' : 'webm';
         if (!MediaRecorder.isTypeSupported(mime)) mime = 'video/webm';
         Promise.all([loadFonts(), T.loadShield(S.lang)]).then(function (a) {
-          var c = document.createElement('canvas'), dur = T.DUR[TJ.kind], opts = function (t) { return { mode: TJ.mode, lang: S.lang, l1: TJ.l1, l2: TJ.l2, sh: a[1], state: T.state(TJ.kind, t) }; };
-          T.draw(c, opts(0)); var st = c.captureStream(30), ch = [], mr = new MediaRecorder(st, { mimeType: mime, videoBitsPerSecond: 8e6 });
+          var c = document.createElement('canvas'), dur = T.DUR[TJ.kind], opts = function (t) { return { mode: TJ.mode, lang: S.lang, l1: TJ.l1, l2: TJ.l2, sh: a[1], state: TJ.kind === 'end' ? null : T.state(TJ.kind, t), t: t, handle: TJ.handle, noName: true }; }, drw = function (t) { if (TJ.kind === 'end') T.drawEnd(c, opts(t)); else T.draw(c, opts(t)); };
+          drw(0); var st = c.captureStream(30), ch = [], mr = new MediaRecorder(st, { mimeType: mime, videoBitsPerSecond: 8e6 });
           mr.ondataavailable = function (e) { if (e.data && e.data.size) ch.push(e.data); };
-          mr.onstop = function () { dl(new Blob(ch, { type: mime.split(';')[0] }), 'britland-' + (TJ.kind === 'in' ? 'tarja-entrada' : 'tarja-saida') + '-' + S.lang + (TJ.mode === 'alpha' ? '-transparente' : TJ.mode === 'green' ? '-verde' : '-azul') + '.' + ext); msg.textContent = 'Pronto. Vídeo baixado.' + (TJ.mode !== 'alpha' && ext === 'webm' ? ' (Este navegador gravou em WebM; o Chrome atual grava MP4.)' : ''); msg.className = 'msg ok'; bg.disabled = false; };
+          mr.onstop = function () { dl(new Blob(ch, { type: mime.split(';')[0] }), 'britland-' + (TJ.kind === 'in' ? 'tarja-entrada' : TJ.kind === 'out' ? 'tarja-saida' : 'encerramento') + '-' + S.lang + (TJ.mode === 'alpha' ? '-transparente' : TJ.mode === 'green' ? '-verde' : '-azul') + '.' + ext); msg.textContent = 'Pronto. Vídeo baixado.' + (TJ.mode !== 'alpha' && ext === 'webm' ? ' (Este navegador gravou em WebM; o Chrome atual grava MP4.)' : ''); msg.className = 'msg ok'; bg.disabled = false; };
           msg.textContent = 'Gravando em tempo real (' + dur.toFixed(1) + ' s)…'; msg.className = 'msg'; bg.disabled = true; mr.start();
-          var t0 = performance.now(); (function tick() { var t = (performance.now() - t0) / 1000; T.draw(c, opts(Math.min(t, dur))); if (t < dur + .25) requestAnimationFrame(tick); else mr.stop(); })();
+          var t0 = performance.now(); (function tick() { var t = (performance.now() - t0) / 1000; drw(Math.min(t, dur)); if (t < dur + .25) requestAnimationFrame(tick); else mr.stop(); })();
         });
       }
       var bg = el('button', { type: 'button' }, 'Gerar e baixar vídeo');
       bg.addEventListener('click', rec);
-      d.append(el('p', { class: 'hint' }, 'A tarja abre a partir do logo do canto (o nome Britland Academy some em fade) e fecha de volta. Deixe as linhas vazias para a tarja vazia. O vídeo é gravado em tempo real, com 1080x1920.'),
-        el('div', { class: 'row' }, el('b', {}, 'Vídeo:'), chips([['in', 'Entrada'], ['out', 'Saída']], TJ.kind, function (v) { TJ.kind = v; reopen(); })),
+      d.append(el('p', { class: 'hint' }, 'A tarja abre a partir do logo do canto (o nome Britland Academy some em fade) e fecha de volta. Deixe as linhas vazias para a tarja vazia. O encerramento começa só com o escudo no canto, que sobe ao centro, e o nome aparece no final. O vídeo é gravado em tempo real, com 1080x1920.'),
+        el('div', { class: 'row' }, el('b', {}, 'Vídeo:'), chips([['in', 'Tarja: entrada'], ['out', 'Tarja: saída'], ['end', 'Encerramento (logo sobe ao centro)']], TJ.kind, function (v) { TJ.kind = v; reopen(); })),
         el('div', { class: 'row' }, el('b', {}, 'Fundo:'), chips([['alpha', 'Transparente (WebM)'], ['blue', 'Azul (MP4)'], ['green', 'Verde chroma (MP4)']], TJ.mode, function (v) { TJ.mode = v; reopen(); })),
-        el('div', { class: 'row' }, l1, l2), el('div', { class: 'sc-grid', style: 'margin-top:10px' }, pv, el('div', { style: 'flex:1;min-width:240px' },
+        el('div', { class: 'row' }, l1, l2), (function () { var cb = el('input', { type: 'checkbox', id: 'tjh' }); cb.checked = TJ.handle; cb.addEventListener('change', function () { TJ.handle = cb.checked; }); return el('label', { class: 'row', style: 'gap:8px;align-items:center' }, cb, 'Encerramento: incluir @britlandacademy'); })(), el('div', { class: 'sc-grid', style: 'margin-top:10px' }, pv, el('div', { style: 'flex:1;min-width:240px' },
           el('div', { class: 'row' }, bg), el('b', {}, 'Imagens PNG (fundo transparente, 1080x1920)'),
           el('div', { class: 'row' }, (function () { var b = el('button', { type: 'button', class: 'ghost' }, 'Logo no canto, com Britland'); b.addEventListener('click', function () { png('corner', 'logo-canto-com-britland'); }); return b; })(),
             (function () { var b = el('button', { type: 'button', class: 'ghost' }, 'Logo no canto, sem Britland'); b.addEventListener('click', function () { png('shield', 'logo-canto-sem-britland'); }); return b; })(),
