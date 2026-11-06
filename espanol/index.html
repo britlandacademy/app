@@ -7,20 +7,20 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Britland Academy">
 <meta property="og:locale" content="pt_BR">
-<meta property="og:title" content="Britland Academy · Plataforma do aluno">
+<meta property="og:title" content="Britland Academy · Plataforma del alumno">
 <meta property="og:description" content="Seu hub de estudos: participe das aulas ao vivo, descubra seu nível, resolva exercícios e acesse todos os conteúdos do curso">
 <meta property="og:url" content="https://www.britlandacademy.co.uk/app/espanol/">
-<meta property="og:image" content="https://www.britlandacademy.co.uk/app/espanol/img/og-britland.jpg">
-<meta property="og:image:secure_url" content="https://www.britlandacademy.co.uk/app/espanol/img/og-britland.jpg">
+<meta property="og:image" content="https://www.britlandacademy.co.uk/app/img/og/og-es-index.jpg">
+<meta property="og:image:secure_url" content="https://www.britlandacademy.co.uk/app/img/og/og-es-index.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Britland Academy: escudo com leão e livro">
+<meta property="og:image:alt" content="Britland Academy: Plataforma del alumno">
 <!-- Twitter / X -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Britland Academy · Plataforma do aluno">
+<meta name="twitter:title" content="Britland Academy · Plataforma del alumno">
 <meta name="twitter:description" content="Seu hub de estudos: participe das aulas ao vivo, descubra seu nível, resolva exercícios e acesse todos os conteúdos do curso">
-<meta name="twitter:image" content="https://www.britlandacademy.co.uk/app/espanol/img/og-britland.jpg">
+<meta name="twitter:image" content="https://www.britlandacademy.co.uk/app/img/og/og-es-index.jpg">
 <link rel="canonical" href="https://www.britlandacademy.co.uk/app/espanol/">
 <style>
 
@@ -151,8 +151,7 @@ Gate.start({kinds:[],attempts:['check','ex']},function(ctx){
     var rv={},STR=function(q){return q>=.9?3:q>=.6?2:1;};
     var go=function(){if(go.d)return;go.d=1;Metro.mount(ctx,{upto:upto,max:112,best:best,stages:STAGES,gate:Gate.gates(),raw:Gate.rawUpto(),acts:[{key:'check',label:'Ejercicios de repaso',short:'Repaso',city:'Madrid',doneCount:done,done:function(l){return l<=ld;},pct:function(l){return best[l]===undefined?null:best[l];},stars:function(l){var q=best[l];return q===undefined?0:(q>=.9?3:q>=.6?2:1);},links:[{t:'Ejercicios de repaso',href:'check.html'}],
       rdone:function(id){return rv[id]!==undefined&&rv[id]>=.7;},rpct:function(id){return rv[id]===undefined?null:rv[id];},rstars:function(id){return rv[id]===undefined||rv[id]<.7?0:STR(rv[id]);},rlink:function(r){return 'check.html?rev='+r.from+'-'+r.to+'&rid='+r.id+(window.Covers?'&stage='+Covers.stageOf(r.from):'');}}]});};
-    var ltp=Promise.resolve();try{ltp=Gate.sb.from('level_tests').select('stage,taken_at,passed').then(function(r){window.BL_LT=(r&&!r.error&&r.data)||[];},function(){});}catch(e){}
-    try{Gate.sb.from('review_results').select('tab,rid,score,total').then(function(r){((r&&r.data)||[]).forEach(function(x){var q=x.total?x.score/x.total:0;if(rv[x.rid]===undefined||q>rv[x.rid])rv[x.rid]=q;});ltp.then(go);},function(){ltp.then(go);});}catch(e){go();}}
+    try{Gate.sb.from('review_results').select('tab,rid,score,total').then(function(r){((r&&r.data)||[]).forEach(function(x){var q=x.total?x.score/x.total:0;if(rv[x.rid]===undefined||q>rv[x.rid])rv[x.rid]=q;});go();},go);}catch(e){go();}}
   document.getElementById('stats').hidden=false;
   if(window.Streak)Streak.mount(document.getElementById('streak'),{head:document.querySelector('.head')});
   if(window.Agenda)Agenda.mount(document.getElementById('agenda'),ctx);
