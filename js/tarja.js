@@ -67,6 +67,23 @@
     var a3 = ez((t - 2.3) / .6);
     if (o.handle && a3 > 0) { c.save(); c.globalAlpha = a3; c.textAlign = 'center'; c.fillStyle = p.line; c.fillRect(440, ab + 70, 200, 6); c.fillStyle = p.t; c.font = '600 44px ' + SANS; c.shadowColor = 'rgba(0,0,0,.35)'; c.shadowBlur = 10; c.fillText('@britlandacademy', 540, ab + 160); c.restore(); }
   }
+
+  /* abertura: escudo desenhado em faíscas (BLLoad) no centro, desce ao canto e o nome aparece */
+  DUR.intro = 5.2;
+  function drawIntro(cv, o) {
+    var p = PAL[o.lang === 'es' ? 'es' : 'en'], t = o.t, c = cv.getContext('2d'), lc = o.lc;
+    cv.width = CW; cv.height = CH; c.clearRect(0, 0, CW, CH);
+    if (o.mode === 'green') { c.fillStyle = '#00FF00'; c.fillRect(0, 0, CW, CH); }
+    else if (o.mode === 'blue') { var g = c.createLinearGradient(0, 0, 0, CH); g.addColorStop(0, o.lang === 'es' ? '#7A141B' : '#16356f'); g.addColorStop(1, o.lang === 'es' ? '#2E060B' : '#0a1530'); c.fillStyle = g; c.fillRect(0, 0, CW, CH); }
+    var mv = ez((t - 3.0) / .9), k = 1 - .75 * mv, cx = 540 + (SX - 540) * mv, cy = 715 + (CY - 715) * mv;
+    c.save(); c.translate(cx, cy); c.scale(k, k); c.translate(-540, -955); c.drawImage(lc, 0, 0, lc.width, lc.width * 365 / 300, 0, 0, CW, CW * 365 / 300); c.restore();
+    var ta = ez((t - 3.6) / .7);
+    if (ta > 0) {
+      c.save(); c.globalAlpha = ta; c.textAlign = 'left'; c.shadowColor = 'rgba(0,0,0,.5)'; c.shadowBlur = 14; c.shadowOffsetY = 3;
+      var tx = SX + SWD / 2 + 26 - 30 * (1 - ta); c.font = '700 66px ' + SERIF; var w1 = c.measureText('BRITLAND').width;
+      c.fillStyle = p.t; c.fillText('BRITLAND', tx, cy - 8); c.font = '500 100px ' + SANS; var f2 = 100 * w1 * .79 / c.measureText('ACADEMY').width; c.font = '500 ' + f2 + 'px ' + SANS; c.fillStyle = p.acc; c.fillText('ACADEMY', tx, cy + f2 * .7 + 22 - 8 + 8); c.restore();
+    }
+  }
   function loadShield(lang) { return new Promise(function (res) { var i = new Image(); i.onload = function () { res(i); }; i.onerror = function () { res(null); }; i.src = (W.BL_BASE || '') + PAL[lang === 'es' ? 'es' : 'en'].sh; }); }
-  W.TarjaFx = { draw: draw, drawEnd: drawEnd, state: state, DUR: DUR, loadShield: loadShield, PAL: PAL, W: CW, H: CH };
+  W.TarjaFx = { draw: draw, drawEnd: drawEnd, drawIntro: drawIntro, state: state, DUR: DUR, loadShield: loadShield, PAL: PAL, W: CW, H: CH };
 })(window);
