@@ -418,9 +418,9 @@ function buildEx(L,ex,k){
   form.append(el('div',{class:'btnrow'},verify,retry),score);
   form.addEventListener('submit',e=>{
     e.preventDefault();if(verify.disabled)return;
-    let right=0;
+    let right=0;const errs=[];
     built.forEach(o=>{
-      const r=o.b.get();
+      const r=o.b.get();if(!r.ok&&r.msg!=='No answer.'&&r.msg!=='Choose an answer.'&&r.msg!=='Choose an option.'){const fi=o.li.querySelector('input,textarea,select');errs.push({item:(o.li.innerText||'').replace(/^\s*\d+\s*/,'').trim(),given:fi?fi.value:'',expected:r.model});}
       o.li.classList.remove('ok','bad');o.li.classList.add(r.ok?'ok':'bad');
       o.fb.hidden=false;o.fb.textContent='';
       o.fb.append(el('span',{class:'mark'},r.ok?'✔ Correct':'✖ Wrong'));
@@ -434,7 +434,7 @@ function buildEx(L,ex,k){
     score.textContent='Score: '+right+' of '+ex.items.length+' · saving…';
     const att={l:L.id,e:ex.id,s:right,t:ex.items.length,at:Date.now()};
     me().attempts.push(att);
-    Gate.saveAttempt('ex',att).then(()=>{score.textContent='Score: '+right+' of '+ex.items.length+' · saved';warnEl.hidden=true;},
+    Gate.logErrors('ex',att,errs);Gate.saveAttempt('ex',att).then(()=>{score.textContent='Score: '+right+' of '+ex.items.length+' · saved';warnEl.hidden=true;},
       ()=>{score.textContent='Score: '+right+' of '+ex.items.length+' · NOT saved';warnEl.hidden=false;});
     refreshAfterAttempt(L);
   });

@@ -1,7 +1,6 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>Workbook · Britland Academy</title>
-<meta property="og:type" content="website"><meta property="og:site_name" content="Britland Academy"><meta property="og:locale" content="pt_BR"><meta property="og:title" content="Britland Academy · Caderno de exercícios Callan"><meta property="og:description" content="Caderno de exercícios do método Callan para praticar cada lição."><meta property="og:url" content="https://www.britlandacademy.co.uk/app/workbook.html"><meta property="og:image" content="https://www.britlandacademy.co.uk/app/img/og/og-workbook.jpg"><meta property="og:image:secure_url" content="https://www.britlandacademy.co.uk/app/img/og/og-workbook.jpg"><meta property="og:image:type" content="image/jpeg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Britland Academy: Caderno de exercícios Callan"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Britland Academy · Caderno de exercícios Callan"><meta name="twitter:description" content="Caderno de exercícios do método Callan para praticar cada lição."><meta name="twitter:image" content="https://www.britlandacademy.co.uk/app/img/og/og-workbook.jpg"><meta name="description" content="Caderno de exercícios do método Callan para praticar cada lição."><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b1733"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Britland"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="js/pwa.js" defer></script>
+<title>Workbook · Britland Academy</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b1733"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Britland"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="js/pwa.js" defer></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <link rel="stylesheet" href="js/fonts.css"><style>
 /* Callan book identity: FreeSet, black and grey, black band with the logo, grey blocks for titles */
@@ -523,9 +522,9 @@ function buildCard(L,s){
   form.append(el('div',{class:'btnrow'},verify,retry),score);
   form.addEventListener('submit',e=>{
     e.preventDefault();if(verify.disabled)return;
-    let right=0;
+    let right=0;const errs=[];
     built.forEach(o=>{
-      const r=o.r.get();
+      const r=o.r.get();if(!r.ok&&r.msg!=='No answer.'&&r.msg!=='Choose an answer.'&&r.msg!=='Choose an option.'){const fi=o.li.querySelector('input,textarea,select');errs.push({item:(o.li.innerText||'').replace(/^\s*\d+\s*/,'').trim(),given:fi?fi.value:'',expected:r.model});}
       o.li.classList.remove('ok','bad');o.li.classList.add(r.ok?'ok':'bad');
       o.fb.hidden=false;o.fb.textContent='';
       o.fb.append(el('span',{class:'mark'},spec.free?(r.ok?'✔ Written':'✖ Empty'):(r.ok?'✔ Correct':'✖ Wrong')));
@@ -541,7 +540,7 @@ function buildCard(L,s){
     score.textContent='Score: '+right+' of '+total+' · saving…';
     const att={l:L.id,e:id,s:right,t:total,at:Date.now()};
     me().attempts.push(att);
-    Gate.saveAttempt('ex',att).then(()=>{score.textContent='Score: '+right+' of '+total+' · saved';warnEl.hidden=true;},
+    Gate.logErrors('ex',att,errs);Gate.saveAttempt('ex',att).then(()=>{score.textContent='Score: '+right+' of '+total+' · saved';warnEl.hidden=true;},
       ()=>{score.textContent='Score: '+right+' of '+total+' · NOT saved';warnEl.hidden=false;});
     updateLesson(L);renderTabs();renderHistory();setTimeout(()=>cvCele(Covers.stageOf(L.id)),700);
   });

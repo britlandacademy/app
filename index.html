@@ -110,6 +110,7 @@ a.card:hover .i-tg .r2,a.card:focus-visible .i-tg .r2{animation:rp 1.8s ease inf
 <section id="agenda" hidden></section>
 <section class="cont" id="cont" hidden><img class="cvr" id="cvr" src="img/covers/cover-1.png" alt="" width="90" height="128"><div><small>Continue where you stopped</small><h2 id="ct">Lesson 1</h2><div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Lesson Checks done" id="bar"><div id="fill"></div></div></div><a class="btn" href="check.html">Continue →</a><div id="cstrip" class="cstrip"></div></section>
 
+<section id="tips" hidden></section>
 <section class="today" id="today" hidden></section>
 <div class="stats" id="stats" hidden><div class="st"><b id="s1">0</b><span>lessons available</span></div><div class="st"><b id="s2">0</b><span>Lesson Checks done</span></div><div class="st"><b id="s3">–</b><span>average score</span></div></div>
 <div id="streak" hidden></div>
@@ -131,6 +132,7 @@ a.card:hover .i-tg .r2,a.card:focus-visible .i-tg .r2{animation:rp 1.8s ease inf
 <script src="js/streak.js" charset="utf-8"></script>
 <script src="js/agenda.js" charset="utf-8"></script>
 <script src="js/today.js" charset="utf-8"></script>
+<script src="js/tips.js" charset="utf-8"></script>
 <script src="js/landmarks.js" charset="utf-8"></script>
 <script src="js/obra.js" charset="utf-8"></script>
 <script src="js/metro.js" charset="utf-8"></script>
@@ -142,6 +144,7 @@ Gate.start({kinds:[],attempts:['check','ex']},function(ctx){
     if(ctx.profile&&ctx.profile.is_admin&&!(ST&&NOW-ST<12*3600e3)){location.replace('admin.html');return;}
     if(ST)localStorage.setItem('bl-stay-student',String(NOW));}catch(e){}
   try{Plan.mount(ctx,{es:false});}catch(e){}
+  try{Tips.mount(document.getElementById('tips'),Gate.sb,(ctx.profile&&ctx.profile.name||'').split(' ')[0]);}catch(e){}
   var name=(ctx.profile&&ctx.profile.name||'').split(' ')[0];
   (function(){
     var c=name?', '+name:'',h=new Date().getHours(),d=new Date(),seed=d.getFullYear()*400+d.getMonth()*31+d.getDate(),first=false;

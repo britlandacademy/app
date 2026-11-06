@@ -1,7 +1,6 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>Lesson Checks · Britland Academy</title>
-<meta property="og:type" content="website"><meta property="og:site_name" content="Britland Academy"><meta property="og:locale" content="pt_BR"><meta property="og:title" content="Britland Academy · Teste da lição"><meta property="og:description" content="Teste de revisão das lições do curso Callan."><meta property="og:url" content="https://www.britlandacademy.co.uk/app/check.html"><meta property="og:image" content="https://www.britlandacademy.co.uk/app/img/og/og-check.jpg"><meta property="og:image:secure_url" content="https://www.britlandacademy.co.uk/app/img/og/og-check.jpg"><meta property="og:image:type" content="image/jpeg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Britland Academy: Teste da lição"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Britland Academy · Teste da lição"><meta name="twitter:description" content="Teste de revisão das lições do curso Callan."><meta name="twitter:image" content="https://www.britlandacademy.co.uk/app/img/og/og-check.jpg"><meta name="description" content="Teste de revisão das lições do curso Callan."><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b1733"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Britland"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="js/pwa.js" defer></script>
+<title>Lesson Checks · Britland Academy</title><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b1733"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Britland"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="js/pwa.js" defer></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <link rel="stylesheet" href="js/fonts.css"><style>
 /* Callan book identity: FreeSet, black and grey, black band with the logo, grey blocks for titles */
@@ -451,9 +450,9 @@ function buildEx(L,ex,k){
   form.addEventListener('submit',e=>{
     e.preventDefault();if(verify.disabled)return;
     const wasDone=lessonStats(L).done===L.ex.length;
-    let right=0;
+    let right=0;const errs=[];
     built.forEach(o=>{
-      const r=o.b.get();
+      const r=o.b.get();if(!r.ok&&r.msg!=='No answer.'&&r.msg!=='Choose an answer.'&&r.msg!=='Choose an option.'){const fi=o.li.querySelector('input,textarea,select');errs.push({item:(o.li.innerText||'').replace(/^\s*\d+\s*/,'').trim(),given:fi?fi.value:'',expected:r.model});}
       o.li.classList.remove('ok','bad');o.li.classList.add(r.ok?'ok':'bad');
       o.fb.hidden=false;o.fb.textContent='';
       o.fb.append(el('span',{class:'mark'},r.ok?'✔ Correct':'✖ Wrong'));
@@ -467,7 +466,7 @@ function buildEx(L,ex,k){
     score.textContent='Score: '+right+' of '+ex.items.length+' · saving…';
     const att={l:L.id,e:ex.id,s:right,t:ex.items.length,at:Date.now()};
     me().attempts.push(att);
-    Gate.saveAttempt('check',att).then(()=>{score.textContent='Score: '+right+' of '+ex.items.length+' · saved';warnEl.hidden=true;},
+    Gate.logErrors('check',att,errs);Gate.saveAttempt('check',att).then(()=>{score.textContent='Score: '+right+' of '+ex.items.length+' · saved';warnEl.hidden=true;},
       ()=>{score.textContent='Score: '+right+' of '+ex.items.length+' · NOT saved';warnEl.hidden=false;});
     try{const st=lessonStats(L);if(!wasDone&&st.done===st.n&&st.pct>=60&&window.BLFX)BLFX.celebrate(1);}catch(e){}
     refreshAfterAttempt(L);

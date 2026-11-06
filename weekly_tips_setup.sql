@@ -1,0 +1,3 @@
+-- Britland Academy: weekly tips + wrong-answer log (already applied to both Supabase projects as migration "weekly_tips_and_attempt_errors").
+-- Tables: weekly_tips (one report per student per week, rating -1/1), attempt_errors (wrong answers), RPCs rate_weekly_tip, seen_weekly_tip, weekly_tip_stats.
+-- Edge function: weekly-tips (cron "weekly-tips-saturday": 0 13,14,15,16,17 * * 6 UTC = 10h-14h Brasilia).

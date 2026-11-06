@@ -201,6 +201,7 @@ details.h{background:var(--surface);border:1px solid var(--line);border-radius:1
   <div class="tw"><table id="aulist" hidden></table></div>
 </section></div>
 <div class="sc" id="s-stats"><section class="card" aria-labelledby="h-st"><h2 id="h-st">Estatísticas</h2><div id="statsBox" data-noi18n="1"></div></section></div>
+<div class="sc" id="s-tips"><section class="card" aria-labelledby="h-tips"><h2 id="h-tips">Dicas semanais</h2><div id="tipsBox" data-noi18n="1"></div></section></div>
 <div class="sc" id="s-social"><section class="card" aria-labelledby="h-soc"><h2 id="h-soc">Redes sociais</h2><div id="socialBox" data-noi18n="1"></div></section></div>
 <div class="sc" id="s-fx"><section class="card" aria-labelledby="h-fx"><h2 id="h-fx">Efeitos de carregamento</h2><div id="fxBox" data-noi18n="1"></div></section></div>
 <div class="sc" id="s-place"><section class="card" aria-labelledby="h-pl"><h2 id="h-pl">Placement test results</h2>
@@ -221,6 +222,7 @@ details.h{background:var(--surface);border:1px solid var(--line);border-radius:1
 <script src="../js/fx-admin.js" charset="utf-8"></script>
 <script src="../js/tarja.js" charset="utf-8"></script>
 <script src="../js/social.js" charset="utf-8"></script>
+<script src="../js/tipsadmin.js" charset="utf-8"></script>
 <script src="../js/agenda.js" charset="utf-8"></script>
 <script>
 Gate.start({admin:true,kinds:[]},function(ctx){
@@ -763,10 +765,10 @@ async function xReview(uid,st,n,accept){
 }
 
 /* ----- tabs and home ----- */
-const IC={social:'M12 15V3M8 7l4-4 4 4M5 12v8h14v-8',stats:'M4 20V10M10 20V4M16 20v-7M22 20H2',home:'M3 11l9-8 9 8M5 10v10h14V10M10 20v-6h4v6',agenda:'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',students:'M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM2.5 20c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6M16 4.5a3.5 3.5 0 0 1 0 6.5M18 14.5c2 .7 3.5 2.5 3.5 5.5',grades:'M4 20V10M10 20V4M16 20v-7M22 20H2',more:'M5 12h.01M12 12h.01M19 12h.01',today:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3 2',exams:'M4 4h16v16H4zM8 12l3 3 5-6',pay:'M3 6h18v12H3zM3 10h18M7 15h3',content:'M12 6c-2-1.5-5-2-8-2v14c3 0 6 .5 8 2 2-1.5 5-2 8-2V4c-3 0-6 .5-8 2zM12 6v14',place:'M6 17V11a6 6 0 0 1 12 0v6l2 2H4zM10 21h4'};
+const IC={tips:'M12 3a6 6 0 0 0-3.5 10.9V17h7v-3.1A6 6 0 0 0 12 3zM9.5 20.5h5',social:'M12 15V3M8 7l4-4 4 4M5 12v8h14v-8',stats:'M4 20V10M10 20V4M16 20v-7M22 20H2',home:'M3 11l9-8 9 8M5 10v10h14V10M10 20v-6h4v6',agenda:'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',students:'M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM2.5 20c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6M16 4.5a3.5 3.5 0 0 1 0 6.5M18 14.5c2 .7 3.5 2.5 3.5 5.5',grades:'M4 20V10M10 20V4M16 20v-7M22 20H2',more:'M5 12h.01M12 12h.01M19 12h.01',today:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3 2',exams:'M4 4h16v16H4zM8 12l3 3 5-6',pay:'M3 6h18v12H3zM3 10h18M7 15h3',content:'M12 6c-2-1.5-5-2-8-2v14c3 0 6 .5 8 2 2-1.5 5-2 8-2V4c-3 0-6 .5-8 2zM12 6v14',place:'M6 17V11a6 6 0 0 1 12 0v6l2 2H4zM10 21h4'};
 function ico(k){const d=document.createElement('div');d.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+IC[k]+'"/></svg>';return d.firstChild;}
-const TABS=[['home','Início'],['agenda','Agenda'],['today','Hoje'],['students','Alunos'],['grades','Notas'],['pay','Pagamentos','payments.html'],['content','Conteúdo'],['place','Placement'],['stats','Estatísticas'],['social','Redes sociais'],['fx','Efeitos']];
-const BAR=['home','agenda','students','grades','more'],MORE=['more','today','content','place','stats','social','fx'];
+const TABS=[['home','Início'],['agenda','Agenda'],['today','Hoje'],['students','Alunos'],['grades','Notas'],['pay','Pagamentos','payments.html'],['content','Conteúdo'],['place','Placement'],['stats','Estatísticas'],['social','Redes sociais'],['tips','Dicas semanais'],['fx','Efeitos']];
+const BAR=['home','agenda','students','grades','more'],MORE=['more','today','content','place','stats','social','tips','fx'];
 let OVERDUE=null,PLN=null,CUR='home';
 function markTabs(){
   document.querySelectorAll('#tpTabs .tp-tab').forEach(x=>x.classList.toggle('on',x.dataset.k===CUR||(x.dataset.k==='more'&&MORE.includes(CUR))));
@@ -779,6 +781,7 @@ function go(k){
   document.querySelectorAll('.sc').forEach(x=>x.classList.toggle('on',x.id==='s-'+sec));
   markTabs();
   if(k==='social'&&window.SocialTab)SocialTab.mount($('socialBox'),{sb:sb,el:el,profiles:()=>PROFILES});
+  if(k==='tips'&&window.TipsAdmin)TipsAdmin.mount($('tipsBox'),{sb:sb,el:el,profiles:()=>PROFILES});
   if(k==='fx'&&window.FxTab)FxTab.mount($('fxBox'),{sb:sb,el:el});
   if(k==='stats'&&window.StatsTab)StatsTab.mount($('statsBox'),{sb:sb,el:el,profiles:()=>PROFILES,att:()=>ATT});
   try{history.replaceState(null,'','#'+k);}catch(e){}
@@ -858,7 +861,8 @@ function socSoon(){return socList().length}
 function renderMore(h){
   const box=$('moreBox');if(!box)return;box.textContent='';
   box.append(el('h2',{},'Mais'));
-  [['pay','Pagamentos','Parcelas e cobranças','payments.html',h.over?h.over+' vencida(s)':''],['exams','Exames','Liberar provas, notas e correções','',h.rev?h.rev+' para revisar':''],['content','Conteúdo','Textos, checks, exercícios e áudios','',''],['place','Placement','Resultados de novos interessados','',''],['stats','Estatísticas','Erros, uso, PWA, contratos e pagamentos','',''],['today','Hoje','Quem estudou e quem ainda não','',''],['agenda','Turmas e disponibilidade','Horários, datas bloqueadas e turmas','',''],['social','Redes sociais','Posts, stories e legendas','',socSoon()?socSoon()+' data(s) em breve':'']].forEach(r=>{
+  [['pay','Pagamentos','Parcelas e cobranças','payments.html',h.over?h.over+' vencida(s)':''],['exams','Exames','Liberar provas, notas e correções','',h.rev?h.rev+' para revisar':''],['content','Conteúdo','Textos, checks, exercícios e áudios','',''],['place','Placement','Resultados de novos interessados','',''],['stats','Estatísticas','Erros, uso, PWA, contratos e pagamentos','',''],['today','Hoje','Quem estudou e quem ainda não','',''],['agenda','Turmas e disponibilidade','Horários, datas bloqueadas e turmas','',''],['tips','Dicas semanais','Relatórios dos alunos e avaliações','',''],
+  ['social','Redes sociais','Posts, stories e legendas','',socSoon()?socSoon()+' data(s) em breve':'']].forEach(r=>{
     const x=el(r[3]?'a':'button',r[3]?{class:'mtile',href:r[3]}:{type:'button',class:'mtile',onclick:()=>go(r[0])});
     const ti=el('span',{class:'ti'});ti.append(ico(r[0]));const tx=el('span',{style:'flex:1'},el('b',{},r[1]),el('small',{},r[2]));
     x.append(ti,tx);if(r[4])x.append(el('span',{class:'tp-flag'},r[4]));box.append(x);});
