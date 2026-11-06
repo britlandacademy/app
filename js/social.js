@@ -139,7 +139,7 @@
   var FORMATS = { feed: { n: 'Feed', w: 1080, h: 1350 }, story: { n: 'Story', w: 1080, h: 1920 }, reels: { n: 'Reels (capa)', w: 1080, h: 1920 }, zap: { n: 'WhatsApp', w: 1080, h: 1080 } };
   var MODELS = { marinho: 'Marinho', creme: 'Creme', festivo: 'Festivo' };
   function theme(m) {
-    if (m === 'creme') return { bg: C.cream, kick: C.red, t1: C.ink, t2: C.red, bar: C.gold, box: C.sand, boxL: '#e0d6bd', big: C.ink, small: C.grey, body: C.ink, ctaBg: C.ink, ctaFg: C.cream, hand: C.grey, lk: C.ink, lk2: C.red };
+    if (m === 'creme') return { bg: C.cream, kick: C.red, t1: C.ink, t2: C.red, bar: C.gold, box: C.sand, boxL: '#e0d6bd', big: C.ink, small: C.grey, body: C.ink, ctaBg: C.gold, ctaFg: C.ink, hand: C.grey, lk: C.ink, lk2: C.red };
     return { bg: C.navy, kick: C.gl, t1: C.mist, t2: C.gl, bar: C.gold, box: C.royal, boxL: '#2b4a8c', big: C.gl, small: C.dust, body: C.mist, ctaBg: C.gold, ctaFg: C.navy, hand: C.dust, lk: C.mist, lk2: C.coral };
   }
   function wrap(ctx, text, maxW) {
@@ -164,15 +164,18 @@
       ctx.restore();
     }
   }
-  function lockup(ctx, xr, y, tc, ac, scale) {
-    var sz = 52 * scale, sw = 96 * scale, sp = 14 * scale;
+  function lockup(ctx, xr, y, tc, ac) {
+    /* escudo + BRITLAND; ACADEMY espaçado para ter a mesma largura; bloco de texto centralizado na altura do escudo */
+    var sz = 52, sw = 96, gap = 20, f2 = 28, i;
     ctx.font = '700 ' + sz + 'px ' + SERIF; var w1 = ctx.measureText('BRITLAND').width;
-    ctx.font = '600 ' + (sz * .44) + 'px ' + SANS; var w2 = 0; for (var i = 0; i < 7; i++) w2 += ctx.measureText('ACADEMY'[i]).width + sp; w2 -= sp;
-    var tw = Math.max(w1, w2), tot = sw + 18 * scale + tw, x0 = xr - tot;
-    if (SHIELD) { var h = sw * SHIELD.height / SHIELD.width; ctx.drawImage(SHIELD, x0, y - 4 * scale, sw, h); }
-    ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left'; ctx.fillStyle = tc; ctx.font = '700 ' + sz + 'px ' + SERIF; ctx.fillText('BRITLAND', x0 + sw + 18 * scale, y + sz * .82);
-    ctx.fillStyle = ac; ctx.font = '600 ' + (sz * .44) + 'px ' + SANS; spaced(ctx, 'ACADEMY', x0 + sw + 18 * scale, y + sz * 1.55, sp, false);
-    return x0;
+    ctx.font = '600 ' + f2 + 'px ' + SANS; var gw = 0; for (i = 0; i < 7; i++) gw += ctx.measureText('ACADEMY'[i]).width; var sp = (w1 - gw) / 6;
+    var x0 = xr - (sw + gap + w1), sh = SHIELD ? sw * SHIELD.height / SHIELD.width : 112;
+    if (SHIELD) ctx.drawImage(SHIELD, x0, y, sw, sh);
+    var tx = x0 + sw + gap, cy = y + sh / 2;
+    ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left';
+    ctx.fillStyle = tc; ctx.font = '700 ' + sz + 'px ' + SERIF; ctx.fillText('BRITLAND', tx, cy + 1.5);
+    ctx.fillStyle = ac; ctx.font = '600 ' + f2 + 'px ' + SANS; spaced(ctx, 'ACADEMY', tx, cy + 35.5, sp, false);
+    return { x: x0, h: sh };
   }
   function draw(cv, fmt, model, ct) {
     var F = FORMATS[fmt], W = F.w, H = F.h, ctx = cv.getContext('2d'), T = theme(model === 'festivo' ? 'marinho' : model), M = 90;
@@ -200,7 +203,7 @@
     var boxHs = boxes.map(function (b) { var f = bfs(b[1]); ctx.font = '700 ' + f + 'px ' + SERIF; var n = wrap(ctx, b[1], maxW - 100).length; ctx.font = '400 32px ' + SANS; var s = b[2] ? wrap(ctx, b[2], maxW - 100).length : 0; return { n: n, s: s, f: f, h: 44 + (b[0] ? 40 : 0) + n * (f * 1.2) + (s ? s * 44 + 10 : 0) }; });
     var boxesH = boxHs.reduce(function (a, b) { return a + b.h + 24; }, 0);
     var bf = fmt === 'zap' ? 36 : 40; ctx.font = '400 ' + bf + 'px ' + SANS; var bl = ct.body ? wrap(ctx, ct.body, maxW) : []; var bodyH = bl.length * bf * 1.45;
-    var used = kickH + titleH + barH + boxesH + (bodyH ? bodyH + 30 : 0), footH = 190, avail = H - topPad - botPad - footH;
+    var used = kickH + titleH + barH + boxesH + (bodyH ? bodyH + 30 : 0), footH = 270, avail = H - topPad - botPad - footH;
     if (used > avail) { /* reduz espaçamentos mínimos, nada a fazer além */ }
     var start = topPad + Math.max(0, (avail - used) * (tall ? 0.4 : 0.28)); y = start;
     ctx.textBaseline = 'alphabetic';
@@ -218,16 +221,16 @@
       y += bh + 24;
     });
     if (bl.length) { y += 6; ctx.fillStyle = T.body; ctx.font = '400 ' + bf + 'px ' + SANS; bl.forEach(function (t) { y += bf * 1.45; ctx.fillText(t, M, y); }); }
-    // rodapé
-    var fy = H - botPad - 112;
+    // rodapé: botão (uma linha, dourado como no Brandbook) acima; arroba à esquerda e escudo + nome à direita, na mesma linha
+    var rowY = H - botPad - 112;
     if (ct.cta) {
-      ctx.font = '700 34px ' + SANS; var cw = Math.min(ctx.measureText(ct.cta).width + 80, maxW * .56);
-      var ctaLines = wrap(ctx, ct.cta, cw - 80), ch = 40 + ctaLines.length * 42;
-      ctx.fillStyle = T.ctaBg; rr(ctx, M, fy - 10, cw, ch + 14, (ch + 14) / 2); ctx.fill();
-      ctx.fillStyle = T.ctaFg; ctaLines.forEach(function (t, i) { ctx.fillText(t, M + 40, fy + 40 + i * 42); });
+      var cf = 34; ctx.font = '700 ' + cf + 'px ' + SANS; while (ctx.measureText(ct.cta).width + 96 > maxW && cf > 22) { cf -= 2; ctx.font = '700 ' + cf + 'px ' + SANS; }
+      var cw = ctx.measureText(ct.cta).width + 96, chh = 84, cyy = rowY - 40 - chh;
+      ctx.fillStyle = T.ctaBg; rr(ctx, M, cyy, cw, chh, chh / 2); ctx.fill();
+      ctx.fillStyle = T.ctaFg; ctx.textBaseline = 'middle'; ctx.fillText(ct.cta, M + 48, cyy + chh / 2 + 2); ctx.textBaseline = 'alphabetic';
     }
-    ctx.fillStyle = T.hand; ctx.font = '400 30px ' + SANS; ctx.fillText('@britlandacademy', M, H - botPad + 16);
-    lockup(ctx, W - M, fy - 4, T.lk, T.lk2, 1);
+    ctx.fillStyle = T.hand; ctx.font = '400 30px ' + SANS; ctx.textBaseline = 'middle'; ctx.fillText('@britlandacademy', M, rowY + 56); ctx.textBaseline = 'alphabetic';
+    lockup(ctx, W - M, rowY, T.lk, T.lk2);
   }
   function rr(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
 
