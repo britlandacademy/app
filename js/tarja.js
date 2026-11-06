@@ -12,7 +12,7 @@
   var DUR = { 'in': 2.6, out: 1.9 };
   function state(kind, t) {
     if (kind === 'in') return { name: 1 - ez((t - .4) / .5), bar: ez((t - .7) / .8), txt: ez((t - 1.3) / .5) };
-    if (kind === 'out') return { name: ez((t - .8) / .5), bar: 1 - ez((t - .3) / .6), txt: 1 - ez(t / .3) };
+    if (kind === 'out') return { name: 0, bar: 1 - ez((t - .3) / .6), txt: 1 - ez(t / .3) };
     if (kind === 'full') return { name: 0, bar: 1, txt: 1 };
     if (kind === 'corner') return { name: 1, bar: 0, txt: 0 };
     if (kind === 'shield') return { name: 0, bar: 0, txt: 0 };
