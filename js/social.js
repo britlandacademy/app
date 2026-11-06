@@ -7,7 +7,8 @@
   var JS = (document.currentScript && document.currentScript.src) || '';
   var BASE = JS ? JS.replace(/js\/[^\/]*$/, '') : '';
   var ES_APP = /\/espanol\//.test(location.pathname);
-  var C = { navy: '#0B1733', royal: '#10224A', gold: '#C9A13B', gl: '#E4C06A', red: '#B3202A', coral: '#EC4654', cream: '#FAF8F3', sand: '#EFE9D9', ink: '#17202F', grey: '#5A6577', mist: '#F2F5FA', dust: '#B4BFD6' };
+  var C = { navy: '#0B1733', royal: '#10224A', gold: '#C9A13B', gl: '#E4C06A', red: '#B3202A', coral: '#EC4654', cream: '#FAF8F3', sand: '#EFE9D9', ink: '#17202F', grey: '#5A6577', mist: '#F2F5FA', dust: '#B4BFD6', gt: '#16356f', gb: '#0a1530', bl: '#2b4a8c' };
+  var C_EN = Object.assign({}, C), C_ES = { navy: '#3A0A10', royal: '#561318', gold: '#F1BF00', gl: '#FFD43B', red: '#AA151B', coral: '#FF5C5F', cream: '#FFFBF0', sand: '#F8EBC4', ink: '#2A1215', grey: '#6B5A55', mist: '#FFF6DD', dust: '#E6C9A6', gt: '#7A141B', gb: '#2E060B', bl: '#9A3B2E' };
   var SERIF = '"Noto Serif",Georgia,serif', SANS = 'Montserrat,Arial,sans-serif';
 
   /* ---------- datas ---------- */
@@ -93,7 +94,7 @@
   var DIVULG = {
     exp: { k: 'Aulas online', t1: 'Bora', t2: 'falar?', big: '', small: '', body: 'Aulas 100% online de inglês e espanhol, no seu ritmo e com gente de verdade do outro lado.', cta: 'Peça sua aula experimental' },
     place: { k: 'Teste de nível', t1: 'Descubra o seu', t2: 'nível.', big: '', small: '', body: 'Faça o Placement Test e saiba por onde começar. Sem pressa, sem vergonha.', cta: 'Faça o teste de nível' },
-    metodo: { k: 'Método Callan', t1: 'Falar desde', t2: 'a primeira aula.', big: '', small: '', body: 'Perguntas e respostas curtas, repetição e correção na hora. Você fala o tempo todo.', cta: 'Conheça o método' },
+    metodo: { k: 'Nosso jeito de ensinar', t1: 'Falar desde', t2: 'a primeira aula.', big: '', small: '', body: 'Perguntas e respostas curtas, repetição e correção na hora. Você fala o tempo todo.', cta: 'Conheça o método' },
     vagas: { k: 'Vagas abertas', t1: 'Turmas com', t2: 'vagas abertas.', big: '', small: '', body: 'Inglês e espanhol online, com horários que cabem na sua rotina.', cta: 'Fale com a gente' }
   };
   var AVISO = {
@@ -111,7 +112,7 @@
     divulg: ['Bora falar de verdade?', 'Sem pressa, sem vergonha.'],
     aviso: ['Passando para avisar.', 'Atenção, pessoal.']
   };
-  var TAGS = { en: ['#InglesOnline', '#AprenderIngles', '#Callan'], es: ['#EspanholOnline', '#AprenderEspanhol', '#Callan'] };
+  var TAGS = { en: ['#InglesOnline', '#AprenderIngles'], es: ['#EspanholOnline', '#AprenderEspanhol'] };
 
   /* ---------- utilitários ---------- */
   function pick(a, i) { return a[i % a.length]; }
@@ -129,10 +130,10 @@
     var t = [document.fonts.load('700 60px "Noto Serif"'), document.fonts.load('italic 700 60px "Noto Serif"'), document.fonts.load('400 30px Montserrat'), document.fonts.load('600 30px Montserrat'), document.fonts.load('700 30px Montserrat')];
     return Promise.race([Promise.all(t).catch(function () { }), new Promise(function (r) { setTimeout(r, 4000); })]);
   }
-  var SHIELD = null;
+  var SHIELD = null, SHIELD_ES = null;
   function loadShield() {
-    if (SHIELD) return Promise.resolve(SHIELD);
-    return new Promise(function (res) { var i = new Image(); i.onload = function () { SHIELD = i; res(i); }; i.onerror = function () { res(null); }; i.src = BASE + 'img/britland-shield.png'; });
+    function ld(f) { return new Promise(function (res) { var i = new Image(); i.onload = function () { res(i); }; i.onerror = function () { res(null); }; i.src = BASE + 'img/' + f; }); }
+    return Promise.all([SHIELD ? SHIELD : ld('britland-shield.png'), SHIELD_ES ? SHIELD_ES : ld('britland-shield-es.png')]).then(function (a) { SHIELD = a[0]; SHIELD_ES = a[1]; return SHIELD; });
   }
 
   /* ---------- desenho ---------- */
@@ -140,7 +141,7 @@
   var MODELS = { marinho: 'Marinho', creme: 'Creme', festivo: 'Festivo' };
   function theme(m) {
     if (m === 'creme') return { bg: C.cream, kick: C.red, t1: C.ink, t2: C.red, bar: C.gold, box: C.sand, boxL: '#e0d6bd', big: C.ink, small: C.grey, body: C.ink, ctaBg: C.gold, ctaFg: C.ink, hand: C.grey, lk: C.ink, lk2: C.red };
-    return { bg: C.navy, kick: C.gl, t1: C.mist, t2: C.gl, bar: C.gold, box: C.royal, boxL: '#2b4a8c', big: C.gl, small: C.dust, body: C.mist, ctaBg: C.gold, ctaFg: C.navy, hand: C.dust, lk: C.mist, lk2: C.coral };
+    return { bg: C.navy, kick: C.gl, t1: C.mist, t2: C.gl, bar: C.gold, box: C.royal, boxL: C.bl, big: C.gl, small: C.dust, body: C.mist, ctaBg: C.gold, ctaFg: C.navy, hand: C.dust, lk: C.mist, lk2: C.coral };
   }
   function wrap(ctx, text, maxW) {
     var words = String(text).split(/\s+/), out = [], l = '';
@@ -165,24 +166,31 @@
     }
   }
   function lockup(ctx, xr, y, tc, ac) {
-    /* escudo + BRITLAND; ACADEMY espaçado para ter a mesma largura; bloco de texto centralizado na altura do escudo */
-    var sz = 52, sw = 96, gap = 20, f2 = 28, i;
+    /* igual ao logotipo do site: escudo à esquerda; BRITLAND em serifa bold; ACADEMY em sans médio, sem espaçamento, alinhado à esquerda sob BRITLAND com ~79% da largura */
+    var sz = 56, sw = 96, gap = 22, i;
     ctx.font = '700 ' + sz + 'px ' + SERIF; var w1 = ctx.measureText('BRITLAND').width;
-    ctx.font = '600 ' + f2 + 'px ' + SANS; var gw = 0; for (i = 0; i < 7; i++) gw += ctx.measureText('ACADEMY'[i]).width; var sp = (w1 - gw) / 6;
-    var x0 = xr - (sw + gap + w1), sh = SHIELD ? sw * SHIELD.height / SHIELD.width : 112;
-    if (SHIELD) ctx.drawImage(SHIELD, x0, y, sw, sh);
-    var tx = x0 + sw + gap, cy = y + sh / 2;
+    ctx.font = '500 100px ' + SANS; var f2 = 100 * (w1 * 0.79) / ctx.measureText('ACADEMY').width;
+    var SH = (C === C_ES_ACTIVE && SHIELD_ES) ? SHIELD_ES : SHIELD;
+    var x0 = xr - (sw + gap + w1), sh = SH ? sw * SH.height / SH.width : 112;
+    if (SH) ctx.drawImage(SH, x0, y, sw, sh);
+    var tx = x0 + sw + gap, cy = y + sh / 2, cap1 = sz * 0.714, cap2 = f2 * 0.7, g = cap1 * 0.5, top = cy - (cap1 + g + cap2) / 2;
     ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left';
-    ctx.fillStyle = tc; ctx.font = '700 ' + sz + 'px ' + SERIF; ctx.fillText('BRITLAND', tx, cy + 1.5);
-    ctx.fillStyle = ac; ctx.font = '600 ' + f2 + 'px ' + SANS; spaced(ctx, 'ACADEMY', tx, cy + 35.5, sp, false);
+    ctx.fillStyle = tc; ctx.font = '700 ' + sz + 'px ' + SERIF; ctx.fillText('BRITLAND', tx, top + cap1);
+    ctx.fillStyle = ac; ctx.font = '500 ' + f2 + 'px ' + SANS; ctx.fillText('ACADEMY', tx, top + cap1 + g + cap2);
     return { x: x0, h: sh };
   }
+  var C_ES_ACTIVE = null;
   function draw(cv, fmt, model, ct) {
+    var es = ct && ct.lang === 'es', keep = Object.assign({}, C);
+    if (es) { Object.assign(C, C_ES); C_ES_ACTIVE = C; } else { Object.assign(C, C_EN); C_ES_ACTIVE = null; }
+    try { return draw0(cv, fmt, model, ct); } finally { Object.assign(C, keep); C_ES_ACTIVE = null; }
+  }
+  function draw0(cv, fmt, model, ct) {
     var F = FORMATS[fmt], W = F.w, H = F.h, ctx = cv.getContext('2d'), T = theme(model === 'festivo' ? 'marinho' : model), M = 90;
     cv.width = W; cv.height = H;
     var tall = H > 1500, topPad = tall ? 210 : 100, botPad = tall ? 250 : 80;
     if (fmt === 'zap') { topPad = 80; botPad = 70; }
-    if (model === 'festivo') { var g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#16356f'); g.addColorStop(1, '#0a1530'); ctx.fillStyle = g; } else ctx.fillStyle = T.bg;
+    if (model === 'festivo') { var g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, C.gt); g.addColorStop(1, C.gb); ctx.fillStyle = g; } else ctx.fillStyle = T.bg;
     ctx.fillRect(0, 0, W, H);
     if (model === 'festivo') {
       var dec = ct.deco || { p: 'stars', col: [C.gl, '#fff', C.gold] };
@@ -246,12 +254,13 @@
     return {
       curta: [hk, big || head, cta].filter(Boolean).join('\n\n') + '\n\n' + tg,
       media: [hk, head.trim(), big, ct.body, cta].filter(Boolean).join('\n\n') + '\n\n' + tg,
-      longa: [hk, head.trim(), big, ct.body, S.occ === 'dica' || S.occ === 'palavra' ? 'Salve este post e pratique em voz alta, três vezes.' : 'Marque alguém que também precisa ver isso.', cta, 'Britland Academy · inglês e espanhol online, pelo método Callan.'].filter(Boolean).join('\n\n') + '\n\n' + tg
+      longa: [hk, head.trim(), big, ct.body, S.occ === 'dica' || S.occ === 'palavra' ? 'Salve este post e pratique em voz alta, três vezes.' : 'Marque alguém que também precisa ver isso.', cta, 'Britland Academy · inglês e espanhol online.'].filter(Boolean).join('\n\n') + '\n\n' + tg
     };
   }
 
   /* ---------- conteúdo por ocasião ---------- */
-  function content(S) {
+  function content(S) { var o = content0(S); o.lang = S.lang; return o; }
+  function content0(S) {
     var lang = S.lang, i = S.seed, o = S.occ, k;
     if (o === 'hol') {
       var h = S.hol; if (!h) return { t1: 'Escolha uma', t2: 'data.', body: '' };
@@ -265,7 +274,7 @@
     if (o === 'conq') {
       var nm = S.name || 'Nome', t = S.conq;
       var big = t === 'stage' ? 'Stage ' + (S.num || '1') + ' concluído' : t === 'streak' ? (S.num || '7') + ' dias seguidos' : 'Aluno(a) do mês';
-      var sm = t === 'stage' ? 'Mais uma etapa do curso Callan.' : t === 'streak' ? 'Estudando todos os dias.' : 'Dedicação que inspira a turma.';
+      var sm = t === 'stage' ? 'Mais uma etapa do curso.' : t === 'streak' ? 'Estudando todos os dias.' : 'Dedicação que inspira a turma.';
       return { k: 'Conquista', t1: 'Parabéns,', t2: nm + '!', big: big, small: sm, body: 'Olha o quanto você já fala!', cta: '', };
     }
     if (o === 'aniv') { var n2 = S.name || 'Nome'; return { k: 'Feliz aniversário', t1: 'Parabéns,', t2: n2 + '!', big: lang === 'en' ? 'Happy Birthday!' : '¡Feliz cumpleaños!', small: 'Feliz aniversário!', body: 'Muitas conquistas em ' + (lang === 'en' ? 'inglês' : 'espanhol') + ' e em tudo o que você sonhar.', cta: '', deco: { p: 'dots', col: [C.coral, C.gl, '#6FA8FF', '#3DB37A'] } }; }
@@ -301,7 +310,7 @@
       // opções da ocasião
       var opt = el('div', { class: 'row' });
       if (S.occ === 'hol') { var hl = holList(); if (!S.hol || hl.indexOf(S.hol) < 0) S.hol = nx[0] ? nx[0].h : hl[0]; opt.append(sel(hl.map(function (h) { return [h.id, h.n + ' · ' + fmtD(nextDate(h, now))]; }), S.hol.id, function (v) { S.hol = hl.filter(function (h) { return h.id === v; })[0]; S.edit = null; render(); }, 'Data')); }
-      if (S.occ === 'divulg') opt.append(sel([['exp', 'Aula experimental'], ['place', 'Teste de nível'], ['metodo', 'Método Callan'], ['vagas', 'Vagas abertas']], S.div, function (v) { S.div = v; S.edit = null; render(); }, 'Tipo'));
+      if (S.occ === 'divulg') opt.append(sel([['exp', 'Aula experimental'], ['place', 'Teste de nível'], ['metodo', 'Falar desde a 1ª aula'], ['vagas', 'Vagas abertas']], S.div, function (v) { S.div = v; S.edit = null; render(); }, 'Tipo'));
       if (S.occ === 'aviso') opt.append(sel([['recesso', 'Recesso'], ['horario', 'Mudança de horário'], ['novidade', 'Novidade no app']], S.av, function (v) { S.av = v; S.edit = null; render(); }, 'Tipo'));
       if (S.occ === 'conq' || S.occ === 'aniv') {
         var st = students(), ns = el('select', { 'aria-label': 'Aluno' }); ns.append(el('option', { value: '' }, '— escolha o aluno —')); st.forEach(function (p) { var op = el('option', { value: firstName(p.name || p.email) }, p.name || p.email); if (firstName(p.name) === S.name) op.selected = true; ns.append(op); });
@@ -333,8 +342,50 @@
       bsh.addEventListener('click', function () { cv.toBlob(function (b) { var f = new File([b], 'britland-' + S.occ + '.png', { type: 'image/png' }); if (navigator.canShare && navigator.canShare({ files: [f] })) navigator.share({ files: [f], text: capBox.value }).catch(function () { }); else { msg.textContent = 'Este aparelho não abre o compartilhamento. Use Baixar PNG.'; msg.className = 'msg bad'; } }, 'image/png'); });
       bra.addEventListener('click', function () { S.seed = rnd(50); S.edit = null; render(); });
       bar.append(bdl, bcp, bsh, bra, bia); right.append(bar, msg);
-      wrapBox.append(el('div', { class: 'sc-grid', style: 'margin-top:14px' }, left, right), ed);
+      wrapBox.append(el('div', { class: 'sc-grid', style: 'margin-top:14px' }, left, right), ed, tarjaSection());
       draw1(); capNow();
+    }
+
+    /* ---------- vídeos: logo no canto e tarja ---------- */
+    var TJ = { kind: 'in', mode: 'alpha', l1: '', l2: '', tab: 0 };
+    function tarjaSection() {
+      var T = window.TarjaFx; if (!T) return el('span');
+      if (window.BL_BASE == null) window.BL_BASE = BASE;
+      var d = el('details', { class: 'sc-ed', style: 'margin-top:18px' }, el('summary', { style: 'cursor:pointer;font-weight:700;margin:8px 0' }, 'Vídeos: logo no canto e tarja'));
+      var pv = el('canvas', { class: 'sc-cv', style: 'max-width:260px;background:repeating-conic-gradient(#8a93a3 0 25%,#6f7889 0 50%) 0 0/24px 24px' });
+      var msg = el('p', { class: 'msg', 'aria-live': 'polite' });
+      var l1 = el('input', { type: 'text', 'aria-label': 'Linha 1 da tarja', placeholder: 'Linha 1 (ex.: Nome do professor)', value: TJ.l1 }), l2 = el('input', { type: 'text', 'aria-label': 'Linha 2 da tarja', placeholder: 'Linha 2 (opcional)', value: TJ.l2 });
+      function prev() { Promise.all([loadFonts(), T.loadShield(S.lang)]).then(function (a) { T.draw(pv, { mode: 'alpha', lang: S.lang, l1: TJ.l1, l2: TJ.l2, sh: a[1], state: T.state('full', 0) }); }); }
+      l1.addEventListener('input', function () { TJ.l1 = l1.value; prev(); }); l2.addEventListener('input', function () { TJ.l2 = l2.value; prev(); });
+      function dl(blob, name) { var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.append(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000); }
+      function png(kind, name) { Promise.all([loadFonts(), T.loadShield(S.lang)]).then(function (a) { var c = document.createElement('canvas'); T.draw(c, { mode: 'alpha', lang: S.lang, l1: kind === 'full' ? TJ.l1 : '', l2: kind === 'full' ? TJ.l2 : '', sh: a[1], state: T.state(kind, 0) }); c.toBlob(function (b) { dl(b, 'britland-' + name + '-' + S.lang + '.png'); }); }); }
+      function rec() {
+        if (!window.MediaRecorder) { msg.textContent = 'Este navegador não grava vídeo. Use o Chrome no computador.'; msg.className = 'msg err'; return; }
+        var mime = TJ.mode === 'alpha' ? 'video/webm;codecs=vp9' : (MediaRecorder.isTypeSupported('video/mp4;codecs=avc1') ? 'video/mp4;codecs=avc1' : 'video/webm;codecs=vp9'), ext = mime.indexOf('mp4') > 0 ? 'mp4' : 'webm';
+        if (!MediaRecorder.isTypeSupported(mime)) mime = 'video/webm';
+        Promise.all([loadFonts(), T.loadShield(S.lang)]).then(function (a) {
+          var c = document.createElement('canvas'), dur = T.DUR[TJ.kind], opts = function (t) { return { mode: TJ.mode, lang: S.lang, l1: TJ.l1, l2: TJ.l2, sh: a[1], state: T.state(TJ.kind, t) }; };
+          T.draw(c, opts(0)); var st = c.captureStream(30), ch = [], mr = new MediaRecorder(st, { mimeType: mime, videoBitsPerSecond: 8e6 });
+          mr.ondataavailable = function (e) { if (e.data && e.data.size) ch.push(e.data); };
+          mr.onstop = function () { dl(new Blob(ch, { type: mime.split(';')[0] }), 'britland-' + (TJ.kind === 'in' ? 'tarja-entrada' : 'tarja-saida') + '-' + S.lang + (TJ.mode === 'alpha' ? '-transparente' : TJ.mode === 'green' ? '-verde' : '-azul') + '.' + ext); msg.textContent = 'Pronto. Vídeo baixado.' + (TJ.mode !== 'alpha' && ext === 'webm' ? ' (Este navegador gravou em WebM; o Chrome atual grava MP4.)' : ''); msg.className = 'msg ok'; bg.disabled = false; };
+          msg.textContent = 'Gravando em tempo real (' + dur.toFixed(1) + ' s)…'; msg.className = 'msg'; bg.disabled = true; mr.start();
+          var t0 = performance.now(); (function tick() { var t = (performance.now() - t0) / 1000; T.draw(c, opts(Math.min(t, dur))); if (t < dur + .25) requestAnimationFrame(tick); else mr.stop(); })();
+        });
+      }
+      var bg = el('button', { type: 'button' }, 'Gerar e baixar vídeo');
+      bg.addEventListener('click', rec);
+      d.append(el('p', { class: 'hint' }, 'A tarja abre a partir do logo do canto (o nome Britland Academy some em fade) e fecha de volta. Deixe as linhas vazias para a tarja vazia. O vídeo é gravado em tempo real, com 1080x1920.'),
+        el('div', { class: 'row' }, el('b', {}, 'Vídeo:'), chips([['in', 'Entrada'], ['out', 'Saída']], TJ.kind, function (v) { TJ.kind = v; reopen(); })),
+        el('div', { class: 'row' }, el('b', {}, 'Fundo:'), chips([['alpha', 'Transparente (WebM)'], ['blue', 'Azul (MP4)'], ['green', 'Verde chroma (MP4)']], TJ.mode, function (v) { TJ.mode = v; reopen(); })),
+        el('div', { class: 'row' }, l1, l2), el('div', { class: 'sc-grid', style: 'margin-top:10px' }, pv, el('div', { style: 'flex:1;min-width:240px' },
+          el('div', { class: 'row' }, bg), el('b', {}, 'Imagens PNG (fundo transparente, 1080x1920)'),
+          el('div', { class: 'row' }, (function () { var b = el('button', { type: 'button', class: 'ghost' }, 'Logo no canto, com Britland'); b.addEventListener('click', function () { png('corner', 'logo-canto-com-britland'); }); return b; })(),
+            (function () { var b = el('button', { type: 'button', class: 'ghost' }, 'Logo no canto, sem Britland'); b.addEventListener('click', function () { png('shield', 'logo-canto-sem-britland'); }); return b; })(),
+            (function () { var b = el('button', { type: 'button', class: 'ghost' }, 'Logo e tarja (vazia)'); b.addEventListener('click', function () { png('bar', 'logo-e-tarja-vazia'); }); return b; })(),
+            (function () { var b = el('button', { type: 'button', class: 'ghost' }, 'Logo e tarja (com texto)'); b.addEventListener('click', function () { png('full', 'logo-e-tarja-texto'); }); return b; })()), msg)));
+      if (TJ.open) d.open = true; d.addEventListener('toggle', function () { TJ.open = d.open; if (d.open) prev(); });
+      function reopen() { TJ.open = true; render(); }
+      return d;
     }
     function render2() { var c = captions(S, ctCur); capBox.value = c[S.cap]; /* só atualiza chip visual */ var chs = capBox.parentNode.querySelectorAll('.sc-chip'); [].forEach.call(chs, function (b) { var on = b.textContent.toLowerCase().indexOf(S.cap === 'media' ? 'média' : S.cap) === 0; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); }); }
     function draw1(keepCap) {
@@ -343,5 +394,5 @@
     }
     render();
   }
-  window.SocialTab = { mount: mount, _draw: draw, _content: content, _captions: captions, _HOL: HOL };
+  window.SocialTab = { mount: mount, _draw: draw, _content: content, _captions: captions, _HOL: HOL, _load: loadShield };
 })();
