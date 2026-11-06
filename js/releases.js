@@ -2,6 +2,7 @@
    Newest first. Written for students (no technical terms). Each entry: v, d [pt, es], t [pt, es] short title, p [pt, es] one sentence,
    show:1 = also shown once in the notice after the update, c:'en'|'es' = only that course (omit = both). */
 window.BL_RELEASES=[
+{v:'1.11.16',d:['6 de novembro','6 de noviembre'],t:['Correção de bugs','Corrección de errores'],p:['','']},
 {v:'1.11.15',d:['5 de novembro','5 de noviembre'],t:['Correção de bugs','Corrección de errores'],p:['','']},
 {v:'1.11.14',d:['5 de novembro','5 de noviembre'],t:['Correção de bugs','Corrección de errores'],p:['','']},
 {v:'1.11.13',d:['5 de novembro','5 de noviembre'],t:['Correção de bugs','Corrección de errores'],p:['','']},

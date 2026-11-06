@@ -298,6 +298,8 @@
     function sel(opts, cur, on, label) { var s = el('select', { 'aria-label': label }); opts.forEach(function (x) { var op = el('option', { value: x[0] }, x[1]); if (x[0] === cur) op.selected = true; s.append(op); }); s.addEventListener('change', function () { on(s.value); }); return s; }
     var students = function () { return (o.profiles ? o.profiles() : []).filter(function (p) { return !p.is_admin && p.status === 'approved'; }); };
     var capBox, ctCur;
+    var aiSig = function () { return JSON.stringify([S.occ, S.hol && S.hol.id, S.lang, S.seed, S.fmt]); };
+    var capText = function (c) { return (S.ai && S.ai.sig === aiSig() && S.ai.v[S.cap]) || c[S.cap]; };
     function render() {
       wrapBox.textContent = '';
       // próximas datas
@@ -332,16 +334,25 @@
       });
       capBox = el('textarea', { class: 'sc-cap', 'aria-label': 'Legenda' });
       var msg = el('p', { class: 'msg', 'aria-live': 'polite' });
-      var capNow = function () { var c = captions(S, ctCur); capBox.value = c[S.cap]; };
+      var capNow = function () { var c = captions(S, ctCur); capBox.value = capText(c); };
       var left = el('div', {}, cv), right = el('div', { style: 'flex:1;min-width:260px' });
       right.append(el('b', {}, 'Legenda'), chips([['curta', 'Curta'], ['media', 'Média'], ['longa', 'Longa']], S.cap, function (v) { S.cap = v; capNow(); render2(); }), capBox);
       var bar = el('div', { class: 'row', style: 'margin-top:10px' });
-      var bdl = el('button', { type: 'button' }, 'Baixar PNG'), bcp = el('button', { type: 'button', class: 'ghost' }, 'Copiar legenda'), bsh = el('button', { type: 'button', class: 'ghost' }, 'Compartilhar'), bra = el('button', { type: 'button', class: 'ghost' }, 'Sortear outra'), bia = el('button', { type: 'button', class: 'ghost', disabled: 'disabled', title: 'Disponível quando a chave do Gemini for configurada' }, 'Reescrever com IA (em breve)');
+      var bdl = el('button', { type: 'button' }, 'Baixar PNG'), bcp = el('button', { type: 'button', class: 'ghost' }, 'Copiar legenda'), bsh = el('button', { type: 'button', class: 'ghost' }, 'Compartilhar'), bra = el('button', { type: 'button', class: 'ghost' }, 'Sortear outra'), bia = el('button', { type: 'button', class: 'ghost', style: 'background:#F5C542;color:#111;border-color:#111' }, 'Reescrever com IA'), tone = sel([['animado', 'Tom: animado'], ['calmo', 'Tom: calmo'], ['formal', 'Tom: formal']], 'animado', function () { }, 'Tom da legenda');
+      bia.addEventListener('click', function () {
+        if (!o.sb || !o.sb.functions) { msg.textContent = 'IA indisponível aqui.'; msg.className = 'msg bad'; return; }
+        var sig = aiSig(), c0 = captions(S, ctCur); bia.disabled = true; msg.textContent = 'Escrevendo com IA…'; msg.className = 'msg';
+        o.sb.functions.invoke('ai-text', { body: { action: 'caption', lang: S.lang, occasion: ctCur.k || S.occ, text: capBox.value || c0[S.cap], note: 'Tom ' + tone.value + '. Formato: ' + S.fmt } }).then(function (r) {
+          bia.disabled = false; var v = r && r.data && r.data.versions;
+          if (r.error || !v || !v.length) { var er = r.data && r.data.error; msg.textContent = er === 'no-key' ? 'Falta a chave do Gemini neste app.' : 'Não consegui gerar agora. Tente de novo.'; msg.className = 'msg bad'; return; }
+          S.ai = { sig: sig, v: { curta: v[0], media: v[1] || v[0], longa: v[2] || v[1] || v[0] } }; capNow(); msg.textContent = 'Legenda reescrita. Confira antes de publicar.'; msg.className = 'msg ok';
+        }, function () { bia.disabled = false; msg.textContent = 'Sem conexão com a IA.'; msg.className = 'msg bad'; });
+      });
       bdl.addEventListener('click', function () { cv.toBlob(function (b) { var a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'britland-' + S.occ + '-' + S.fmt + '.png'; document.body.append(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000); msg.textContent = 'Imagem baixada.'; msg.className = 'msg ok'; }, 'image/png'); });
       bcp.addEventListener('click', function () { var t = capBox.value; (navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { msg.textContent = 'Legenda copiada.'; msg.className = 'msg ok'; }, function () { capBox.select(); msg.textContent = 'Selecionei a legenda: use Copiar do aparelho.'; msg.className = 'msg'; }); });
       bsh.addEventListener('click', function () { cv.toBlob(function (b) { var f = new File([b], 'britland-' + S.occ + '.png', { type: 'image/png' }); if (navigator.canShare && navigator.canShare({ files: [f] })) navigator.share({ files: [f], text: capBox.value }).catch(function () { }); else { msg.textContent = 'Este aparelho não abre o compartilhamento. Use Baixar PNG.'; msg.className = 'msg bad'; } }, 'image/png'); });
       bra.addEventListener('click', function () { S.seed = rnd(50); S.edit = null; render(); });
-      bar.append(bdl, bcp, bsh, bra, bia); right.append(bar, msg);
+      bar.append(tone, bia, bdl, bcp, bsh, bra); right.append(bar, msg);
       wrapBox.append(el('div', { class: 'sc-grid', style: 'margin-top:14px' }, left, right), ed, tarjaSection());
       draw1(); capNow();
     }
@@ -388,10 +399,10 @@
       function reopen() { TJ.open = true; render(); }
       return d;
     }
-    function render2() { var c = captions(S, ctCur); capBox.value = c[S.cap]; /* só atualiza chip visual */ var chs = capBox.parentNode.querySelectorAll('.sc-chip'); [].forEach.call(chs, function (b) { var on = b.textContent.toLowerCase().indexOf(S.cap === 'media' ? 'média' : S.cap) === 0; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); }); }
+    function render2() { var c = captions(S, ctCur); capBox.value = capText(c); /* só atualiza chip visual */ var chs = capBox.parentNode.querySelectorAll('.sc-chip'); [].forEach.call(chs, function (b) { var on = b.textContent.toLowerCase().indexOf(S.cap === 'media' ? 'média' : S.cap) === 0; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); }); }
     function draw1(keepCap) {
       var ct = ctCur = Object.assign({}, content(S), S.edit || {});
-      Promise.all([loadFonts(), loadShield()]).then(function () { draw(cv, S.fmt, S.model, ct); if (!keepCap && capBox) capBox.value = captions(S, ct)[S.cap]; });
+      Promise.all([loadFonts(), loadShield()]).then(function () { draw(cv, S.fmt, S.model, ct); if (!keepCap && capBox) capBox.value = capText(captions(S, ct)); });
     }
     render();
   }
