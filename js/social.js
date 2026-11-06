@@ -395,5 +395,7 @@
     }
     render();
   }
-  window.SocialTab = { mount: mount, _draw: draw, _content: content, _captions: captions, _HOL: HOL, _load: loadShield };
+  /* datas que chegam em breve (aviso no painel): [{n: nome, d: dias}] */
+  function soon(lang, max) { var now = new Date(), t0 = new Date(now.getFullYear(), now.getMonth(), now.getDate()); return HOL.filter(function (h) { return !h.hide && (h.c === 'both' || h.c === lang); }).map(function (h) { return { n: h.n, d: Math.round((nextDate(h, now) - t0) / 864e5) }; }).filter(function (x) { return x.d <= (max || 7); }).sort(function (a, b) { return a.d - b.d; }); }
+  window.SocialTab = { soon: soon, mount: mount, _draw: draw, _content: content, _captions: captions, _HOL: HOL, _load: loadShield };
 })();

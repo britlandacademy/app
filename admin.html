@@ -854,17 +854,19 @@ function renderRings(h){
     ringSvg(h.pend?1:0,String(h.pend),'Pedidos de acesso','#ff8a3d'),
     ringSvg(h.over?1:0,String(h.over||0),'Parcelas vencidas','var(--bad)'));
 }
+function socList(){try{return window.SocialTab&&SocialTab.soon?SocialTab.soon('en',7):[]}catch(e){return[]}}
+function socSoon(){return socList().length}
 function renderMore(h){
   const box=$('moreBox');if(!box)return;box.textContent='';
   box.append(el('h2',{},'Mais'));
-  [['pay','Pagamentos','Parcelas e cobranças','payments.html',h.over?h.over+' vencida(s)':''],['exams','Exames','Liberar provas, notas e correções','',h.rev?h.rev+' para revisar':''],['content','Conteúdo','Textos, checks, exercícios e áudios','',''],['place','Placement','Resultados de novos interessados','',''],['stats','Estatísticas','Erros, uso, PWA, contratos e pagamentos','',''],['today','Hoje','Quem estudou e quem ainda não','',''],['agenda','Turmas e disponibilidade','Horários, datas bloqueadas e turmas','',''],['social','Redes sociais','Posts, stories e legendas','','']].forEach(r=>{
+  [['pay','Pagamentos','Parcelas e cobranças','payments.html',h.over?h.over+' vencida(s)':''],['exams','Exames','Liberar provas, notas e correções','',h.rev?h.rev+' para revisar':''],['content','Conteúdo','Textos, checks, exercícios e áudios','',''],['place','Placement','Resultados de novos interessados','',''],['stats','Estatísticas','Erros, uso, PWA, contratos e pagamentos','',''],['today','Hoje','Quem estudou e quem ainda não','',''],['agenda','Turmas e disponibilidade','Horários, datas bloqueadas e turmas','',''],['social','Redes sociais','Posts, stories e legendas','',socSoon()?socSoon()+' data(s) em breve':'']].forEach(r=>{
     const x=el(r[3]?'a':'button',r[3]?{class:'mtile',href:r[3]}:{type:'button',class:'mtile',onclick:()=>go(r[0])});
     const ti=el('span',{class:'ti'});ti.append(ico(r[0]));const tx=el('span',{style:'flex:1'},el('b',{},r[1]),el('small',{},r[2]));
     x.append(ti,tx);if(r[4])x.append(el('span',{class:'tp-flag'},r[4]));box.append(x);});
 }
 function renderHome(){
   const h=homeStats(),ul=$('tpAttnList'),cards=$('tpCards');if(!ul)return;
-  const TI=k=>TABS.findIndex(t=>t[0]===k);TABS[TI('students')][3]=()=>h.pend+h.rev;TABS[TI('pay')][3]=()=>h.over||0;TABS[TI('agenda')][3]=()=>h.lreq+h.lcan;renderToday();
+  const TI=k=>TABS.findIndex(t=>t[0]===k);TABS[TI('students')][3]=()=>h.pend+h.rev;TABS[TI('pay')][3]=()=>h.over||0;TABS[TI('agenda')][3]=()=>h.lreq+h.lcan;TABS[TI('social')][3]=()=>socSoon();renderToday();
   buildTabs();markTabs();renderRings(h);renderMore(h);
   {const al=$('tpAlert');if(al){const parts=[];if(h.lreq)parts.push(h.lreq+(h.lreq===1?' pedido':' pedidos'));if(h.lcan)parts.push(h.lcan+(h.lcan===1?' cancelamento':' cancelamentos'));
     al.hidden=!parts.length;al.textContent='';if(parts.length){al.append(el('b',{},'\uD83D\uDD14 '+parts.join(' \u00B7 ')),el('i',{},'Ver'));al.onclick=()=>{const b=$('agendaBox');if(b)b.scrollIntoView({behavior:'smooth',block:'start'});};}}}
@@ -872,6 +874,7 @@ function renderHome(){
   if(h.pend)rows.push([h.pend+' pedido(s) de acesso para aprovar','students']);
   if(h.rev)rows.push([h.rev+' prova(s) com respostas para você revisar','exams']);
   if(h.over)rows.push([h.over+' parcela(s) vencida(s)','payments.html']);
+  socList().forEach(x=>rows.push(['Data para divulgar: '+x.n+' ('+(x.d===0?'hoje':x.d===1?'amanhã':'em '+x.d+' dias')+')','social']));
   if(h.idle)rows.push([h.idle+' aluno(s) sem fazer exercícios há mais de 7 dias','grades']);
   ul.textContent='';
   if(!rows.length)ul.append(el('li',{},el('span',{},'Nada pendente. Tudo em dia!')));
