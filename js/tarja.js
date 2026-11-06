@@ -46,11 +46,17 @@
 
   /* encerramento: logo sobe do canto para o centro; proporções do logo oficial, ACADEMY centralizado */
   DUR.end = 3.4;
+  /* fundo azul que esmaece (k 1..0) sobre transparente/verde; no modo azul fica sempre cheio */
+  function fadeBg(c, o, k) {
+    if (o.mode === 'green') { c.fillStyle = '#00FF00'; c.fillRect(0, 0, CW, CH); }
+    if (k <= 0 && o.mode !== 'blue') return;
+    var g = c.createLinearGradient(0, 0, 0, CH); g.addColorStop(0, o.lang === 'es' ? '#7A141B' : '#16356f'); g.addColorStop(1, o.lang === 'es' ? '#2E060B' : '#0a1530');
+    c.save(); c.globalAlpha = o.mode === 'blue' ? 1 : k; c.fillStyle = g; c.fillRect(0, 0, CW, CH); c.restore();
+  }
   function drawEnd(cv, o) {
     var p = PAL[o.lang === 'es' ? 'es' : 'en'], t = o.t, c = cv.getContext('2d'), sh = o.sh;
     cv.width = CW; cv.height = CH; c.clearRect(0, 0, CW, CH);
-    if (o.mode === 'green') { c.fillStyle = '#00FF00'; c.fillRect(0, 0, CW, CH); }
-    else if (o.mode === 'blue') { var g = c.createLinearGradient(0, 0, 0, CH); g.addColorStop(0, o.lang === 'es' ? '#7A141B' : '#16356f'); g.addColorStop(1, o.lang === 'es' ? '#2E060B' : '#0a1530'); c.fillStyle = g; c.fillRect(0, 0, CW, CH); }
+    fadeBg(c, o, ez((t - .5) / 1.2));
     var sw = 520, shh = sw * sh.height / sh.width, m = document.createElement('canvas').getContext('2d');
     m.font = '700 100px ' + SERIF; var bw = 1.486 * sw, fs = 100 * bw / m.measureText('BRITLAND').width, cap = fs * .714;
     m.font = '500 100px ' + SANS; var aw = .745 * bw, f2 = 100 * aw / m.measureText('ACADEMY').width, cap2 = f2 * .7;
@@ -73,8 +79,7 @@
   function drawIntro(cv, o) {
     var p = PAL[o.lang === 'es' ? 'es' : 'en'], t = o.t, c = cv.getContext('2d'), lc = o.lc;
     cv.width = CW; cv.height = CH; c.clearRect(0, 0, CW, CH);
-    if (o.mode === 'green') { c.fillStyle = '#00FF00'; c.fillRect(0, 0, CW, CH); }
-    else if (o.mode === 'blue') { var g = c.createLinearGradient(0, 0, 0, CH); g.addColorStop(0, o.lang === 'es' ? '#7A141B' : '#16356f'); g.addColorStop(1, o.lang === 'es' ? '#2E060B' : '#0a1530'); c.fillStyle = g; c.fillRect(0, 0, CW, CH); }
+    fadeBg(c, o, 1 - ez((t - 3.0) / .45));
     var mv = ez((t - 3.0) / .9), k = 1 - .75 * mv, cx = 540 + (SX - 540) * mv, cy = 715 + (CY - 715) * mv;
     c.save(); c.translate(cx, cy); c.scale(k, k); c.translate(-540, -955); c.drawImage(lc, 0, 0, lc.width, lc.width * 365 / 300, 0, 0, CW, CW * 365 / 300); c.restore();
     var ta = ez((t - 3.6) / .7);
