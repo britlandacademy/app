@@ -104,7 +104,7 @@ summary{cursor:pointer;font-weight:700;padding:4px 0}
 <script src="js/config.js" charset="utf-8"></script>
 <script src="js/i18n-es.js" charset="utf-8"></script>
 <script src="../js/i18n.js" charset="utf-8"></script>
-<script src="../js/gate.js" charset="utf-8"></script><script src="../js/profile2.js" charset="utf-8"></script><script src="../js/receipt.js" charset="utf-8"></script><script src="../js/qr.js" charset="utf-8"></script><script src="../js/certificate.js" charset="utf-8"></script>
+<script src="../js/gate.js" charset="utf-8"></script><script src="../js/medals.js" charset="utf-8"></script><script src="../js/profile2.js" charset="utf-8"></script><script src="../js/receipt.js" charset="utf-8"></script><script src="../js/qr.js" charset="utf-8"></script><script src="../js/certificate.js" charset="utf-8"></script>
 <script>
 Gate.start({kinds:[]},function(ctx){
 if(Gate.gameOn()){location.replace('index.html#profile');return;}
@@ -192,18 +192,9 @@ async function grades0(){
   const ch=el('div',{class:'chart'});ch.append(svgH('<svg viewBox="0 0 320 96" role="img" aria-label="Activity per week"><polyline points="'+pts.map(p=>p.join(',')).join(' ')+'" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>'+pts.map(p=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4" fill="var(--accent)"/>').join('')+'</svg>'));
   ch.append(el('div',{class:'ax'},el('span',{},'8'),el('span',{},'0')));
   ch.lastChild.firstChild.textContent='−8 w';ch.lastChild.lastChild.textContent='now';box.append(ch);
-  /* medals */
-  const perfect=Object.values(best).some(o=>o.kind==='check'&&o.t&&o.s===o.t);
-  const stageDone=STG.some(r=>{const n=L.filter(l=>l.check&&l.lesson>=r[0]&&l.lesson<=r[1]).length;return n>=(r[1]-r[0]+1);});
-  const exN=all.filter(a=>a.kind==='ex').length;
-  const has=[done>=1,done>=10,perfect,mx>=7,stageDone,all.some(a=>a.kind==='ex'&&/^wb/.test(String(a.ex))),exN>=50,done>=5&&ct&&cs/ct>=.9];
-  const prog=[done?1:0,Math.min(1,done/10),perfect?1:0,Math.min(1,mx/7),0,0,Math.min(1,exN/50),done>=5&&ct?Math.min(1,cs/ct/.9):0];
+  /* medals (js/medals.js) */
   box.append(el('h3',{class:'sec'},'Medals'));
-  const mg=el('div',{class:'medals'});MD.forEach((m,i)=>{const d=el('div',{class:'md '+(has[i]?'on':'off')});d.append(svgH('<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" /><g transform="translate(4.8 4.8) scale(.6)"><path d="'+m[1]+'"/></g></svg>'),el('span',{},m[0]));mg.append(d);});box.append(mg);
-  let nx=-1,np=-1;has.forEach((h,i)=>{if(!h&&prog[i]>np){np=prog[i];nx=i;}});
-  if(nx>=0){const nb=el('div',{class:'pbar'},el('span',{class:'sm'},'Next medal'),el('b',{},' · '+MD[nx][0]),el('div',{class:'bar'},el('i',{style:'width:'+Math.round(np*100)+'%'})));
-    nb.querySelector('b').firstChild.textContent=' · ';nb.querySelector('b').append('');box.append(nb);
-    const bb=nb.querySelector('b');bb.textContent='';bb.append(' · ',el('span',{},MD[nx][0]));}
+  try{await Medals.render(box,all);}catch(e){}
   /* progress by stage */
   const sg=[];STG.forEach((r,i)=>{const n=L.filter(l=>l.check&&l.lesson>=r[0]&&l.lesson<=r[1]).length;if(!n)return;
     let s=0,t=0;L.forEach(l=>{if(l.check&&l.lesson>=r[0]&&l.lesson<=r[1]){s+=l.check.s;t+=l.check.t;}});

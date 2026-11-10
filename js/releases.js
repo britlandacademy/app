@@ -2,6 +2,8 @@
    Newest first. Written for students (no technical terms). Each entry: v, d [pt, es], t [pt, es] short title, p [pt, es] one sentence,
    show:1 = also shown once in the notice after the update, c:'en'|'es' = only that course (omit = both). */
 window.BL_RELEASES=[
+{v:'2.0.0',d:['10 de novembro','10 de noviembre'],t:['Versão 2.0: perfil público, medalhas e Modo Jogo melhorado','Versión 2.0: perfil público, medallas y Modo Juego mejorado'],p:['Agora você vê o perfil dos colegas pelo Ranking da turma, ganha 69 medalhas (inclusive no Modo Jogo, com avisos dourados), ajusta sua foto com zoom e gira, e o exercício Corrija o erro ficou maior e mais claro.','Ahora ves el perfil de tus compañeros desde el Ranking del grupo, ganas 69 medallas (también en el Modo Juego, con avisos dorados), ajustas tu foto con zoom y giro, y el ejercicio Corrige el error es más grande y claro.'],show:1},
+{v:'1.11.19',d:['10 de novembro','10 de noviembre'],t:['Novas medalhas e conquistas, e correção das traduções','Nuevas medallas y logros, y corrección de traducciones'],p:['','']},
 {v:'1.11.18',d:['10 de novembro','10 de noviembre'],t:['Nova página inicial, cabeçalhos e Meu perfil','Nueva página de inicio, encabezados y Mi perfil'],p:['','']},
 {v:'1.11.17',d:['6 de novembro','6 de noviembre'],t:['Dicas semanais para os alunos','Consejos semanales para los alumnos'],p:['','']},
 {v:'1.11.16',d:['6 de novembro','6 de noviembre'],t:['Correção de bugs','Corrección de errores'],p:['','']},

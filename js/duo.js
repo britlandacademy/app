@@ -187,6 +187,11 @@
 '#bl-duo.game .dz-q .chip.on{border-color:#f5c542;background:rgba(245,197,66,.18)}'+
 '#bl-duo.game .dz-q.fix{display:flex;flex-direction:column;gap:8px}#bl-duo.game .dz-q.fix .dz-wrong{margin:0;text-align:center;font-size:1.3rem;padding:12px 14px;border:2px solid #7a3a4a;border-radius:14px;background:rgba(122,58,74,.25);color:var(--ink,#fff)}#bl-duo.game .dz-q.fix .dz-wrong em{font-style:normal;color:#ff6b6b;border-bottom:3px solid #ff6b6b}#bl-duo.game .dz-q.fix .dz-arrow{text-align:center;color:var(--muted,#9fb0d6);font-size:1.3rem;line-height:1}'+
 '#bl-duo.game .dz-bank.fix{display:flex;flex-direction:column;gap:8px;min-height:0}#bl-duo.game .dz-bank.fix .area{order:1;min-height:90px;border:2px solid #f5c542;border-radius:14px;padding:10px;margin:0;align-content:center}#bl-duo.game .dz-bank.fix .dz-undo{order:2;align-self:flex-end;min-height:40px;padding:0 14px;border:2px solid var(--line,#2b4a8c);border-radius:12px;background:transparent;color:#f5c542;font:inherit;font-size:.9rem}#bl-duo.game .dz-bank.fix .pool{order:3;margin:14px 0 0;display:flex;flex-wrap:wrap;justify-content:center;gap:10px}#bl-duo.game .dz-bank.fix .chip{min-height:48px;font-size:1.15rem;border-radius:14px;padding:10px 18px}'+
+'#bl-duo.game .wdrow{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin:8px 0;padding:20px 12px;border:2px solid var(--line,#2b4a8c);border-radius:16px;background:var(--surface,#142a5c)}'+
+'#bl-duo.game .wdrow .wd{font-size:1.4rem;line-height:1.2;padding:10px 14px;min-height:50px;border-radius:12px;border:2px solid transparent;background:transparent;color:var(--ink,#fff)}#bl-duo.game .wdrow .wd.x{background:rgba(122,58,74,.45);border-color:#c0505f;text-decoration:line-through;text-decoration-thickness:2px}'+
+'#bl-duo.game .wdhint{text-align:center;font-size:.98rem;margin:2px 0 4px;color:var(--muted,#9fb0d0)}#bl-duo.game .wdbox{margin-top:10px}#bl-duo.game .wdlab{display:block;text-align:center;font-weight:700;margin:0 0 10px}'+
+'#bl-duo.game .wdbox .pool{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}#bl-duo.game .wdbox .chip{font-size:1.2rem;padding:12px 18px;min-height:50px;border-radius:14px}#bl-duo.game .wdbox .chip.on{background:#f5c542;color:#1a1405;border-color:#f5c542}#bl-duo.game .wdbox .chip.del{border-style:dashed}'+
+'#bl-duo.game .wdalt{display:block;margin:14px auto 0;font-size:.85rem;opacity:.8}'+
 '#bl-duo.game .dz-q.fix .cloze{margin:0;padding:22px 16px;border:2px solid var(--line,#2b4a8c);border-radius:16px;background:var(--surface,#142a5c);text-align:center;font-size:1.5rem;line-height:2.1;color:var(--ink,#fff)}#bl-duo.game .dz-q.fix .dz-bl{display:inline-block;min-width:80px;height:36px;vertical-align:middle;border-bottom:3px solid #f5c542;background:rgba(245,197,66,.12);border-radius:8px 8px 0 0;color:transparent;overflow:hidden;margin:0 4px}#bl-duo.game .dz-q.fix .dz-bw{font-size:1.3rem}'+
 '#bl-duo.game .dz-chip{display:inline-block;align-self:flex-start;margin:0 0 8px;padding:3px 10px;border:1px solid var(--line,#bbb);border-radius:10px;background:var(--surface,#fff);font:700 .68rem/1.3 system-ui,sans-serif;letter-spacing:.07em;color:var(--mu,#667)}'+
 '#bl-duo.game .dz-sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}'+
@@ -525,6 +530,7 @@
     cur.lock=function(){locked=true;clear.disabled=true;try{ol();}catch(e){}draw();};
   }
 
+  function gm(fn){try{if(W.Medals&&Medals.game)Medals.game(fn);}catch(e){}}
   function xpKey(){return 'bl-xp'+((W.BL_COURSE&&W.BL_COURSE.id)?'-'+W.BL_COURSE.id:'');}
   function xpGet(){try{return parseInt(localStorage.getItem(xpKey()),10)||0;}catch(e){return 0;}}
   /* XP is kept on this device and mirrored in the student's row of game_xp (the larger value wins, so it never goes down) */
@@ -572,7 +578,7 @@
       if(noLives||lives<=0)return;lives--;var k=lives;var sp=lifeEls[k];
       sp.className='dz-life burn';flame();
       setTimeout(function(){setLife(k,false);},1400);
-      lifeLabel();if(lives<=0)over=true;
+      lifeLabel();if(lives<=0){over=true;if(game)gm(function(d){d.l3=1;});}
     }
     function gain(){
       for(var k=0;k<3;k++){if(!lifeEls[k].classList.contains('gold')&&!lifeEls[k].classList.contains('burn')){setLife(k,true);lifeEls[k].classList.add('gain');lives++;break;}}
@@ -654,7 +660,7 @@
       if(r.model&&!r.ok)fb.appendChild(el('p','',T('model')+': '+r.model));
       if(!r.ok&&s.it.why)fb.appendChild(whyBtn(s.it.why));
       if(game){
-        if(r.ok){combo++;var gx=rv?5:(10+(combo>=3?5:0));sessXP+=gx;xpAdd(gx);fb.appendChild(el('p','dz-xp',T('xp',{n:gx})));
+        if(r.ok){combo++;if(game&&(combo===10||combo===25))gm(function(d){if((d.mc||0)<combo)d.mc=combo;});var gx=rv?5:(10+(combo>=3?5:0));sessXP+=gx;xpAdd(gx);fb.appendChild(el('p','dz-xp',T('xp',{n:gx})));
           if(combo>=3&&pill){pill.textContent=T('pill',{n:combo});pill.classList.remove('on');void pill.offsetWidth;pill.classList.add('on');}
           if(!rv&&lives<3&&lives>0&&combo>=5){combo=0;gain();fb.appendChild(el('p','',T('back')));}else bell();}
         else{combo=0;if(!rv)lose();buzz();}
@@ -705,6 +711,8 @@
     var CTRY={usa:'USA',england:'England',poland:'Poland',scotland:'Scotland',wales:'Wales',ireland:'Ireland',uk:'UK','flag-es.png':'España','flag-mx.png':'México','flag-ve.png':'Venezuela','flag-ar.png':'Argentina'};
     function buildTicketPop(){
       var X=TKT[B?'es':(ix()===1?'pt':'en')],pct=total?right/total:0,stars=pct>=.9?3:pct>=.6?2:1,passMin=typeof o.passMin==='number'?o.passMin:0,passed=pct>=passMin;
+      (function(){var si=o.station;if(!game||!passed)return;var k=si&&si.city&&si.station?si.city+'|'+si.station:null,hr=new Date().getHours(),td=new Date(),ds=td.getFullYear()+'-'+String(td.getMonth()+1).padStart(2,'0')+'-'+String(td.getDate()).padStart(2,'0'),clean=!noLives&&lives===3&&!rv;
+        gm(function(d){if(k){d.st=d.st||{};d.st[k]=1;}if(clean&&k)d.fl=1;if(hr<5)d.mn=1;d.gd=d.gd||[];if(d.gd.indexOf(ds)<0){d.gd.push(ds);if(d.gd.length>90)d.gd.shift();}});})();
       var nx=null;try{nx=o.next?o.next():null;}catch(e){}
       var ch=pickCh(),who=WHO[ch.id]||[ch.id,''],ctry=CTRY[ch.cc]||'',inf=o.station||{};
       var pop=el('div','dz-pop'),card=el('div','dz-card tkc');pop.setAttribute('role','alertdialog');pop.setAttribute('aria-label',X.done);
@@ -773,7 +781,7 @@
       try{(mb||nb||cb).focus();}catch(e){}
     }
     function end(){
-      if(rv){total=mainTotal;idx=total;if(rvOk===steps.length){sessXP+=20;xpAdd(20);}}
+      if(rv){total=mainTotal;idx=total;if(rvOk===steps.length){sessXP+=20;xpAdd(20);if(game)gm(function(d){d.rv=1;});}}
       setBar(total);
       if(game){inn.textContent='';fb.hidden=true;foot.className='dz-foot';foot.style.display='none';state='end';popup();return;}
       inn.textContent='';fb.hidden=true;foot.className='dz-foot';

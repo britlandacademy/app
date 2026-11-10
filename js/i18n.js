@@ -143,6 +143,15 @@ var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they 
 ["Send again","Reenviar","Reenviar"],
 ["Sent, in review","Enviado, em análise","Enviado, en revisión"],
 ["Cancel","Cancelar","Cancelar"],
+["Adjust your photo","Ajuste sua foto","Ajusta tu foto"],
+["Drag to move. Pinch or use the slider to zoom.","Arraste para mover. Use dois dedos ou o controle para aproximar.","Arrastra para mover. Usa dos dedos o el control para acercar."],
+["Zoom","Zoom","Zoom"],
+["Rotate left","Girar à esquerda","Girar a la izquierda"],
+["Rotate right","Girar à direita","Girar a la derecha"],
+["Reset","Restaurar","Restablecer"],
+["Preview","Prévia","Vista previa"],
+["Your name","Seu nome","Tu nombre"],
+["Save photo","Salvar foto","Guardar foto"],
 ["Other","Outro","Otro"],
 
 ["Next medal","Próxima medalha","Próxima medalla"],
@@ -458,7 +467,7 @@ var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they 
 ['Impressive! 🏆 You have a very solid command of the language. Now the work is refining the details and getting closer to native speech.','Impressionante! 🏆 Você tem um domínio muito sólido do idioma. Agora o trabalho é refinar os detalhes e se aproximar da fala nativa.','¡Impresionante! 🏆 Tienes un dominio muy sólido del idioma. Ahora el trabajo es pulir los detalles y acercarte al habla nativa.'],
 ['Choose the Stage to load','Escolha a etapa para carregar','Elige la etapa que quieres cargar'],
 ['Only this Stage is downloaded, to save data.','Só esta etapa é baixada, para economizar dados.','Solo se descarga esta etapa, para ahorrar datos.'],
-['Complete Lesson {0} Check to unlock Lesson {1} Check.','Complete o Lesson Check da Lição {0} para liberar o da Lição {1}.','Completa el Lesson Check de la Lección {0} para desbloquear el de la Lección {1}.']
+['Complete Lesson {0} Check to unlock Lesson {1} Check.','Complete o Lesson Check da Lição {0} para liberar o da Lição {1}.','Completa el Lesson Check de la Lección {0} para desbloquear el de la Lección {1}.'],
 /* home 2.0 (1.11.18) */
 ["Overview","Visão geral","Resumen"],
 ["Journey","Jornada","Trayectoria"],

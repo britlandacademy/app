@@ -502,7 +502,7 @@ function mount(c,o){
     }
     function startTrain(){
       scale=svg.getBoundingClientRect().width/340;
-      if(tr){tourPlay(ci);}
+      if(tr){tourPlay(ci);try{if(W.Medals&&Medals.game)Medals.game(function(d){d.tr=1;});}catch(e){}}
       else if(cur&&prev&&prev<cur&&!reduced()){busy=true;fillTo(prev-1,10);trainEl.setAttribute('opacity',1);
         var a=lens[prev-1],b=lens[ci],t0=null,dur=Math.min(4200,1500+(cur-prev)*500);rumble(dur/1000);
         (function fr(ts){if(t0===null)t0=ts;var k=Math.min(1,(ts-t0)/dur),len=a+(b-a)*ease(k);setProg(len);camY(pt(len).y,false);if(k<1)requestAnimationFrame(fr);else{arriveFx();setTimeout(function(){trainEl.setAttribute('opacity',0);},900);setTimeout(function(){plateLater(ci,true);},250);busy=false;}})(performance.now());}
