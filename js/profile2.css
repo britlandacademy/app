@@ -18,7 +18,7 @@ html:not([data-theme="light"]) .p2k{color:var(--p2G)}
 .p2since{font-weight:700;font-size:.9rem;margin:6px 0}.p2since span{color:var(--muted);font-weight:400}
 .p2seal{position:absolute;right:20px;top:18px;width:74px;height:74px;border-radius:50%;background:#c9a23a;display:grid;place-content:center;text-align:center;box-shadow:inset 0 0 0 5px #f0cf6b,0 3px 8px rgba(0,0,0,.25);color:#0e1f4a;line-height:1}
 .p2seal small{font:700 9px/1 Arial;letter-spacing:.08em}.p2seal b{font:700 1.7rem Georgia,serif}
-.p2share{margin-left:8px}.p2share svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;margin-right:6px}
+.p2btns{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 0}.p2btns .btn{flex:1 1 0;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;margin:0;white-space:nowrap}.p2btns .btn svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;margin:0}
 .hero.p2h #hbar{max-width:260px}
 @media(max-width:560px){.hero.p2h{padding:150px 18px 22px;margin-top:30px}.hero.p2h:before{width:100%;height:120px;bottom:auto;border-radius:20px 20px 0 0}.hero.p2h .ed{left:50%;margin-left:-65px;top:-24px}.p2seal{right:14px;top:14px;width:60px;height:60px}.hero.p2h h2{font-size:1.5rem}}
 .tabs{grid-template-columns:repeat(5,1fr)!important;gap:6px!important}

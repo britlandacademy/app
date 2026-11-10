@@ -1,0 +1,12 @@
+/* Exercise screens: one shape language (pills), one border colour, calm watermark. Loaded after theme/home2. */
+.opt,.chip,input.txt,input.txt.inl,select.inl,.inl,button.btn,a.btn,.gtr{border-radius:999px}
+.opt{padding:8px 18px;border-color:var(--line)}
+.opt:has(input:checked){border-color:var(--accent);background:var(--chip)}
+.chip{border-color:var(--line)}
+input.txt,input.txt.inl,select.inl,.inl{border-color:var(--line);padding-left:16px;padding-right:16px}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap}.btnrow .btn{flex:1 1 0;min-width:0;justify-content:center;text-align:center;margin:0;padding:10px 12px;white-space:nowrap}
+.gtr{border:2px solid var(--line);background:var(--surface,#fff);color:var(--ink);padding:8px 16px;min-height:40px;font:inherit;font-size:.92rem;cursor:pointer}
+/* watermark behind everything, softer, never over cards or buttons */
+:root:root body,:root:root[data-theme="dark"] body,:root[data-theme="light"]:root body{background:var(--bg)}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.55;background:url(../img/wm-dark.png) 0 0/360px 240px repeat}
+:root[data-theme="light"] body::before{background-image:url(../img/wm-light.png)}

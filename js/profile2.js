@@ -45,11 +45,11 @@ function header(st){
   var since=st.first||(S.me&&S.me.created_at?new Date(S.me.created_at):null);
   if(since){var m=since.toLocaleDateString(loc(),{month:'short',year:'numeric'});var p=el('p','p2since');
     p.setAttribute('data-n',st.nd);p.textContent='Student since '+m;
-    var sp=el('span','','· '+st.nd+' days of study');p.appendChild(document.createTextNode(' '));p.appendChild(sp);
+    var sp=el('span','','· '+st.nd+(st.nd===1?' day of study':' days of study'));p.appendChild(document.createTextNode(' '));p.appendChild(sp);
     hi.insertBefore(p,$('hbar')||null);}
-  var chg=$('chg');if(chg){chg.textContent='Change picture';chg.classList.add('p2chg');}
+  var chg=$('chg');if(chg){chg.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>';chg.appendChild(el('span','','Change picture'));chg.classList.add('p2chg');}
   var shr=el('button','btn p2share');shr.type='button';shr.innerHTML=IC.sh;shr.appendChild(el('span','','Share'));shr.onclick=function(){shareImg(st);};
-  if(chg&&chg.parentNode)chg.parentNode.appendChild(shr);
+  if(chg&&chg.parentNode){chg.parentNode.classList.add('p2btns');chg.parentNode.appendChild(shr);}
 }
 /* ---------- share image ---------- */
 function shareImg(st){
@@ -97,7 +97,7 @@ function shareImg(st){
     var n=mi.length,mw=156,mh=168,gap=36,sx=(W-(n*mw+(n-1)*gap))/2,my=yy+6;
     mi.forEach(function(im,i){if(im)x.drawImage(im,sx+i*(mw+gap),my,mw,mh);});
     /* stats */
-    var rows=[[st.nd,'days of study'],[st.checks,'Lesson Checks'],[st.streak,'days in a row']];x.textAlign='center';
+    var rows=[[st.nd,st.nd===1?'day of study':'days of study'],[st.checks,'Lesson Checks'],[st.streak,st.streak===1?'day in a row':'days in a row']];x.textAlign='center';
     rows.forEach(function(r,i){var cx=W/2+(i-1)*320;x.fillStyle='#fff';x.font='700 64px '+SER;x.fillText(String(r[0]),cx,1236);x.fillStyle='#a9b8de';x.font='400 28px '+SAN;x.fillText(tr(r[1]),cx,1282);});
     c.toBlob(function(b){if(!b)return;var f=new File([b],'britland.png',{type:'image/png'});
       if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:'Britland Academy'}).catch(function(){});return;}
@@ -141,7 +141,7 @@ function overview(st){
   for(var k2=29;k2>=0;k2--){var d2=new Date();d2.setDate(d2.getDate()-k2);var cc=st.days[iso(d2)]||0;if(cc)n30++;
     var cell=el('i','p2c'+(cc?' on l'+(cc>mx*.66?3:cc>mx*.33?2:1):''));cell.title=d2.toLocaleDateString(loc(),{day:'numeric',month:'short'})+(cc?' · '+cc:'');
     cal.appendChild(cell);}
-  box.appendChild(cal);box.appendChild(el('p','hint',n30+' days studied'));
+  box.appendChild(cal);box.appendChild(el('p','hint',n30+(n30===1?' day studied':' days studied')));
 }
 /* ---------- overview extras (watch #g): remove weekly line chart, medal hints ---------- */
 var HOW=[['First check','Finish your first Lesson Check'],['10 checks','Finish 10 Lesson Checks'],['Perfect score','Get 100% in a Lesson Check'],['7 days in a row','Study 7 days in a row'],['Stage finished','Finish every Lesson Check of a Stage'],['Workbook','Do your first Workbook section'],['50 exercises','Do 50 exercises'],['Top student','Keep a 90% average after 5 Lesson Checks']];

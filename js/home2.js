@@ -45,7 +45,6 @@ var chips=null;
 function build(){
   var band=document.querySelector('header .band');if(!band||band.classList.contains('sh'))return;
   band.classList.add('sh');
-  var back=document.createElement('a');back.className='shb';back.href='index.html';back.textContent='← Back to the stage';band.insertBefore(back,band.firstChild);
   var c=document.createElement('div');c.className='shc';c.setAttribute('aria-hidden','true');c.innerHTML=window.Home2.art(K[pg]);band.appendChild(c);
   chips=document.createElement('div');chips.className='shch';chips.hidden=true;
   var d=band.querySelector('.intro');if(d&&d.parentNode)d.parentNode.appendChild(chips);else band.appendChild(chips);

@@ -234,7 +234,7 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 </aside>
 <div id="out"></div>
 <div class="nav" style="margin-top:22px"><button type="button" id="prev2">← Previous</button><button type="button" id="next2">Next →</button></div>
-<p class="hint" style="margin-top:14px"><a href="index.html" style="color:var(--ink)">← Back to the start page</a></p>
+
 <div class="seal-foot"><img src="img/callan-seal.png" alt="Callan Accredited School" width="150" height="91" loading="lazy"></div>
 </main>
 </div>
@@ -363,11 +363,14 @@ prevs.forEach(b=>b.addEventListener('click',()=>{if(cur>LO)show(cur-1);}));
 nexts.forEach(b=>b.addEventListener('click',()=>{if(cur<HI)show(cur+1);}));
 show(cur,true);
 let ALLP=null;
-if(window.LSearch)LSearch.init({out:out,cur:()=>cur,show:show,stageOf:id=>stageOf(id).n,stages:ALL.filter(t=>t.from<=UPTO),lessonWord:'Lesson',parWord:'parágrafo',para:parList,
+if(window.LSearch)LSearch.init({out:out,cur:()=>cur,show:show,stageOf:id=>stageOf(id).n,stages:ALL.filter(t=>t.from<=UPTO),lessonWord:'Lesson',parWord:(({en:'paragraph',pt:'parágrafo',es:'párrafo'})[(window.I18N&&I18N.lang)||'en']||'paragraph'),para:parList,
   fetchAll:()=>{if(ALLP)return ALLP;const lo=BUS?1001:1,hi=BUS?1000+UPTO:UPTO;
     ALLP=Gate.sb.from('content').select('lesson,body').eq('kind','text').gte('lesson',lo).lte('lesson',hi).order('lesson',{ascending:true}).then(r=>{if(r.error||!r.data)throw r.error;const m={};r.data.forEach(x=>{m[BUS?x.lesson-1000:x.lesson]=x.body;});return m;}).catch(()=>{ALLP=null;return Object.assign({},window.LESSON_TEXT||{});});
     return ALLP;},
-  t:{open:'Buscar no texto',ph:'Buscar nas lições',close:'Fechar',back:'Voltar',list:'Lista',all:'Buscar em todas as lições',none:'Nada encontrado nesta lição',inLesson:(i,n)=>i+' de '+n+' nesta lição',type2:'Digite pelo menos 2 letras.',loading:'Carregando as lições…',noRes:'Nenhum resultado.',res:n=>n+(n===1?' resultado':' resultados'),first:n=>'mostrando os '+n+' primeiros',of:(i,n)=>'Resultado '+i+' de '+n,fAll:'Todas',fWords:'Palavras',fQs:'Perguntas',fText:'Textos',fDict:'Ditados',allStages:'Todos os Stages',prev:'Resultado anterior',next:'Próximo resultado',end:'Encerrar a busca'}});
+  t:(function(){const L=(window.I18N&&I18N.lang)||'en';const D={
+   en:{open:'Search the text',ph:'Search the lessons',close:'Close',back:'Back',list:'List',all:'Search all lessons',none:'Nothing found in this lesson',inLesson:(i,n)=>i+' of '+n+' in this lesson',type2:'Type at least 2 letters.',loading:'Loading the lessons…',noRes:'No results.',res:n=>n+(n===1?' result':' results'),first:n=>'showing the first '+n,of:(i,n)=>'Result '+i+' of '+n,fAll:'All',fWords:'Words',fQs:'Questions',fText:'Texts',fDict:'Dictations',allStages:'All Stages',prev:'Previous result',next:'Next result',end:'End search'},
+   pt:{open:'Buscar no texto',ph:'Buscar nas lições',close:'Fechar',back:'Voltar',list:'Lista',all:'Buscar em todas as lições',none:'Nada encontrado nesta lição',inLesson:(i,n)=>i+' de '+n+' nesta lição',type2:'Digite pelo menos 2 letras.',loading:'Carregando as lições…',noRes:'Nenhum resultado.',res:n=>n+(n===1?' resultado':' resultados'),first:n=>'mostrando os '+n+' primeiros',of:(i,n)=>'Resultado '+i+' de '+n,fAll:'Todas',fWords:'Palavras',fQs:'Perguntas',fText:'Textos',fDict:'Ditados',allStages:'Todos os Stages',prev:'Resultado anterior',next:'Próximo resultado',end:'Encerrar a busca'},
+   es:{open:'Buscar en el texto',ph:'Buscar en las lecciones',close:'Cerrar',back:'Atrás',list:'Lista',all:'Buscar en todas las lecciones',none:'No se encontró nada en esta lección',inLesson:(i,n)=>i+' de '+n+' en esta lección',type2:'Escribe al menos 2 letras.',loading:'Cargando las lecciones…',noRes:'Sin resultados.',res:n=>n+(n===1?' resultado':' resultados'),first:n=>'mostrando los '+n+' primeros',of:(i,n)=>'Resultado '+i+' de '+n,fAll:'Todas',fWords:'Palabras',fQs:'Preguntas',fText:'Textos',fDict:'Dictados',allStages:'Todas las Etapas',prev:'Resultado anterior',next:'Siguiente resultado',end:'Terminar la búsqueda'}};return D[L]||D.en;})()});
 });
 </script>
 </body></html>

@@ -508,6 +508,10 @@ var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they 
 ["Show me in the class ranking","Mostrar-me no ranking da turma","Mostrarme en el ranking de la clase"],
 ["Other students can see your first name and streak.","Outros alunos veem seu primeiro nome e sua sequência.","Otros alumnos ven tu nombre y tu racha."],
 ["Animations and sounds","Animações e sons","Animaciones y sonidos"],
+["· 1 day of study","· 1 dia de estudo","· 1 día de estudio"],
+["1 day studied","1 dia estudado","1 día estudiado"],
+["day of study","dia de estudo","día de estudio"],
+["day in a row","dia seguido","día seguido"],
 ["days of study","dias de estudo","días de estudio"],
 ["Lesson Checks","Lesson Checks","Lesson Checks"],
 ["days in a row","dias seguidos","días seguidos"],
@@ -715,8 +719,15 @@ function add(entry){
 (window.I18N_EXTRA||[]).forEach(add); /* course-specific wording first, so it wins */
 var FP=false,F1=0,F2=0;
 D.forEach(function(e,i){if(e[0]==='Request access'&&!F1)F1=i;if(e[0]==='Wrong e-mail or password.')F2=i;});
-D.forEach(function(e,i){if(i<F1||(i>=F2&&i<D.findIndex(function(z){return z[0]==='Signed in:';})))e.f=1;add(e);});
-X.forEach(function(e){e.f=1;add(e);});
+/* UI labels follow the language chosen in the menu; only tutorials, warnings and instructions stay forced to Portuguese */
+(function(){function ix(k){return D.findIndex(function(z){return z[0]===k;});}
+ var R=[['My account','Receipts'],['I\'ve paid','Other'],['Next medal','All paid. Thank you!']],ex={'Talk to the school':1};
+ R.forEach(function(r){var a=ix(r[0]),b=ix(r[1]);if(a<0||b<0)return;for(var i=a;i<=b;i++)D[i].nf=1;});
+ ['My Profile','Change picture','Dark mode','Game mode','Help'].forEach(function(k){var i=ix(k);if(i>=0)D[i].nf=1;});
+ D.forEach(function(e){if(ex[e[0]])e.nf=0;});
+ ['Skip to content','Continue →','Start over','Lesson {0} Check','Back to the stage'].forEach(function(k){D.concat(X).forEach(function(e){if(e[0]===k)e.nf=1;});});})();
+D.forEach(function(e,i){if(!e.nf&&(i<F1||(i>=F2&&i<D.findIndex(function(z){return z[0]==='Signed in:';}))))e.f=1;add(e);});
+X.forEach(function(e){e.f=e.nf?0:1;add(e);});
 TPL.sort(function(a,b){return b.re.source.length-a.re.source.length;});
 /* Portuguese wording already present in the admin page */
 function alias(pt,en){var e=MAP[en];if(e&&!MAP.hasOwnProperty(pt))MAP[pt]=e;}
