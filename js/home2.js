@@ -32,7 +32,7 @@ window.Home2={rings:function(v){qa('#stats .st').forEach(function(st,i){if(st.qu
     if(!card)return;var n=card.querySelector('.hn'),s=card.querySelector('.hs'),ph=card.querySelector('.ph');
     if(n&&o.name)n.textContent=o.name;
     if(s&&o.line)s.textContent=o.line;
-    if(ph&&window.Profile&&o.uid!==undefined){Profile.ready().then(function(){Profile.paint(ph,o.avatar||'',o.uid);});}
+    if(ph&&o.uid!==undefined){var tries=0;(function go(){if(window.Profile&&Profile.ready){Profile.ready().then(function(){Profile.paint(ph,o.avatar||'',o.uid);});}else if(tries++<40)setTimeout(go,150);})();}
   }};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',enhance);else enhance();
 })();

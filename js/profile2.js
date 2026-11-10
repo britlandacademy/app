@@ -53,20 +53,56 @@ function header(st){
 }
 /* ---------- share image ---------- */
 function shareImg(st){
-  var W=1080,H=1350,c=document.createElement('canvas');c.width=W;c.height=H;var x=c.getContext('2d');
-  var g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,'#1b3270');g.addColorStop(1,'#0e1f4a');x.fillStyle=g;x.fillRect(0,0,W,H);
-  x.strokeStyle='#c9a23a';x.lineWidth=10;x.strokeRect(36,36,W-72,H-72);
-  x.textAlign='center';x.fillStyle='#f0cf6b';x.font='700 38px Georgia,serif';x.fillText('BRITLAND ACADEMY',W/2,150);
-  x.fillStyle='#fff';x.font='700 84px Georgia,serif';x.fillText((S.me&&S.me.name||'').split(' ')[0]||'',W/2,430);
-  x.fillStyle='#c5d0ea';x.font='400 42px Arial,sans-serif';x.fillText((ES?'Callan Español':'Callan English'),W/2,500);
-  x.fillStyle='#c9a23a';x.beginPath();x.arc(W/2,700,130,0,7);x.fill();x.fillStyle='#f0cf6b';x.beginPath();x.arc(W/2,700,104,0,7);x.fill();
-  x.fillStyle='#0e1f4a';x.font='700 34px Arial,sans-serif';x.fillText('STAGE',W/2,680);x.font='700 100px Georgia,serif';x.fillText(String(st.si+1),W/2,770);
-  var rows=[[st.nd,'days of study'],[st.checks,'Lesson Checks'],[st.streak,'days in a row']];
-  rows.forEach(function(r,i){var cx=W/2+(i-1)*320;x.fillStyle='#fff';x.font='700 90px Georgia,serif';x.fillText(String(r[0]),cx,1010);x.fillStyle='#c5d0ea';x.font='400 34px Arial,sans-serif';x.fillText(tr(r[1]),cx,1064);});
-  x.fillStyle='#f0cf6b';x.font='700 40px Georgia,serif';x.fillText(tr('Keep going!'),W/2,1230);
-  c.toBlob(function(b){if(!b)return;var f=new File([b],'britland.png',{type:'image/png'});
-    if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:'Britland Academy'}).catch(function(){});return;}
-    var u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='britland.png';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u);},4000);},'image/png');
+  var W=1080,H=1350,L=(LANG==='pt'||LANG==='es')?LANG:'en';
+  var TX={en:{rank:'RANKING',pts:'ACHIEVEMENT SCORE',gm:'GAME MODE',lvl:'Level',stage:'Stage',of:'of',med:'medals'},pt:{rank:'RANKING',pts:'PONTUAÇÃO DE CONQUISTAS',gm:'MODO JOGO',lvl:'Nível',stage:'Stage',of:'de',med:'medalhas'},es:{rank:'RANKING',pts:'PUNTOS DE LOGROS',gm:'MODO JUEGO',lvl:'Nivel',stage:'Etapa',of:'de',med:'medallas'}}[L];
+  var PT={b:10,s:25,g:50},TO={g:3,s:2,b:1};
+  function img(src){return new Promise(function(ok){var i=new Image();i.onload=function(){ok(i);};i.onerror=function(){ok(null);};i.src=src;});}
+  function medImg(id){try{var sv=window.Medals&&Medals.svg&&Medals.svg(id),d=document.getElementById('mddefs');if(!sv||!d)return Promise.resolve(null);
+    var defs=d.innerHTML.replace(/^<defs>|<\/defs>$/g,''),x=sv.replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" width="200" height="216" ').replace(/^(<svg[^>]*>)/,'$1<defs>'+defs+'</defs>');
+    return img('data:image/svg+xml;charset=utf-8,'+encodeURIComponent(x));}catch(e){return Promise.resolve(null);}}
+  var uid=S.me&&S.me.id,pr=(S.sb&&uid)?S.sb.rpc('public_profile',{p_uid:uid}).then(function(r){return (r&&r.data)||null;},function(){return null;}):Promise.resolve(null);
+  Promise.all([pr,img((ES?'../':'')+'img/britland-shield.png')]).then(function(r){
+    var d=r[0]||{},logo=r[1],cat=(window.Medals&&Medals.cat)||[],byId={};cat.forEach(function(m){byId[m.id]=m;});
+    var ms=(d.medals||[]).filter(function(m){return byId[m.id];}),mp=0;ms.forEach(function(m){mp+=PT[m.tier]||0;});
+    var top=ms.slice().sort(function(p,q){return (TO[q.tier]||0)-(TO[p.tier]||0)||(p.at<q.at?1:-1);}).slice(0,3);
+    return Promise.all(top.map(function(m){return medImg(m.id);})).then(function(mi){draw(d,logo,ms,mp,mi);});
+  });
+  function draw(d,logo,ms,mp,mi){
+    var c=document.createElement('canvas');c.width=W;c.height=H;var x=c.getContext('2d'),SER='Georgia,serif',SAN='system-ui,-apple-system,Segoe UI,Arial,sans-serif';
+    function ls(v){try{x.letterSpacing=v+'px';}catch(e){}}
+    function rr(px,py,w,h,r){x.beginPath();x.moveTo(px+r,py);x.arcTo(px+w,py,px+w,py+h,r);x.arcTo(px+w,py+h,px,py+h,r);x.arcTo(px,py+h,px,py,r);x.arcTo(px,py,px+w,py,r);x.closePath();}
+    var g=x.createLinearGradient(0,0,W*.4,H);g.addColorStop(0,'#10224f');g.addColorStop(.7,'#0a1536');x.fillStyle=g;x.fillRect(0,0,W,H);
+    var gl=x.createRadialGradient(W*.85,H*.06,0,W*.85,H*.06,W*.5);gl.addColorStop(0,'rgba(230,197,106,.2)');gl.addColorStop(1,'rgba(230,197,106,0)');x.fillStyle=gl;x.fillRect(0,0,W,H);
+    var lw=0;if(logo){lw=168;var lh=lw*logo.naturalHeight/logo.naturalWidth;x.drawImage(logo,64,60,lw,lh);}
+    x.textAlign='left';x.textBaseline='alphabetic';x.fillStyle='#f0cf6b';x.font='700 52px '+SER;ls(8);x.fillText('BRITLAND',lw?260:64,135);
+    x.fillStyle='#e0576b';x.font='400 26px '+SAN;ls(16);x.fillText('ACADEMY',lw?262:66,178);
+    if(d.rank){x.textAlign='right';x.fillStyle='#f0cf6b';x.font='700 20px '+SAN;ls(6);x.fillText(TX.rank,W-64,110);x.fillStyle='#fff';x.font='700 60px '+SER;ls(0);x.fillText('#'+d.rank,W-64,174);}
+    x.textAlign='left';ls(0);x.fillStyle='#fff';x.font='700 92px '+SER;var nm=((S.me&&S.me.name)||'').split(' ')[0]||'';x.fillText(nm,64,340);
+    x.fillStyle='#a9b8de';x.font='400 30px '+SAN;x.fillText(TX.stage+' '+(st.si+1),64,392);
+    /* score card */
+    var y0=452,sg=x.createLinearGradient(64,y0,1016,y0+300);sg.addColorStop(0,'#2a4a9c');sg.addColorStop(1,'#16295a');rr(64,y0,952,296,32);x.fillStyle=sg;x.fill();x.strokeStyle='rgba(230,197,106,.35)';x.lineWidth=2;x.stroke();
+    x.fillStyle='#a9b8de';x.font='700 20px '+SAN;ls(6);x.fillText(TX.pts,102,y0+58);ls(0);
+    x.strokeStyle='#f0cf6b';x.lineWidth=8;x.beginPath();x.arc(150,y0+148,46,0,7);x.stroke();x.fillStyle='#f0cf6b';x.font='700 56px '+SER;x.textAlign='center';x.fillText('G',150,y0+168);
+    x.textAlign='left';x.font='700 116px '+SER;x.fillText(String(mp),224,y0+178);
+    x.textAlign='right';x.fillStyle='#a9b8de';x.font='400 28px '+SAN;x.fillText(ms.length+' '+TX.of+' '+((window.Medals&&Medals.cat&&Medals.cat.length)||69)+' '+TX.med,W-102,y0+160);
+    rr(102,y0+232,876,14,7);x.fillStyle='#26376a';x.fill();var tot=((window.Medals&&Medals.cat&&Medals.cat.length)||69),pw=Math.max(14,876*ms.length/tot);rr(102,y0+232,pw,14,7);var bg=x.createLinearGradient(102,0,978,0);bg.addColorStop(0,'#a67c1a');bg.addColorStop(1,'#e6c56a');x.fillStyle=bg;x.fill();
+    var yy=y0+296+22;
+    /* game mode card */
+    if(d.xp>0){var l=1;while(d.xp>=l*(l+1)*25)l++;rr(64,yy,952,190,32);x.fillStyle='#16295a';x.fill();x.strokeStyle='#26376a';x.lineWidth=2;x.stroke();
+      x.textAlign='left';x.fillStyle='#a9b8de';x.font='700 20px '+SAN;ls(6);x.fillText(TX.gm,102,yy+54);ls(0);
+      var pt=TX.lvl+' '+l;x.font='400 24px '+SAN;var pw2=x.measureText(pt).width+40;rr(W-102-pw2,yy+24,pw2,44,22);x.fillStyle='#0a1330';x.fill();x.strokeStyle='#26376a';x.stroke();x.fillStyle='#e9edf7';x.textAlign='center';x.fillText(pt,W-102-pw2/2,yy+54);
+      x.textAlign='left';x.fillStyle='#7fd1ff';x.font='700 72px '+SER;x.fillText(d.xp.toLocaleString(L==='es'?'es-ES':L==='pt'?'pt-BR':'en-US')+' XP',102,yy+142);yy+=190+30;}
+    else yy+=10;
+    /* medals */
+    var n=mi.length,mw=156,mh=168,gap=36,sx=(W-(n*mw+(n-1)*gap))/2,my=yy+6;
+    mi.forEach(function(im,i){if(im)x.drawImage(im,sx+i*(mw+gap),my,mw,mh);});
+    /* stats */
+    var rows=[[st.nd,'days of study'],[st.checks,'Lesson Checks'],[st.streak,'days in a row']];x.textAlign='center';
+    rows.forEach(function(r,i){var cx=W/2+(i-1)*320;x.fillStyle='#fff';x.font='700 64px '+SER;x.fillText(String(r[0]),cx,1236);x.fillStyle='#a9b8de';x.font='400 28px '+SAN;x.fillText(tr(r[1]),cx,1282);});
+    c.toBlob(function(b){if(!b)return;var f=new File([b],'britland.png',{type:'image/png'});
+      if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:'Britland Academy'}).catch(function(){});return;}
+      var u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='britland.png';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u);},4000);},'image/png');
+  }
 }
 function tr(s){return(window.I18N&&I18N.ptx&&LANG==='pt')?I18N.ptx(s):s;}
 /* ---------- tabs ---------- */

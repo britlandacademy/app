@@ -374,15 +374,32 @@ function birthdayToday(){
   if(bm===2&&bd===29&&!leap)return m===2&&dd===28;
   return bm===m&&bd===dd;
 }
-function birthdayField(){
-  var L=gLang(),lab=['Birthday','Aniversário','Cumpleaños'][L],sv=['Save','Salvar','Guardar'][L],ok=['Saved ✓','Salvo ✓','Guardado ✓'][L];
-  var inp=el('input',{type:'date',min:'1920-01-01',max:isoToday(),'aria-label':lab,value:(prof&&prof.birthdate)||'',style:'font:inherit;padding:8px;min-width:0;flex:1 1 130px;border-radius:8px;border:2px solid var(--line,#999);background:var(--card,#fff);color:var(--ink,#111);min-height:44px'});
-  var msg=el('small',{style:'margin-left:8px'},'');
-  var b=el('button',{type:'button',class:'btn',onclick:function(){
-    if(!inp.value||!sb)return;
-    sb.rpc('set_my_birthdate',{p_date:inp.value}).then(function(r){if(r.error){msg.textContent=niceError(r.error);return;}if(prof)prof.birthdate=inp.value;msg.textContent=ok;},function(){});
+function birthdayField(o){
+  /* 2.0: three fields (day, month, year) + Save; o.bare = no emoji/label row (the Profile page already has a "Birthday" heading) */
+  o=o||{};var L=gLang(),lab=['Birthday','Aniversário','Cumpleaños'][L],sv=['Save','Salvar','Guardar'][L],ok=['Saved ✓','Salvo ✓','Guardado ✓'][L],bad=['Check the date.','Confira a data.','Revisa la fecha.'][L];
+  var ph=[['Day','Month','Year'],['Dia','Mês','Ano'],['Día','Mes','Año']][L],loc=['en-GB','pt-BR','es-ES'][L];
+  var cur=(prof&&prof.birthdate&&/^\d{4}-\d\d-\d\d$/.test(prof.birthdate))?prof.birthdate:'',cy=new Date().getFullYear();
+  var sty='font:inherit;font-size:1rem;min-height:48px;min-width:0;width:100%;padding:0 10px;border-radius:14px;border:2px solid var(--line,#999);background:var(--card,#fff);color:var(--ink,#111);text-align:center;text-align-last:center;appearance:auto';
+  function sel(label,opts,val,fl){var x=el('select',{'aria-label':label,style:sty+';flex:'+fl});x.append(el('option',{value:'',disabled:true,selected:!val},label));opts.forEach(function(p){var op=el('option',{value:p[0]},p[1]);if(String(p[0])===String(val))op.selected=true;x.append(op);});return x;}
+  var days=[],months=[],years=[],i;
+  for(i=1;i<=31;i++)days.push([i,String(i)]);
+  for(i=0;i<12;i++){var mn=new Date(2000,i,1).toLocaleDateString(loc,{month:'long'});months.push([i+1,mn.charAt(0).toUpperCase()+mn.slice(1)]);}
+  for(i=cy;i>=1920;i--)years.push([i,String(i)]);
+  var d0=cur?+cur.slice(8,10):'',m0=cur?+cur.slice(5,7):'',y0=cur?+cur.slice(0,4):'';
+  var sd=sel(ph[0],days,d0,'.8 1 0'),sm=sel(ph[1],months,m0,'1.5 1 0'),sy=sel(ph[2],years,y0,'1.1 1 0');
+  var msg=el('small',{style:'display:block;text-align:center;margin-top:8px;min-height:1.2em;opacity:.85',role:'status'},'');
+  var b=el('button',{type:'button',style:'display:flex;align-items:center;justify-content:center;width:100%;margin-top:10px;min-height:48px;border-radius:14px;border:0;background:var(--accent,#c9a23a);color:#1a1405;font:inherit;font-weight:700;cursor:pointer;padding:0 22px',onclick:function(){
+    if(!sd.value||!sm.value||!sy.value){msg.textContent=bad;return;}
+    var y=+sy.value,m=+sm.value,d=+sd.value,t=new Date(y,m-1,d);
+    if(t.getFullYear()!==y||t.getMonth()!==m-1||t.getDate()!==d||t>new Date()){msg.textContent=bad;return;}
+    var iso=y+'-'+('0'+m).slice(-2)+'-'+('0'+d).slice(-2);
+    if(!sb)return;msg.textContent='';
+    sb.rpc('set_my_birthdate',{p_date:iso}).then(function(r){if(r.error){msg.textContent=niceError(r.error);return;}if(prof)prof.birthdate=iso;msg.textContent=ok;},function(){});
   }},sv);
-  return el('div',{class:'g-mr',style:'flex-wrap:wrap;cursor:default'},el('b',{style:'width:20px;text-align:center'},'\uD83C\uDF82'),el('span',{style:'white-space:nowrap'},lab),el('div',{style:'flex:1 0 100%;display:flex;gap:8px;align-items:center;flex-wrap:wrap'},inp,b,msg));
+  var rowF=el('div',{style:'display:flex;gap:8px;width:100%'},sd,sm,sy);
+  var box=el('div',{style:'flex:1 0 100%;width:100%'},rowF,b,msg);
+  if(o.bare)return el('div',{class:'g-bd',style:'width:100%'},box);
+  return el('div',{class:'g-mr',style:'flex-wrap:wrap;cursor:default'},el('b',{style:'width:20px;text-align:center'},'🎂'),el('span',{style:'white-space:nowrap'},lab),box);
 }
 /* livro de presente (só no app em inglês): sorteia um reader Penguin do nível do aluno; o professor envia o PDF */
 function bdLevels(){var n=stageOf(Math.max((prof&&prof.lessons_upto)||1,1));return n<=2?[0,1]:n<=4?[2]:n<=6?[3]:n<=8?[4]:n<=10?[5]:[6];}
@@ -707,10 +724,6 @@ function saveAttempt(kind,a){
     if(!OPTS.admin){try{sb.rpc('ping_activity').then(function(){},function(){});}catch(e){}}
   },function(e){if(isNet(e)){later();return;}throw e;});
 }
-function logErrors(kind,a,rows){
-  if(!rows||!rows.length||!sb||(prof&&prof.is_admin)||navigator.onLine===false)return;
-  try{sb.from('attempt_errors').insert(rows.slice(0,20).map(function(r){return {kind:kind,lesson:BUS?a.l+1000:a.l,ex:String(a.e),item:String(r.item||'').slice(0,200),given:String(r.given||'').slice(0,200),expected:String(r.expected||'').slice(0,200)};})).then(function(){},function(){});}catch(e){}
-}
 function audioUrl(path){
   return sb.storage.from('audio').createSignedUrl(path,7200).then(function(r){
     if(r.error||!r.data)throw (r.error||new Error('no url'));
@@ -980,6 +993,6 @@ function start(opts,cb){
 
 function skel(box,n,h){if(!box)return;box.setAttribute('aria-busy','true');for(var i=0;i<(n||3);i++){var d=document.createElement('span');d.className='bl-sk';d.style.height=(h||52)+'px';d.style.marginBottom='10px';box.append(d);}}
 function unskel(box){if(!box)return;box.removeAttribute('aria-busy');Array.prototype.slice.call(box.querySelectorAll(':scope>.bl-sk')).forEach(function(n){n.remove();});}
-window.Gate={gates:function(){return GATES;},rawUpto:function(){return prof.lessons_upto||0;},birthdayField:birthdayField,birthdayToday:birthdayToday,settingsBlock:settingsBlock,gameSwitch:gameSwitch,gameConfirm:gameConfirm,gameOn:gameIsOn,pushRow:pushRow,help:function(){showHelp();},skel:skel,unskel:unskel,profile:function(){return prof;},start:start,signOut:signOut,setSize:setSize,setTheme:function(t){setTheme(t);},theme:function(){return theme;},shownTheme:shownTheme,setAvatar:setAvatar,loadProfile:loadProfile,sizeIdx:function(){return fsIdx;},sizeMax:function(){return SIZES.length-1;},saveAttempt:saveAttempt,logErrors:logErrors,audioUrl:audioUrl,el:el,
+window.Gate={gates:function(){return GATES;},rawUpto:function(){return prof.lessons_upto||0;},birthdayField:birthdayField,birthdayToday:birthdayToday,settingsBlock:settingsBlock,gameSwitch:gameSwitch,gameConfirm:gameConfirm,gameOn:gameIsOn,pushRow:pushRow,help:function(){showHelp();},skel:skel,unskel:unskel,profile:function(){return prof;},start:start,signOut:signOut,setSize:setSize,setTheme:function(t){setTheme(t);},theme:function(){return theme;},shownTheme:shownTheme,setAvatar:setAvatar,loadProfile:loadProfile,sizeIdx:function(){return fsIdx;},sizeMax:function(){return SIZES.length-1;},saveAttempt:saveAttempt,audioUrl:audioUrl,el:el,
   get profile(){return prof;},bizUpto:function(){return bizUpto();},mainUpto:function(){return mainUpto();},get user(){return user;},sb:null};
 })();

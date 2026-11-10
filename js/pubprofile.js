@@ -46,7 +46,7 @@ function build(box,d,mine,myxp){
   var rk=el('div','rk');rk.appendChild(el('small','',T('rank')));rk.appendChild(el('b','','#'+d.rank));top.appendChild(rk);box.appendChild(top);
   if(window.Profile&&Profile.paint)Profile.ready().then(function(){Profile.paint(av,d.avatar||'',d.uid||'');});
   var pl=el('div','',''),row=el('div','rw');
-  var hero=el('div','cd hero');hero.appendChild(el('div','lb',T('pts')));row.appendChild(el('div','big','Ⓖ '+mp));row.appendChild(el('div','sp'));row.appendChild(el('div','mu',T('of',{a:ls.length,b:tot})));hero.appendChild(row);
+  var hero=el('div','cd hero');hero.appendChild(el('div','lb',T('pts')));var bigEl=el('div','big','Ⓖ '+mp);row.appendChild(bigEl);if(window.BLMotion)BLMotion.count(bigEl,mp,'Ⓖ ');row.appendChild(el('div','sp'));row.appendChild(el('div','mu',T('of',{a:ls.length,b:tot})));hero.appendChild(row);
   var b1=el('div','bar'),i1=el('i');i1.style.width=Math.min(100,Math.round(ls.length/tot*100))+'%';b1.appendChild(i1);hero.appendChild(b1);box.appendChild(hero);
   var xp=d.xp||0;
   if(xp>0){var l=lvlOf(xp),a=(l-1)*l*25,b=l*(l+1)*25,gm=el('div','cd'),r2=el('div','rw');var r0=el('div','rw');r0.appendChild(el('div','lb',T('gm')));r0.appendChild(el('div','sp'));r0.appendChild(el('span','pill',T('lvl',{n:l})));gm.appendChild(r0);

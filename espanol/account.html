@@ -104,7 +104,7 @@ summary{cursor:pointer;font-weight:700;padding:4px 0}
 <script src="js/config.js" charset="utf-8"></script>
 <script src="js/i18n-es.js" charset="utf-8"></script>
 <script src="../js/i18n.js" charset="utf-8"></script>
-<script src="../js/gate.js" charset="utf-8"></script><script src="../js/medals.js" charset="utf-8"></script><script src="../js/profile2.js" charset="utf-8"></script><script src="../js/receipt.js" charset="utf-8"></script><script src="../js/qr.js" charset="utf-8"></script><script src="../js/certificate.js" charset="utf-8"></script>
+<script src="../js/gate.js" charset="utf-8"></script><script src="../js/sheet.js" charset="utf-8"></script><script src="../js/motion.js" charset="utf-8"></script><script src="../js/medals.js" charset="utf-8"></script><script src="../js/profile2.js" charset="utf-8"></script><script src="../js/receipt.js" charset="utf-8"></script><script src="../js/qr.js" charset="utf-8"></script><script src="../js/certificate.js" charset="utf-8"></script>
 <script>
 Gate.start({kinds:[]},function(ctx){
 if(Gate.gameOn()){location.replace('index.html#profile');return;}
@@ -286,7 +286,7 @@ async function pays0(){
   const nm=(ctx.profile&&ctx.profile.name)||'';
   box.append(el('p',{},el('a',{class:'btn',href:'https://wa.me/5511914881274?text='+encodeURIComponent('Hello! This is '+nm+', a Britland Academy student. I have a question about my payments.'),target:'_blank',rel:'noopener'},'Talk to the school')));
 }
-{const w=el('div',{class:'g-bar gp'},Gate.birthdayField());$('p-s').append(el('h3',{},'Birthday'),w);}
+{const w=el('div',{class:'g-bar gp'},Gate.birthdayField({bare:true}));$('p-s').append(el('h3',{},'Birthday'),w);}
 grades();pays();
 });
 </script>

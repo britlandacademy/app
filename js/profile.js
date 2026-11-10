@@ -99,6 +99,7 @@ function openPicker(o){
   css();
   return ready().then(function(){
     var A=window.BL_AVATARS||[],cats=window.BL_AVATAR_CATS||[],cat='school',pick=find(o.current)||find('lion-navy'),photo=null,oldPhoto=(o.current||'').indexOf('photo:')===0?o.current:null;
+    if(oldPhoto&&o.uid){photo={blob:null,url:photoUrl(o.uid,oldPhoto)};pick=null;}var lastPhoto=photo;
     var cur=find(o.current);if(cur)cat=cur.cat;
     var ov=document.createElement('div');ov.className='pf-ov';
     var dlg=document.createElement('div');dlg.className='pf-dlg';dlg.setAttribute('role','dialog');dlg.setAttribute('aria-modal','true');dlg.setAttribute('aria-label','Profile picture');ov.append(dlg);
@@ -126,7 +127,7 @@ function openPicker(o){
     function draw(){
       Array.prototype.forEach.call(cb.children,function(x){x.classList.toggle('on',!photo&&x.dataset.k===cat);});
       ob.textContent='';
-      if(photo){var pb=document.createElement('button');pb.type='button';pb.className='on';var pa=document.createElement('span');pa.className='pf-av';var im=document.createElement('img');im.src=photo.url;im.alt='Your photo';im.style.cssText='width:100%;height:100%;object-fit:cover';pa.append(im);pb.append(pa);ob.append(pb);}
+      if(photo||lastPhoto){var pb=document.createElement('button');pb.type='button';pb.className=photo?'on':'';pb.onclick=function(){photo=lastPhoto;pick=null;showFact(null);draw();};var pa=document.createElement('span');pa.className='pf-av';var im=document.createElement('img');im.src=(photo||lastPhoto).url;im.alt='Your photo';im.style.cssText='width:100%;height:100%;object-fit:cover';pa.append(im);pb.append(pa);ob.append(pb);}
       A.filter(function(a){return a.cat===cat;}).forEach(function(a){
         var b=document.createElement('button');b.type='button';b.title=a.name;b.setAttribute('aria-label',a.name);
         var s=document.createElement('span');s.className='pf-av';s.innerHTML=a.svg;b.append(s);
@@ -137,7 +138,7 @@ function openPicker(o){
     cats.forEach(function(c){var b=document.createElement('button');b.type='button';b.textContent=c[1];b.dataset.k=c[0];b.onclick=function(){cat=c[0];draw();};cb.append(b);});
     file.onchange=function(){
       var f=file.files&&file.files[0];if(!f)return;err.textContent='';
-      squarePhoto(f).then(function(b){photo={blob:b,url:URL.createObjectURL(b)};pick=null;showFact(null);draw();},function(e){if(!e||e.message!=='cancel')err.textContent=T('Could not read this photo. Try another one.');});
+      squarePhoto(f).then(function(b){photo=lastPhoto={blob:b,url:URL.createObjectURL(b)};pick=null;showFact(null);draw();},function(e){if(!e||e.message!=='cancel')err.textContent=T('Could not read this photo. Try another one.');});
     };
     function close(){document.removeEventListener('keydown',key);ov.remove();}
     function key(e){if(e.key==='Escape')close();}
@@ -146,6 +147,7 @@ function openPicker(o){
     save.onclick=function(){
       err.textContent='';save.disabled=true;
       var p;
+      if(photo&&!photo.blob){close();if(o.onSaved)o.onSaved(oldPhoto);return;}
       if(photo){
         var name=(window.crypto&&crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random().toString(16).slice(2)).replace(/[^a-z0-9-]/gi,'').toLowerCase()+'.jpg';
         p=o.sb.storage.from('avatars').upload(o.uid+'/'+name,photo.blob,{contentType:'image/jpeg',upsert:false}).then(function(r){
