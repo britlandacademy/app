@@ -68,6 +68,7 @@ var S={
  gErr:{en:'Enter a name and pick at least one student.',pt:'Informe o nome e marque ao menos um aluno.',es:'Escribe un nombre y marca al menos un alumno.'},
  none:{en:'No lessons scheduled yet.',pt:'Nenhuma aula marcada ainda.',es:'Aún no hay clases programadas.'},
  busy:{en:'Working…',pt:'Aguarde…',es:'Espera…'},
+ nk:{en:'NEXT LESSON',pt:'PRÓXIMA AULA',es:'PRÓXIMA CLASE'},
  fail:{en:'Something went wrong. Try again.',pt:'Algo deu errado. Tente de novo.',es:'Algo salió mal. Inténtalo de nuevo.'}
 };
 function T(k,a){var s=(S[k]||{})[lang()]||(S[k]||{}).en||k;if(a!==undefined)s=s.replace('{0}',a);return s;}
@@ -137,9 +138,10 @@ function mount(box,ctx){
       var x=el('button','','\u00D7');x.type='button';x.setAttribute('aria-label',T('dis'));x.style.cssText='margin-left:auto;flex:none;min-width:32px;min-height:32px;border:0;background:transparent;color:inherit;font-size:1.3rem;line-height:1;cursor:pointer';
       x.onclick=function(){dis[q.id]=1;try{localStorage.setItem('bl-ag-dis',JSON.stringify(dis));}catch(e){}m.remove();};m.appendChild(x);w.appendChild(m);});
     w.appendChild(el('h2','',T('next')));
-    if(!rows.length)w.appendChild(el('p','ag-s',T('none')));
+    if(!rows.length)w.appendChild(el('p','ag-s ag-none',T('none')));
     rows.forEach(function(x){
-      var r=el('div','ag-row'),dt=new Date(x.start_at),db=el('div','ag-date'),d=el('div');
+      var r=el('div','ag-row'+(x===rows[0]?' ag-next':'')),dt=new Date(x.start_at),db=el('div','ag-date'),d=el('div');
+      if(x===rows[0]){if(window.Home2)r.insertAdjacentHTML('afterbegin',Home2.art('cal'));r.appendChild(el('span','ag-k',T('nk')));}
       var wd='';try{wd=new Intl.DateTimeFormat(loc(),{weekday:'short'}).format(dt).replace('.','');}catch(e){}
       db.appendChild(el('span','ag-wd',wd));db.appendChild(el('span','ag-dn',String(dt.getDate())));r.appendChild(db);
       d.style.flex='1';d.style.minWidth='0';d.appendChild(el('b','',fmtT(x.start_at)+' – '+fmtT(x.end_at)));if(x.title)d.appendChild(el('small','',x.title));r.appendChild(d);

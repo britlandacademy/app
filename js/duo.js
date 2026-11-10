@@ -36,6 +36,10 @@
     lostall:['You lost all your lions.','Você perdeu todos os leões.','Perdiste todos los leones.'],
     retry:['Try again','Tentar de novo','Intentar de nuevo'],
     back:['A lion is back!','Um leão voltou!','¡Un león volvió!'],
+    fixQ:['Correct the sentence.','Corrija a frase.','Corrige la frase.'],
+    fixTap:['1. Tap the wrong word.','1. Toque na palavra errada.','1. Toca la palabra incorrecta.'],
+    fixPick:['2. Choose what goes in its place:','2. Escolha o que fica no lugar:','2. Elige qué va en su lugar:'],
+    fixDel:['Delete the word','Apagar a palavra','Borrar la palabra'],
     bankHint:['Tap the words in order.','Toque nas palavras na ordem.','Toca las palabras en orden.'],
     lives:['Lions left: {n}','Leões restantes: {n}','Leones restantes: {n}'],
     xp:['+{n} XP','+{n} XP','+{n} XP'],
@@ -180,6 +184,7 @@
 '#bl-duo.game .dz-scene{display:flex;align-items:center;gap:14px;margin:6px 0 16px}'+
 '#bl-duo.game .dz-peep{flex:none;width:84px;height:84px;border-radius:18px;overflow:hidden;border:3px solid #e8b923;box-shadow:0 4px 0 #a8820f;background:#e9e2cf}'+
 '#bl-duo.game .dz-peep img{width:100%;height:100%;display:block;object-fit:cover;max-height:none;margin:0;background:none;border-radius:0}'+
+'#bl-duo.game .dz-q .chip.on{border-color:#f5c542;background:rgba(245,197,66,.18)}'+
 '#bl-duo.game .dz-q.fix{display:flex;flex-direction:column;gap:8px}#bl-duo.game .dz-q.fix .dz-wrong{margin:0;text-align:center;font-size:1.3rem;padding:12px 14px;border:2px solid #7a3a4a;border-radius:14px;background:rgba(122,58,74,.25);color:var(--ink,#fff)}#bl-duo.game .dz-q.fix .dz-wrong em{font-style:normal;color:#ff6b6b;border-bottom:3px solid #ff6b6b}#bl-duo.game .dz-q.fix .dz-arrow{text-align:center;color:var(--muted,#9fb0d6);font-size:1.3rem;line-height:1}'+
 '#bl-duo.game .dz-bank.fix{display:flex;flex-direction:column;gap:8px;min-height:0}#bl-duo.game .dz-bank.fix .area{order:1;min-height:90px;border:2px solid #f5c542;border-radius:14px;padding:10px;margin:0;align-content:center}#bl-duo.game .dz-bank.fix .dz-undo{order:2;align-self:flex-end;min-height:40px;padding:0 14px;border:2px solid var(--line,#2b4a8c);border-radius:12px;background:transparent;color:#f5c542;font:inherit;font-size:.9rem}#bl-duo.game .dz-bank.fix .pool{order:3;margin:14px 0 0;display:flex;flex-wrap:wrap;justify-content:center;gap:10px}#bl-duo.game .dz-bank.fix .chip{min-height:48px;font-size:1.15rem;border-radius:14px;padding:10px 18px}'+
 '#bl-duo.game .dz-q.fix .cloze{margin:0;padding:22px 16px;border:2px solid var(--line,#2b4a8c);border-radius:16px;background:var(--surface,#142a5c);text-align:center;font-size:1.5rem;line-height:2.1;color:var(--ink,#fff)}#bl-duo.game .dz-q.fix .dz-bl{display:inline-block;min-width:80px;height:36px;vertical-align:middle;border-bottom:3px solid #f5c542;background:rgba(245,197,66,.12);border-radius:8px 8px 0 0;color:transparent;overflow:hidden;margin:0 4px}#bl-duo.game .dz-q.fix .dz-bw{font-size:1.3rem}'+
@@ -424,7 +429,38 @@
   function bare(w){return String(w).replace(/^[^\w\u00C0-\u024F]+|[^\w\u00C0-\u024F]+$/g,'').toLowerCase();}
   var GEN_EN=['do','does','not','the','a','is','are','was','to','of','in','my'],GEN_ES=['no','es','el','la','un','de','que','se','en','mi'];
   /* Game mode: typed answers become a bank of words to tap. */
+  /* "Correct the mistake" in game mode: 1) tap the wrong word, 2) choose what goes in its place (or delete it). */
+  function fixPick(cur,s){
+    var fx=cur.fx,words=fx.words,ans=String(s.it.ans[0]).trim().split(/\s+/),p=0,q=0,i;
+    while(p<words.length&&p<ans.length&&words[p]===ans[p])p++;
+    while(q<words.length-p&&q<ans.length-p&&words[words.length-1-q]===ans[ans.length-1-q])q++;
+    var R=ans.slice(p,ans.length-q).join(' '),have={};
+    ans.forEach(function(w){have[bare(w)]=1;});
+    var traps=[],wrongB={};words.slice(p,words.length-q).forEach(function(w){wrongB[bare(w)]=1;});
+    if(R&&R.split(' ').length===1&&!/^[A-Z]/.test(R)){var rb=R.replace(/[.,;:?!]+$/,'');var vv=/ing$/.test(rb)?[rb.slice(0,-3),rb.slice(0,-3)+'s']:/(o|ch|sh|ss|x|z)es$/.test(rb)?[rb.slice(0,-2)]:/s$/.test(rb)?[rb.slice(0,-1)]:/ed$/.test(rb)?[rb.slice(0,-2),rb.slice(0,-2)+'s']:[rb+'s',rb+'ing'];
+      vv.forEach(function(v){if(v&&v.length>1&&v!==rb&&!wrongB[bare(v)]&&traps.indexOf(v)<0)traps.push(v);});}
+    var isEs=!!(W.BL_COURSE&&W.BL_COURSE.id==='es'),gen=shuf((isEs?GEN_ES:GEN_EN).slice());
+    gen.forEach(function(w){if(w!==R&&!have[w]&&!wrongB[w]&&traps.indexOf(w)<0)traps.push(w);});
+    var opts=[];if(R)opts.push({t:R,v:R});else opts.push({t:'\u2702 '+T('fixDel'),v:'',del:1});
+    traps.slice(0,R?3:4).forEach(function(w){opts.push({t:w,v:w});});
+    if(R)opts.push({t:'\u2702 '+T('fixDel'),v:'',del:1});
+    opts=shuf(opts);
+    var chosen=null,locked=false,list=el('div','pool');list.setAttribute('role','group');
+    var lab=fx.lab;if(lab)lab.textContent=T('fixPick');
+    fx.hint.textContent=T('fixTap');
+    function draw(){list.textContent='';opts.forEach(function(o){var b=el('button','chip'+(o.del?' del':''),o.t);b.type='button';b.disabled=locked;b.setAttribute('aria-pressed',chosen===o?'true':'false');
+      if(chosen===o)b.classList.add('on');b.addEventListener('click',function(){if(locked)return;chosen=o;fx.inp.value=o.v;draw();});list.appendChild(b);});}
+    draw();
+    fx.inp.style.display='none';fx.inp.setAttribute('aria-hidden','true');fx.inp.tabIndex=-1;
+    var lb=fx.box.querySelector('label');if(lb)lb.removeAttribute('for');
+    fx.box.appendChild(list);
+    var og=cur.get,ol=cur.lock;
+    cur.canCheck=function(){return fx.sel.size>0&&!!chosen;};
+    cur.get=function(){if(!chosen)return {ok:false,msg:T('fixPick'),model:s.it.ans[0]};return og();};
+    cur.lock=function(){locked=true;try{ol();}catch(e){}draw();};
+  }
   function bankify(cur,s,steps){
+    if(cur.fx&&s.it.shown&&s.it.ans&&s.it.ans[0]!=null&&!s.it.nobank){try{fixPick(cur,s);}catch(e){}return;}
     var nodes=cur.nodes||[],inp=null,top=-1,i;
     for(i=0;i<nodes.length&&!inp;i++){var n=nodes[i];if(!n||!n.querySelector)continue;
       var f=(n.matches&&n.matches('input.txt'))?n:n.querySelector('input.txt');if(f){inp=f;top=i;}}
@@ -544,7 +580,7 @@
     }
     function updCombo(){if(!comboEl)return;comboEl.textContent=(game&&lives<3&&lives>0)?T('combo',{n:combo}):'';}
     function setBar(n){var p=Math.round(n/total*100);fill.style.width=p+'%';bar.setAttribute('aria-valuenow',String(p));}
-    function touched(){if(state==='ask')btn.disabled=false;}
+    function touched(){if(state!=='ask')return;btn.disabled=!!(cur&&cur.canCheck&&!cur.canCheck());}
     inn.addEventListener('input',touched);inn.addEventListener('change',touched);inn.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('button,label,input,select,.opt,.chip'))setTimeout(touched,0);});
     function onKey(e){
       if(e.key==='Escape'){e.preventDefault();quit();}
@@ -597,7 +633,7 @@
             var sc2=el('div','dz-scene rev'),pw2=el('div','dz-peep'),pi2=el('img'),bub2=el('div','dz-bub');
             pi2.src=PEEPS[a2-1];pi2.alt='';pi2.style.transform='scaleX(-1)';pw2.style.background=PBG[nameHash(plain(B.n))%PBG.length];
             pw2.appendChild(pi2);bub2.appendChild(el('span','dz-nm',B.n));bub2.appendChild(B.cl?B.cl:el('b','',B.t));sc2.appendChild(pw2);sc2.appendChild(bub2);inn.appendChild(sc2);skipN=dd.cl;}
-          else bub.appendChild(el('b','',qe.textContent.trim()));qe.className+=' dz-sr';if(!(dd&&dd.sw))bub.setAttribute('aria-hidden','true');}
+          else bub.appendChild(el('b','',(s.it.shown&&/^Correct the sentence\.?$/i.test(qe.textContent.trim()))?T('fixQ'):qe.textContent.trim()));qe.className+=' dz-sr';if(!(dd&&dd.sw))bub.setAttribute('aria-hidden','true');}
         else{var gt=g.title||'';if(/^Match the pictures with the words/i.test(gt))gt=['Choose the word that matches each picture.','Escolha a palavra que combina com a figura.','Elige la palabra que corresponde a cada imagen.'][ix()];
           if(gt){chip.textContent=T('q',{a:idx+1,b:total}).toUpperCase();bub.appendChild(el('b','',gt));}else bub.appendChild(el('p','dz-lab',T('q',{a:idx+1,b:total})));}}
       if(game)bankify(cur,s,steps);

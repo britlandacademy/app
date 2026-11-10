@@ -29,7 +29,7 @@ window.Today={mount:function(box,o){
     var ol=el('ol',{'aria-labelledby':'today-h'}),first=true;
     o.steps.forEach(function(st,i){
       var cls=st.done?'dn':(first?'next':'');if(!st.done)first=false;
-      ol.append(el('li',{class:cls},[el('a',{href:st.href},[el('span',{class:'tn','aria-hidden':'true'},[st.done?'✓':String(i+1)]),st.t+(st.done?' ✓':'')])]));
+      ol.append(el('li',{class:cls},[el('a',{href:st.href},[el('span',{class:'tn','aria-hidden':'true'},[st.done?'✓':String(i+1)]),st.t+(st.done?' ✓':''),st.tag?el('span',{class:'ttag'},[st.tag]):''])]));
     });
     box.append(ol);
   }

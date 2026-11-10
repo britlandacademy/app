@@ -43,10 +43,10 @@ window.Tips={mount:function(box,sb,name){
     var fx=t.body.fixes||[],nm=name?', '+name:'';
     var sub=fx.length?('Você tem '+fx.length+' dicas para a próxima semana: '+fx.map(function(f){return f.t;}).join(', ')+'.'):String(t.body.praise||'').replace(/^Oi,[^!]*!\s*/,'');
     box.textContent='';box.classList.add('tipc');
-    var b=el('button',{type:'button'},['Ver as dicas →']);b.onclick=function(){open(sb,t);};
-    if(!t.seen_at)box.append(el('span',{class:'tb'},['Novo · sábado']));
-    box.append(el('h2',{},['Suas dicas da semana'+nm]),el('p',{},[sub]),b);
-    box.hidden=false;box.setAttribute('aria-label','Suas dicas da semana');
+    var b=el('button',{type:'button'},['See tips →']);b.onclick=function(){open(sb,t);};
+    if(!t.seen_at)box.append(el('span',{class:'tb'},['NEW · SATURDAY']));
+    box.append(el('h2',{},[name?'Your weekly tips, '+name:'Your weekly tips']),el('p',{},[sub]),b);
+    box.hidden=false;box.setAttribute('aria-label','Your weekly tips');
     if(location.hash==='#dicas')open(sb,t);
   },function(){});
 }};

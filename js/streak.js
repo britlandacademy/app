@@ -97,7 +97,7 @@ function celebrate(n,start){
 }
 function nudge(t,s,cur){
   if(!t.gos)return t.go;
-  var nm=((window.Gate&&window.Gate.profile&&window.Gate.profile())||{}).name||'';nm=String(nm).trim().split(/\s+/)[0];
+  var nm=((function(){try{var p=window.Gate&&window.Gate.profile;return typeof p==='function'?p():p;}catch(e){return null;}})()||{}).name||'';nm=String(nm).trim().split(/\s+/)[0];
   var c=nm?', '+nm:'',gap=0;try{if(s.last)gap=Math.round((Date.now()-new Date(s.last+'T12:00:00'))/864e5);}catch(e){}
   var set=gap>=3?t.gom:(cur>=2?t.gos.concat(t.gok):t.gos);
   var d=new Date(),seed=d.getFullYear()*400+d.getMonth()*31+d.getDate();

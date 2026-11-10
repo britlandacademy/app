@@ -107,3 +107,7 @@ a.card:hover,.card:hover{border-color:var(--accent)}
 .band>div:not(.bl-lock){order:2;flex:1 1 100%;min-width:0}
 @media(min-width:760px){.band{flex-wrap:nowrap!important}.band .logo{order:3}.band>div:not(.bl-lock){order:2;flex:1 1 auto}}
 @media(max-width:560px){.head,.band{padding:14px 16px!important}}
+
+/* Skip link: visible only when focused with the keyboard */
+.skip{position:absolute;left:-9999px;top:8px;z-index:100000;padding:10px 16px;border-radius:10px;background:var(--accent,#f5c542);color:var(--accent-ink,#111);font-weight:700;text-decoration:none}
+.skip:focus{left:8px}
