@@ -48,3 +48,12 @@ html:not([data-theme="light"]) .p2k{color:var(--p2G)}
 .p2sw .g-sw{position:relative;width:52px;height:30px;min-height:30px;padding:0;border-radius:99px;border:0;background:var(--line);flex:none}
 .p2sw .g-sw i{position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .2s}
 .p2sw .g-sw.on{background:#2e7d4a}.p2sw .g-sw.on i{transform:translateX(22px)}
+
+/* 2.0.3: month calendar */
+.p2m{margin:0 0 14px}.p2mh{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.p2mh .sec{margin:0}.p2mn{color:var(--hl,#c9a13b);font-weight:700;font-size:.9rem}
+.p2cal{grid-template-columns:repeat(7,1fr)!important;gap:5px!important;margin:8px 0!important}
+.p2wd{font:700 12px Arial,sans-serif;color:var(--muted,#a9b8de);text-align:center}
+.p2cal .p2c{aspect-ratio:1;border-radius:50%!important;display:grid;place-items:center;font:600 13px system-ui,Arial,sans-serif;font-style:normal;color:var(--muted,#a9b8de);background:var(--chip,#162b5c)}
+.p2cal .p2c.e{visibility:hidden}.p2cal .p2c.fut{background:none;opacity:.55}
+.p2cal .p2c.on{background:#c9a23a!important;color:#1a1405;font-weight:800}
+.p2cal .p2c.td{box-shadow:0 0 0 2px var(--card,#10224a),0 0 0 4px #e4c06a}

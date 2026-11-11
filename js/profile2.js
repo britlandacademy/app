@@ -127,21 +127,23 @@ function overview(st){
   box.textContent='';
   var goal=+(S.me&&S.me.weekly_goal)||5,now=new Date(),dow=(now.getDay()+6)%7,mon=new Date(now);mon.setDate(now.getDate()-dow);
   var done=0;for(var i=0;i<7;i++){var d=new Date(mon);d.setDate(mon.getDate()+i);if(st.days[iso(d)])done++;}
-  var wrap=el('div','p2g');
-  var R=30,C=2*Math.PI*R,v=Math.min(1,done/goal);
-  wrap.appendChild(svg('<svg viewBox="0 0 80 80" role="img" aria-label="'+done+'/'+goal+'"><circle cx="40" cy="40" r="'+R+'" fill="none" stroke="var(--line)" stroke-width="9"/><circle cx="40" cy="40" r="'+R+'" fill="none" stroke="#c9a23a" stroke-width="9" stroke-linecap="round" stroke-dasharray="'+(C*v).toFixed(1)+' '+C.toFixed(1)+'" transform="rotate(-90 40 40)"/><text x="40" y="46" text-anchor="middle" class="p2rt">'+done+'/'+goal+'</text></svg>'));
+  /* month calendar (Mon-first): studied days in gold, today ringed */
+  var mc=el('div','p2m'),mh=el('div','p2mh'),ym=new Date(now.getFullYear(),now.getMonth(),1),nd=new Date(now.getFullYear(),now.getMonth()+1,0).getDate(),nm=0;
+  for(var q=1;q<=nd;q++){if(st.days[iso(new Date(now.getFullYear(),now.getMonth(),q))])nm++;}
+  var mname=ym.toLocaleDateString(loc(),{month:'long'});mname=mname.charAt(0).toUpperCase()+mname.slice(1);
+  mh.appendChild(el('h3','sec',mname));mh.appendChild(el('span','p2mn',nm+(nm===1?' day studied':' days studied')));mc.appendChild(mh);
+  var cal=el('div','p2cal'),wd0=new Date(2024,0,1);
+  for(var w=0;w<7;w++){var wdd=new Date(wd0);wdd.setDate(1+w);cal.appendChild(el('span','p2wd',wdd.toLocaleDateString(loc(),{weekday:'narrow'})));}
+  for(var e0=0;e0<(ym.getDay()+6)%7;e0++)cal.appendChild(el('i','p2c e'));
+  for(var dn=1;dn<=nd;dn++){var dd=new Date(now.getFullYear(),now.getMonth(),dn),cc=st.days[iso(dd)]||0,fut=dd>now&&iso(dd)!==iso(now);
+    var cell=el('i','p2c'+(cc?' on':'')+(iso(dd)===iso(now)?' td':'')+(fut?' fut':''),String(dn));cell.title=dd.toLocaleDateString(loc(),{day:'numeric',month:'short'})+(cc?' · '+cc:'');cal.appendChild(cell);}
+  mc.appendChild(cal);box.appendChild(mc);
+  /* weekly goal */
   var tx=el('div','p2gt');tx.appendChild(el('h3','sec','Weekly goal'));
-  var msg=done>=goal?'Goal reached this week!':'Study '+goal+' days a week.';tx.appendChild(el('p','hint',msg));
+  var msg=done>=goal?'Goal reached this week!':'Study '+goal+' days a week \u00b7 '+done+'/'+goal;tx.appendChild(el('p','hint',msg));
   var ch=el('div','choices p2goals');[3,5,7].forEach(function(n){var b=el('button','',n+' days');b.type='button';b.setAttribute('aria-pressed',String(n===goal));
     b.onclick=function(){S.sb.rpc('set_my_goal',{p_goal:n}).then(function(r){if(!r.error){S.me.weekly_goal=n;overview(st);}});};ch.appendChild(b);});
-  tx.appendChild(ch);wrap.appendChild(tx);box.appendChild(wrap);
-  box.appendChild(el('h3','sec','Last 30 days'));
-  var cal=el('div','p2cal'),n30=0,mx=1;
-  for(var k=29;k>=0;k--){var dd=new Date();dd.setDate(dd.getDate()-k);var c=st.days[iso(dd)]||0;if(c>mx)mx=c;}
-  for(var k2=29;k2>=0;k2--){var d2=new Date();d2.setDate(d2.getDate()-k2);var cc=st.days[iso(d2)]||0;if(cc)n30++;
-    var cell=el('i','p2c'+(cc?' on l'+(cc>mx*.66?3:cc>mx*.33?2:1):''));cell.title=d2.toLocaleDateString(loc(),{day:'numeric',month:'short'})+(cc?' · '+cc:'');
-    cal.appendChild(cell);}
-  box.appendChild(cal);box.appendChild(el('p','hint',n30+(n30===1?' day studied':' days studied')));
+  tx.appendChild(ch);box.appendChild(tx);
 }
 /* ---------- overview extras (watch #g): remove weekly line chart, medal hints ---------- */
 var HOW=[['First check','Finish your first Lesson Check'],['10 checks','Finish 10 Lesson Checks'],['Perfect score','Get 100% in a Lesson Check'],['7 days in a row','Study 7 days in a row'],['Stage finished','Finish every Lesson Check of a Stage'],['Workbook','Do your first Workbook section'],['50 exercises','Do 50 exercises'],['Top student','Keep a 90% average after 5 Lesson Checks']];
