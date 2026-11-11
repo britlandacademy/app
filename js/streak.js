@@ -149,7 +149,7 @@ function admin(box){
     box.hidden=false;
   }).catch(function(){undo();});
 }
-function openPid(e){var li=e.target&&e.target.closest&&e.target.closest('li[data-pid]');if(!li||!window.PubProfile)return;if(e.type==='keydown'&&e.key!=='Enter'&&e.key!==' ')return;e.preventDefault();PubProfile.open(li.getAttribute('data-pid'));}
+function openPid(e){var li=e.target&&e.target.closest&&e.target.closest('li[data-pid]');if(!li||!window.PubProfile)return;if(e.type==='keydown'&&e.key!=='Enter'&&e.key!==' ')return;e.preventDefault();PubProfile.open(li.getAttribute('data-pid'),li.querySelector('.pf-av,img,svg,u')||li);}
 document.addEventListener('click',openPid);document.addEventListener('keydown',openPid);
 window.Streak={mount:mount,admin:admin};
 })();

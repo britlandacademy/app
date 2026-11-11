@@ -10,6 +10,7 @@
     'stage-concluido': 'Ao concluir um Stage (em breve)'
   };
   var CUR = { en: 'Inglês', es: 'Espanhol', 'en,es': 'Inglês e espanhol' };
+  var st = document.createElement('style'); st.textContent = '.fxr{display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}.fxr label{display:flex;gap:8px;align-items:center;font-weight:700;min-width:0}.fxr .fxl{grid-column:1/-1;display:flex;gap:6px;align-items:center;flex-wrap:wrap;white-space:nowrap}.fxr .fxl input{width:52px;min-height:36px;padding:2px 4px;font:inherit;text-align:center;-moz-appearance:textfield}.fxr .fxl input::-webkit-outer-spin-button,.fxr .fxl input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}.fxr .fxc{color:var(--mut);font-size:.8rem;font-weight:600}.fxr button{white-space:nowrap;flex:none}'; document.head.append(st);
   function pad(n) { return ('0' + n).slice(-2); }
   function mount(box, o) {
     var sb = o.sb, el = o.el, B = window.BLLoad;
@@ -28,20 +29,19 @@
         var when;
         if (e.d && !AUTO[e.id]) {
           var f = ['d1', 'm1', 'd2', 'm2'].map(function (k, i) {
-            var n = el('input', { type: 'number', min: 1, max: (i % 2 ? 12 : 31), value: r[i % 2 ? i : i], 'aria-label': k, style: 'width:56px;min-height:36px;padding:2px 6px;font:inherit' });
+            var n = el('input', { type: 'number', min: 1, max: (i % 2 ? 12 : 31), value: r[i % 2 ? i : i], 'aria-label': k, inputmode: 'numeric' });
             return n;
           });
           // ordem dos campos: dia início, mês início, dia fim, mês fim; r = [m1,d1,m2,d2]
           f[0].value = r[1]; f[1].value = r[0]; f[2].value = r[3]; f[3].value = r[2];
           var upd = function () { var v = [+f[1].value, +f[0].value, +f[3].value, +f[2].value]; if (v.every(function (x) { return x > 0; })) { if (v.join() === e.d.join()) delete cfg.dates[e.id]; else cfg.dates[e.id] = v; } };
           f.forEach(function (n) { n.addEventListener('input', upd); });
-          when = el('span', {}, 'de ', f[0], '/', f[1], ' até ', f[2], '/', f[3]);
-        } else when = el('span', { class: 'hint' }, AUTO[e.id] || '');
+          when = el('span', { class: 'fxl' }, 'de ', f[0], '/', f[1], ' até ', f[2], '/', f[3], el('span', { class: 'hint', style: 'margin:0' }, '(dia/mês)'));
+        } else when = el('span', { class: 'hint fxl', style: 'margin:0;white-space:normal' }, AUTO[e.id] || '');
         var see = el('button', { type: 'button', class: 'ghost' }, 'Ver');
         see.addEventListener('click', function () { preview(e.id); });
-        list.append(el('div', { class: 'row', style: 'align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);flex-wrap:wrap' },
-          el('label', { style: 'display:flex;gap:8px;align-items:center;min-width:210px;font-weight:700' }, sw, e.n),
-          el('span', { class: 'hint', style: 'min-width:110px;margin:0' }, CUR[e.c] || e.c), when, see));
+        list.append(el('div', { class: 'fxr' },
+          el('label', {}, sw, e.n, el('span', { class: 'fxc' }, '· ' + (CUR[e.c] || e.c))), see, when));
       });
     }
     function preview(id) {

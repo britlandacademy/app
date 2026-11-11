@@ -103,7 +103,7 @@ summary{cursor:pointer;font-weight:700;padding:4px 0}
 </div>
 <script src="js/i18n.js" charset="utf-8"></script>
 <script src="js/config.js" charset="utf-8"></script>
-<script src="js/gate.js" charset="utf-8"></script><script src="js/sheet.js" charset="utf-8"></script><script src="js/motion.js" charset="utf-8"></script><script src="js/medals.js" charset="utf-8"></script><script src="js/profile2.js" charset="utf-8"></script><script src="js/receipt.js" charset="utf-8"></script><script src="js/qr.js" charset="utf-8"></script><script src="js/certificate.js" charset="utf-8"></script>
+<script src="js/gate.js" charset="utf-8"></script><script src="js/sheet.js" charset="utf-8"></script><script src="js/motion.js" charset="utf-8"></script><script src="js/medals.js" charset="utf-8"></script><script src="js/profile2.js" charset="utf-8"></script><script src="js/displayname.js" charset="utf-8"></script><script src="js/receipt.js" charset="utf-8"></script><script src="js/qr.js" charset="utf-8"></script><script src="js/certificate.js" charset="utf-8"></script>
 <script>
 Gate.start({kinds:[]},function(ctx){
 if(Gate.gameOn()){location.replace('index.html#profile');return;}
@@ -120,7 +120,7 @@ function pct(s,t){return t?Math.round(s/t*100)+'%':'—';}
 function show(w){['g','p','s'].forEach(k=>{$('p-'+k).hidden=k!==w;$('t-'+k).setAttribute('aria-selected',String(k===w));});}
 $('t-g').addEventListener('click',()=>show('g'));$('t-p').addEventListener('click',()=>show('p'));$('t-s').addEventListener('click',()=>show('s'));
 const me=ctx.profile||{};
-$('hn').textContent=me.name||'';$('hs').textContent=COURSE.name||'Callan English';
+$('hn').textContent=me.display_name||me.name||'';if(window.DisplayName)DisplayName.mount({sb:sb,me:me,el:$('hn')});$('hs').textContent=COURSE.name||'Callan English';
 function openPic(){Gate.loadProfile(()=>Profile.openPicker({sb:sb,uid:me.id||ctx.user.id,current:me.avatar,lang:COURSE.uiLang||'en',onSaved:id=>{me.avatar=id;Gate.setAvatar(id);}}));}
 $('edav').addEventListener('click',openPic);$('chg').addEventListener('click',openPic);
 Gate.loadProfile(()=>{Gate.setAvatar(me.avatar||null);if(location.hash==='#picture'){history.replaceState(null,'',location.pathname+location.search);openPic();}});

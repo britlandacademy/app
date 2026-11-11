@@ -538,6 +538,8 @@ var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they 
 ["NEW","NOVO","NUEVO"],
 ["STAGE EXAM","PROVA DO STAGE","EXAMEN DE LA ETAPA"],
 ["Stage test","Teste do Stage","Prueba de la Etapa"],
+["Certificate","Certificado","Certificado"],
+["Download certificate","Baixar certificado","Descargar certificado"],
 ["Lesson Check","Lesson Check","Lesson Check"],
 ["not done","não feito","sin hacer"],
 ["Take test","Fazer o teste","Hacer la prueba"],
@@ -583,7 +585,7 @@ var X=[ /* forced Portuguese in the English course: [English, Português, Españ
 ["Well done, keep going! {0} exercises left to complete {1}.","Muito bem, continue! Faltam {0} exercícios para concluir {1}.","Well done, keep going! {0} exercises left to complete {1}."],
 ["Well done, keep going! {0} exercise left to complete {1}.","Muito bem, continue! Falta {0} exercício para concluir {1}.","Well done, keep going! {0} exercise left to complete {1}."],
 ["{0} completed! Well done.","{0} concluída! Muito bem.","{0} completed! Well done."],
-["Exercise {0} of {1}","Exercício {0} de {1}","Exercise {0} of {1}"],
+["Exercise {0} of {1}","Exercício {0} de {1}","Ejercicio {0} de {1}"],
 ["Select and copy the text above.","Selecione e copie o texto acima.","Select and copy the text above."],
 ["Report copied. Paste it into your chat with the teacher.","Relatório copiado. Cole na sua conversa com o professor.","Report copied. Paste it into your chat with the teacher."],
 ["Copy report","Copiar relatório","Copy report"],
@@ -733,7 +735,7 @@ D.forEach(function(e,i){if(e[0]==='Request access'&&!F1)F1=i;if(e[0]==='Wrong e-
  R.forEach(function(r){var a=ix(r[0]),b=ix(r[1]);if(a<0||b<0)return;for(var i=a;i<=b;i++)D[i].nf=1;});
  ['My Profile','Change picture','Dark mode','Game mode','Help'].forEach(function(k){var i=ix(k);if(i>=0)D[i].nf=1;});
  D.forEach(function(e){if(ex[e[0]])e.nf=0;});
- ['Skip to content','Continue →','Start over','Lesson {0} Check','Back to the stage'].forEach(function(k){D.concat(X).forEach(function(e){if(e[0]===k)e.nf=1;});});})();
+ ['Skip to content','Continue →','Start over','Lesson {0} Check','Back to the stage','Exercise {0} of {1}'].forEach(function(k){D.concat(X).forEach(function(e){if(e[0]===k)e.nf=1;});});})();
 D.forEach(function(e,i){if(!e.nf&&(i<F1||(i>=F2&&i<D.findIndex(function(z){return z[0]==='Signed in:';}))))e.f=1;add(e);});
 X.forEach(function(e){e.f=e.nf?0:1;add(e);});
 TPL.sort(function(a,b){return b.re.source.length-a.re.source.length;});

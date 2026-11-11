@@ -177,7 +177,7 @@ Gate.start({admin:true,kinds:[]},function(ctx){
 const sb=Gate.sb,el=Gate.el,$=id=>document.getElementById(id);
 const SYM={EUR:'€',BRL:'R$'},PRESET={Grupo:80,VIP:120,Intensivo:200};
 let SUBS=[],CH=[],PROF=[];
-function money(v,c){return (SYM[c]||'')+' '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function money(v,c){return (SYM[c]||'')+'\u00a0'+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function today(){return iso(new Date());}
 function br(s){if(!s)return '';const p=s.split('-');return p[2]+'/'+p[1]+'/'+p[0];}

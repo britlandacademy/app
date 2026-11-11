@@ -4,6 +4,7 @@
 'use strict';
 var CSS='.bk{display:block!important}'+
 '.bk .bkn{display:flex;flex-wrap:wrap;gap:16px 20px;align-items:center;justify-content:space-between}'+
+'.bk .bkcw{position:relative;flex:none;display:block;line-height:0}.bk .bkrib{position:absolute;left:-6px;right:-6px;bottom:14px;border:0;background:linear-gradient(90deg,#a67c1a,#e6c56a,#a67c1a);color:#1a1405;font:700 10.5px system-ui,sans-serif;line-height:1.2;text-align:center;padding:4px 0;box-shadow:0 3px 8px rgba(0,0,0,.5);transform:rotate(-4deg);letter-spacing:.03em;cursor:pointer}.bk .bkrib:focus-visible{outline:2px solid #fff;outline-offset:1px}.bk .bkrib:disabled{opacity:.6}'+
 '.bk .bkcv{width:90px;height:auto;border-radius:4px;box-shadow:0 6px 16px rgba(0,0,0,.4);flex:none}@media(max-width:560px){.bk .bkcv{width:70px}}'+
 '.bk .bkg{text-align:center;font-size:.72rem;color:var(--mut);min-width:0;flex:1}.bk .bkg strong{display:block;color:var(--ink);font-size:.78rem;margin-top:4px}'+
 '.bk .bkr{width:62px;height:62px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;margin:0 auto;background:var(--line)}'+
@@ -53,7 +54,7 @@ function mount(o){
   var real=1;ST.forEach(function(r,i){if(Math.max(upto,1)>=r[0])real=i+1;});
   var key=o.key||'callan-stage',chosen=real;
   try{var sv=parseInt(sessionStorage.getItem('bl-book'),10);if(sv>=1&&sv<=real)chosen=sv;}catch(e){}
-  var startSt=+prof.start_stage||0,LT=null,uid=(prof.id)||(ctx.user&&ctx.user.id)||'';
+  var startSt=+prof.start_stage||0,LT=null,CERTS=null,uid=(prof.id)||(ctx.user&&ctx.user.id)||'';
   var KINDS=o.acts;
   function st(kind,n){return o.stat?o.stat(kind,n):Covers.stats(att,kind,n,upto);}
   function active(n){return KINDS.some(function(a){return st(a.kind,n).done>0;});}
@@ -72,9 +73,16 @@ function mount(o){
     else{d.innerHTML=ash(null);d.append(el('strong','','Stage test'));
       if(r&&!r.taken_at){var a=el('a','bktt','Take test');a.href='check.html?lt='+n;d.append(a);}else d.append(el('span','','—'));}
     return d;}
+  function certOf(n){if(!CERTS)return null;for(var i=0;i<CERTS.length;i++)if(+CERTS[i].stage===n)return CERTS[i];return null;}
+  function loadJs(u){return new Promise(function(ok,no){var s=document.createElement('script');s.src=u;s.onload=ok;s.onerror=no;document.head.append(s);});}
+  function ribbon(row){var b=el('button','bkrib','\ud83c\udfc5 '+T('Certificate'));b.type='button';b.setAttribute('aria-label',T('Download certificate'));
+    b.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();if(b.disabled)return;b.disabled=true;var px=es?'../js/':'js/';
+      Promise.resolve(window.QR||loadJs(px+'qr.js')).then(function(){return window.Certificate||loadJs(px+'certificate.js');})
+        .then(function(){return Certificate.download({cert:row,lang:es?'es':'en',base:es?'../':''});}).catch(function(){}).then(function(){b.disabled=false;});});
+    return b;}
   function render(still){
     var n=chosen,sk=skipped(n);box.textContent='';box.classList.add('bk');
-    var top=el('div','bkn'),stk=el('div','bks'),rings=[],cv=new Image();cv.src=Covers.src(n,es);cv.alt=es?'Libro del Estudiante \u00b7 Etapa '+n:"Student's Book \u00b7 Stage "+n;cv.width=90;cv.height=128;cv.className='cvr bkcv';cv.decoding='async';top.append(cv);
+    var top=el('div','bkn'),stk=el('div','bks'),rings=[],cv=new Image();cv.src=Covers.src(n,es);cv.alt=es?'Libro del Estudiante \u00b7 Etapa '+n:"Student's Book \u00b7 Stage "+n;cv.width=90;cv.height=128;cv.className='cvr bkcv';cv.decoding='async';var cw=cv,cr=certOf(n);if(cr){cw=el('div','bkcw');cw.append(cv,ribbon(cr));}top.append(cw);
     KINDS.forEach(function(a){var s=st(a.kind,n),d=el('a','bkg'),r=el('div','bkr'+(sk?' dash':'')),b=el('b','',sk?'—':'0%');r.append(b);d.append(r);
       d.href=href(a,n);d.setAttribute('aria-label',a.label);d.style.cssText='text-decoration:none;color:inherit;display:block';d.append(el('strong','',a.label));
       d.append(el('span','',sk?T('not done'):(s.avail?F('{0} of {1}',[s.done,s.avail]):'—')));stk.append(d);
@@ -99,7 +107,8 @@ function mount(o){
     try{localStorage.setItem(key,String(n));}catch(e){}
     render();if(o.onChange)o.onChange(n);}
   render();
-  if(o.sb){try{var q=o.sb.from('level_tests').select('stage,taken_at,score,total,passed');if(uid)q=q.eq('user_id',uid);
+  if(o.sb){try{o.sb.from('certificates').select('id,student_name,stage,hours,exam_pct,distinction,completed_on').then(function(r){CERTS=(r&&!r.error&&r.data)||[];if(CERTS.length)render(true);},function(){});}catch(e){}
+  try{var q=o.sb.from('level_tests').select('stage,taken_at,score,total,passed');if(uid)q=q.eq('user_id',uid);
     q.then(function(r){LT=(r&&!r.error&&r.data)||[];render(true);},function(){});}catch(e){}}
   return {chosen:function(){return chosen;},real:real,hrefFor:function(a,n){return href(a,n||chosen);}};
 }

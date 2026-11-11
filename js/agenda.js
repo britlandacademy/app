@@ -295,10 +295,18 @@ function admin(box,lg){
     var evs={},eo=[];
     (rows||[]).forEach(function(x){var k=String(x.id).split(':')[0];if(!evs[k]){evs[k]={k:k,title:x.title,start_at:x.start_at,end_at:x.end_at,ids:[]};eo.push(k);}if(x.user_id)evs[k].ids.push(x.user_id);});
     w.appendChild(el('h2','','Próximas aulas'));w.appendChild(el('p','ag-s','Toque numa aula para escolher a qual aluno ela pertence.'));
-    eo.slice(0,12).forEach(function(k){var x=evs[k],r=el('button','ag-row ag-tap'),d=el('div');r.type='button';d.style.flex='1';d.appendChild(el('b','',fmt(x.start_at)+' · '+(x.title||'')));
+    var tzA='America/Sao_Paulo',dkA=function(i){try{return new Date(i).toLocaleDateString('en-CA',{timeZone:tzA});}catch(e){return String(i).slice(0,10);}},tmrA=dkA(Date.now()+864e5);
+    function row(k){var x=evs[k],r=el('button','ag-row ag-tap'),d=el('div');r.type='button';d.style.flex='1';d.appendChild(el('b','',fmt(x.start_at)+' · '+(x.title||'')));
       var nm=x.ids.map(function(i){return gr?sname(gr,i):i;});
       d.appendChild(el('small','',nm.length?nm.join(', '):T('nm')));r.appendChild(d);r.appendChild(el('span','ag-chev','›'));
-      r.onclick=function(){if(gr)assignUI(gr,x);};w.appendChild(r);});
+      r.onclick=function(){if(gr)assignUI(gr,x);};return r;}
+    var near=eo.filter(function(k){return dkA(evs[k].start_at)<=tmrA;}),later=eo.filter(function(k){return dkA(evs[k].start_at)>tmrA;}).slice(0,12);
+    if(!near.length&&!later.length)w.appendChild(el('p','ag-s','Nenhuma aula nos próximos dias.'));
+    else if(!near.length)w.appendChild(el('p','ag-s','Nenhuma aula hoje nem amanhã.'));
+    near.forEach(function(k){w.appendChild(row(k));});
+    if(later.length){var more=el('div');more.hidden=true;later.forEach(function(k){more.appendChild(row(k));});
+      var tg=el('button','ag-btn alt','Ver mais aulas ('+later.length+')');tg.type='button';tg.onclick=function(){more.hidden=!more.hidden;tg.textContent=more.hidden?'Ver mais aulas ('+later.length+')':'Mostrar menos';};
+      w.appendChild(tg);w.appendChild(more);}
     if(/[?&]gcal=ok/.test(location.search))msg(T('ok'));
     if(gr){requestsUI(gr);availUI(gr);groupsUI(gr);}
   }
