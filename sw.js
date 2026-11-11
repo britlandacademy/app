@@ -1,6 +1,6 @@
 /* Britland Academy service worker.
    Change VERSION every time the app is updated, so students always get the new files. */
-const VERSION = '2.0.23';
+const VERSION = '2.0.24';
 const CACHE = 'bl-' + VERSION;
 const CORE = ['offline.html', 'img/britland-shield.png', 'img/icons/icon-192.png', 'favicon-32.png'];
 
@@ -31,7 +31,7 @@ self.addEventListener('fetch', e => {
     })));
     return;
   }
-  e.respondWith(fetch(req).then(r => {                                              // pages, scripts, styles: network first
+  e.respondWith(fetch(req, { cache: 'no-cache' }).then(r => {                      // pages, scripts, styles: network first, always revalidated (no 10-minute browser cache)
     if (r.ok) { const c = r.clone(); caches.open(CACHE).then(x => x.put(req, c)); }
     return r;
   }).catch(() => caches.match(req).then(hit => hit || (req.mode === 'navigate' ? caches.match('offline.html') : Response.error()))));

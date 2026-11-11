@@ -2,6 +2,7 @@
    Newest first. Written for students (no technical terms). Each entry: v, d [pt, es], t [pt, es] short title, p [pt, es] one sentence,
    show:1 = also shown once in the notice after the update, c:'en'|'es' = only that course (omit = both). */
 window.BL_RELEASES=[
+{v:'2.0.24',d:['11 de novembro','11 de noviembre'],t:['Atualização automática do app','Actualización automática de la app'],p:['O app agora se atualiza sozinho quando sai uma versão nova, sem interromper o seu exercício.','La app ahora se actualiza sola cuando sale una versión nueva, sin interrumpir tu ejercicio.']},
 {v:'2.0.23',d:['11 de novembro','11 de noviembre'],t:['Registro de erros dos alunos corrigido','Registro de errores de los alumnos corregido'],p:['','']},
 {v:'2.0.22',d:['11 de novembro','11 de noviembre'],t:['Correção ao salvar as respostas','Corrección al guardar las respuestas'],p:['Corrigimos um erro que podia travar o botão Verificar e impedir que o resultado dos exercícios e dos Lesson Checks fosse salvo.','Corregimos un error que podía bloquear el botón Verificar e impedir que se guardara el resultado de los ejercicios y de los Lesson Checks.']},
 {v:'2.0.21',d:['11 de novembro','11 de noviembre'],t:['Aviso de Stage concluído corrigido','Aviso de Stage completado corregido'],p:['','']},

@@ -5,7 +5,7 @@
    (nao usa sessionStorage: alguns navegadores/PWAs zeram a cada pagina e o jogo "voltava" para Lesson Checks) */
 try{var __n=Date.now(),__s=+localStorage.getItem('bl-seen')||0;if(!__s||__n-__s>30*60e3)localStorage.setItem('bl-game','0');localStorage.setItem('bl-seen',String(__n));
   var __t=function(){try{localStorage.setItem('bl-seen',String(Date.now()));}catch(e){}};setInterval(__t,60000);addEventListener('pagehide',__t);document.addEventListener('visibilitychange',__t);}catch(e){}
-window.BL_VERSION='2.0.23';
+window.BL_VERSION='2.0.24';
 /* leaving Game Mode: the empty platform stays over the page (and the loading screen) until the normal home is ready */
 try{var __o=localStorage.getItem('bl-tfx')||'';if(/^out:\d+$/.test(__o)){localStorage.removeItem('bl-tfx');if(Date.now()-(+__o.slice(4))<20000){
   var __v=document.createElement('div'),__h=Math.max(640,390*innerHeight/innerWidth),__f=((470+(__h-640)/2)/__h*100).toFixed(2);__v.style.cssText='position:fixed;inset:0;z-index:2147483000;pointer-events:none;background:#f1ead6 linear-gradient(180deg,transparent 0 '+__f+'%,#e4dcc3 '+__f+'%);';
@@ -69,10 +69,29 @@ function banner(){
   r.onclick=function(){location.reload();};
   b.append(t,r);document.body.append(b);
 }
-navigator.serviceWorker.addEventListener('controllerchange',banner);
+/* ---- atualização automática: recarrega sozinho quando há versão nova, sem interromper o aluno ---- */
+var upd=false;
+function safeNow(){try{if(document.getElementById('bl-duo'))return false;var a=document.activeElement;if(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&a.value)return false;return !/\/(exercises|check|workbook|exam|dele)\.html$/.test(location.pathname);}catch(e){return false;}}
+function applyUpdate(v){
+  if(upd||!had)return;upd=true;
+  try{var k='bl-upd';if(sessionStorage.getItem(k)===String(v||'x')){banner();return;}if(v)sessionStorage.setItem(k,String(v));}catch(e){}
+  if(document.visibilityState==='hidden'||safeNow()){location.reload();return;}
+  banner();
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')location.reload();});
+}
+function checkVersion(){
+  try{fetch((window.BL_BASE||'')+'sw.js',{cache:'no-store'}).then(function(r){return r.text();}).then(function(t){
+    var m=/VERSION\s*=\s*'([^']+)'/.exec(t);
+    if(m&&window.BL_VERSION&&m[1]!==window.BL_VERSION){try{navigator.serviceWorker.getRegistration().then(function(g){if(g)g.update();});}catch(e){}applyUpdate(m[1]);}
+  }).catch(function(){});}catch(e){}
+}
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')checkVersion();});
+setInterval(checkVersion,30*60*1000);
+window.addEventListener('load',function(){setTimeout(checkVersion,4000);});
+navigator.serviceWorker.addEventListener('controllerchange',function(){applyUpdate('sw');});
 navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='bl-roar'){try{var a=new Audio((window.BL_BASE||'')+'js/sfx/leao_7dias.mp3');a.volume=.8;a.play().catch(function(){});}catch(x){}}});
 window.addEventListener('load',function(){
-  navigator.serviceWorker.register((window.BL_BASE||'')+'sw.js').then(function(reg){
+  navigator.serviceWorker.register((window.BL_BASE||'')+'sw.js',{updateViaCache:'none'}).then(function(reg){
     try{reg.update();}catch(e){}
   }).catch(function(){});
 });
