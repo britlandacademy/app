@@ -52,7 +52,7 @@ draw:function(svg,o){
   for(var by2=70,bn=0;by2<VH-40;by2+=480,bn++){var gb=el('g',{'class':'bfl',style:'animation-delay:'+(-rnd(sd+bn*4)*16)+'s;animation-duration:'+(14+rnd(sd+bn)*8)+'s'},g);var ib=el('g',{transform:'translate(0,'+(by2+rnd(sd+bn*2)*160)+') scale(.9)',opacity:.7},gb);ib.innerHTML=BIRD;}
   /* landmarks: the city's main one (with lights) plus other famous buildings, 2-3 per map, on the side away from the route */
   var LMS=(d.lms||[]).map(function(q,i){return[rnd(sd+i*3.7+9),q];}).sort(function(a,b){return a[0]-b[0];}).map(function(a){return a[1];});if(d.lm)LMS.unshift(d.lm);
-  var STEP=520,cnt=LMS.length?Math.max(2,Math.floor((VH-160)/STEP)+1):0;var LR=[];
+  var STEP=300,cnt=LMS.length?Math.max(2,Math.floor((VH-160)/STEP)+1):0;var LR=[];
   for(var li=0;li<cnt;li++){var lm=LMS[li%LMS.length],it=lm.img,H0=lm.h||150,sc2=Math.min(H0/it[1],(it[0]/it[1]>1.8?120:88)/it[0]),hp=it[1]*sc2,wp=it[0]*sc2,ly=34+li*STEP+(li?rnd(sd+li*5.1)*60:0),sx=0,sn=0;
     for(var ri=0;ri<route.length;ri++)if(route[ri][1]>ly-40&&route[ri][1]<ly+hp+40){sx+=route[ri][0];sn++;}
     if(!sn){var bd=1e9;for(var rj=0;rj<route.length;rj++){var dy=Math.abs(route[rj][1]-ly);if(dy<bd){bd=dy;sx=route[rj][0];}}sn=1;}
