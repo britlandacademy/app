@@ -215,7 +215,7 @@ function el(tag,props){
 function shuffle(a){const r=a.slice();for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=r[i];r[i]=r[j];r[j]=t;}return r;}
 function norm(s){
   s=String(s).toLowerCase().replace(/[‘’`´]/g,"'");
-  s=s.replace(/n't\b/g,' not').replace(/'m\b/g,' am').replace(/'re\b/g,' are').replace(/'s\b/g,' is');
+  s=s.replace(/\bcan't\b/g,'can not').replace(/\bcannot\b/g,'can not').replace(/\bwon't\b/g,'will not').replace(/\bshan't\b/g,'shall not').replace(/n't\b/g,' not').replace(/'m\b/g,' am').replace(/'re\b/g,' are').replace(/'s\b/g,' is');
   return s.replace(/[^a-z0-9áéíóúüñ\s]/g,' ').replace(/\s+/g,' ').trim();
 }
 function sig(s){return s.replace(/[^.,;?!]/g,'').replace(/;/g,'.').replace(/\.+/g,'.');}
