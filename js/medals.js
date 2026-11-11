@@ -215,17 +215,21 @@ function award(m,silent){
 /* ---------- check & announce ---------- */
 var queue=[],showing=false;
 function enq(m){if(!m||queue.some(function(q){return q.id===m.id;}))return;queue.push(m);}
+function seenGet(){try{return JSON.parse(localStorage.getItem('bl-md-seen-'+C.uid)||'{}')||{};}catch(e){return {};}}
+function seenSet(o){try{localStorage.setItem('bl-md-seen-'+C.uid,JSON.stringify(o));}catch(e){}}
 async function check(){
   if(C.busy||!sbx()||!C.uid)return;C.busy=true;
   try{
-    var prof=window.Gate&&Gate.profile&&Gate.profile();if(prof&&prof.is_admin)return;
     var all=await loadAll(),x=C.extra||await loadExtra(),mine=await loadMine(),S=stats(all,x),res=evalAll(S);
-    var earned=res.filter(function(r){return r.have;});
-    if(!mine._sync){
-      for(var i=0;i<earned.length;i++)if(!mine[earned[i].m.id]){await award(earned[i].m,true);mine[earned[i].m.id]={medal_id:earned[i].m.id,earned_at:new Date().toISOString()};}
-      await award({id:'_sync',tier:'b',n:['sync']},true);mine._sync=1;return;}
-    for(var j=0;j<earned.length;j++){var m=earned[j].m;if(mine[m.id])continue;
-      if(await award(m,false)){mine[m.id]={medal_id:m.id,earned_at:new Date().toISOString()};enq(m);}}
+    var TR={g:0,s:1,b:2};
+    var earned=res.filter(function(r){return r.have;}).sort(function(p,q){return (TR[p.m.tier]||0)-(TR[q.m.tier]||0);});
+    var hist=!mine._sync,seen=seenGet(),ch=false,CAP=99;
+    /* every medal already earned but never shown on this device is announced (all of them, best first); new ones are announced and the teacher is told */
+    for(var i=0;i<earned.length;i++){var m=earned[i].m,fresh=false;
+      if(!mine[m.id]){var ok=await award(m,hist);if(ok||hist){mine[m.id]={medal_id:m.id,earned_at:new Date().toISOString()};fresh=true;}}
+      if((fresh||!seen[m.id])&&queue.length<CAP&&!queue.some(function(q){return q.id===m.id;})){enq(m);seen[m.id]=1;ch=true;}}
+    if(hist){await award({id:'_sync',tier:'b',n:['sync']},true);mine._sync=1;}
+    if(ch)seenSet(seen);
     if(queue.length)run();
   }catch(e){}finally{C.busy=false;}
 }

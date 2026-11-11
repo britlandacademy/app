@@ -44,16 +44,21 @@ draw:function(svg,o){
       for(var q1=0;q1<3;q1++){var vk=d.vehl[(bi+q1+sd)%d.vehl.length],wv=el('g',{'class':'drv',style:'animation-delay:'+(-(q1*7+rnd(sd+q1)*6))+'s;animation-duration:'+(16+q1*5)+'s'+(q1%2?';animation-direction:reverse':'')},bg);put(wv,d.veh[vk[0]],0,by+hh-3,vk[1]*(d.veh[vk[0]][1]/d.veh[vk[0]][0]),{op:.85,flip:q1%2===1});}}}}
   /* birds, high above */
   for(var by2=70,bn=0;by2<VH-40;by2+=480,bn++){var gb=el('g',{'class':'bfl',style:'animation-delay:'+(-rnd(sd+bn*4)*16)+'s;animation-duration:'+(14+rnd(sd+bn)*8)+'s'},g);var ib=el('g',{transform:'translate(0,'+(by2+rnd(sd+bn*2)*160)+') scale(.9)',opacity:.7},gb);ib.innerHTML=BIRD;}
-  /* landmark, on the side away from the first stretch of the route */
-  if(d.lm){var lx=(route[0][0]<170)?250:4,H=d.lm.h,it=d.lm.img,sc2=H/it[1],gl=el('g',{transform:'translate('+lx+',34) scale('+sc2+')'},g);
+  /* landmarks: the city's main one (with lights) plus other famous buildings, 2-3 per map, on the side away from the route */
+  var LMS=(d.lms||[]).map(function(q,i){return[rnd(sd+i*3.7+9),q];}).sort(function(a,b){return a[0]-b[0];}).map(function(a){return a[1];});if(d.lm)LMS.unshift(d.lm);
+  var cnt=Math.min(LMS.length,VH>1500?3:2);var LR=[];
+  for(var li=0;li<cnt;li++){var lm=LMS[li],it=lm.img,H0=lm.h||150,sc2=Math.min(H0/it[1],(it[0]/it[1]>1.8?120:88)/it[0]),hp=it[1]*sc2,wp=it[0]*sc2,ly=34+li*((VH-300)/cnt)+(li?rnd(sd+li*5.1)*50:0),sx=0,sn=0;
+    for(var ri=0;ri<route.length;ri++)if(route[ri][1]>ly-40&&route[ri][1]<ly+hp+40){sx+=route[ri][0];sn++;}
+    if(!sn){var bd=1e9;for(var rj=0;rj<route.length;rj++){var dy=Math.abs(route[rj][1]-ly);if(dy<bd){bd=dy;sx=route[rj][0];}}sn=1;}
+    var lx=(sx/sn<170)?336-wp:4;LR.push([lx-18,ly-18,lx+wp+18,ly+hp+8]);var gl=el('g',{transform:'translate('+lx+','+ly+') scale('+sc2+')'},g);
     el('path',{d:it[2],fill:'#14204a','fill-opacity':.55,'fill-rule':'evenodd'},gl);
-    d.lm.fx.forEach(function(f,i){var e;if(f[3]==='win'){e=el('ellipse',{'class':'glow',cx:f[0],cy:f[1],rx:9,ry:17,fill:'#ffd35c'},gl);e.style.animationDelay=(i*.5)+'s';}
+    if(lm.fx)lm.fx.forEach(function(f,i){var e;if(f[3]==='win'){e=el('ellipse',{'class':'glow',cx:f[0],cy:f[1],rx:9,ry:17,fill:'#ffd35c'},gl);e.style.animationDelay=(i*.5)+'s';}
       else if(f[3]==='big'){el('circle',{'class':'glow',cx:f[0],cy:f[1],r:f[2],fill:'#ffd35c',opacity:.7},gl);el('circle',{'class':'chime',cx:f[0],cy:f[1],r:f[2]-2,fill:'none',stroke:'#e4c06a','stroke-width':6},gl);}
       else el('circle',{'class':'torch',cx:f[0],cy:f[1],r:f[2],fill:'#ffd35c'},gl);});}
   /* trees, lamps, people and small props along the edges, kept clear of the route */
   var tk=Object.keys(d.tr),lk=Object.keys(d.lamp),pk=Object.keys(PPL),prk=Object.keys(d.prop),i=0;
   for(var y=90;y<VH-20;y+=46,i++){var r1=rnd(sd+i*7.3),r2=rnd(sd+i*3.1+1),r3=rnd(sd+i*5.9+2),left=r1<.5,x=left?(26+r2*34):(340-26-r2*34),yy=y+r3*16;
-    if(!far(x,yy-14,40))continue;var inb=false;for(var bk=0;bk<bands.length;bk++)if(yy>bands[bk].y-14&&yy<bands[bk].y+bands[bk].h+34)inb=true;if(inb)continue;
+    if(!far(x,yy-14,40))continue;var onl=false;for(var q9=0;q9<LR.length;q9++)if(x>LR[q9][0]&&x<LR[q9][2]&&yy>LR[q9][1]&&yy<LR[q9][3])onl=true;if(onl)continue;var inb=false;for(var bk=0;bk<bands.length;bk++)if(yy>bands[bk].y-14&&yy<bands[bk].y+bands[bk].h+34)inb=true;if(inb)continue;
     var kind=rnd(sd+i*11.7+4);
     if(kind<.5){put(g,d.tr[tk[(i*3+sd)%tk.length]],x,yy,42+r3*22,{cls:'swy',delay:-(i*.7),fill:'#2f5a45',op:.78});}
     else if(kind<.68){put(g,d.lamp[lk[(i+sd)%lk.length]],x,yy,19);}
