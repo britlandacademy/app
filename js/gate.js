@@ -739,7 +739,7 @@ function saveAttempt(kind,a){
 }
 function logErrors(kind,a,rows){
   if(!rows||!rows.length||!sb||(prof&&prof.is_admin)||navigator.onLine===false)return;
-  try{sb.from('attempt_errors').insert(rows.slice(0,20).map(function(r){return {kind:kind,lesson:BUS?a.l+1000:a.l,ex:String(a.e),item:String(r.item||'').slice(0,200),given:String(r.given||'').slice(0,200),expected:String(r.expected||'').slice(0,200)};})).then(function(){},function(){});}catch(e){}
+  try{sb.from('attempt_errors').insert(rows.slice(0,20).map(function(r){return {kind:kind,lesson:BUS?a.l+1000:a.l,ex:String(a.e).slice(0,40),item:String(r.item||'').slice(0,40),given:String(r.given||'').slice(0,200),expected:String(r.expected||'').slice(0,200)};})).then(function(){},function(){});}catch(e){}
 }
 function audioUrl(path){
   return sb.storage.from('audio').createSignedUrl(path,7200).then(function(r){
