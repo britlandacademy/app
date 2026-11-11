@@ -606,7 +606,7 @@ function updateLesson(L){
   u.barFill.style.width=st.pct+'%';u.bar.setAttribute('aria-valuenow',String(st.pct));
   u.big.textContent=st.pts+' of '+st.tot+' ('+st.pct+'%) · '+st.done+' of '+st.n+' sections checked';
   const nxt=LESSONS[LESSONS.indexOf(L)+1];u.actions.textContent='';
-  u.msg.textContent=st.done===0?'Do the four sections and press Check in each one.':(st.complete?'Lesson '+L.id+' workbook completed! Well done.':'Keep going: '+(st.n-st.done)+' section'+(st.n-st.done>1?'s':'')+' left.');
+  {const PT=x=>(window.I18N&&I18N.ptx)?I18N.ptx(x):x;u.msg.textContent=st.done===0?PT('Do the four sections and press Check in each one.'):(st.complete?'Lesson '+L.id+' workbook completed! Well done.':PT('Keep going: '+(st.n-st.done)+' section'+(st.n-st.done>1?'s':'')+' left.'));}
   if(nxt)u.actions.append(el('button',{type:'button',class:'btn primary',onclick:()=>showTab(String(nxt.id))},'Next: Lesson '+nxt.id));
 }
 

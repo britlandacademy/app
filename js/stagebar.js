@@ -53,7 +53,7 @@
     render:function(tabsEl,o){
       tabsEl.textContent='';tabsEl.classList.add('sbar');
       var b=el('button','sb-main');b.type='button';
-      b.appendChild(D.createTextNode(o.label+' '));b.appendChild(el('span','','· '+o.done+'/'+o.total+' ▾'));
+      b.appendChild(D.createTextNode(o.label+' '));b.appendChild(el('span','','· '+(o.sub!=null?o.sub:o.done+'/'+o.total)+' ▾'));
       b.setAttribute('aria-haspopup','dialog');
       b.addEventListener('click',function(){openSheet(o.n);});
       tabsEl.appendChild(b);

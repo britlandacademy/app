@@ -171,6 +171,7 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 </header>
 <div id="app" hidden>
   <div class="who noprint"><span id="wsp">Student: <b id="who"></b></span></div>
+  <nav class="tabs noprint" id="tabs" aria-label="Stages"></nav>
   <div class="gtools noprint">
     <input type="search" id="q" placeholder="Search a grammar point" aria-label="Search a grammar point">
     <button type="button" class="gbtn ghost" id="pt">Traduzir tudo para o português</button>
@@ -185,6 +186,7 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 
 <script src="js/i18n.js" charset="utf-8"></script>
 <script src="js/config.js" charset="utf-8"></script>
+<script src="js/stagebar.js" charset="utf-8"></script>
 <script src="js/gate.js" charset="utf-8"></script><script src="js/sheet.js" charset="utf-8"></script><script src="js/motion.js" charset="utf-8"></script><script src="js/medals.js" charset="utf-8"></script>
 <script>
 Gate.start({kinds:['ex']},function(ctx){
@@ -213,6 +215,7 @@ map.forEach(e=>{const g=e.g;const h=el('h3',{});const dl=el('dl',{});const c={e,
 const list=document.getElementById('glist');cards.forEach(c=>list.append(c.node));
 document.getElementById('gempty').hidden=cards.length>0;
 document.getElementById('gst').textContent=window.CALLAN_STAGE?('Stage '+window.CALLAN_STAGE+' · '+cards.length+' grammar points'):'';
+try{const tb=document.getElementById('tabs');if(tb&&window.StageBar&&window.CALLAN_STAGE){document.getElementById('gst').hidden=true;StageBar.render(tb,{n:window.CALLAN_STAGE,label:'Stage '+window.CALLAN_STAGE,sub:cards.length+' grammar points',done:0,total:0});}}catch(e){}
 document.getElementById('q').addEventListener('input',function(){const q=this.value.trim().toLowerCase();let n=0;cards.forEach(c=>{const t=(c.node.textContent+' '+c.e.g.title+(c.e.g.pt?' '+c.e.g.pt.title:'')).toLowerCase();const ok=!q||t.indexOf(q)>=0;c.node.hidden=!ok;if(ok)n++;});document.getElementById('gempty').hidden=n>0;});
 const ptb=document.getElementById('pt');ptb.addEventListener('click',()=>{allPt=!allPt;cards.forEach(c=>fill(c,allPt));ptb.textContent=allPt?'Show everything in English':'Traduzir tudo para o português';});
 document.getElementById('pr').addEventListener('click',()=>window.print());
