@@ -114,7 +114,7 @@ a.card:hover .i-tg .r2,a.card:focus-visible .i-tg .r2{animation:rp 1.8s ease inf
 
 <section id="tips" hidden></section>
 <section class="today" id="today" hidden></section>
-<div class="stats" id="stats" hidden><div class="st"><b id="s1">0</b><span>lessons available</span></div><div class="st"><b id="s2">0</b><span>ejercicios de repaso hechos</span></div><div class="st"><b id="s3">–</b><span>average score</span></div></div>
+<div class="stats" id="stats" hidden style="display:none"><div class="st"><b id="s1">0</b><span>lessons available</span></div><div class="st"><b id="s2">0</b><span>ejercicios de repaso hechos</span></div><div class="st"><b id="s3">–</b><span>average score</span></div></div>
 <div id="streak" hidden></div>
 <div class="grid">
 <a class="card" data-art="book" href="lessons.html"><div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" class="i-book"><path class="rp" d="M12 6c2.5-1.5 5.5-1.5 8-.5V19c-2.5-1-5.5-1-8 .5z"/><path class="pg" d="M12 6C9.5 4.5 6.5 4.5 4 5.5V19c2.5-1 5.5-1 8 .5z"/><path class="tx" d="M15 9.5h3.2M15 12.5h3.2M6 9.5h3.2M6 12.5h3.2"/><g class="cv"><rect x="5.5" y="4" width="13" height="16" rx="1.6"/><path d="M8.7 4v16M12 8.5h3.5"/></g></svg></div><div class="tt"><b>Lessons</b><span>Read each lesson and listen to the audio</span><div class="pr" hidden><div class="bar"><div></div></div><small></small></div></div><i class="go" aria-hidden="true">→</i></a>
@@ -158,7 +158,6 @@ Gate.start({kinds:[],attempts:['check','ex']},function(ctx){
     var go=function(){if(go.d)return;go.d=1;Metro.mount(ctx,{upto:upto,max:112,best:best,stages:STAGES,gate:Gate.gates(),raw:Gate.rawUpto(),acts:[{key:'check',label:'Ejercicios de repaso',short:'Repaso',city:'Madrid',doneCount:done,done:function(l){return l<=ld;},pct:function(l){return best[l]===undefined?null:best[l];},stars:function(l){var q=best[l];return q===undefined?0:(q>=.9?3:q>=.6?2:1);},links:[{t:'Ejercicios de repaso',href:'check.html'}],
       rdone:function(id){return rv[id]!==undefined&&rv[id]>=.7;},rpct:function(id){return rv[id]===undefined?null:rv[id];},rstars:function(id){return rv[id]===undefined||rv[id]<.7?0:STR(rv[id]);},rlink:function(r){return 'check.html?rev='+r.from+'-'+r.to+'&rid='+r.id+(window.Covers?'&stage='+Covers.stageOf(r.from):'');}}]});};
     try{Gate.sb.from('review_results').select('tab,rid,score,total').then(function(r){((r&&r.data)||[]).forEach(function(x){var q=x.total?x.score/x.total:0;if(rv[x.rid]===undefined||q>rv[x.rid])rv[x.rid]=q;});go();},go);}catch(e){go();}}
-  document.getElementById('stats').hidden=false;
   if(window.Streak)Streak.mount(document.getElementById('streak'),{head:document.querySelector('.head')});
   if(window.Agenda)Agenda.mount(document.getElementById('agenda'),ctx);
   document.getElementById('s1').textContent=upto;
