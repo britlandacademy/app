@@ -116,6 +116,7 @@ var CSS=
 '#bl-metro .fl{font:700 15px sans-serif;min-width:42px;text-align:right}'+
 '#bl-metro .sheet .ss{margin-top:6px;font-size:1.3rem;letter-spacing:.08em;line-height:1}#bl-metro .sheet .ss .on{color:#e8b923;text-shadow:0 0 8px rgba(232,185,35,.5)}#bl-metro .sheet .ss .off{color:#2b4070}#bl-metro .sheet .ss em{font:700 .8rem sans-serif;font-style:normal;margin-left:10px;color:#9fb0d0;letter-spacing:0}#bl-metro .sum{margin:2px 2px 4px;font:600 12px sans-serif;color:#9fb0d0}#bl-metro .sum b{color:#e8b923}'+
 '#bl-metro .hd{display:flex;align-items:center;gap:12px;background:var(--n1);border:2px solid var(--n2);border-radius:16px;padding:12px 14px;margin-bottom:6px}'+
+'#bl-metro .rkhome{display:flex;align-items:center;gap:12px;margin:2px 0 10px}#bl-metro .rkhome .tx{flex:1;min-width:0}#bl-metro .rkhome .tx b{display:block;font:700 16px sans-serif;overflow-wrap:anywhere}#bl-metro .rkhome .tx small{color:var(--mu);font:600 12px sans-serif}#bl-metro .flag.s{width:40px;height:27px;border-radius:4px}'+
 '#bl-metro .flag{width:54px;height:36px;border-radius:5px;overflow:hidden;flex:none;box-shadow:0 0 0 2px #fff,0 3px 0 2px rgba(0,0,0,.4)}#bl-metro .flag svg,#bl-metro .flag img{width:100%;height:100%;display:block;object-fit:cover}'+
 '#bl-metro .hd .tx{flex:1;min-width:0}#bl-metro .hd small{display:block;font:700 10px sans-serif;letter-spacing:.14em;color:var(--go);text-transform:uppercase}#bl-metro .hd b{display:block;font:700 16px sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'+
 '#bl-metro .rnd{width:36px;height:36px;border-radius:50%;background:#fff;border:7px solid var(--lc);display:flex;align-items:center;justify-content:center;color:#10224a;font:800 13px sans-serif;flex:none}'+
@@ -486,13 +487,21 @@ function mount(c,o){
   function switchAct(i){if(busy||i===ai)return;ctx();tick();useAct(i);lessonsDone=A.doneCount||o.doneCount||0;quick=true;view();}
 
   /* ----- views ----- */
+  /* the map fills the screen height under the header and scrolls inside itself, so the page never scrolls */
+  function fitMap(){
+    if(!scEl||!scEl.isConnected)return;
+    var vh=(W.visualViewport&&W.visualViewport.height)||W.innerHeight||700,top=scEl.getBoundingClientRect().top+(W.pageYOffset||0);
+    scEl.style.height=Math.max(220,Math.min(Math.floor(vh-top-100),760))+'px';
+    var ex=(D.documentElement.scrollHeight||0)-(W.innerHeight||vh);if(ex>0&&ex<400)scEl.style.height=Math.max(150,scEl.clientHeight-ex)+'px'; /* trim whatever still makes the page scroll */
+  }
+  W.addEventListener('resize',function(){fitMap();});W.addEventListener('orientationchange',function(){setTimeout(fitMap,200);});
   function homeView(box){
-    var hd=h('div','rkh');
-    var f=h('div','flag',flagHTML(C)),t=h('div','tx'),rn=h('div','rnd');
-    t.innerHTML='<small></small><b></b>';t.firstChild.textContent=C.city+' · '+C.line;
+    var hd=h('div','rkh rkhome');
+    var f=h('div','flag s',flagHTML(C)),t=h('div','tx'),rn=h('div','rnd');
+    t.innerHTML='<b></b><small></small>';t.firstChild.textContent=C.city+' · '+C.line;
     var stg=1,cl=curL();(o.stages||[]).forEach(function(r,k){if(cl>=r[0]&&cl<=r[1])stg=k+1;});
-    t.lastChild.textContent=tx.stage+' '+stg+' · '+(cur&&SEQ[cur-1].t==='R'?tx.review:tx.lesson+' '+cl);rn.textContent=stg;
-    hd.append(f,t,rn);box.append(hd);
+    t.lastChild.textContent=tx.stage+' '+stg;rn.textContent=stg;
+    hd.append(rn,t,f);box.append(hd);
     if(multi){
       var ac=h('div','acts');ac.setAttribute('role','tablist');
       acts.forEach(function(a,i){var ci=a.city?cityIdx(a.city):0,cc=CITIES[ci>=0?ci:0];
@@ -508,6 +517,7 @@ function mount(c,o){
     var sc=h('div','mapscroll');scEl=sc;box.append(sc);
     var svg=el('svg',{'class':'map',width:'100%',viewBox:'0 0 340 '+(N*S+120),role:'group','aria-label':C.city});mapEl=svg;sc.append(svg);
     scale=Math.min(1.3,(sc.clientWidth||340)/340);
+    fitMap();
     build();
     var prev=0,pk=posKey();try{prev=parseInt(localStorage.getItem(pk),10)||0;localStorage.setItem(pk,String(cur||openN));}catch(e){}
     var ci=cur?cur-1:Math.max(0,Math.min(openN,N)-1);
