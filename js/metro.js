@@ -195,12 +195,12 @@ function pickCity(){
 
 /* ---------- long route: one continuous line, 45-degree bends, no horizontal runs ---------- */
 function genRouteH(seed,H){
-  var r=rng(seed),x=90+r()*160,y=34,pts=[[x,y],[x,y+50]],last='d',guard=0;y+=50;
+  var r=rng(seed),x=100+r()*140,y=34,pts=[[x,y],[x,y+50]],last='d',guard=0;y+=50;
   while(y<H-6&&guard++<6000){
-    var ks=['d','se','sw','d','se','sw'].filter(function(k){return k!==last;});
-    var k=ks[Math.floor(r()*ks.length)],len=60+r()*70,nx=x,ny=y;
-    if(k==='d')ny=y+len;else if(k==='se'){nx=x+len*.8;ny=y+len*.8;}else{nx=x-len*.8;ny=y+len*.8;}
-    if(nx<52||nx>288)continue;
+    var ks=last==='d'?['se','sw']:['d','d',last==='se'?'sw':'se'];
+    var k=ks[Math.floor(r()*ks.length)],nx=x,ny=y,len;
+    if(k==='d'){len=120+r()*140;ny=y+len;}else{len=110+r()*70;nx=x+(k==='se'?len*.8:-len*.8);ny=y+len*.8;}
+    if(nx<64||nx>276){if(k==='d')continue;k=k==='se'?'sw':'se';nx=x+(k==='se'?len*.8:-len*.8);if(nx<64||nx>276)continue;}
     pts.push([+nx.toFixed(1),+ny.toFixed(1)]);x=nx;y=ny;last=k;
   }
   return pts;
@@ -340,12 +340,15 @@ function mount(c,o){
   }
   function build(){
     mapEl.textContent='';
-    var key=A.key;if(!routes[key]){var sd=0;for(var q=0;q<key.length;q++)sd=(sd*31+key.charCodeAt(q))|0;routes[key]=genLong(sd+7,N*S+120);}
+    var key=A.key;if(!routes[key]){var sd=(Math.random()*1e9)|0,gr=rng(sd+99),gp=[40],gi;
+      /* uneven spacing: 80-130 px between stations, more room around Reviews */
+      for(gi=1;gi<N;gi++){var gg=80+gr()*50;if(SEQ[gi].t==='R'||SEQ[gi-1].t==='R')gg+=22;gp.push(gp[gi-1]+gg);}
+      routes[key+'#g']=gp;routes[key]=genLong(sd+7,gp[N-1]+120);}
     var route=routes[key];
     pathEl=el('path',{d:pathD(route),fill:'none'},mapEl);pathEl.style.display='none';Ltot=pathEl.getTotalLength();
     var ym=0;route.forEach(function(p){if(p[1]>ym)ym=p[1];});VHL=Math.ceil(Math.max(ym,Ltot*.6)+40);
     mapEl.setAttribute('viewBox','0 0 340 '+VHL);mapEl.setAttribute('height',Math.round(VHL*(mapEl.clientWidth||340)/340));
-    lens=[];for(var i=0;i<N;i++)lens.push(40+S*i);
+    lens=routes[key+'#g'].slice(0,N);
     /* Stage zones, like fare zones on a metro map: a tinted band per Stage with a label */
     (function(){var ST=o.stages;if(!ST||ST.length<2)return;
       var sOf=function(sq){var n=sq.t==='L'?sq.l:sq.to;for(var z=0;z<ST.length;z++)if(n>=ST[z][0]&&n<=ST[z][1])return z;return ST.length-1;};
@@ -360,6 +363,14 @@ function mount(c,o){
         el('rect',{x:8,y:ly-9,width:68,height:18,rx:9,fill:k%2?'#10224a':C.color},g0);
         var t0=el('text',{x:42,y:ly+4,'text-anchor':'middle',fill:C.ink==='#fff'||k%2?'#fff':'#1a1a1a','font-family':'system-ui,sans-serif','font-size':9.5,'font-weight':800,'letter-spacing':1},g0);t0.textContent=(tx.stage+' '+(zi+1)).toUpperCase();
       });})();
+    /* living map: trees, lamps, people, clouds and a landmark per city, drawn behind the route (art loads on demand) */
+    (function(){var K={'London':'L','New York':'N','Ireland':'I','Madrid':'M'}[C.city];if(!K)return;
+      var go=function(){if(!W.BL_ART||!BL_ART.has(K)||!mapEl||!mapEl.isConnected)return;var old=mapEl.querySelector('.bla');if(old)old.remove();var g=BL_ART.draw(mapEl,{key:K,VHL:VHL,route:route});if(g&&g.parentNode===mapEl){var first=mapEl.querySelector('path[stroke="#d8d2bd"]');if(first)mapEl.insertBefore(g,first);}};
+      if(W.BL_ART&&BL_ART.has(K)){go();return;}
+      var base=(function(){var ss=D.getElementsByTagName('script'),i;for(i=ss.length-1;i>=0;i--){var m=/^(.*\/)metro\.js(\?.*)?$/.exec(ss[i].src||'');if(m)return m[1];}return '';})();
+      if(!base)return;var ld=function(f,cb){var sc=D.createElement('script');sc.src=base+f;sc.async=true;sc.onload=cb;sc.onerror=function(){};D.head.appendChild(sc);};
+      var after=function(){ld('mapart-'+K+'.js',go);};
+      if(W.BL_ART)after();else ld('mapart.js',after);})();
     el('path',{d:pathD(route),fill:'none',stroke:'#d8d2bd','stroke-width':12,'stroke-linecap':'round','stroke-linejoin':'round'},mapEl);
     fillEl=el('path',{d:pathD(route),fill:'none',stroke:C.color,'stroke-width':12,'stroke-linecap':'round','stroke-linejoin':'round'},mapEl);
     fillEl.style.strokeDasharray=Ltot+' '+Ltot;fillEl.style.strokeDashoffset=Ltot;

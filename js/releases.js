@@ -2,6 +2,7 @@
    Newest first. Written for students (no technical terms). Each entry: v, d [pt, es], t [pt, es] short title, p [pt, es] one sentence,
    show:1 = also shown once in the notice after the update, c:'en'|'es' = only that course (omit = both). */
 window.BL_RELEASES=[
+{v:'2.0.5',d:['10 de novembro','10 de noviembre'],t:['Mapa vivo no Modo Jogo, rota mais reta e novo trem','Mapa vivo en el Modo Juego, ruta más recta y nuevo tren'],p:['','']},
 {v:'2.0.4',d:['10 de novembro','10 de noviembre'],t:['Calendário do mês e ranking por pontos','Calendario del mes y ranking por puntos'],p:['','']},
 {v:'2.0.3',d:['10 de novembro','10 de noviembre'],t:['Nova abertura e encerramento do Modo Jogo, com o metrô de cada cidade','Nueva apertura y cierre del Modo Juego, con el metro de cada ciudad'],p:['','']},
 {v:'2.0.2',d:['10 de novembro','10 de noviembre'],t:['Botões de voltar padronizados, exercícios mais uniformes e idiomas sem mistura','Botones de volver estandarizados, ejercicios más uniformes e idiomas sin mezcla'],p:['','']},
