@@ -245,7 +245,7 @@ function mount(c,o){
   var s0=0;try{var sa=localStorage.getItem('bl-metro-act');for(var q=0;q<acts.length;q++)if(acts[q].key===sa)s0=q;}catch(e){}
   useAct(s0);
   var streak={cur:0,best:0,last:''};
-  var tab=(W.location&&W.location.hash==='#profile')?'pro':'home',busy=false,quick=false,routes={},mapEl,pathEl,fillEl,trainEl,carEls=[],Ltot=0,lens=[],signEl,toastEl,scEl,scale=1,VHL=0;
+  var tab=(W.location&&W.location.hash==='#profile')?'pro':'home',busy=false,quick=false,routes={},mapEl,pathEl,fillEl,trainEl,carEls=[],carOff=null,rotAdj=0,Ltot=0,lens=[],signEl,toastEl,scEl,scale=1,VHL=0;
   var lessonsDone=A.doneCount||o.doneCount||0;
   function posKey(){return A.key==='main'?'bl-metro-pos2':'bl-metro-pos2-'+A.key;}
   function stn(i){return C.stn[i%C.stn.length];}
@@ -308,7 +308,7 @@ function mount(c,o){
   }
   function pt(len){return pathEl.getPointAtLength(Math.max(0,Math.min(Ltot,len)));}
   function ang(len){var a=pt(len-3),b=pt(len+3);return Math.atan2(b.y-a.y,b.x-a.x)*180/Math.PI-90;}
-  function setProg(len){fillEl.style.strokeDashoffset=Ltot-len;for(var i=0;i<carEls.length;i++){var l=Math.max(0,len-i*30),p=pt(l);carEls[i].setAttribute('transform','translate('+p.x+' '+p.y+') rotate('+ang(l)+')');}}
+  function setProg(len){fillEl.style.strokeDashoffset=Ltot-len;for(var i=0;i<carEls.length;i++){var l=Math.max(0,len-(carOff?carOff[i]:i*30)),p=pt(l);carEls[i].setAttribute('transform','translate('+p.x+' '+p.y+') rotate('+(ang(l)+rotAdj)+')');}}
   function ease(x){return x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;}
   function reduced(){return W.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;}
   /* camera: scroll the map so a point of the line sits near the middle of the window */
@@ -405,8 +405,19 @@ function mount(c,o){
       g.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();tap(+e.currentTarget.getAttribute('data-i'));}});
     }
     ltCards();
-    trainEl=el('g',{opacity:0,'pointer-events':'none'},mapEl);carEls=[];
+    trainEl=el('g',{opacity:0,'pointer-events':'none'},mapEl);carEls=[];carOff=null;rotAdj=0;
+    var TK=C.city==='London'?'L':C.city==='New York'?'N':C.city==='Ireland'?'I':C.city==='Madrid'?'M':(ES?'M':'L'),TS=(typeof FX_TR!=='undefined'&&FX_TR&&FX_TR[TK])||null;
+    if(TS&&TS.length>1){
+      /* silhouette train (2 cars, nose first) in the line colour, with a steam trail */
+      if(!D.getElementById('bl-trs')){var st=D.createElement('style');st.id='bl-trs';st.textContent='@keyframes blpf{0%{transform:translate(0,0) scale(.35);opacity:.8}100%{transform:translate(44px,-14px) scale(1.8);opacity:0}}.blpf{transform-box:fill-box;transform-origin:center;animation:blpf 1.8s ease-out infinite}html.fx-off .blpf{display:none}@media(prefers-reduced-motion:reduce){.blpf{display:none}}';D.head.appendChild(st);}
+      var tsc=84/(TS[0][0]+TS[1][0]+4);carOff=[0,(TS[0][0]/2+TS[1][0]/2+4)*tsc];rotAdj=-90;
+      TS.slice(0,2).forEach(function(cr,i){var g=el('g',{},trainEl);carEls.push(g);var u=el('g',{transform:'scale('+tsc+') translate('+(-cr[0]/2)+' '+(-cr[1]/2)+')'},g);
+        el('path',{d:cr[2],fill:'#fff',stroke:'#fff','stroke-width':3.2/tsc,'stroke-linejoin':'round'},u);el('path',{d:cr[2],fill:C.color},u);
+        if(i===1){var sg=el('g',{transform:'translate('+(cr[0]/2*tsc)+','+(-cr[1]*tsc/2+2)+')'},g);
+          for(var pk=0;pk<5;pk++){var pc=el('circle',{'class':'blpf',cx:0,cy:0,r:2.2+(pk%3)*.7,fill:'#fff',stroke:'#8fa2b4','stroke-width':.9},sg);pc.style.animationDelay=(-pk*.36)+'s';}}});
+    }else{
     [0,1,2].forEach(function(i){var g=el('g',{},trainEl);carEls.push(g);el('rect',{x:-11,y:-15,width:22,height:30,rx:7,fill:i?'#fff':C.color,stroke:i?C.color:'#fff','stroke-width':2.5},g);el('rect',{x:-7,y:-10,width:14,height:7,rx:2,fill:'#1d3f8a'},g);el('rect',{x:-7,y:1,width:14,height:7,rx:2,fill:'#1d3f8a'},g);if(!i)el('circle',{cx:0,cy:17,r:2.6,fill:'#ffe9a8'},g);});
+    }
     if(W.Gate&&Gate.birthdayToday&&Gate.birthdayToday()){var bl=el('text',{y:-20,'font-size':18,'text-anchor':'middle'},carEls[0]);bl.textContent='\uD83C\uDF88\uD83C\uDF89';}
     var ci=cur?cur-1:Math.max(0,Math.min(openN,N)-1);setProg(lens[ci]);
   }
