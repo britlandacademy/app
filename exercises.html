@@ -438,7 +438,7 @@ function buildEx(L,ex,k){
     score.textContent='Score: '+right+' of '+ex.items.length+' · saving…';
     const att={l:L.id,e:ex.id,s:right,t:ex.items.length,at:Date.now()};
     me().attempts.push(att);
-    Gate.logErrors('ex',att,errs);Gate.saveAttempt('ex',att).then(()=>{score.textContent='Score: '+right+' of '+ex.items.length+' · saved';warnEl.hidden=true;},
+    try{Gate.logErrors('ex',att,errs);}catch(e){}Gate.saveAttempt('ex',att).then(()=>{score.textContent='Score: '+right+' of '+ex.items.length+' · saved';warnEl.hidden=true;},
       ()=>{score.textContent='Score: '+right+' of '+ex.items.length+' · NOT saved';warnEl.hidden=false;});
     refreshAfterAttempt(L);
   });

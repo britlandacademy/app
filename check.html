@@ -470,7 +470,7 @@ function buildEx(L,ex,k){
     score.textContent='Score: '+right+' of '+ex.items.length+' · saving…';
     const att={l:L.id,e:ex.id,s:right,t:ex.items.length,at:Date.now()};
     me().attempts.push(att);
-    Gate.logErrors('check',att,errs);Gate.saveAttempt('check',att).then(()=>{score.textContent='Score: '+right+' of '+ex.items.length+' · saved';warnEl.hidden=true;},
+    try{Gate.logErrors('check',att,errs);}catch(e){}Gate.saveAttempt('check',att).then(()=>{score.textContent='Score: '+right+' of '+ex.items.length+' · saved';warnEl.hidden=true;},
       ()=>{score.textContent='Score: '+right+' of '+ex.items.length+' · NOT saved';warnEl.hidden=false;});
     try{const st=lessonStats(L);if(!wasDone&&st.done===st.n&&st.pct>=60&&window.BLFX)BLFX.celebrate(1);}catch(e){}
     refreshAfterAttempt(L);

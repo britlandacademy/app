@@ -148,6 +148,7 @@ html:not(.fx-off) section.card:hover,html:not(.fx-off) section.card:active,html:
 .bar2{height:10px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 4px}.bar2 i{display:block;height:100%;background:var(--accent);border-radius:99px}
 .ec .m{display:flex;justify-content:space-between;gap:10px;font-size:.85rem;color:var(--muted);flex-wrap:wrap}.ec .act{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center;position:relative}
 button.gold{background:#C5A880;border-color:#C5A880;color:#1a1305}
+.sub2{margin:10px 0 0;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.lnk{background:none!important;border:0!important;min-height:0!important;padding:0 4px!important;color:var(--bad)!important;font-weight:700;font-size:.85rem;text-decoration:underline;cursor:pointer}
 .mn{display:none;position:absolute;left:0;top:100%;margin-top:4px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px;min-width:240px;box-shadow:0 8px 24px rgba(0,0,0,.35);z-index:6;flex-direction:column;gap:2px}.mn.open{display:flex}
 .mn .mi{background:transparent;color:var(--ink);border:0;text-align:left;justify-content:flex-start;min-height:40px;border-radius:8px!important;font-weight:600}.mn .mi.d{color:var(--bad)}
 .ovl{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:80;display:flex;align-items:flex-start;justify-content:center;padding:40px 12px;overflow:auto}
@@ -746,29 +747,26 @@ function examCard(p,st){
     const m1=el('span',c.miss.length?{style:'color:var(--bad)'}:{},c.done+'/'+c.total+' Ejercicios de repaso'+(c.avg!=null?' · média '+Math.round(c.avg*100)+'%':'')+(c.miss.length?' · faltam lecciones '+c.miss.join(', '):''));
     const bits=[];if(sub&&nrev)bits.push(nrev+' resposta(s) para revisar');if(sub&&res.late)bits.push('enviada após o tempo');if(prog)bits.push('desde '+fmt(res.started_at));if(un)bits.push('passagem liberada');
     if(cert)bits.push('★ '+cert.id+(cert.revoked?' (revogado)':''));
-    const act=el('div',{class:'act'}),mn=el('div',{class:'mn'});
+    const act=el('div',{class:'act'});
     const fail=r=>{if(r.error){setMsg('xmsg','Erro: '+r.error.message,'bad');return true;}return false;};
     const reload=r=>{if(!fail(r)){setMsg('xmsg','');loadExams();}};
     if(sub){
-      if(!res.score_visible)act.append(xbtn('Liberar nota','',()=>{if(nrev&&!confirm('Ainda há '+nrev+' resposta(s) para você revisar. Liberar a nota assim mesmo?'))return;
-        sb.from('exam_results').update({score_visible:true}).eq('user_id',p.id).eq('stage',st).then(reload);}));
       act.append(xbtn('Ver resultado',res.score_visible?'':'ghost',()=>showExam(p,st)));
     }else if(prog){
       act.append(xbtn('Encerrar e corrigir','',()=>{if(!confirm('Encerrar e corrigir agora a prova de '+p.name+' com as respostas salvas?'))return;sb.rpc('exam_finalize',{p_user:p.id,p_stage:st}).then(reload);}));
     }
     if(rel&&!sub)act.append(xbtn('+5 min','ghost',()=>{sb.from('exam_release').update({extra_minutes:(rel.extra_minutes||0)+5}).eq('user_id',p.id).eq('stage',st).then(r=>{if(!fail(r)){setMsg('xmsg','+5 min para '+p.name+'.','ok');loadExams();}});}));
     if(CERT_OK)act.append(xbtn(cert&&!cert.revoked?'★ Certificado emitido':'★ Certificado','gold',()=>certDialog(p,st,c,res,cert)));
-    const mi=(t,cls,fn)=>{const b=el('button',{type:'button',class:'mi '+(cls||'')},t);b.addEventListener('click',()=>{mn.classList.remove('open');fn();});mn.append(b);};
-    mi(un?'Remover liberação do Etapa '+st:'Liberar passagem do Etapa '+st,'',()=>{
-      if(un){sb.from('stage_unlock').delete().eq('user_id',p.id).eq('stage',st).then(reload);return;}
-      if(!confirm('Liberar o próximo Etapa para '+p.name+', ignorando a trava do Etapa '+st+' (prova, média e exercícios)?'))return;
+    const passRow=swRow('Passagem do Stage '+st,!!un,false,'Libera o próximo Stage sem exigir prova, média e exercícios',on=>{
+      if(!on){sb.from('stage_unlock').delete().eq('user_id',p.id).eq('stage',st).then(reload);return;}
+      if(!confirm('Liberar o próximo Stage para '+p.name+', ignorando a trava do Stage '+st+' (prova, média e exercícios)?'))return false;
       sb.from('stage_unlock').insert({user_id:p.id,stage:st}).then(reload);});
-    if(sub&&res.score_visible)mi('Ocultar nota','',()=>sb.from('exam_results').update({score_visible:false}).eq('user_id',p.id).eq('stage',st).then(reload));
-    if(rel&&!res)mi('Cancelar liberação da prova','',()=>{if(!confirm('Cancelar a liberação para '+p.name+'?'))return;sb.from('exam_release').delete().eq('user_id',p.id).eq('stage',st).then(reload);});
-    if(res)mi('Zerar prova','d',()=>{if(!confirm('APAGAR a prova de '+p.name+' (Etapa '+st+') para ele poder refazer? Isso não pode ser desfeito.'))return;
+    const notaRow=sub?swRow('Nota visível ao aluno',!!res.score_visible,false,'A nota da prova aparece para ele',on=>{
+      if(on&&nrev&&!confirm('Ainda há '+nrev+' resposta(s) para você revisar. Liberar a nota assim mesmo?'))return false;
+      sb.from('exam_results').update({score_visible:on}).eq('user_id',p.id).eq('stage',st).then(reload);}):null;
+    const zerar=res?el('button',{type:'button',class:'lnk'},'Zerar prova'):null;
+    if(zerar)zerar.addEventListener('click',()=>{if(!confirm('APAGAR a prova de '+p.name+' (Stage '+st+') para ele poder refazer? Isso não pode ser desfeito.'))return;
       sb.from('exam_results').delete().eq('user_id',p.id).eq('stage',st).then(r=>{if(!fail(r)){$('xdet').textContent='';loadExams();}});});
-    const mb=el('button',{type:'button',class:'ghost mnb'},'⋯ Mais');mb.addEventListener('click',()=>{const o=mn.classList.contains('open');document.querySelectorAll('.mn.open').forEach(x=>x.classList.remove('open'));if(!o)mn.classList.add('open');});
-    act.append(mb,mn);
     const lt=XLT.find(x=>x.user_id===p.id&&x.stage===st);
     const ltDo=(fn,args,okMsg)=>sb.rpc(fn,args).then(r=>{if(r.error){setMsg('xmsg','Erro: '+r.error.message,'bad');return;}const d=r.data||{};
       if(d.ok===false){setMsg('xmsg',d.why==='passed'?'Esse aluno já passou neste teste.':d.why==='wait'?'Nova tentativa só a partir de '+fmt(d.until)+'.':'Não foi possível.','bad');return;}
@@ -776,7 +774,7 @@ function examCard(p,st){
     const liberar=()=>{if(c.miss.length&&!confirm(p.name+' ainda não fez os Lesson Checks das lessons: '+c.miss.join(', ')+'.\n\nLiberar a prova mesmo assim?'))return false;
       sb.from('exam_release').insert({user_id:p.id,stage:st}).then(reload);};
     const cancelRel=()=>{if(!confirm('Cancelar a liberação para '+p.name+'?'))return false;sb.from('exam_release').delete().eq('user_id',p.id).eq('stage',st).then(reload);};
-    const provaRow=swRow('Prova · Stage '+st,!!(rel||prog||sub),!def||prog||sub,pill,on=>on?liberar():(rel&&!res?cancelRel():false));
+    const provaRow=swRow('Prova · Stage '+st,!!(rel||prog||sub),!def||prog||sub,zerar?el('span',{},pill,' ',zerar):pill,on=>on?liberar():(rel&&!res?cancelRel():false));
     const taken=!!(lt&&lt.taken_at&&!lt.reverted),ltSub=el('span',{});
     if(taken){
       const pc2=lt.total?Math.round(lt.score/lt.total*100):0;
@@ -785,7 +783,7 @@ function examCard(p,st){
       else ltSub.append(xbtn('Liberar de novo','ghost',()=>ltDo('level_test_release',{p_user:p.id,p_stage:st},'Teste liberado para '+p.name+'.')));
     }else ltSub.append(lt?'Teste liberado ao aluno':'Precisa acertar todas · 20 perguntas');
     const testeRow=swRow('Teste de nível · Stage '+st,!!lt,taken,ltSub,on=>on?ltDo('level_test_release',{p_user:p.id,p_stage:st},'Teste liberado para '+p.name+'.'):sb.from('level_tests').delete().eq('user_id',p.id).eq('stage',st).then(reload));
-    return {rows:[provaRow,testeRow],info:el('div',{},el('div',{class:'bar2'},el('i',{style:'width:'+pc+'%'})),el('div',{class:'m'},m1,el('span',{},bits.join(' · ')))),acts:act};
+    return {rows:[el('div',{class:'sub2'},'Prova e teste'),provaRow,testeRow,el('div',{class:'sub2'},'Passagem e nota'),passRow,notaRow].filter(Boolean),info:el('div',{},el('div',{class:'bar2'},el('i',{style:'width:'+pc+'%'})),el('div',{class:'m'},m1,el('span',{},bits.join(' · ')))),acts:act};
 }
 function swRow(title,on,dis,sub,fn,keep){
   const cb=el('input',{type:'checkbox',class:'sws',role:'switch','aria-label':title});cb.checked=!!on;cb.disabled=!!dis;

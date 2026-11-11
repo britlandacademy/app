@@ -544,7 +544,7 @@ function buildCard(L,s){
     score.textContent='Score: '+right+' of '+total+' · saving…';
     const att={l:L.id,e:id,s:right,t:total,at:Date.now()};
     me().attempts.push(att);
-    Gate.logErrors('ex',att,errs);Gate.saveAttempt('ex',att).then(()=>{score.textContent='Score: '+right+' of '+total+' · saved';warnEl.hidden=true;},
+    try{Gate.logErrors('ex',att,errs);}catch(e){}Gate.saveAttempt('ex',att).then(()=>{score.textContent='Score: '+right+' of '+total+' · saved';warnEl.hidden=true;},
       ()=>{score.textContent='Score: '+right+' of '+total+' · NOT saved';warnEl.hidden=false;});
     updateLesson(L);renderTabs();renderHistory();setTimeout(()=>cvCele(Covers.stageOf(L.id)),700);
   });

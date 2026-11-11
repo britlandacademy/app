@@ -2,6 +2,7 @@
    Newest first. Written for students (no technical terms). Each entry: v, d [pt, es], t [pt, es] short title, p [pt, es] one sentence,
    show:1 = also shown once in the notice after the update, c:'en'|'es' = only that course (omit = both). */
 window.BL_RELEASES=[
+{v:'2.0.22',d:['11 de novembro','11 de noviembre'],t:['Correção ao salvar as respostas','Corrección al guardar las respuestas'],p:['Corrigimos um erro que podia travar o botão Verificar e impedir que o resultado dos exercícios e dos Lesson Checks fosse salvo.','Corregimos un error que podía bloquear el botón Verificar e impedir que se guardara el resultado de los ejercicios y de los Lesson Checks.']},
 {v:'2.0.21',d:['11 de novembro','11 de noviembre'],t:['Aviso de Stage concluído corrigido','Aviso de Stage completado corregido'],p:['','']},
 {v:'2.0.20',d:['11 de novembro','11 de noviembre'],t:['Botão do Stage em destaque','Botón del Stage destacado'],p:['Nas telas de Exercises, Lesson Checks e Workbook, o botão do Stage agora é o principal: toque nele para trocar de Stage. Quando você termina um Stage, aparece um aviso para revisar ou seguir para o próximo. O histórico agora fica no seu perfil.','En las pantallas de Exercises, Lesson Checks y Workbook, el botón del Stage ahora es el principal: tócalo para cambiar de Stage. Al terminar un Stage aparece un aviso para repasar o pasar al siguiente. El historial ahora está en tu perfil.']},
 {v:'2.0.19',d:['11 de novembro','11 de noviembre'],t:['Game Mode: textos corrigidos','Game Mode: textos corregidos'],p:['','']},

@@ -737,6 +737,10 @@ function saveAttempt(kind,a){
   },function(e){if(isNet(e)){if(!stamp)later();settled=true;return;}settled=true;throw e;});
   return Promise.race([req,guard]);
 }
+function logErrors(kind,a,rows){
+  if(!rows||!rows.length||!sb||(prof&&prof.is_admin)||navigator.onLine===false)return;
+  try{sb.from('attempt_errors').insert(rows.slice(0,20).map(function(r){return {kind:kind,lesson:BUS?a.l+1000:a.l,ex:String(a.e),item:String(r.item||'').slice(0,200),given:String(r.given||'').slice(0,200),expected:String(r.expected||'').slice(0,200)};})).then(function(){},function(){});}catch(e){}
+}
 function audioUrl(path){
   return sb.storage.from('audio').createSignedUrl(path,7200).then(function(r){
     if(r.error||!r.data)throw (r.error||new Error('no url'));
@@ -1006,6 +1010,6 @@ function start(opts,cb){
 
 function skel(box,n,h){if(!box)return;box.setAttribute('aria-busy','true');for(var i=0;i<(n||3);i++){var d=document.createElement('span');d.className='bl-sk';d.style.height=(h||52)+'px';d.style.marginBottom='10px';box.append(d);}}
 function unskel(box){if(!box)return;box.removeAttribute('aria-busy');Array.prototype.slice.call(box.querySelectorAll(':scope>.bl-sk')).forEach(function(n){n.remove();});}
-window.Gate={gates:function(){return GATES;},rawUpto:function(){return prof.lessons_upto||0;},birthdayField:birthdayField,birthdayToday:birthdayToday,settingsBlock:settingsBlock,gameSwitch:gameSwitch,gameConfirm:gameConfirm,gameOn:gameIsOn,pushRow:pushRow,help:function(){showHelp();},skel:skel,unskel:unskel,profile:function(){return prof;},start:start,signOut:signOut,setSize:setSize,setTheme:function(t){setTheme(t);},theme:function(){return theme;},shownTheme:shownTheme,setAvatar:setAvatar,loadProfile:loadProfile,sizeIdx:function(){return fsIdx;},sizeMax:function(){return SIZES.length-1;},saveAttempt:saveAttempt,audioUrl:audioUrl,el:el,
+window.Gate={gates:function(){return GATES;},rawUpto:function(){return prof.lessons_upto||0;},birthdayField:birthdayField,birthdayToday:birthdayToday,settingsBlock:settingsBlock,gameSwitch:gameSwitch,gameConfirm:gameConfirm,gameOn:gameIsOn,pushRow:pushRow,help:function(){showHelp();},skel:skel,unskel:unskel,profile:function(){return prof;},start:start,signOut:signOut,setSize:setSize,setTheme:function(t){setTheme(t);},theme:function(){return theme;},shownTheme:shownTheme,setAvatar:setAvatar,loadProfile:loadProfile,sizeIdx:function(){return fsIdx;},sizeMax:function(){return SIZES.length-1;},saveAttempt:saveAttempt,logErrors:logErrors,audioUrl:audioUrl,el:el,
   get profile(){return prof;},bizUpto:function(){return bizUpto();},mainUpto:function(){return mainUpto();},get user(){return user;},sb:null};
 })();
