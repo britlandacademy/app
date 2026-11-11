@@ -242,7 +242,7 @@
 '#bl-duo.game .dz-q .opt:nth-child(2),#bl-duo.game .dz-q .chip:nth-child(2),#bl-duo.game .dz-q .pcell:nth-child(2){animation-delay:.06s}#bl-duo.game .dz-q .opt:nth-child(3),#bl-duo.game .dz-q .chip:nth-child(3),#bl-duo.game .dz-q .pcell:nth-child(3){animation-delay:.12s}#bl-duo.game .dz-q .opt:nth-child(4),#bl-duo.game .dz-q .chip:nth-child(4),#bl-duo.game .dz-q .pcell:nth-child(4){animation-delay:.18s}#bl-duo.game .dz-q .opt:nth-child(n+5),#bl-duo.game .dz-q .chip:nth-child(n+5),#bl-duo.game .dz-q .pcell:nth-child(n+5){animation-delay:.24s}'+
 '#bl-duo.game .dz-q .opt,#bl-duo.game .dz-q .chip,#bl-duo.game .dz-q button.cho{border-bottom-width:4px;transition:transform .08s}#bl-duo.game .dz-q .opt:active,#bl-duo.game .dz-q .chip:active,#bl-duo.game .dz-q button.cho:active{transform:translateY(3px);border-bottom-width:1px}'+
 '#bl-duo.game .dz-q .opt.dz-right{border-color:#58cc02;background:#2e7d12;color:#fff;box-shadow:0 3px 0 #1f5a0c}#bl-duo.game .dz-q .opt.dz-wrongpick{border-color:#d94242;background:#7a2430;color:#fff;box-shadow:0 3px 0 #561a22}#bl-duo.game .dz-q .opt.dz-dim{opacity:.5}'+
-'#bl-duo.game .dz-bank .dz-undo{display:block;width:max-content;margin:10px 0 0 auto;min-height:40px;padding:0 14px;border:2px solid var(--line,#2b4a8c);border-radius:12px;background:transparent;color:#f5c542;font:inherit;font-size:.9rem}#bl-duo.game .dz-bank.fix .dz-undo{margin:0;align-self:flex-end}'+
+'#bl-duo.game .dz-undo{display:block;width:max-content;margin:10px 0 0 auto;min-height:40px;padding:0 14px;border:2px solid var(--line,#2b4a8c);border-radius:12px;background:transparent;color:#f5c542;font:inherit;font-size:.9rem}#bl-duo.game .dz-bank.fix .dz-undo{margin:0;align-self:flex-end}'+
 '#bl-duo.game .dz-peep{animation:dz-casc .45s cubic-bezier(.3,1.5,.5,1) both}'+
 '#bl-duo.game .dz-foot.ok .dz-fb,#bl-duo.game .dz-foot.bad .dz-fb{animation:dz-up .3s ease-out both}'+
 '#bl-duo.game .dz-foot.ok .dz-ic{animation:dz-pop .5s ease-out}'+
@@ -492,7 +492,7 @@
         btns.forEach(function(x){x.classList.toggle('on',x===b);x.setAttribute('aria-pressed',x===b?'true':'false');});});
       btns.push(b);pool.appendChild(b);});
     var wrap=el('div','dz-bank fix cz');wrap.appendChild(pool);
-    var nodes=cur.nodes||[],top=-1;nodes.forEach(function(n,i){if(top<0&&n&&n.querySelector&&(n===sel||n.contains(sel)))top=i;});if(top<0)return false;nodes.splice(top+1,0,wrap);cur.nodes=nodes;
+    var nodes=cur.nodes||[],top=-1;nodes.forEach(function(n,i){if(top<0&&n&&n.querySelector&&(n===sel||n.contains(sel)))top=i;});if(top<0)return false;nodes.splice(top+1,0,wrap);cur.nodes=nodes;cur.fixMode=true;
     var ol=cur.lock;cur.lock=function(){locked=true;btns.forEach(function(x){x.disabled=true;});try{ol();}catch(e){}};
     return true;
   }
@@ -680,6 +680,7 @@
           else bub.appendChild(el('b','',(s.it.shown&&/^Correct the sentence\.?$/i.test(qe.textContent.trim()))?T('fixQ'):qe.textContent.trim()));qe.className+=' dz-sr';if(!(dd&&dd.sw))bub.setAttribute('aria-hidden','true');}
         else{var gt=g.title||'';if(/^Match the pictures with the words/i.test(gt))gt=['Choose the word that matches each picture.','Escolha a palavra que combina com a figura.','Elige la palabra que corresponde a cada imagen.'][(ix()===0&&!(W.BL_COURSE&&W.BL_COURSE.id==='es'))?1:ix()];
           if(gt){chip.textContent=T('q',{a:idx+1,b:total}).toUpperCase();bub.appendChild(el('b','',gt));}else bub.appendChild(el('p','dz-lab',T('q',{a:idx+1,b:total})));}}
+      if(game){try{(cur.nodes||[]).forEach(function(n){if(!n||!n.querySelectorAll)return;var bs=(n.matches&&n.matches('button.small'))?[n]:[].slice.call(n.querySelectorAll('button.small'));bs.forEach(function(b){if(/^(clear|limpar|borrar)$/i.test(b.textContent.trim())&&!b.classList.contains('dz-undo')){b.classList.add('dz-undo');b.textContent='\u21BA '+({'en':'Clear','pt':'Limpar','es':'Borrar'}[['en','pt','es'][ix()]]);b.setAttribute('data-noi18n','');}});});}catch(e){}}
       if(game){try{var bb0=bub.querySelector('b'),gg0=inn.querySelector('.dz-gram');
         if(bb0&&gg0&&/^(complete a frase|corrija a frase|monte a frase|complete la frase|corrige la frase|ordena la frase|complete the sentence|correct the sentence|put the words in order|build the sentence)\.?$/i.test(bb0.textContent.trim())){bb0.textContent='\uD83D\uDCA1 '+gg0.textContent.replace(/\s*\(.*$/,'');bb0.setAttribute('data-noi18n','');gg0.style.display='none';}}catch(e){}}
       if(game)bankify(cur,s,steps);
