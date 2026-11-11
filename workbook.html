@@ -199,6 +199,7 @@ textarea.wrt{width:100%;font:inherit;font-size:1rem;color:var(--ink);background:
 <script src="js/covers.js" charset="utf-8"></script>
 <script src="js/obra.js" charset="utf-8"></script>
 <script src="js/metro.js" charset="utf-8"></script>
+<script src="js/stagebar.js" charset="utf-8"></script>
 <script src="js/duo.js" charset="utf-8"></script>
 <script src="js/review.js" charset="utf-8"></script>
 <script>
@@ -637,10 +638,8 @@ function cvCele(n){
 function renderTabs(){
   tabsEl.textContent='';
   cvUpdate();
-  STAGES.forEach(t=>{const ls=stageLessons(t);if(!ls.length)return;
-    const nDone=ls.filter(L=>lessonStats(L).complete).length;
-    tabsEl.append(el('button',{type:'button',class:'tab'+(curStage===t.n&&curTab!=='h'?' on':''),'aria-current':(curStage===t.n&&curTab!=='h')?'page':null,onclick:()=>showStage(t.n)},'Stage '+t.n+' ',el('span',{class:'tstat'},nDone+'/'+ls.length)));});
-  tabsEl.append(el('button',{type:'button',class:'tab'+(curTab==='h'?' on':''),'aria-current':curTab==='h'?'page':null,onclick:()=>showTab('h')},'My history'));
+  {const t0=STAGES[curStage-1],ls0=t0?stageLessons(t0):[];
+   StageBar.render(tabsEl,{n:curStage,label:(typeof SLAB==='function'?SLAB(curStage):'Stage '+curStage),done:ls0.filter(L=>lessonStats(L).complete).length,total:ls0.length,hist:curTab==='h'});}
   chipsEl.textContent='';chipsEl.hidden=curTab==='h';
   if(curTab!=='h'){const st0=STAGES[curStage-1];if(st0)stageLessons(st0).forEach(L=>{
     const st=lessonStats(L),on=curTab===String(L.id);
@@ -664,7 +663,7 @@ function reportText(){
   return lines.join('\n');
 }
 function renderHistory(){
-  const s=me();if(!s)return;histPanel.textContent='';cvPath();
+  const s=me();if(!s)return;histPanel.textContent='';StageBar.back(histPanel,()=>showStage(curStage));cvPath();
   const sum=el('div',{class:'hsum'});
   LESSONS.forEach(L=>{const st=lessonStats(L);if(!st.done)return;
     sum.append(el('div',{class:'hbox'},el('p',{class:'lab'},'Lesson '+L.id),el('p',{class:'big-score'},st.pts+' / '+st.tot),el('p',{class:'hint'},st.pct+'% · '+(st.complete?'completed ✔':st.done+' of '+st.n+' sections'))));});
@@ -683,7 +682,7 @@ function renderHistory(){
 whoEl.textContent=me().name;appEl.hidden=false;
 LESSONS.forEach(L=>panelsEl.append(mountLesson(L)));panelsEl.append(histPanel);
 const first=LESSONS.find(L=>!lessonStats(L).complete);
-let q0=first?String(first.id):'1';try{const q=+new URLSearchParams(location.search).get('lesson');if(q&&BYID[q])q0=String(q);;if(q&&!BYID[q]&&window.Obra&&q>(ctx.upto||0)){const S=(window.Covers&&Covers.STG)||[];Obra.screen({what:'lesson',lang:(window.I18N&&I18N.hint)||'pt',stage:Obra.stageOf(q,S),cur:Obra.stageOf(Math.max(ctx.upto||0,1),S),home:'index.html'});}}catch(e){}
+let q0=first?String(first.id):'1';try{const q=+new URLSearchParams(location.search).get('lesson');if(q&&BYID[q])q0=String(q);;if(q&&!BYID[q]&&window.Obra&&q>(ctx.upto||0)){const S=(window.Covers&&Covers.STG)||[];Obra.screen({what:'lesson',lang:(window.I18N&&I18N.hint)||'pt',stage:Obra.stageOf(q,S),cur:Obra.stageOf(Math.max(ctx.upto||0,1),S),home:'index.html'});}}catch(e){};try{if(new URLSearchParams(location.search).get('tab')==='h')q0='h';}catch(e){}
 showTab(q0);
 setTimeout(()=>cvCele(curStage),900);
 if(window.Review&&Review.params())setTimeout(revStart,500);

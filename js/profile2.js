@@ -190,6 +190,12 @@ async function journey(){
         d.appendChild(s);var bd=t.body||{};d.appendChild(el('p','',bd.praise||''));
         (bd.fixes||[]).forEach(function(f){var p=el('p','hint');p.appendChild(el('b','',f.t||''));p.appendChild(document.createTextNode(' — '+(f.d||'')));d.appendChild(p);});
         box.appendChild(d);});}}catch(e){}
+  /* exercise history: reached from here, not from the Stage screens */
+  try{box.appendChild(el('h3','sec','My history'));
+    var hl=el('p','hint');
+    (ES?[['check.html?tab=h','Lesson Checks']]:[['exercises.html?tab=h','Grammar Exercises'],['check.html?tab=h','Lesson Checks'],['workbook.html?tab=h','Workbook']]).forEach(function(l,i){
+      if(i)hl.appendChild(document.createTextNode(' \u00b7 '));var a=el('a','',l[1]);a.href=l[0];hl.appendChild(a);});
+    box.appendChild(hl);}catch(e){}
 }
 /* ---------- mistakes ---------- */
 async function mistakes(){

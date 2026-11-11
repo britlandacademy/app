@@ -189,6 +189,7 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 <script src="js/covers.js" charset="utf-8"></script>
 <script src="js/obra.js" charset="utf-8"></script>
 <script src="js/metro.js" charset="utf-8"></script>
+<script src="js/stagebar.js" charset="utf-8"></script>
 <script src="js/duo.js" charset="utf-8"></script>
 <script src="js/review.js" charset="utf-8"></script>
 <script src="js/leveltest.js" charset="utf-8"></script>
@@ -586,13 +587,8 @@ function cvCele(n){
 function renderTabs(){
   tabsEl.textContent='';
   cvUpdate();
-  STAGES.forEach(t=>{
-    const ls=stageLessons(t);if(!ls.length)return;
-    const open=stageUnlocked(t),nDone=ls.filter(L=>lessonStats(L).complete).length;
-    tabsEl.append(el('button',{type:'button',class:'tab'+(curStage===t.n&&curTab!=='h'?' on':''),disabled:!open,'aria-current':(curStage===t.n&&curTab!=='h')?'page':null,
-      onclick:()=>showStage(t.n)},SLAB(t.n)+' ',el('span',{class:'tstat'},open?(nDone+'/'+ls.length):'🔒')));
-  });
-  tabsEl.append(el('button',{type:'button',class:'tab'+(curTab==='h'?' on':''),'aria-current':curTab==='h'?'page':null,onclick:()=>showTab('h')},'My history'));
+  {const t0=STAGES[curStage-1],ls0=t0?stageLessons(t0):[];
+   StageBar.render(tabsEl,{n:curStage,label:(typeof SLAB==='function'?SLAB(curStage):'Stage '+curStage),done:ls0.filter(L=>lessonStats(L).complete).length,total:ls0.length,hist:curTab==='h'});}
   chipsEl.textContent='';
   chipsEl.hidden=curTab==='h';
   if(curTab!=='h')stageLessons(STAGES[curStage-1]).forEach(L=>{
@@ -632,7 +628,7 @@ function reportText(){
 let confirmDel=false;
 function renderHistory(){
   const s=me();if(!s)return;
-  histPanel.textContent='';cvPath();
+  histPanel.textContent='';StageBar.back(histPanel,()=>showStage(curStage));cvPath();
   const sum=el('div',{class:'hsum'});
   STAGES.forEach(t=>{const ls=stageLessons(t);if(!ls.length)return;const nd=ls.filter(L=>lessonStats(L).complete).length;
     let pts=0,tot=0;ls.forEach(L=>{const st=lessonStats(L);if(st.done){pts+=st.pts;tot+=st.tot;}});
@@ -667,7 +663,7 @@ function loadStudent(key){
   panelsEl.append(histPanel);
   let first=LESSONS.find(L=>!lessonStats(L).complete);
   curTab=first?String(first.id):'h';
-  try{const q=+new URLSearchParams(location.search).get('lesson');if(q&&BYID[q])curTab=String(q);;if(q&&!BYID[q]&&window.Obra&&q>(ctx.upto||0)){const S=(window.Covers&&Covers.STG)||[];Obra.screen({what:'lesson',lang:(window.I18N&&I18N.hint)||'pt',stage:Obra.stageOf(q,S),cur:Obra.stageOf(Math.max(ctx.upto||0,1),S),home:'index.html'});}}catch(e){}
+  try{const q=+new URLSearchParams(location.search).get('lesson');if(q&&BYID[q])curTab=String(q);;if(q&&!BYID[q]&&window.Obra&&q>(ctx.upto||0)){const S=(window.Covers&&Covers.STG)||[];Obra.screen({what:'lesson',lang:(window.I18N&&I18N.hint)||'pt',stage:Obra.stageOf(q,S),cur:Obra.stageOf(Math.max(ctx.upto||0,1),S),home:'index.html'});}}catch(e){}try{if(new URLSearchParams(location.search).get('tab')==='h')curTab='h';}catch(e){}
   confirmDel=false;
   showTab(curTab);
   setTimeout(()=>cvCele(curStage),900);
