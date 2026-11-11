@@ -662,7 +662,7 @@ function loadStudent(key){
   LESSONS.forEach(L=>panelsEl.append(mountLesson(L)));
   panelsEl.append(histPanel);
   let first=LESSONS.find(L=>!lessonStats(L).complete);
-  curTab=first?String(first.id):'h';
+  curTab=first?String(first.id):(LESSONS[0]?String(LESSONS[0].id):'h');
   try{const q=+new URLSearchParams(location.search).get('lesson');if(q&&BYID[q])curTab=String(q);;if(q&&!BYID[q]&&window.Obra&&q>(ctx.upto||0)){const S=(window.Covers&&Covers.STG)||[];Obra.screen({what:'lesson',lang:(window.I18N&&I18N.hint)||'pt',stage:Obra.stageOf(q,S),cur:Obra.stageOf(Math.max(ctx.upto||0,1),S),home:'index.html'});}}catch(e){}try{if(new URLSearchParams(location.search).get('tab')==='h')curTab='h';}catch(e){}
   confirmDel=false;
   showTab(curTab);
