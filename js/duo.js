@@ -242,6 +242,15 @@
 '#bl-duo.game .dz-peep{animation:dz-casc .45s cubic-bezier(.3,1.5,.5,1) both}'+
 '#bl-duo.game .dz-foot.ok .dz-fb,#bl-duo.game .dz-foot.bad .dz-fb{animation:dz-up .3s ease-out both}'+
 '#bl-duo.game .dz-foot.ok .dz-ic{animation:dz-pop .5s ease-out}'+
+/* light Game Mode look (cream page, white cards, gold selection, green CHECK) */
+':root[data-theme="light"] #bl-duo.game{--bg:#faf8f3;--card:#fff;--surface:#fff;--ink:#14213d;--muted:#4a5472;--mu:#7a8299;--line:#e4dfd2;--chip:#fbf3dc;--accent:#c9a13b;--accent-ink:#14213d;--ok:#2f6d00;--ok-bg:#e3f6cf;--bad:#c23b3b;--bad-bg:#fde6e3;--warn:#a07a1c;color-scheme:light}'+
+'#bl-duo.game .dz-btn{background:#58cc02;border-color:#46a302;color:#0b1733}'+
+'#bl-duo.game .dz-foot.ok .dz-btn{background:#58cc02;border-color:#46a302;color:#0b1733}'+
+':root[data-theme="light"] #bl-duo.game .dz-btn,:root[data-theme="light"] #bl-duo.game .dz-foot.ok .dz-btn,:root[data-theme="light"] #bl-duo.game .dz-foot.bad .dz-btn{color:#fff}'+
+':root[data-theme="light"] #bl-duo.game .dz-foot.ok .dz-fb h3{color:#2f6d00}:root[data-theme="light"] #bl-duo.game .dz-foot.bad .dz-fb h3,:root[data-theme="light"] #bl-duo.game .dz-foot.bad .dz-fb p{color:#c23b3b}'+
+':root[data-theme="light"] #bl-duo.game .dz-nm,:root[data-theme="light"] #bl-duo.game .dz-xp{color:#a07a1c}'+
+':root[data-theme="light"] #bl-duo.game .dz-q .opt,:root[data-theme="light"] #bl-duo.game .dz-q .chip,:root[data-theme="light"] #bl-duo.game .dz-q select.inl{border-color:#d9d3c3}'+
+':root[data-theme="light"] #bl-duo.game .dz-q .opt:has(input:checked),:root[data-theme="light"] #bl-duo.game .dz-q .chip.on{border-color:#c9a13b;background:#fbf3dc}'+
 '#bl-duo .dz-logo{text-align:center;line-height:1;margin:0 0 12px}#bl-duo .dz-logo img{height:50px;display:block;margin:0 auto 6px;max-height:none;background:none;border-radius:0}#bl-duo .dz-logo b{display:block;font:700 1.15rem Georgia,"Noto Serif",serif;letter-spacing:.04em;color:var(--ink,#fff)}#bl-duo .dz-logo i{display:block;font:600 .6rem Arial,sans-serif;letter-spacing:.5em;padding-left:.5em;color:#e8506a;margin-top:4px;font-style:normal}#bl-duo .dz-logo u{display:block;width:120px;height:2px;background:#e8b923;margin:7px auto 0}'+
 '#bl-duo .dz-stars .on{animation:dz-star .45s ease-out both,dz-shine 1.6s ease-in-out 1.4s infinite}'+
 '@keyframes dz-casc{from{transform:translateY(14px) scale(.85);opacity:0}to{transform:none;opacity:1}}'+
