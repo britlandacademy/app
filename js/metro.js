@@ -397,7 +397,7 @@ function mount(c,o){
         var t0=el('text',{x:42,y:ly+4,'text-anchor':'middle',fill:C.ink==='#fff'||k%2?'#fff':'#1a1a1a','font-family':'system-ui,sans-serif','font-size':9.5,'font-weight':800,'letter-spacing':1},g0);t0.textContent=(tx.stage+' '+(zi+1)).toUpperCase();
       });})();
     /* living map: trees, lamps, people, clouds and a landmark per city, drawn behind the route (art loads on demand) */
-    (function(){var K={'London':'L','New York':'N','Ireland':'I','Madrid':'M'}[C.city];if(!K)return;
+    (function(){var K={'London':'L','New York':'N','Ireland':'I','Madrid':'M','Ciudad de México':'X','Buenos Aires':'B','Santiago':'C','Australia':'A'}[C.city];if(!K)return;
       var go=function(){if(!W.BL_ART||!BL_ART.has(K)||!mapEl||!mapEl.isConnected)return;var old=mapEl.querySelector('.bla');if(old)old.remove();var g=BL_ART.draw(mapEl,{key:K,VHL:VHL,route:route});if(g&&g.parentNode===mapEl){var first=mapEl.querySelector('path[stroke="#d8d2bd"]');if(first)mapEl.insertBefore(g,first);}};
       if(W.BL_ART&&BL_ART.has(K)){go();return;}
       var base=(function(){var ss=D.getElementsByTagName('script'),i;for(i=ss.length-1;i>=0;i--){var m=/^(.*\/)metro\.js(\?.*)?$/.exec(ss[i].src||'');if(m)return m[1];}return '';})();
