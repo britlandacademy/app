@@ -110,7 +110,7 @@ a.card:hover .i-tg .r2,a.card:focus-visible .i-tg .r2{animation:rp 1.8s ease inf
 <h1 id="hi">Welcome</h1><p class="sub" id="sub">Choose an activity.</p>
 <section id="plan" hidden></section>
 <section id="agenda" hidden></section>
-<section class="cont" id="cont" hidden><img class="cvr" id="cvr" src="img/covers/es-1.png" alt="" width="90" height="128"><div><small>Continúa donde lo dejaste</small><h2 id="ct">Lesson 1</h2><div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Ejercicios de repaso hechos" id="bar"><div id="fill"></div></div></div><a class="btn" href="check.html">Continue →</a><div id="cstrip" class="cstrip"></div></section>
+<section class="cont" id="cont" hidden></section>
 
 <section id="tips" hidden></section>
 <section class="today" id="today" hidden></section>
@@ -129,7 +129,7 @@ a.card:hover .i-tg .r2,a.card:focus-visible .i-tg .r2{animation:rp 1.8s ease inf
 <script src="../js/gate.js" charset="utf-8"></script><script src="../js/sheet.js" charset="utf-8"></script><script src="../js/motion.js" charset="utf-8"></script><script src="../js/medals.js" charset="utf-8"></script>
 <script src="../js/home2.js" charset="utf-8"></script>
 <script src="../js/plan.js" charset="utf-8"></script>
-<script src="../js/covers.js" charset="utf-8"></script>
+<script src="../js/covers.js" charset="utf-8"></script><script src="../js/book.js" charset="utf-8"></script>
 <script src="../js/streak.js" charset="utf-8"></script><script src="../js/pubprofile.js" charset="utf-8"></script>
 <script src="../js/agenda.js" charset="utf-8"></script>
 <script src="../js/today.js" charset="utf-8"></script>
@@ -174,19 +174,24 @@ Gate.start({kinds:[],attempts:['check','ex']},function(ctx){
     var av=avail.filter(function(x){return x>=r0[0]&&x<=r0[1];}),dn=av.filter(function(x){return best[x]!==undefined;}).length;
     Home2.profile(document.querySelector('a.card.hp'),{name:(ctx.profile&&ctx.profile.name)||'',avatar:ctx.profile&&ctx.profile.avatar,uid:(ctx.profile&&ctx.profile.id)||(ctx.user&&ctx.user.id)||'',line:'Callan Espa\u00f1ol \u00b7 Stage '+stg+' \u00b7 '+(av.length?Math.round(dn/av.length*100):0)+'%'});})();}catch(e){}
   var next=0;for(var i=0;i<avail.length;i++){if(best[avail[i]]===undefined){next=avail[i];break;}}
-  if(next){
-    var st=1;STAGES.forEach(function(r,k){if(next>=r[0]&&next<=r[1])st=k+1;});
-    document.getElementById('ct').textContent='Etapa '+st+' · Ejercicio de repaso '+(REP.indexOf(next)+1);
-    var cv=document.getElementById('cvr');cv.src='img/covers/es-'+st+'.png';cv.alt='Student\'s Book · Stage '+st;cv.height=Math.round(cv.width*1.42);
-    var pct=Math.round(done/avail.length*100);
-    document.getElementById('fill').style.width=pct+'%';document.getElementById('bar').setAttribute('aria-valuenow',String(pct));
-    (function(){var box=document.getElementById('cstrip');box.textContent='';
-      box.append(Covers.path({href:function(i){return 'check.html?stage='+i;},state:function(i){var open=Covers.STG[i-1][0]<=upto,s=Covers.stats(ctx.attempts||[],'check',i);
-        return {cls:!open?'lock':(s.complete?'done':(i===st?'cur':'')),pct:s.total?100*s.done/s.total:0};}}));})();
-    document.getElementById('cont').hidden=false;
-    (function(){var r=STAGES[st-1],av=avail.filter(function(l){return l>=r[0]&&l<=r[1];}),dn=av.filter(function(l){return best[l]!==undefined;}).length,n=REP.indexOf(next)+1;
+  var realSt=1;STAGES.forEach(function(r,k){if(Math.max(upto,1)>=r[0])realSt=k+1;});
+  var BK=null,BA=[{kind:'check',label:'Repaso',href:'check.html'}];
+  function inSt(n){return REP.filter(function(l){return l>=STAGES[n-1][0]&&l<=STAGES[n-1][1];});}
+  function bStat(kind,n){var all=inSt(n),av=all.filter(function(l){return l<=upto;}),dn=av.filter(function(l){return best[l]!==undefined;}).length,sm=0;av.forEach(function(l){if(best[l]!==undefined)sm+=best[l];});
+    return {done:dn,total:all.length,avail:av.length,avg:dn?sm/dn:0,complete:all.length>0&&dn>=all.length&&sm/dn>=.7};}
+  function bNext(kind,n){var all=inSt(n),i;for(i=0;i<all.length;i++)if(all[i]<=upto&&best[all[i]]===undefined)return all[i];return all[0]||STAGES[n-1][0];}
+  function bookLinks(n){try{Array.prototype.forEach.call(document.querySelectorAll('a.card'),function(a){var h=(a.getAttribute('href')||'').split('?')[0];
+    if(h==='check.html')a.setAttribute('href','check.html?lesson='+bNext('check',n));else if(h==='lessons.html')a.setAttribute('href','lessons.html?stage='+n);});}catch(e){}}
+  function todayFor(st){
+    var next=bNext('check',st);if(best[next]!==undefined||next>upto)next=0;
+    (function(st){var r=STAGES[st-1],av=avail.filter(function(l){return l>=r[0]&&l<=r[1];}),dn=av.filter(function(l){return best[l]!==undefined;}).length,n=REP.indexOf(next)+1;
       Today.mount(document.getElementById('today'),{cta:'Continuar →',title:'Qué hacer hoy',sub:'Dos pasos cortos para el repaso '+n+'.',stage:'Progreso de la Etapa '+st,done:dn,total:av.length,
-        steps:[{t:'Lee la lección y escucha el audio',href:'lessons.html',done:false},{t:'Ejercicio de repaso '+n,href:'check.html',done:false}]});})();
+        steps:[{t:'Lee la lección y escucha el audio',href:'lessons.html',done:false},{t:'Ejercicio de repaso '+n,href:'check.html'+(next?'?lesson='+next:''),done:false}]});})(st);
+  }
+  if(upto>0){try{BK=Book.mount({box:document.getElementById('cont'),ctx:ctx,upto:upto,stages:STAGES,es:true,key:(window.BL_COURSE&&BL_COURSE.stageKey)||'callan-stage',sb:Gate.sb,acts:BA,stat:bStat,nextL:bNext,onChange:function(n){todayFor(n);bookLinks(n);}});document.getElementById('cont').hidden=false;bookLinks(BK.chosen());}catch(e){}}
+  if(next){
+    var st=BK?BK.chosen():realSt;
+    todayFor(st);
   }else if(upto>0){
     Today.mount(document.getElementById('today'),{cta:'Continuar →',title:'Estás al día',sub:'Has terminado todos los ejercicios de repaso disponibles. Pide a tu profesor las próximas lecciones.',stage:'Progreso',done:done,total:avail.length,steps:[{t:'Practica las pruebas DELE',href:'dele.html',done:false}]});
   }

@@ -238,7 +238,7 @@ function settings(){
 var st0=Gate.start;
 Gate.start=function(o,cb){return st0.call(Gate,o,function(ctx){
   var r,err=null;try{r=cb(ctx);}catch(e){err=e;}
-  try{S.ctx=ctx;S.sb=Gate.sb;S.me=ctx.profile||{};tabs();settings();
+  try{S.ctx=ctx;S.sb=Gate.sb;S.me=ctx.profile||{};tabs();settings();try{if(location.hash==='#journey'){var jb=$('t-j');if(jb)jb.click();}}catch(e){}
     loadAll().then(function(all){var st=stats(all);header(st);overview(st);tidy();
       var g=$('g');if(g&&window.MutationObserver){var t=null;new MutationObserver(function(){clearTimeout(t);t=setTimeout(tidy,60);}).observe(g,{childList:true,subtree:true});}
       var hs=$('hs');if(hs&&ES)hs.textContent=hs.textContent;});

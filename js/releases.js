@@ -2,6 +2,8 @@
    Newest first. Written for students (no technical terms). Each entry: v, d [pt, es], t [pt, es] short title, p [pt, es] one sentence,
    show:1 = also shown once in the notice after the update, c:'en'|'es' = only that course (omit = both). */
 window.BL_RELEASES=[
+{v:'2.0.13',d:['11 de novembro','11 de noviembre'],t:['Home nova: escolha o livro sem sair da tela, com progresso por atividade e a medalha do Stage test','Home nueva: elige el libro sin salir de la pantalla, con progreso por actividad y la medalla de la prueba de la Etapa'],p:['','']},
+{v:'2.0.12',d:['11 de novembro','11 de noviembre'],t:['Novo perfil com nível, ranking da turma e linhas, monumentos mais raros com luzes e navios iluminados à noite','Nuevo perfil con nivel, ranking de la clase y líneas, monumentos menos frecuentes con luces y barcos iluminados de noche'],p:['','']},
 {v:'2.0.11',d:['11 de novembro','11 de noviembre'],t:['Trem novo em todas as viagens do mapa','Tren nuevo en todos los viajes del mapa'],p:['','']},
 {v:'2.0.10',d:['11 de novembro','11 de noviembre'],t:['Pessoas caminham devagar, carros viram para o lado certo e resultado sempre salvo','Personas caminan despacio, coches miran al lado correcto y resultado siempre guardado'],p:['','']},
 {v:'2.0.9',d:['11 de novembro','11 de noviembre'],t:['Mais monumentos no mapa do Modo Jogo','Más monumentos en el mapa del Modo Juego'],p:['','']},

@@ -537,6 +537,14 @@ var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they 
 ["Start exam →","Iniciar prova →","Empezar examen →"],
 ["NEW","NOVO","NUEVO"],
 ["STAGE EXAM","PROVA DO STAGE","EXAMEN DE LA ETAPA"],
+["Stage test","Teste do Stage","Prueba de la Etapa"],
+["Lesson Check","Lesson Check","Lesson Check"],
+["not done","não feito","sin hacer"],
+["Take test","Fazer o teste","Hacer la prueba"],
+["Skipped: you started at Stage {0}. You can still practise this book.","Pulado: você começou no Stage {0}. Você ainda pode praticar este livro.","Omitido: empezaste en la Etapa {0}. Aún puedes practicar este libro."],
+["Back to Stage {0}","Voltar ao Stage {0}","Volver a la Etapa {0}"],
+["{0} of {1}","{0} de {1}","{0} de {1}"],
+["skipped","pulado","omitido"],
 ];
 var X=[ /* forced Portuguese in the English course: [English, Português, Español] */
 ["No answer.","Sem resposta.","No answer."],

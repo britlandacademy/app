@@ -482,7 +482,11 @@
     for(i=0;i<nodes.length;i++){if(nodes[i]&&nodes[i].querySelector&&(nodes[i].querySelector('.tokline')||(nodes[i].classList&&nodes[i].classList.contains('tokline'))))return;}
     var model=(s.it.ans&&s.it.ans[0]!=null)?String(s.it.ans[0]):null;
     var rwn=nodes[top]&&nodes[top].classList&&nodes[top].classList.contains('rwtxt')?nodes[top]:null;
-    if(rwn){if(s.it.ok){rwn.style.display='none';return;}if(s.it.fix&&s.it.fix[0])model=String(s.it.fix[0]);}
+    if(rwn){var ok0=s.it.ok,fx=s.it.fix&&s.it.fix[0];
+      /* Duo items do not carry ok/fix: read them from the model answer ("Right" / "Wrong: a → b") so the bank holds only the corrected word */
+      if(ok0===undefined||fx===undefined){var gm=null;try{gm=cur.get().model;}catch(e){}
+        if(gm){gm=String(gm);if(/^(right|correcto)$/i.test(gm.trim())){ok0=true;}else{var mt=/(?:\u2192|->)\s*(.+)$/.exec(gm);ok0=false;if(mt)fx=mt[1].trim();}}}
+      if(ok0){rwn.style.display='none';return;}if(fx)model=String(fx);}
     if(model==null){try{model=cur.get().model;}catch(e){}}
     if(!model)return;
     var toks=String(model).trim().split(/\s+/).filter(Boolean);

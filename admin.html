@@ -282,6 +282,15 @@ function renderPend(){
   box.append(el('div',{class:'tw'},el('table',{},th(['Nome','E-mail','Pedido em','Ação']),tb)));
 }
 let PLAN={links:{},cols:{},prog:{},tabs:{}},OPEN=new Set(),EXS={},SAVED={};
+function startBlock(p){
+  const ok=el('span',{class:'sv',style:'margin-left:8px'});
+  const sel=el('select',{'aria-label':'Começou no Stage, '+p.name,title:'Se o aluno entrou direto num Stage mais alto, marque aqui. Os Stages anteriores aparecem como pulados na home dele.'});
+  sel.append(el('option',{value:''},'Automático'));
+  for(let i=2;i<=STG_END.length;i++)sel.append(el('option',{value:String(i)},'Stage '+i));
+  sel.value=p.start_stage?String(p.start_stage):'';
+  sel.addEventListener('change',()=>{const v=sel.value?parseInt(sel.value,10):null;upd(p,{start_stage:v},()=>okTag(ok));});
+  return el('label',{style:'display:block;font-size:.88rem;margin:0'},'Começou no Stage: ',sel,ok);
+}
 function upd(p,patch,ok){return sb.from('profiles').update(patch).eq('id',p.id).then(r=>{if(r.error){setMsg('xmsg','Erro ao salvar: '+r.error.message,'bad');return;}Object.assign(p,patch);if(ok)ok();});}
 function okTag(sp){sp.textContent='✓ salvo';clearTimeout(sp._t);sp._t=setTimeout(()=>{sp.textContent='';},2000);}
 function exStat(uid,st){
@@ -360,6 +369,7 @@ function renderStu(){
       const autoOk=el('span',{class:'sv',style:'margin-left:8px'});
       const left=el('div',{},
         el('label',{style:'display:block;font-size:.88rem;margin:0',title:'Libera só até a lição em que o aluno está na planilha'},el('input',{type:'checkbox',checked:p.auto_release!==false,onchange:e=>upd(p,{auto_release:e.target.checked},()=>okTag(autoOk))}),' Auto pela planilha'+(p.lessons_auto!=null?' (lição '+p.lessons_auto+')':' (sem dados)')),autoOk,
+        el('div',{style:'height:6px'}),startBlock(p),
         el('div',{style:'height:6px'}),planBlock(p));
       box.append(left);
       box.append(XOK?el('div',{},examCard(p,EXS[p.id]||gst)):el('div',{},el('p',{class:'hint'},'Provas indisponíveis.')));
