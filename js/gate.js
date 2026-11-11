@@ -523,7 +523,7 @@ function birthdayTune(){
   }catch(e){}
 }
 function gameNav(){
-  var L=gLang(),onProf=false;
+  var L=(function(){var l=window.I18N&&window.I18N.lang;return l==='pt'?1:l==='es'?2:l==='en'?0:gLang();})(),onProf=false;
   var a=function(href,ico,lab,act){return el('a',{href:href,class:'gn-i'+(act?' on':''),'data-noi18n':'1'},el('span',{class:'gn-e'},ico),el('span',{},lab));};
   var nav=el('nav',{class:'g-nav','aria-label':'Game'},a('index.html','🗺️',['Map','Mapa','Mapa'][L],!onProf));
   if(COURSE.profile!==false)nav.append(a('account.html','👤',['Profile','Perfil','Perfil'][L],onProf));
