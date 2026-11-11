@@ -10,3 +10,5 @@ input.txt,input.txt.inl,select.inl,.inl{border-color:var(--line);padding-left:16
 :root:root body,:root:root[data-theme="dark"] body,:root[data-theme="light"]:root body{background:var(--bg)}
 body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.55;background:url(../img/wm-dark.png) 0 0/360px 240px repeat}
 :root[data-theme="light"] body::before{background-image:url(../img/wm-light.png)}
+/* mobile header: smaller art in the corner, shield clear of "Home" */
+@media(max-width:560px){.band .shc{width:80px!important;height:80px!important;top:14px!important;right:12px!important;margin-top:0!important}.band h1{padding-right:84px}.g-top .g-logoc{left:auto!important;right:52px!important;transform:translateY(-50%)!important}}

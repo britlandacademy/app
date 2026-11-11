@@ -2,6 +2,7 @@
    Newest first. Written for students (no technical terms). Each entry: v, d [pt, es], t [pt, es] short title, p [pt, es] one sentence,
    show:1 = also shown once in the notice after the update, c:'en'|'es' = only that course (omit = both). */
 window.BL_RELEASES=[
+{v:'2.0.3',d:['10 de novembro','10 de noviembre'],t:['Nova abertura e encerramento do Modo Jogo, com o metrô de cada cidade','Nueva apertura y cierre del Modo Juego, con el metro de cada ciudad'],p:['','']},
 {v:'2.0.2',d:['10 de novembro','10 de noviembre'],t:['Botões de voltar padronizados, exercícios mais uniformes e idiomas sem mistura','Botones de volver estandarizados, ejercicios más uniformes e idiomas sin mezcla'],p:['','']},
 {v:'2.0.1',d:['10 de novembro','10 de noviembre'],t:['Novo seletor, animações suaves e imagem de compartilhar','Nuevo selector, animaciones suaves e imagen para compartir'],p:['','']},
 {v:'2.0.0',d:['10 de novembro','10 de noviembre'],t:['Versão 2.0: perfil público, medalhas e Modo Jogo melhorado','Versión 2.0: perfil público, medallas y Modo Juego mejorado'],p:['Agora você vê o perfil dos colegas pelo Ranking da turma, ganha 69 medalhas (inclusive no Modo Jogo, com avisos dourados), ajusta sua foto com zoom e gira, e o exercício Corrija o erro ficou maior e mais claro.','Ahora ves el perfil de tus compañeros desde el Ranking del grupo, ganas 69 medallas (también en el Modo Juego, con avisos dorados), ajustas tu foto con zoom y giro, y el ejercicio Corrige el error es más grande y claro.'],show:1},
