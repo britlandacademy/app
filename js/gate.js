@@ -724,12 +724,18 @@ function fetchAttempts(kind){
 }
 function saveAttempt(kind,a){
   var row={kind:kind,lesson:BUS?a.l+1000:a.l,ex:a.e,score:a.s,total:a.total!==undefined?a.total:a.t};
-  function later(){var q=pq();q.push({kind:row.kind,lesson:row.lesson,ex:row.ex,score:row.score,total:row.total,created_at:new Date().toISOString()});pqSet(q);offBanner(true);}
+  var stamp=null,settled=false;
+  function later(){var q=pq();stamp=new Date().toISOString();q.push({kind:row.kind,lesson:row.lesson,ex:row.ex,score:row.score,total:row.total,created_at:stamp});pqSet(q);offBanner(true);}
   if(navigator.onLine===false){later();return Promise.resolve();}
-  return sb.from('attempts').insert(row).then(function(r){
-    if(r.error){if(isNet(r.error)){later();return;}throw r.error;}
+  /* if the request never answers (stuck connection or session), keep the result in the offline queue after 12 s instead of leaving "saving…" on screen */
+  var guard=new Promise(function(res){setTimeout(function(){if(!settled){later();res();}},12000);});
+  var req=sb.from('attempts').insert(row).then(function(r){
+    if(r.error){if(isNet(r.error)){if(!stamp)later();settled=true;return;}settled=true;throw r.error;}
+    if(stamp){pqSet(pq().filter(function(x){return x.created_at!==stamp;}));}   /* it did arrive after all: drop the queued copy */
+    settled=true;
     if(!OPTS.admin){try{sb.rpc('ping_activity').then(function(){},function(){});}catch(e){}}
-  },function(e){if(isNet(e)){later();return;}throw e;});
+  },function(e){if(isNet(e)){if(!stamp)later();settled=true;return;}settled=true;throw e;});
+  return Promise.race([req,guard]);
 }
 function audioUrl(path){
   return sb.storage.from('audio').createSignedUrl(path,7200).then(function(r){
