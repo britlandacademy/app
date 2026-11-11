@@ -267,7 +267,7 @@ function bFix(it,id,n){
   alt.addEventListener('click',()=>{mode='full';row.hidden=true;box.hidden=true;hint.hidden=true;fullBox.hidden=false;alt.hidden=true;full.focus();});
   const nodes=[ctxEl(it.ctx),sitEl(it.sit),el('p',{class:'q'},it.q),hint,row,box,fullBox,alt];
   const build=()=>{if(mode==='full')return full.value;const first=Math.min(...sel),out=[];words.forEach((w,i)=>{if(i===first)out.push(inp.value.trim());else if(!sel.has(i))out.push(w);});return out.join(' ').replace(/\s+/g,' ').trim();};
-  return {nodes,get:()=>{if(mode==='tap'&&!sel.size)return {ok:false,msg:'Tap the wrong word and write the correct one.',model:it.ans[0]};const r=evalAns(build(),it.ans);r.model=it.ans[0];return r;},lock:()=>{inp.disabled=true;full.disabled=true;alt.disabled=true;btns.forEach(b=>{b.disabled=true;});}};
+  return {fx:{words:words,sel:sel,inp:inp,box:box,hint:hint,lab:box.firstChild},nodes,get:()=>{if(mode==='tap'&&!sel.size)return {ok:false,msg:'Tap the wrong word and write the correct one.',model:it.ans[0]};const r=evalAns(build(),it.ans);r.model=it.ans[0];return r;},lock:()=>{inp.disabled=true;full.disabled=true;alt.disabled=true;btns.forEach(b=>{b.disabled=true;});}};
 }
 function bType(it,id,n){
   if(it.shown)return bFix(it,id,n);
