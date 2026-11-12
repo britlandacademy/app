@@ -221,6 +221,7 @@ function render(box,ev,deps,opts){opts=opts||{};
     var all=el('button','ghost','Marcar todos: ✔ Veio');all.type='button';all.addEventListener('click',function(){var rows=[];d.uids.forEach(function(u){rows.push({event_key:d.key,user_id:u,status:'came',late_min:null,class_start:ev.start_at,updated_at:new Date().toISOString()});});
       saveMsg.textContent='Salvando…';deps.sb.from('class_attendance').upsert(rows).then(function(r){if(r&&r.error){saveMsg.textContent='Não foi possível salvar a presença.';return;}rows.forEach(function(x){d.att[x.user_id]=x;});tb.querySelectorAll('.nc-st').forEach(function(rw2){if(rw2._paint)rw2._paint();});saveMsg.textContent='Presença salva ✓';});});
     add(ft,send,rmsg,el('span','sp'),saveMsg,group||d.uids.length>1?all:null);wrap.appendChild(ft);
+    if(window.BL_CLOSE&&!opts.past){var ch=el('div');wrap.appendChild(ch);window.BL_CLOSE.render(ch,{sb:deps.sb,ev:ev,key:d.key,uids:d.uids,prog:d.prog,att:d.att,name:name});}
   }).catch(function(e){wrap.textContent='';wrap.appendChild(el('div','nc-sub','Não foi possível carregar os detalhes da aula.'));});
 }
 function summaries(sb,evs,students){

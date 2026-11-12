@@ -2,6 +2,7 @@
    Newest first. Written for students (no technical terms). Each entry: v, d [pt, es], t [pt, es] short title, p [pt, es] one sentence,
    show:1 = also shown once in the notice after the update, c:'en'|'es' = only that course (omit = both). */
 window.BL_RELEASES=[
+{v:'2.0.46',d:['12 de novembro','12 de noviembre'],t:['Painel: novo cartão "Fechar a aula" na aula do dia. Registra no app (sem planilha) a aula dada, a lição, o parágrafo, a última palavra, a presença e uma anotação; em turma, toque em quem faltou.','Panel: nueva tarjeta "Cerrar la clase" en la clase del día. Registra en la app (sin hoja) la clase dada, lección, párrafo, última palabra, asistencia y una nota; en grupo, toque a quien faltó.'],p:['','']},
 {v:'2.0.45',d:['12 de novembro','12 de noviembre'],t:['Alunos sem planilha ganham o formulário Criar planilha no detalhe do aluno','Los alumnos sin hoja ganan el formulario Crear hoja en el detalle del alumno'],p:['','']},
 {v:'2.0.44',d:['12 de novembro','12 de noviembre'],t:['Caixas de confirmação e aviso no padrão do app, em todas as telas','Cajas de confirmación y aviso con el estilo de la app, en todas las pantallas'],p:['','']},
 {v:'2.0.43',d:['12 de novembro','12 de noviembre'],t:['Provas dos Stages 3 a 12 cadastradas; conversa de 15 pontos corrigida no painel, fora dos 50 da prova','Exámenes de las Etapas 3 a 12 registrados; conversación de 15 puntos corregida en el panel, fuera de los 50 del examen'],p:['','']},

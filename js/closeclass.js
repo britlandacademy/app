@@ -1,0 +1,68 @@
+/* Painel do professor · "Fechar a aula": registra no app (sem planilha) o que foi dado, onde parou e a presença. */
+(function(W){
+'use strict';
+var D=document;
+function el(t,c,x){var e=D.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+function css(){if(D.getElementById('cc-css'))return;var s=el('style');s.id='cc-css';s.textContent=
+'.cc{border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:14px;background:var(--card);padding:12px 14px;display:grid;gap:10px}'+
+'.cc .cc-k{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}.cc .cc-m{color:var(--muted);font-size:.86rem}'+
+'.cc .cc-seg{display:flex;flex-wrap:wrap;gap:6px}.cc .cc-seg button,.cc .cc-pill{min-height:36px;padding:2px 14px;border-radius:99px;font:inherit;font-weight:700;font-size:.86rem;background:transparent;color:var(--ink);border:2px solid var(--line);cursor:pointer}'+
+'.cc .cc-seg button.on{background:var(--ok);border-color:var(--ok);color:var(--surface,#fff)}.cc .cc-seg button.bad.on{background:var(--bad);border-color:var(--bad)}.cc .cc-seg button.warn.on{background:var(--warn);border-color:var(--warn)}'+
+'.cc .cc-pill.ok{border-color:var(--ok);color:var(--ok)}.cc .cc-pill.no{border-color:var(--bad);color:var(--bad);text-decoration:line-through;opacity:.85}'+
+'.cc .cc-g{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:8px}@media(max-width:760px){.cc .cc-g{grid-template-columns:1fr}}'+
+'.cc label{display:grid;gap:3px;font-size:.78rem;color:var(--muted);font-weight:700}.cc input,.cc textarea,.cc select{min-height:40px;padding:4px 10px;border:1px solid var(--line);border-radius:10px;background:transparent;color:var(--ink);font:inherit;min-width:0}.cc textarea{min-height:60px}'+
+'.cc .cc-act{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.cc .cc-act .sp{flex:1}.cc .cc-b{min-height:40px;padding:0 20px;border-radius:99px;font:inherit;font-weight:700;cursor:pointer;border:2px solid var(--line);background:transparent;color:var(--ink)}.cc .cc-b.go{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}';
+D.head.appendChild(s);}
+function plan(stage,n){var P=W.BL_PLANS&&W.BL_PLANS[String(stage)],r=P&&P.rows&&P.rows[n-1];return r?r.c:'';}
+function render(host,x){css();
+  var sb=x.sb,uids=x.uids,group=uids.length>1,key=x.key,box=el('div','cc');host.appendChild(box);
+  Promise.all([sb.from('class_log').select('*').in('user_id',uids).order('class_start',{ascending:false}).limit(200),
+    sb.from('plan_links').select('user_id,sheet_name').in('user_id',uids)].map(function(q){return Promise.resolve(q).then(function(r){return r&&!r.error?r.data||[]:[];},function(){return [];});})).then(function(a){
+    var logs=a[0],mine={},maxN=0;logs.forEach(function(l){if(l.event_key===key)mine[l.user_id]=l;if(l.status==='given'&&l.class_number>maxN&&l.event_key!==key)maxN=l.class_number;});
+    var u0=uids[0],pr=(x.prog[u0]||{}),sm=a[1][0]&&/(?:stage|stg)\s*(\d+)/i.exec(a[1][0].sheet_name||'');
+    var stage=+((mine[u0]&&mine[u0].stage)||pr.stage||(sm?sm[1]:0))||0,num=(mine[u0]&&mine[u0].class_number)||Math.max(maxN,+pr.class_number||0)+1;
+    var absent={},status='given',saved=!!mine[u0];uids.forEach(function(u){if(mine[u]&&mine[u].status!=='given')absent[u]=1;});
+    if(!group&&mine[u0])status=mine[u0].status;
+    box.appendChild(el('div','cc-k','Fechar a aula'+(saved?' · salva ✓':'')));
+    var top=el('div','cc-act'),stSel=D.createElement('select');for(var s=1;s<=12;s++){var o=D.createElement('option');o.value=s;o.textContent='Stage '+s;stSel.appendChild(o);}stSel.value=stage||6;stSel.setAttribute('aria-label','Stage');
+    var nIn=D.createElement('input');nIn.type='number';nIn.min=1;nIn.value=num;nIn.style.width='80px';nIn.setAttribute('aria-label','Número da aula');
+    top.appendChild(stSel);top.appendChild(el('span','cc-m','aula nº'));top.appendChild(nIn);box.appendChild(top);
+    var hint=el('div','cc-m');box.appendChild(hint);
+    function setHint(){var t=plan(stSel.value,+nIn.value);hint.textContent=t?'Plano do Stage '+stSel.value+' · aula '+nIn.value+': '+t:'';}stSel.onchange=nIn.onchange=setHint;setHint();
+    var ctl=el('div','cc-seg'),btns={};
+    function paint(){
+      if(group){ctl.textContent='';uids.forEach(function(u){var b=el('button','cc-pill '+(absent[u]?'no':'ok'),(absent[u]?'':'✓ ')+x.name(u));b.type='button';b.onclick=function(){absent[u]=!absent[u];paint();};ctl.appendChild(b);});
+        var ab=uids.filter(function(u){return absent[u];});msg.textContent=ab.length?ab.map(x.name).join(', ')+' vai ficar com a aula '+nIn.value+' em perdidas para revisar':'Toque no nome de quem faltou.';return;}
+      Object.keys(btns).forEach(function(k){btns[k].classList.toggle('on',status===k);});}
+    var msg=el('div','cc-m');
+    if(!group){[['given','Dada',''],['missed','Faltou','bad'],['rescheduled','Remarcada','warn']].forEach(function(k){var b=el('button',k[2],k[1]);b.type='button';b.onclick=function(){status=k[0];paint();};btns[k[0]]=b;ctl.appendChild(b);});}
+    box.appendChild(ctl);box.appendChild(msg);
+    var g=el('div','cc-g'),L=mine[u0]||{};
+    function fld(lab,val,ph){var l=el('label',null,lab),i=D.createElement('input');i.type='text';i.value=val||'';if(ph)i.placeholder=ph;l.appendChild(i);g.appendChild(l);return i;}
+    var iL=fld('Lesson',L.lesson,''),iP=fld('Parágrafo',L.paragraph,''),iW=fld('Última palavra',L.last_word,'');box.appendChild(g);
+    nIn.addEventListener('change',function(){if(!iL.value||iL.dataset.auto){var m=/LESSON\s*(\d+)/i.exec(plan(stSel.value,+nIn.value));if(m){iL.value=m[1];iL.dataset.auto=1;}}});
+    iL.addEventListener('input',function(){delete iL.dataset.auto;});
+    var det=D.createElement('details'),sm2=el('summary','cc-m',group?'Anotação da aula (opcional)':'Anotação (opcional)'),ta=D.createElement('textarea');ta.value=L.note||'';det.appendChild(sm2);det.appendChild(ta);if(L.note)det.open=true;box.appendChild(det);
+    var act=el('div','cc-act'),later=el('button','cc-b','Depois'),go=el('button','cc-b go','Salvar aula'),st=el('span','cc-m');later.type=go.type='button';
+    later.onclick=function(){box.style.display='none';};
+    go.onclick=function(){
+      var n=+nIn.value,stg=+stSel.value,now=new Date().toISOString();if(!n){st.textContent='Informe o número da aula.';return;}
+      var rows=[],att=[],prog=[];
+      uids.forEach(function(u){var s=group?(absent[u]?'missed':'given'):status;
+        rows.push({event_key:key,user_id:u,class_start:x.ev.start_at,stage:stg,class_number:n,status:s,lesson:iL.value.trim()||null,paragraph:iP.value.trim()||null,last_word:iW.value.trim()||null,note:ta.value.trim()||null,updated_at:now});
+        if(s==='given'&&!(x.att[u]&&x.att[u].status))att.push({event_key:key,user_id:u,status:'came',late_min:null,class_start:x.ev.start_at,updated_at:now});
+        if(s==='missed'&&!(x.att[u]&&x.att[u].status==='ns'))att.push({event_key:key,user_id:u,status:'ns',late_min:null,class_start:x.ev.start_at,updated_at:now});});
+      go.disabled=true;st.textContent='Salvando…';
+      var P=function(q){return Promise.resolve(q).then(function(r){if(r&&r.error)throw r.error;return r;});};
+      P(sb.from('class_log').upsert(rows)).then(function(){return att.length?P(sb.from('class_attendance').upsert(att)):0;}).then(function(){
+        return Promise.all(rows.map(function(r){var old=x.prog[r.user_id]||{},d=JSON.parse(JSON.stringify(old.data||{}));d.currentPosition=d.currentPosition||{};d.me=d.me||{};d.me.missed=(d.me.missed||[]).filter(function(m){return m.classNumber!==n;});
+          if(r.status==='given'){var cp=d.currentPosition;cp.classNumber=n;if(r.lesson)cp.lesson=r.lesson;if(r.paragraph)cp.paragraph=r.paragraph;if(r.last_word)cp.lastWord=r.last_word;d.classesDone=Math.max(d.classesDone||0,n);}
+          else if(r.status==='missed')d.me.missed.push({classNumber:n,lesson:r.lesson||''});
+          var row={user_id:r.user_id,stage:stg,lesson:r.status==='given'&&r.lesson?r.lesson:old.lesson||null,class_number:r.status==='given'?n:old.class_number||null,last_word:r.status==='given'&&r.last_word?r.last_word:old.last_word||null,data:d,updated_at:now};
+          x.prog[r.user_id]=row;return P(sb.from('plan_progress').upsert(row,{onConflict:'user_id'}));}));
+      }).then(function(){go.disabled=false;st.textContent='Aula salva ✓ '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});box.firstChild.textContent='Fechar a aula · salva ✓';},function(e){go.disabled=false;st.textContent='Não foi possível salvar ('+((e&&e.message)||'erro')+').';});};
+    act.appendChild(later);act.appendChild(el('span','sp'));act.appendChild(st);act.appendChild(go);box.appendChild(act);paint();
+  });
+}
+W.BL_CLOSE={render:render};
+})(window);
