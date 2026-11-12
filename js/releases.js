@@ -2,6 +2,7 @@
    Newest first. Written for students (no technical terms). Each entry: v, d [pt, es], t [pt, es] short title, p [pt, es] one sentence,
    show:1 = also shown once in the notice after the update, c:'en'|'es' = only that course (omit = both). */
 window.BL_RELEASES=[
+{v:'2.0.41',d:['12 de novembro','12 de noviembre'],t:['Revisão do dia abre em janela própria na metade esquerda da tela','La revisión del día se abre en ventana propia en la mitad izquierda de la pantalla'],p:['','']},
 {v:'2.0.40',d:['12 de novembro','12 de noviembre'],t:['Livro do professor da 2ª edição: Stage 3 incluído na revisão do dia','Libro del profesor de la 2.ª edición: Stage 3 incluido en la revisión del día'],p:['','']},
 {v:'2.0.39',d:['12 de novembro','12 de noviembre'],t:['Entrar na aula abre a revisão em outra aba; faixa de revisão com última palavra em Lessons; busca de dictations por número','Entrar en clase abre la revisión en otra pestaña; barra de revisión con última palabra en Lessons; búsqueda de dictations por número'],p:['','']},
 {v:'2.0.38',d:['12 de novembro','12 de noviembre'],t:['Aviso de atraso no plano na Próxima aula e na aba Hoje','Aviso de retraso respecto al plan en Próxima clase y en Hoy'],p:['','']},

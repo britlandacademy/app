@@ -94,14 +94,18 @@ function render(box,ev,deps,opts){opts=opts||{};
     var za=el('a','nc-btn go','Entrar na aula');za.href=meet;za.target='_blank';za.rel='noopener';
     za.addEventListener('click',function(){try{openRevision();}catch(e){}});
     /* revisao do dia em outra aba: 3a edicao = Lessons do app (parágrafo); 2a edicao = livro do professor (PDF privado) na página */
+    /* janela da revisão: metade esquerda da tela onde o painel está aberto (o Zoom fica na direita) */
+    function revWin(url){
+      var sc=window.screen||{},L=sc.availLeft||0,T=sc.availTop||0,W=Math.floor((sc.availWidth||1280)/2),H=sc.availHeight||800;
+      return window.open(url,'blrev','popup=yes,left='+L+',top='+T+',width='+W+',height='+H);}
     function openRevision(){
       var rv=nx&&nx.review,sh=ln&&ln.sheet_name;if(!rv||rv.from==null||!sh)return;
       var sm=/(?:stage|stg)\s*(\d+)/i.exec(sh),stg=+(fd.stage||(sm?sm[1]:0)),from=+rv.from,to=rv.to!=null?+rv.to:from,
           who=String(name(d.uids[0])).trim().split(/\s+/)[0],enc=encodeURIComponent,w=cp.lastWord||(first&&first.last_word)||'',par=cp.paragraph||cp.lastNewWord||'';
       if(/3rd/i.test(sh)){
-        window.open('lessons.html?stage='+stg+'&rv='+from+'-'+to+'&w='+enc(w)+'&p='+enc(par)+'&who='+enc(who)+'&n='+enc(nx.classNumber||''),'_blank');return;}
+        revWin('lessons.html?stage='+stg+'&rv='+from+'-'+to+'&w='+enc(w)+'&p='+enc(par)+'&who='+enc(who)+'&n='+enc(nx.classNumber||''));return;}
       var T=window.BL_TBOOK,file=T&&T.file(stg),page=T&&T.pageFor(stg,from);
-      var win=window.open('about:blank','_blank');if(!win)return;
+      var win=revWin('about:blank');if(!win)return;
       var say=function(t){try{win.document.body.style.cssText='font:16px system-ui;padding:24px;background:#0b1733;color:#f3f4f6';win.document.body.textContent=t;}catch(e){}};
       if(!file){say('O livro do professor do Stage '+stg+' (2ª edição) ainda não está disponível no app.');return;}
       say('Abrindo o livro do professor, p. '+page+'…');
