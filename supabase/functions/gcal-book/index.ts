@@ -19,6 +19,7 @@ const HORIZON_DAYS = 30;   // quantos dias a frente oferecer
 const HOLD_HOURS = 24;     // pedido pendente reserva o horario por 24 h
 const MAX_PENDING_NEW = 3; // pedidos de aula nova pendentes por aluno
 const TZ_OFFSET = "-03:00"; // horario do professor (Brasilia, sem horario de verao)
+const ZOOM = "https://us06web.zoom.us/j/2447679341"; // sala fixa do professor: toda aula marcada usa o Zoom
 
 // ---- avisos push (gravam em teacher_events / student_msgs; a super-processor envia) ----
 const fmtP = (v: string | number) => { const p = new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", weekday: "short", hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit", hourCycle: "h23" }).formatToParts(new Date(v)); const g = (t: string) => p.find((x) => x.type === t)?.value || ""; return g("weekday").replace(".", "") + " " + g("day") + "/" + g("month") + " " + g("hour") + ":" + g("minute"); };
@@ -169,12 +170,12 @@ Deno.serve(async (req) => {
         for (const l of ls || []) await db.from("lessons").update({ start_at: r.new_start, end_at: r.new_end, updated_at: now }).eq("id", l.id);
       } else {
         const { data: st } = await db.from("profiles").select("name,email").eq("id", r.user_id).maybeSingle();
-        const ev: any = { summary: st?.name || "Aula", start: { dateTime: r.new_start }, end: { dateTime: r.new_end }, conferenceData: { createRequest: { requestId: r.id, conferenceSolutionKey: { type: "hangoutsMeet" } } } };
+        const ev: any = { summary: st?.name || "Aula", start: { dateTime: r.new_start }, end: { dateTime: r.new_end }, location: ZOOM, description: "Aula online pelo Zoom: " + ZOOM };
         if (st?.email) ev.attendees = [{ email: st.email }];
-        const cr = await fetch(calUrl(link) + "?conferenceDataVersion=1&sendUpdates=none", { method: "POST", headers: H, body: JSON.stringify(ev) });
+        const cr = await fetch(calUrl(link) + "?sendUpdates=none", { method: "POST", headers: H, body: JSON.stringify(ev) });
         if (!cr.ok) throw new Error("agenda: " + cr.status);
         const c = await cr.json();
-        const meet = c.hangoutLink || c.conferenceData?.entryPoints?.find((x: any) => x.entryPointType === "video")?.uri || null;
+        const meet = ZOOM;
         await db.from("lessons").upsert({ id: c.id + ":" + r.user_id, user_id: r.user_id, title: ev.summary, start_at: r.new_start, end_at: r.new_end, meet_url: meet, is_group: false, updated_at: now });
       }
       await db.from("lesson_requests").update({ status: "approved", decided_at: now }).eq("id", r.id);

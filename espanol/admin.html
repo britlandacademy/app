@@ -172,6 +172,7 @@ details.h{background:var(--surface);border:1px solid var(--line);border-radius:1
 .bar3{height:6px;border-radius:4px;background:var(--line);overflow:hidden;margin:8px 0 4px}.bar3 i{display:block;height:100%;background:var(--accent)}.sm2 small{display:block;color:var(--muted);font-size:.78rem}
 .fc{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px}.fc h4{margin:0 0 8px}.fc.dz{border-color:var(--bad)}.fc.dz summary{cursor:pointer;font-weight:700;color:var(--bad)}
 .dg{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))!important}
+.dg.dgt{display:block!important}.dgt .dtabs{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 12px}.dgt .dtab{min-height:36px;padding:2px 16px;border-radius:999px;border:2px solid var(--line);background:transparent;color:var(--muted);font:inherit;font-weight:700;font-size:.88rem;cursor:pointer}.dgt .dtab.on{border-color:var(--accent);color:var(--accent);background:var(--chip,var(--card))}.dgt .dp{display:none;gap:12px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));align-items:start}.dgt .dp.on{display:grid}
 @media (min-width:901px){#stt{table-layout:fixed}#stt .nmc{position:relative}#stt .nmc .tg{position:absolute;top:8px;right:6px;color:var(--ink)}#stt .nmc>span{padding-right:26px}#stt th:nth-child(1){width:23%}#stt th:nth-child(2){width:27%}#stt th:nth-child(3){width:32%}#stt .lim{flex-wrap:wrap;gap:6px}#stt .lim input[type=number]{width:84px!important}#stt .lim select{min-width:0!important;flex:1 1 110px}#stt th:nth-child(4){width:18%}.sdw{flex-wrap:wrap;gap:5px;justify-content:flex-start}.dg{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr) minmax(0,.85fr)!important}}
 @media (max-width:900px){
  #stt,#stt tbody,#stt tr,#stt td{display:block;width:auto!important}#stt thead{display:none}
@@ -341,7 +342,7 @@ function renderPend(){
   });
   box.append(el('div',{class:'tw'},el('table',{},th(['Nome','E-mail','Pedido em','Ação']),tb)));
 }
-let PLAN={links:{},cols:{},prog:{},tabs:{}},OPEN=new Set(),EXS={},SAVED={};
+let PLAN={links:{},cols:{},prog:{},tabs:{}},OPEN=new Set(),EXS={},SAVED={},DTAB={};
 /* nome de cadastro editavel (vai para o certificado): corrige o perfil e os certificados ja emitidos */
 function nameBlock(p){
   const ok=el('span',{class:'sv',style:'margin-left:8px'}),inp=el('input',{type:'text',value:p.name||'','aria-label':'Nome de cadastro de '+(p.name||p.email),style:'width:100%;max-width:340px;min-height:38px;box-sizing:border-box',autocomplete:'off'});
@@ -448,18 +449,23 @@ function renderStu(){
       null);
     tb.append(tr);
     const detail=()=>{
-      const box=el('div',{class:'dg'});
+      const box=el('div',{class:'dg dgt'});
       const autoOk=el('span',{class:'sv',style:'margin-left:8px'});
       const fc=(t,...k)=>el('div',{class:'fc'},el('h4',{},t),...k);
       const ex=XOK?examCard(p,EXS[p.id]||gst):null;
       const planRow=swRow('Plano pela planilha',p.auto_release!==false,false,'Libera só até a lição em que o aluno está'+(p.lessons_auto!=null?' (lição '+p.lessons_auto+')':' (sem dados)'),on=>{upd(p,{auto_release:on},()=>okTag(autoOk));},true);
       planRow.append(autoOk);
-      box.append(fc('Liberações',planRow,...(ex?ex.rows:[]),ex?ex.info:el('p',{class:'hint'},'Provas indisponíveis.')));
-      box.append(fc('Nome de cadastro',nameBlock(p)));
-      box.append(fc('Plano e início',startBlock(p),el('div',{style:'height:8px'}),planBlock(p),p.display_name?el('div',{style:'margin-top:8px'},el('button',{type:'button',class:'ghost',onclick:async()=>{if(await BL_DLG.confirm('Remover o apelido "'+p.display_name+'" de '+(p.name||p.email)+'?'))upd(p,{display_name:null,display_name_at:null},()=>renderStu());}},'Remover apelido')):null));
+      const pLib=el('div',{class:'dp','data-p':'lib'}),pCad=el('div',{class:'dp','data-p':'cad'}),pAcc=el('div',{class:'dp','data-p':'acc'});
+      pLib.append(fc('Liberações',planRow,...(ex?ex.rows:[]),ex?ex.info:el('p',{class:'hint'},'Provas indisponíveis.')));
+      pCad.append(fc('Nome de cadastro',nameBlock(p)));
+      pCad.append(fc('Plano e início',startBlock(p),el('div',{style:'height:8px'}),planBlock(p),p.display_name?el('div',{style:'margin-top:8px'},el('button',{type:'button',class:'ghost',onclick:async()=>{if(await BL_DLG.confirm('Remover o apelido "'+p.display_name+'" de '+(p.name||p.email)+'?'))upd(p,{display_name:null,display_name_at:null},()=>renderStu());}},'Remover apelido')):null));
       const blk=p.status==='blocked';
       const accRow=swRow('Acesso ativo',!blk,false,blk?'Aluno bloqueado':'Desligar bloqueia o acesso do aluno',on=>on?(update(p.id,{status:'approved'}),undefined):BL_DLG.confirm('Bloquear '+(p.name||p.email)+'?').then(k=>k?(update(p.id,{status:'blocked'}),undefined):false));
-      box.append(el('div',{class:'dc3'},fc('Acesso',accRow),CON?fc('Contrato',ContractAdmin.cell({el:el,sb:sb,profile:p,reload:loadProfiles})):null,ex?fc('Ações',ex.acts):null));
+      pAcc.append(fc('Acesso',accRow),CON?fc('Contrato',ContractAdmin.cell({el:el,sb:sb,profile:p,reload:loadProfiles})):null,ex?fc('Ações',ex.acts):null);
+      /* abas: um assunto por vez (Liberações, Cadastro, Contrato e acesso) */
+      const tabs=el('div',{class:'dtabs',role:'tablist'}),panes={lib:pLib,cad:pCad,acc:pAcc},pick=k=>{DTAB[p.id]=k;tabs.querySelectorAll('.dtab').forEach(b=>{const on=b.dataset.k===k;b.classList.toggle('on',on);b.setAttribute('aria-selected',String(on));});Object.keys(panes).forEach(x=>panes[x].classList.toggle('on',x===k));};
+      [['lib','Liberações'],['cad','Cadastro'],['acc','Contrato e acesso']].forEach(([k,t])=>tabs.append(el('button',{type:'button',class:'dtab',role:'tab','data-k':k,onclick:()=>pick(k)},t)));
+      box.append(tabs,pLib,pCad,pAcc);pick(DTAB[p.id]||'lib');
       return el('tr',{class:'dr','data-d':tr.dataset.d,'data-q':tr.dataset.q},el('td',{colspan:5},box));
     };
     if(open)tb.append(detail());
