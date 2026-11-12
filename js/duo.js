@@ -60,7 +60,7 @@
   function uix(){var l=W.I18N&&W.I18N.lang;return l==='pt'?1:l==='es'?2:l==='en'?0:ix();}
   function T(k,v){var s=S[k][FORCED[k]?ix():uix()];if(v)for(var p in v)s=s.replace('{'+p+'}',v[p]);return s;}
   /* Game Mode in the English course: footer buttons follow Verificar (Portuguese), never a mix */
-  function TB(k,v){var i=ix();if(i===0&&!(W.BL_COURSE&&W.BL_COURSE.id==='es'))i=1;var s=S[k][i];if(v)for(var p in v)s=s.replace('{'+p+'}',v[p]);return s;}
+  function TB(k,v){var i=FORCED[k]?ix():uix();if(FORCED[k]&&i===0&&!(W.BL_COURSE&&W.BL_COURSE.id==='es'))i=1;var s=S[k][i];if(v)for(var p in v)s=s.replace('{'+p+'}',v[p]);return s;}
   function el(tag,cls,txt){var e=D.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
 
   /* ---------- sounds (synthesised, no files) ---------- */
