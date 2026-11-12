@@ -402,7 +402,9 @@ function planBlock(p){
   cl.addEventListener('change',save);
   const g=PLAN.prog[p.id];
   const last=g?('Stage '+(g.stage||'?')+' · Lição '+(g.lesson||'?')+(g.last_word?' · '+g.last_word:'')+' · '+new Date(g.updated_at).toLocaleString('pt-BR')):(cur?'aguardando a próxima leitura':'—');
-  return el('div',{},el('div',{class:'pr'},ab,cl,m),el('div',{class:'sm lr'},'Última leitura: '+last));
+  const nsBox=el('div',{});
+  if(!cur&&window.BL_NS&&BL_NS.form)BL_NS.form(sb,p.id,()=>{loadPlan();}).then(c=>{if(c)nsBox.append(c);}).catch(()=>{});
+  return el('div',{},el('div',{class:'pr'},ab,cl,m),el('div',{class:'sm lr'},'Última leitura: '+last),nsBox);
 }
 function stuMeta(p,sst){const d=idleDays(p),a=sst>1?STG_END[sst-2]+1:1,b=STG_END[sst-1]||MAXL,up=p.lessons_upto||0,pct=Math.max(0,Math.min(100,Math.round((up-a+1)/(b-a+1)*100)));
   const cls=d<=3?'ok':d<=7?'warn':'bad',txt=d<=3?'Em dia':d>=999?'Ainda não estudou':'Sem estudar há '+d+' dias';
