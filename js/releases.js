@@ -2,6 +2,7 @@
    Newest first. Written for students (no technical terms). Each entry: v, d [pt, es], t [pt, es] short title, p [pt, es] one sentence,
    show:1 = also shown once in the notice after the update, c:'en'|'es' = only that course (omit = both). */
 window.BL_RELEASES=[
+{v:'2.0.36',d:['12 de novembro','12 de noviembre'],t:['Próxima aula em largura total, campo Palavra corrigido e parágrafos escritos como par.','Campo Palabra del registro de la clase con el ancho correcto'],p:['','']},
 {v:'2.0.35',d:['11 de novembro','11 de noviembre'],t:['Aula de conversação no registro da aula','Clase de conversación en el registro de la clase'],p:['','']},
 {v:'2.0.34',d:['11 de novembro','11 de noviembre'],t:['Lesson Check só abre no fim da lição','El Lesson Check solo se abre al terminar la lección'],p:['','']},
 {v:'2.0.33',d:['11 de novembro','11 de noviembre'],t:['Feriados da semana e da próxima e possíveis turmas no painel Hoje','Avisos de feriados y posibles grupos en el panel Hoy'],p:['','']},
