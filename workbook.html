@@ -318,7 +318,7 @@ function bC(L,d,id){
     const t=d.left[oi];
     const s=pickOf(id+'r'+i,'Letter for '+t,d.right.map(r=>[r[0],r[1]]),true);
     const a=d.ans[oi];const m=a+'  '+d.right.find(r=>r[0]===a)[1];
-    return {nodes:[el('p',{class:'q'},t),s],get:()=>{if(!s.value)return {ok:false,msg:'Choose a letter.',model:m};return s.value===a?{ok:true,model:m}:{ok:false,msg:'Check the model answer.',model:m};},lock:()=>{s.disabled=true;}};
+    return {nodes:[el('p',{class:'q'},t),s],get:()=>{if(!s.value)return {ok:false,msg:'Choose a letter.',model:m};return (s.value===a||d.left.some((x,j)=>x===t&&d.ans[j]===s.value))?{ok:true,model:m}:{ok:false,msg:'Check the model answer.',model:m};},lock:()=>{s.disabled=true;}};
   });
   return {pre:pre,rows:rows,grid:false};
 }
