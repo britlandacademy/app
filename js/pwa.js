@@ -5,7 +5,7 @@
    (nao usa sessionStorage: alguns navegadores/PWAs zeram a cada pagina e o jogo "voltava" para Lesson Checks) */
 try{var __n=Date.now(),__s=+localStorage.getItem('bl-seen')||0;if(!__s||__n-__s>30*60e3)localStorage.setItem('bl-game','0');localStorage.setItem('bl-seen',String(__n));
   var __t=function(){try{localStorage.setItem('bl-seen',String(Date.now()));}catch(e){}};setInterval(__t,60000);addEventListener('pagehide',__t);document.addEventListener('visibilitychange',__t);}catch(e){}
-window.BL_VERSION='2.0.59';
+window.BL_VERSION='2.0.60';
 /* leaving Game Mode: the empty platform stays over the page (and the loading screen) until the normal home is ready */
 try{var __o=localStorage.getItem('bl-tfx')||'';if(/^out:\d+$/.test(__o)){localStorage.removeItem('bl-tfx');if(Date.now()-(+__o.slice(4))<20000){
   var __v=document.createElement('div'),__h=Math.max(640,390*innerHeight/innerWidth),__f=((470+(__h-640)/2)/__h*100).toFixed(2);__v.style.cssText='position:fixed;inset:0;z-index:2147483000;pointer-events:none;background:#f1ead6 linear-gradient(180deg,transparent 0 '+__f+'%,#e4dcc3 '+__f+'%);';
