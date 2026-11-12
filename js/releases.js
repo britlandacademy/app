@@ -2,6 +2,7 @@
    Newest first. Written for students (no technical terms). Each entry: v, d [pt, es], t [pt, es] short title, p [pt, es] one sentence,
    show:1 = also shown once in the notice after the update, c:'en'|'es' = only that course (omit = both). */
 window.BL_RELEASES=[
+{v:'2.0.57',d:['12 de novembro','12 de noviembre'],t:['O título da aba não pisca mais em português no app em inglês.','El título de la pestaña ya no parpadea en portugués en la app en inglés.'],p:['','']},
 {v:'2.0.56',d:['12 de novembro','12 de noviembre'],t:['Menu do perfil: o botão Sair agora segue o idioma do menu (Sign out no app em inglês).','Menú del perfil: el botón de salir ahora sigue el idioma del menú.'],p:['','']},
 {v:'2.0.55',d:['12 de novembro','12 de noviembre'],t:['Modo Jogo: os botões do rodapé (Check, Continue, Finish) agora seguem o idioma do menu.','Modo Juego: los botones del pie (Check, Continue, Finish) ahora siguen el idioma del menú.'],p:['','']},
 {v:'2.0.54',d:['12 de novembro','12 de noviembre'],t:['Botões Check, Continue, Finish e Why? também seguem o idioma do menu no app em inglês.','Los botones Check, Continue, Finish y Why? también siguen el idioma del menú.'],p:['','']},

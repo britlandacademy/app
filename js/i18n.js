@@ -831,7 +831,7 @@ function walk(root){
     c=c.nextSibling;
   }
 }
-function doTitle(){var t=document.title,n=tr(t);if(n!==t)document.title=n;}
+function doTitle(){var t=document.title,fp=FP;FP=false;var n=tr(t);FP=fp;if(n!==t)document.title=n;} /* page titles are labels: never forced to Portuguese */
 var obs=null,pend=false,queue=[];
 function flush(){
   pend=false;var q=queue;queue=[];
