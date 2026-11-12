@@ -110,12 +110,10 @@ function render(box,ev,deps,opts){opts=opts||{};
     /* revisao do dia em outra aba: 3a edicao = Lessons do app (parágrafo); 2a edicao = livro do professor (PDF privado) na página */
     /* janela da revisão: metade esquerda da tela onde o painel está aberto (o Zoom fica na direita) */
     function revWin(url,ts){
-      var L,T,W,H;
-      if(ts){L=ts.availLeft;T=ts.availTop;W=ts.availWidth;H=ts.availHeight;}/* monitor principal, ocupando toda a área útil */
-      else{var sc=window.screen||{};L=sc.availLeft||0;T=sc.availTop||0;W=Math.floor((sc.availWidth||1280)/2);H=sc.availHeight||800;}
-      var w=window.open(url,'blrev','popup=yes,left='+L+',top='+T+',width='+W+',height='+H);
-      if(w&&ts){try{w.moveTo(L,T);w.resizeTo(W,H);}catch(e){}}
-      return w;}
+      if(ts){/* monitor principal, no tamanho que a janela do livro já tinha (o navegador lembra); sem forçar tela cheia */
+        return window.open(url,'blrev','popup=yes,left='+(ts.availLeft+40)+',top='+(ts.availTop+40));}
+      var sc=window.screen||{},L=sc.availLeft||0,T=sc.availTop||0,W=Math.floor((sc.availWidth||1280)/2),H=sc.availHeight||800;
+      return window.open(url,'blrev','popup=yes,left='+L+',top='+T+',width='+W+',height='+H);}
     function openRevision(ts){
       var rv=nx&&nx.review,sh=ln&&ln.sheet_name;if(!sh)return;
       var rl=null;
