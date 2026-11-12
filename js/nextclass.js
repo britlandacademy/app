@@ -72,6 +72,12 @@ function loadIdx(cb){if(window.BL_WORDIDX)return cb(window.BL_WORDIDX);
   if(!IDXQ){IDXQ=[];var sc=document.querySelector('script[src*="nextclass.js"]'),base=sc?sc.src.replace(/nextclass\.js.*$/,''):'js/',t=document.createElement('script');
     t.src=base+'wordidx.js';t.onload=function(){var q=IDXQ;IDXQ=null;q.forEach(function(f){f(window.BL_WORDIDX);});};t.onerror=function(){var q=IDXQ;IDXQ=null;q.forEach(function(f){f(null);});};document.head.appendChild(t);}
   IDXQ.push(cb);}
+function zoomApp(u){var m=/\/j\/(\d+)/.exec(String(u||''));if(!m)return u;var pw=/[?&]pwd=([^&#]+)/.exec(u);return 'zoommtg://zoom.us/join?confno='+m[1]+(pw?'&pwd='+pw[1]:'');}
+/* monitor auxiliar via Window Management API (pede permissao uma vez); null se nao houver */
+function screens(){
+  if(!window.getScreenDetails)return Promise.resolve(null);
+  return window.getScreenDetails().then(function(d){var o=d.screens.filter(function(x){return x!==d.currentScreen;});
+    return o.filter(function(x){return !x.isPrimary;})[0]||o[0]||null;},function(){return null;});}
 function render(box,ev,deps,opts){opts=opts||{};
   css();box.textContent='';var wrap=el('div','nc');box.appendChild(wrap);
   var name=function(id){var p=deps.profiles().filter(function(x){return x.id===id;})[0];return p?(p.display_name||p.name||p.email):'Aluno';};
@@ -91,14 +97,27 @@ function render(box,ev,deps,opts){opts=opts||{};
     if(sub.length)hd.appendChild(el('div','nc-sub',sub.join(' · ')));
     top.appendChild(hd);top.appendChild(el('span','sp'));
     if(sid){var sa=el('a','nc-btn','Abrir planilha');sa.href='https://docs.google.com/spreadsheets/d/'+sid+'/edit'+(gid?'#gid='+gid:'');sa.target='_blank';sa.rel='noopener';top.appendChild(sa);}
-    var za=el('a','nc-btn go','Entrar na aula');za.href=meet;za.target='_blank';za.rel='noopener';
-    za.addEventListener('click',function(){try{openRevision();}catch(e){}});
+    var zUrl=zoomApp(meet),za=el('a','nc-btn go','Entrar na aula');za.href=zUrl;if(!/^zoommtg:/.test(zUrl)){za.target='_blank';za.rel='noopener';}
+    /* clique: abre a revisão (livro) no monitor auxiliar e abre o Zoom pelo app (equivale a "start zoommtg://...") */
+    za.addEventListener('click',function(e){
+      if(!/^zoommtg:/.test(zUrl)){try{openRevision(null);}catch(x){}return;}
+      e.preventDefault();
+      var launch=function(){var h=document.createElement('a');h.href=zUrl;h.style.display='none';document.body.appendChild(h);h.click();setTimeout(function(){h.remove();},500);};
+      screens().then(function(sc){
+        if(sc){try{openRevision(sc);}catch(x){}launch();}
+        else{launch();if(window.BL_DLG)BL_DLG.alert('Não encontrei um monitor auxiliar (ou o acesso à posição das janelas foi negado). Abri só o Zoom. Para o livro ir sozinho ao segundo monitor, conecte-o e permita "Gerenciar janelas" quando o navegador perguntar.',{title:'Só o Zoom foi aberto'});}
+      });
+    });
     /* revisao do dia em outra aba: 3a edicao = Lessons do app (parágrafo); 2a edicao = livro do professor (PDF privado) na página */
     /* janela da revisão: metade esquerda da tela onde o painel está aberto (o Zoom fica na direita) */
-    function revWin(url){
-      var sc=window.screen||{},L=sc.availLeft||0,T=sc.availTop||0,W=Math.floor((sc.availWidth||1280)/2),H=sc.availHeight||800;
-      return window.open(url,'blrev','popup=yes,left='+L+',top='+T+',width='+W+',height='+H);}
-    function openRevision(){
+    function revWin(url,ts){
+      var L,T,W,H;
+      if(ts){L=ts.availLeft;T=ts.availTop;W=ts.availWidth;H=ts.availHeight;}/* monitor auxiliar, ocupando toda a área útil */
+      else{var sc=window.screen||{};L=sc.availLeft||0;T=sc.availTop||0;W=Math.floor((sc.availWidth||1280)/2);H=sc.availHeight||800;}
+      var w=window.open(url,'blrev','popup=yes,left='+L+',top='+T+',width='+W+',height='+H);
+      if(w&&ts){try{w.moveTo(L,T);w.resizeTo(W,H);}catch(e){}}
+      return w;}
+    function openRevision(ts){
       var rv=nx&&nx.review,sh=ln&&ln.sheet_name;if(!sh)return;
       var rl=null;
       if(!rv||rv.from==null){/* sem revisao por paragrafo: tenta "REV a-b" do conteudo (licoes) */
@@ -106,9 +125,9 @@ function render(box,ev,deps,opts){opts=opts||{};
       var sm=/(?:stage|stg)\s*(\d+)/i.exec(sh),stg=+(fd.stage||(sm?sm[1]:0)),from=+rv.from,to=rv.to!=null?+rv.to:from,
           who=String(name(d.uids[0])).trim().split(/\s+/)[0],enc=encodeURIComponent,w=cp.lastWord||(first&&first.last_word)||'',par=cp.paragraph||cp.lastNewWord||'';
       if(!/2nd/i.test(sh)){
-        revWin('lessons.html?stage='+stg+(rl?'&rl='+rl:'&rv='+from+'-'+to)+'&w='+enc(w)+'&p='+enc(par)+'&who='+enc(who)+'&n='+enc(nx.classNumber||''));return;}
+        revWin('lessons.html?stage='+stg+(rl?'&rl='+rl:'&rv='+from+'-'+to)+'&w='+enc(w)+'&p='+enc(par)+'&who='+enc(who)+'&n='+enc(nx.classNumber||''),ts);return;}
       var T=window.BL_TBOOK,file=T&&T.file(stg),page=T&&T.pageFor(stg,from);
-      var win=revWin('about:blank');if(!win)return;
+      var win=revWin('about:blank',ts);if(!win)return;
       var say=function(t){try{win.document.body.style.cssText='font:16px system-ui;padding:24px;background:#0b1733;color:#f3f4f6';win.document.body.textContent=t;}catch(e){}};
       if(!file){say('O livro do professor do Stage '+stg+' (2ª edição) ainda não está disponível no app.');return;}
       say('Abrindo o livro do professor, p. '+page+'…');
