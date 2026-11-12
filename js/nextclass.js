@@ -73,11 +73,10 @@ function loadIdx(cb){if(window.BL_WORDIDX)return cb(window.BL_WORDIDX);
     t.src=base+'wordidx.js';t.onload=function(){var q=IDXQ;IDXQ=null;q.forEach(function(f){f(window.BL_WORDIDX);});};t.onerror=function(){var q=IDXQ;IDXQ=null;q.forEach(function(f){f(null);});};document.head.appendChild(t);}
   IDXQ.push(cb);}
 function zoomApp(u){var m=/\/j\/(\d+)/.exec(String(u||''));if(!m)return u;var pw=/[?&]pwd=([^&#]+)/.exec(u);return 'zoommtg://zoom.us/join?confno='+m[1]+(pw?'&pwd='+pw[1]:'');}
-/* monitor auxiliar via Window Management API (pede permissao uma vez); null se nao houver */
+/* monitor principal via Window Management API (pede permissao uma vez); null se indisponivel */
 function screens(){
   if(!window.getScreenDetails)return Promise.resolve(null);
-  return window.getScreenDetails().then(function(d){var o=d.screens.filter(function(x){return x!==d.currentScreen;});
-    return o.filter(function(x){return !x.isPrimary;})[0]||o[0]||null;},function(){return null;});}
+  return window.getScreenDetails().then(function(d){return d.screens.filter(function(x){return x.isPrimary;})[0]||null;},function(){return null;});}
 function render(box,ev,deps,opts){opts=opts||{};
   css();box.textContent='';var wrap=el('div','nc');box.appendChild(wrap);
   var name=function(id){var p=deps.profiles().filter(function(x){return x.id===id;})[0];return p?(p.display_name||p.name||p.email):'Aluno';};
@@ -105,14 +104,14 @@ function render(box,ev,deps,opts){opts=opts||{};
       var launch=function(){var h=document.createElement('a');h.href=zUrl;h.style.display='none';document.body.appendChild(h);h.click();setTimeout(function(){h.remove();},500);};
       screens().then(function(sc){
         if(sc){try{openRevision(sc);}catch(x){}launch();}
-        else{launch();if(window.BL_DLG)BL_DLG.alert('Não encontrei um monitor auxiliar (ou o acesso à posição das janelas foi negado). Abri só o Zoom. Para o livro ir sozinho ao segundo monitor, conecte-o e permita "Gerenciar janelas" quando o navegador perguntar.',{title:'Só o Zoom foi aberto'});}
+        else{launch();if(window.BL_DLG)BL_DLG.alert('Não consegui posicionar o livro no monitor principal (o acesso à posição das janelas foi negado ou o navegador não oferece). Abri só o Zoom. Para o livro abrir sozinho no monitor principal, permita "Gerenciar janelas" quando o navegador perguntar.',{title:'Só o Zoom foi aberto'});}
       });
     });
     /* revisao do dia em outra aba: 3a edicao = Lessons do app (parágrafo); 2a edicao = livro do professor (PDF privado) na página */
     /* janela da revisão: metade esquerda da tela onde o painel está aberto (o Zoom fica na direita) */
     function revWin(url,ts){
       var L,T,W,H;
-      if(ts){L=ts.availLeft;T=ts.availTop;W=ts.availWidth;H=ts.availHeight;}/* monitor auxiliar, ocupando toda a área útil */
+      if(ts){L=ts.availLeft;T=ts.availTop;W=ts.availWidth;H=ts.availHeight;}/* monitor principal, ocupando toda a área útil */
       else{var sc=window.screen||{};L=sc.availLeft||0;T=sc.availTop||0;W=Math.floor((sc.availWidth||1280)/2);H=sc.availHeight||800;}
       var w=window.open(url,'blrev','popup=yes,left='+L+',top='+T+',width='+W+',height='+H);
       if(w&&ts){try{w.moveTo(L,T);w.resizeTo(W,H);}catch(e){}}
