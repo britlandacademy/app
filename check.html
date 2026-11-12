@@ -453,6 +453,8 @@ function buildEx(L,ex,k){
   form.append(el('div',{class:'btnrow'},verify,retry),score);
   form.addEventListener('submit',e=>{
     e.preventDefault();if(verify.disabled)return;
+    const touched=[...form.querySelectorAll('input,textarea,select')].some(x=>(x.type==='radio'||x.type==='checkbox')?x.checked:String(x.value||'').trim()!=='')||!!form.querySelector('[aria-pressed="true"],.on');
+    if(!touched){const m='Responda pelo menos uma questão antes de verificar.';if(window.BL_DLG)BL_DLG.alert(m,{title:'Nada respondido'});else alert(m);return;}
     const wasDone=lessonStats(L).done===L.ex.length;
     let right=0;const errs=[];
     built.forEach(o=>{
