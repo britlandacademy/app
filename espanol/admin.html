@@ -843,7 +843,7 @@ async function xReview(uid,st,n,accept){
 }
 
 /* ----- tabs and home ----- */
-const IC={tips:'M12 3a6 6 0 0 0-3.5 10.9V17h7v-3.1A6 6 0 0 0 12 3zM9.5 20.5h5',social:'M12 15V3M8 7l4-4 4 4M5 12v8h14v-8',stats:'M4 20V10M10 20V4M16 20v-7M22 20H2',home:'M3 11l9-8 9 8M5 10v10h14V10M10 20v-6h4v6',agenda:'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',students:'M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM2.5 20c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6M16 4.5a3.5 3.5 0 0 1 0 6.5M18 14.5c2 .7 3.5 2.5 3.5 5.5',grades:'M4 20V10M10 20V4M16 20v-7M22 20H2',more:'M5 12h.01M12 12h.01M19 12h.01',today:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3 2',exams:'M4 4h16v16H4zM8 12l3 3 5-6',pay:'M3 6h18v12H3zM3 10h18M7 15h3',content:'M12 6c-2-1.5-5-2-8-2v14c3 0 6 .5 8 2 2-1.5 5-2 8-2V4c-3 0-6 .5-8 2zM12 6v14',place:'M6 17V11a6 6 0 0 1 12 0v6l2 2H4zM10 21h4'};
+const IC={fx:'M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z',tips:'M12 3a6 6 0 0 0-3.5 10.9V17h7v-3.1A6 6 0 0 0 12 3zM9.5 20.5h5',social:'M12 15V3M8 7l4-4 4 4M5 12v8h14v-8',stats:'M4 20V10M10 20V4M16 20v-7M22 20H2',home:'M3 11l9-8 9 8M5 10v10h14V10M10 20v-6h4v6',agenda:'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',students:'M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM2.5 20c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6M16 4.5a3.5 3.5 0 0 1 0 6.5M18 14.5c2 .7 3.5 2.5 3.5 5.5',grades:'M4 20V10M10 20V4M16 20v-7M22 20H2',more:'M5 12h.01M12 12h.01M19 12h.01',today:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3 2',exams:'M4 4h16v16H4zM8 12l3 3 5-6',pay:'M3 6h18v12H3zM3 10h18M7 15h3',content:'M12 6c-2-1.5-5-2-8-2v14c3 0 6 .5 8 2 2-1.5 5-2 8-2V4c-3 0-6 .5-8 2zM12 6v14',place:'M6 17V11a6 6 0 0 1 12 0v6l2 2H4zM10 21h4'};
 function ico(k){const d=document.createElement('div');d.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+IC[k]+'"/></svg>';return d.firstChild;}
 const TABS=[['home','Início'],['agenda','Agenda'],['today','Hoje'],['students','Alunos'],['grades','Notas'],['pay','Pagamentos','payments.html'],['content','Conteúdo'],['place','Placement'],['stats','Estatísticas'],['social','Redes sociais'],['tips','Dicas semanais'],['fx','Efeitos']];
 const BAR=['home','agenda','students','grades','more'],MORE=['more','today','content','place','stats','social','tips','fx'];
@@ -974,7 +974,7 @@ function renderHome(){
     ['exams',String(h.done),'Exames','Liberar provas, notas e correções',h.rev?h.rev+' para revisar':''],
     ['payments.html','','Pagamentos','Parcelas e cobranças',h.over?h.over+' vencida(s)':''],
     ['content','','Conteúdo','Textos, checks, exercícios e áudios',''],
-    ['place',PLN==null?'':String(PLN),'Pruebas de nivel','Resultados de novos interessados','']];
+    ['place',PLN==null?'':String(PLN),'Placement tests','Resultados de novos interessados','']];
   cards.textContent='';
   const KEY={students:'students',grades:'grades',exams:'exams','payments.html':'pay',content:'content',place:'place'},NB={students:h.pend,exams:h.rev,'payments.html':h.over};
   C.forEach(c=>{const ti=el('span',{class:'ti'});ti.append(ico(KEY[c[0]]));const kids=[ti,el('span',{},c[2]==='Placement tests'?'Placement':c[2])];if(c[1])kids.push(el('small',{},c[1]+(c[0]==='students'?' ativos':'')));const n=NB[c[0]]||0;if(n)kids.push(el('span',{class:'nb'},String(n)));
