@@ -60,9 +60,18 @@ function render(host,x){css();
     nIn.addEventListener('change',function(){if(!iL.value||iL.dataset.auto){var m=/LESSON\s*(\d+)/i.exec(plan(stSel.value,+nIn.value));if(m){iL.value=m[1];iL.dataset.auto=1;}}});
     iL.addEventListener('input',function(){delete iL.dataset.auto;});
     var det=D.createElement('details'),sm2=el('summary','cc-m',group?'Anotação da aula (opcional)':'Anotação (opcional)'),ta=D.createElement('textarea');ta.value=L.note||'';det.appendChild(sm2);det.appendChild(ta);if(L.note)det.open=true;box.appendChild(det);
+    var ex=el('div','cc-seg'),xc={};
+    function ckx(k,txt,on){var l=el('label','cc-ck'),c=D.createElement('input');c.type='checkbox';c.checked=on;l.appendChild(c);l.appendChild(D.createTextNode(' '+txt));ex.appendChild(l);xc[k]=c;l.hidden=false;return l;}
+    var thm=D.createElement('input');thm.type='text';thm.placeholder='Tema da conversação';thm.style.display='none';
+    function ctOf(){var nx=((x.prog[u0]||{}).data||{}).nextClass;return nx&&+nx.classNumber===+nIn.value?String(nx.contents||''):plan(stSel.value,+nIn.value);}
+    var lRev=null;
+    if(sheet){ckx('done','Marcar como Completed na planilha',true);ckx('ins','Não deu tempo de terminar (adicionar nova linha)',false);ckx('conv','Aula de conversação (conta como dada)',false);lRev=ckx('rev','Terminei a revisão do Stage (liberar a prova)',false);ex.appendChild(thm);
+      xc.conv.onchange=function(){thm.style.display=xc.conv.checked?'':'none';};
+      var tgl=function(){lRev.hidden=!/FULL\s*REVISION|REVIS/i.test(ctOf())||/OFFICIAL.*EXAM|MOCK\s*EXAM/i.test(ctOf());};tgl();var f0=fillTasks;fillTasks=function(){f0();tgl();};
+      box.appendChild(ex);box.appendChild(el('div','cc-m','Ao salvar, os dados também vão para a aba "'+sheet+'" (parágrafo, última palavra, leitura, ditado, presença, data). O Lesson Check fica só no app.'));}
     var act=el('div','cc-act'),later=el('button','cc-b','Depois'),go=el('button','cc-b go','Salvar aula'),st=el('span','cc-m');later.type=go.type='button';
     later.onclick=function(){box.style.display='none';};
-    go.onclick=function(){
+    var saveApp=function(cb){
       var n=+nIn.value,stg=+stSel.value,now=new Date().toISOString();if(!n){st.textContent='Informe o número da aula.';return;}
       var rows=[],att=[],prog=[];
       uids.forEach(function(u){var s=group?(absent[u]?'missed':'given'):status;
@@ -77,7 +86,32 @@ function render(host,x){css();
           else if(r.status==='missed')d.me.missed.push({classNumber:n,lesson:r.lesson||''});
           var row={user_id:r.user_id,stage:stg,lesson:r.status==='given'&&r.lesson?r.lesson:old.lesson||null,class_number:r.status==='given'?n:old.class_number||null,last_word:r.status==='given'&&r.last_word?r.last_word:old.last_word||null,data:d,updated_at:now};
           x.prog[r.user_id]=row;return P(sb.from('plan_progress').upsert(row,{onConflict:'user_id'}));}));
-      }).then(function(){go.disabled=false;st.textContent='Aula salva ✓ '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});box.firstChild.textContent='Fechar a aula · salva ✓';},function(e){go.disabled=false;st.textContent='Não foi possível salvar ('+((e&&e.message)||'erro')+').';});};
+      }).then(function(){go.disabled=false;st.textContent='Aula salva ✓ '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});box.firstChild.textContent='Fechar a aula · salva ✓';if(cb)cb();},function(e){go.disabled=false;st.textContent='Não foi possível salvar ('+((e&&e.message)||'erro')+').';});};
+    function ymd(){return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo'}).format(new Date(x.ev.start_at));}
+    function pushSheet(keep){
+      var n=+nIn.value,fn=function(u){return String(x.name(u)).trim().split(/\s+/)[0];},a={},late={},nsAll=true,ct=ctOf(),isMock=/MOCK\s*EXAM/i.test(ct),isRev=!isMock&&!/OFFICIAL.*EXAM/i.test(ct)&&/FULL\s*REVISION|REVIS/i.test(ct);
+      uids.forEach(function(u){var came=group?!absent[u]:status==='given',at=x.att[u];if(came)nsAll=false;a[fn(u)]=came&&!(at&&at.status==='ns');if(at&&at.status==='late')late[fn(u)]=at.late_min||10;});
+      var pl={sheetName:sheet,lesson:n,date:ymd(),attendance:a};if(Object.keys(late).length)pl.late=late;
+      if(nsAll){pl.paragraph='NS';pl.lastWord='NO SHOW';pl.insert=true;}
+      else if(xc.conv&&xc.conv.checked){pl.conversation=true;pl.theme=thm.value.trim();pl.insert=true;pl.paragraph='E';pl.lastWord='CONVERSATION';pl.status='Completed';}
+      else{if(!keep){if(iP.value.trim())pl.paragraph=iP.value.trim();if(iW.value.trim())pl.lastWord=iW.value.trim();}if(xc.ins&&xc.ins.checked)pl.insert=true;if(iR.value.trim())pl.readingGiven=true;if(iD.value.trim())pl.dictationGiven=true;if(pl.readingGiven||pl.dictationGiven)pl.done=true;if(xc.done&&xc.done.checked)pl.status='Completed';}
+      st.textContent+=' · enviando à planilha…';
+      return sb.functions.invoke('sheet-push',{body:pl}).then(function(r){var q=r&&r.data;
+        if(q&&q.ok){st.textContent='Aula salva no app e na planilha ✓ '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+(q.inserted?' · nova linha adicionada':'');
+          var gv=uids.filter(function(u){return group?!absent[u]:status==='given';});
+          if(+stSel.value&&gv.length&&(isMock||(isRev&&xc.rev&&xc.rev.checked))){return sb.from('exam_release').upsert(gv.map(function(u){return {user_id:u,stage:+stSel.value};}),{onConflict:'user_id,stage',ignoreDuplicates:true}).then(function(z){st.textContent+=z&&z.error?' · não consegui liberar a prova':' · prova do Stage '+stSel.value+' liberada';});}
+          return;}
+        var e=q&&q.error,m={aba_nao_encontrada:'a aba não foi encontrada na planilha',licao_nao_encontrada:'a aula não foi achada na coluna Lesson',forbidden:'senha do script não confere',not_configured:'planilha não configurada'};
+        st.textContent='Salva no app, mas não foi para a planilha'+(e?' ('+(m[e]||e)+')':'')+'. Salve de novo para tentar outra vez.';},function(){st.textContent='Salva no app, mas sem conexão com a planilha. Salve de novo para tentar outra vez.';});}
+    go.onclick=function(){
+      var n=+nIn.value;if(!n){st.textContent='Informe o número da aula.';return;}
+      if(!sheet||status!=='given'&&!group){saveApp(sheet&&status==='missed'?function(){pushSheet(false);}:null);return;}
+      var cp=(((x.prog[u0]||{}).data||{}).currentPosition)||{},sp=cp.paragraph!=null?String(cp.paragraph):'',sw=cp.lastWord!=null?String(cp.lastWord):'',ap=iP.value.trim(),aw=iW.value.trim();
+      var diff=+cp.classNumber===n&&((sp&&ap&&sp!==ap)||(sw&&aw&&sw.toLowerCase()!==aw.toLowerCase()));
+      var go2=function(keep){if(keep){if(sp)iP.value=sp;if(sw)iW.value=sw;}saveApp(function(){pushSheet(keep);});};
+      if(!diff){go2(false);return;}
+      var dlg=window.BL_DLG?BL_DLG.confirm('A planilha já tem esta aula com outro valor.\n\nPlanilha: par. '+(sp||'—')+' · '+(sw||'—')+'\nApp: par. '+(ap||'—')+' · '+(aw||'—')+'\n\nOK usa o do app e atualiza a planilha. Cancelar mantém o da planilha.',{title:'Dados diferentes',ok:'Usar o do app',cancel:'Manter o da planilha',danger:false}):Promise.resolve(true);
+      dlg.then(function(useApp){go2(!useApp);});};
     act.appendChild(later);act.appendChild(el('span','sp'));act.appendChild(st);act.appendChild(go);box.appendChild(act);paint();
   });
 }

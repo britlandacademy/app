@@ -127,7 +127,7 @@ function render(box,ev,deps,opts){opts=opts||{};
     if(lw||cp.lesson){add(b2,el('div','nc-v',(cp.lesson?'Lição '+cp.lesson:'')+(pn?' · par. '+pn:'')),el('div','nc-m',lw?'Última palavra: '+lw:''));}else add(b2,el('div','nc-m','Sem leitura da planilha ainda'));
     if(cp.classNumber)b2.appendChild(el('div','nc-m','Aula nº '+cp.classNumber));
     /* registro da aula: grava na planilha (Apps Script via sheet-push) */
-    (function(){var sh=ln&&ln.sheet_name;if(!sh||!nx||!nx.classNumber||opts.past)return;
+    (function(){var sh=ln&&ln.sheet_name;if(!sh||!nx||!nx.classNumber||opts.past||window.BL_CLOSE)return;
       var ct=String(nx.contents||''),isExam=/OFFICIAL.*EXAM/i.test(ct),isMock=/MOCK\s*EXAM/i.test(ct),isRev=!isExam&&!isMock&&/FULL\s*REVISION|REVIS/i.test(ct);
       var sm=/(?:stage|stg)\s*(\d+)/i.exec(sh),stg=+(first&&first.stage)||(sm?+sm[1]:0);
       var f=el('div','nc-reg'),ip=el('input'),iw=el('input'),stSel=null,auto=true;
