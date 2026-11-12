@@ -238,6 +238,7 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 <script src="js/i18n-es.js" charset="utf-8"></script>
 <script src="../js/i18n.js" charset="utf-8"></script>
 <script src="../js/gate.js" charset="utf-8"></script><script src="../js/sheet.js" charset="utf-8"></script><script src="../js/motion.js" charset="utf-8"></script><script src="../js/medals.js" charset="utf-8"></script>
+<script src="../js/lsearch.js" charset="utf-8"></script>
 <script src="../js/home2.js" charset="utf-8"></script>
 <script src="../js/protect.js" charset="utf-8"></script>
 <script>
@@ -329,12 +330,17 @@ function show(id,noscroll){
   prevs.forEach(b=>{b.disabled=id<=LO;});nexts.forEach(b=>{b.disabled=id>=HI;});
   try{localStorage.setItem('callan-lesson-last-es',String(id));}catch(e){}
   if(!noscroll)window.scrollTo({top:0});
+  if(window.LSearch)LSearch.after();
 }
 stSel.addEventListener('change',()=>show(STAGES.find(t=>t.n===+stSel.value).from));
 lsSel.addEventListener('change',()=>show(+lsSel.value));
 prevs.forEach(b=>b.addEventListener('click',()=>{if(cur>LO)show(cur-1);}));
 nexts.forEach(b=>b.addEventListener('click',()=>{if(cur<HI)show(cur+1);}));
 show(cur,true);
+let ALLP=null;
+if(window.LSearch)LSearch.init({out:out,cur:()=>cur,show:show,stageOf:id=>stageOf(id).n,stages:STAGES,lessonWord:'Lección',stageWord:'Etapa',parWord:'párrafo',
+  fetchAll:()=>{if(ALLP)return ALLP;ALLP=Gate.sb.from('content').select('lesson,body').eq('kind','text').gte('lesson',1).lte('lesson',UPTO).order('lesson',{ascending:true}).then(r=>{if(r.error||!r.data)throw r.error;const m={};r.data.forEach(x=>{m[x.lesson]=x.body;});return m;}).catch(()=>{ALLP=null;return Object.assign({},window.LESSON_TEXT||{});});return ALLP;},
+  t:{open:'Buscar en el texto',ph:'Buscar en las lecciones',close:'Cerrar',back:'Atrás',list:'Lista',all:'Buscar en todas las lecciones',none:'No se encontró nada en esta lección',inLesson:(i,n)=>i+' de '+n+' en esta lección',type2:'Escribe al menos 2 letras.',loading:'Cargando las lecciones…',noRes:'Sin resultados.',res:n=>n+(n===1?' resultado':' resultados'),first:n=>'mostrando los '+n+' primeros',of:(i,n)=>'Resultado '+i+' de '+n,fAll:'Todas',fWords:'Palabras',fQs:'Preguntas',fText:'Textos',fDict:'Dictados',allStages:'Todas las Etapas',prev:'Resultado anterior',next:'Siguiente resultado',end:'Terminar la búsqueda'}});
 });
 </script>
 </body></html>

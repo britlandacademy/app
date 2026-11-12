@@ -121,6 +121,7 @@ a.card:hover .i-tg .r2,a.card:focus-visible .i-tg .r2{animation:rp 1.8s ease inf
 <a class="card" data-art="ck" href="check.html"><div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" class="i-ck"><rect class="bx" x="3.5" y="3.5" width="17" height="17" rx="3"/><path class="mk" d="M7.5 12.5l3.2 3.2L17 8.5"/></svg></div><div class="tt"><b>Ejercicios de repaso</b><span>Los ejercicios de repaso del libro</span><div class="pr" hidden><div class="bar"><div></div></div><small></small></div></div><i class="go" aria-hidden="true">→</i></a>
 <a class="card" data-art="dele" href="dele.html"><div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" class="i-dl"><path d="M12 3.5l9 4-9 4-9-4z"/><path d="M6.5 10.5V15c0 1.4 2.5 3 5.5 3s5.500-1.6 5.500-3v-4.500"/><path class="ta" d="M21 8v5"/></svg></div><div class="tt"><b>DELE</b><span>Preparación para el examen · niveles A1 a C2</span><div class="pr" hidden><div class="bar"><div></div></div><small></small></div></div><i class="go" aria-hidden="true">→</i></a>
 <a class="card hp" data-art="prof" href="account.html"><div class="ph" aria-hidden="true"></div><div class="tt"><span class="hk">My Profile</span><b class="hn"></b><span class="hs">Your grades and payments</span><em class="hchip">Open profile →</em></div><i class="go" aria-hidden="true">→</i></a>
+<a class="card hx" data-art="exam" id="examCard" href="exam.html" style="display:none"><div class="tt"><span class="tag">NUEVO</span><span class="hk">EXAMEN DE ETAPA</span><b>Examen de etapa</b><span>Tu profesor ha abierto un examen para ti</span><em class="hchip">Empezar examen →</em></div><i class="go" aria-hidden="true">→</i></a>
 </div>
 </main>
 <script src="js/config.js" charset="utf-8"></script>
@@ -147,6 +148,7 @@ Gate.start({kinds:[],attempts:['check','ex']},function(ctx){
     if(ctx.profile&&ctx.profile.is_admin&&!(ST&&NOW-ST<12*3600e3)){location.replace('admin.html');return;}
     if(ST)localStorage.setItem('bl-stay-student',String(NOW));}catch(e){}
   try{Plan.mount(ctx,{es:true});}catch(e){}
+  try{Gate.sb.from('exam_release').select('stage').then(function(r){var d=r&&!r.error&&r.data;if(d&&d.length){var ek=document.getElementById('examCard');ek.style.display='';var k=ek.querySelector('.hk');if(k)k.textContent='ETAPA '+d[0].stage;}});}catch(e){}
   try{Tips.mount(document.getElementById('tips'),Gate.sb,(ctx.profile&&ctx.profile.name||'').split(' ')[0]);}catch(e){}
   var name=(ctx.profile&&ctx.profile.name||'').split(' ')[0];
   document.getElementById('hi').textContent=name?'Bienvenido de nuevo, '+name:'Bienvenido de nuevo';

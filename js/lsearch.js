@@ -45,7 +45,7 @@ LS.init=function(cfg){
   var rcnt=el('p',{class:'ls-note'}),list=el('div'),chips=el('div',{class:'ls-chips'}),sel=el('select',{class:'ls-sel','aria-label':'Stage'});
   var types=[['all',T.fAll],['v',T.fWords],['qa',T.fQs],['s',T.fText],['d',T.fDict]];
   var chipEls=types.map(function(x){return el('button',{type:'button',class:'ls-chip','aria-pressed':x[0]==='all'?'true':'false',onclick:function(){typeF=x[0];chipEls.forEach(function(c,i){c.setAttribute('aria-pressed',types[i][0]===typeF?'true':'false');});render();}},x[1]);});
-  sel.append(el('option',{value:'0'},T.allStages));cfg.stages.forEach(function(s){sel.append(el('option',{value:String(s.n)},'Stage '+s.n));});
+  sel.append(el('option',{value:'0'},T.allStages));cfg.stages.forEach(function(s){sel.append(el('option',{value:String(s.n)},(cfg.stageWord||'Stage')+' '+s.n));});
   sel.addEventListener('change',function(){stageF=+sel.value;render();});
   chips.append.apply(chips,chipEls);chips.append(sel);
   var res=el('div',{class:'ls-res',hidden:true,role:'dialog','aria-label':T.all},
@@ -141,7 +141,7 @@ LS.init=function(cfg){
     if(!fl.length){rcnt.textContent=T.noRes;return;}
     rcnt.textContent=T.res(fl.length)+(fl.length>300?' · '+T.first(300):'');
     fl.slice(0,300).forEach(function(r,i){
-      var meta='Stage '+r.stage+' · '+cfg.lessonWord+' '+r.id+(r.par?' · '+cfg.parWord+' '+r.par:'');
+      var meta=(cfg.stageWord||'Stage')+' '+r.stage+' · '+cfg.lessonWord+' '+r.id+(r.par?' · '+cfg.parWord+' '+r.par:'');
       list.append(el('button',{type:'button',class:'ls-it',onclick:function(){pick(i);}},el('small',{},meta),el('span',{},snippet(r,nq))));
     });
   }
