@@ -125,7 +125,7 @@ a.btnl{display:inline-flex;align-items:center;min-height:46px;padding:8px 20px;b
 <body>
 <div id="app"></div>
 <script src="js/config.js" charset="utf-8"></script>
-<script src="js/gate.js" charset="utf-8"></script>
+<script src="js/gate.js" charset="utf-8"></script><script src="js/examcalc.js" charset="utf-8"></script>
 <script>
 Gate.start({kinds:[],bare:true},function(ctx){
 'use strict';
@@ -370,9 +370,9 @@ function finished(st){
   sent=true;
   const kids=[logo(),el('h1',{class:'center'},'Exam submitted')];
   if(st.visible){
-    const sc=st.scores||{},mx=st.maxes||{};let t=0,m=0;Object.keys(mx).forEach(k=>{t+=sc[k]||0;m+=mx[k];});
-    const kp=el('div',{class:'kp'});Object.keys(mx).forEach(k=>kp.append(el('div',{},el('small',{},PART_NAME[k]||k),el('b',{},(sc[k]||0)+' / '+mx[k]))));
-    kids.push(el('p',{class:'center big'},t+' / '+m+' ('+Math.round(100*t/(m||1))+'%)'),kp,el('p',{class:'center'},'Your teacher will talk to you about the result.'));
+    const c=BL_EXAM.compose(st.scores,st.maxes,st.oral);
+    const kp=el('div',{class:'kp'});c.rows.forEach(r=>kp.append(el('div',{},el('small',{},PART_NAME[r.id]||r.label),el('b',{},BL_EXAM.fmt(r.s)+' / '+r.m))));
+    kids.push(el('p',{class:'center big'},BL_EXAM.fmt(c.T)+' / '+c.M+' ('+c.pct+'%)'),kp,c.oral.done?el('p',{class:'center'},'Conversation with your teacher: '+c.oral.s+' / 15'):null,el('p',{class:'center'},'Your teacher will talk to you about the result.'));
   }else kids.push(el('p',{class:'center'},'Thank you! Your answers were sent. Your teacher will check the exam and give you the result.'));
   kids.push(el('p',{class:'center'},leave()));
   screen([el('div',{class:'scr'},...kids)]);

@@ -17,6 +17,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body)
 h1{margin:4px 0 0;font-size:clamp(1.5rem,5vw,2.2rem);line-height:1.15}
 h2{font-size:1.25rem;margin:0 0 10px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:16px;margin:0 0 18px}
+.ob{display:inline-flex;gap:4px}.ob button{min-height:36px;min-width:36px;padding:0 8px;background:var(--surface);color:var(--ink);border:2px solid var(--line)}.ob button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}.orq input[type=text]{width:100%;min-height:36px}.orq .exp{color:var(--muted);font-size:.86rem}.orw{color:var(--warn,#8a5a00);font-size:.82rem;font-weight:700}
 .hint{color:var(--muted);font-size:.92rem;margin:6px 0}
 table{border-collapse:collapse;width:100%;font-size:.95rem}
 th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:middle}
@@ -289,7 +290,7 @@ details.h{background:var(--surface);border:1px solid var(--line);border-radius:1
 <script src="js/newstudent.js" charset="utf-8"></script>
 <script src="js/holidays.js" charset="utf-8"></script>
 <script src="js/agenda.js" charset="utf-8"></script>
-<script src="js/tbook.js" charset="utf-8"></script><script src="js/nextclass.js" charset="utf-8"></script>
+<script src="js/examcalc.js" charset="utf-8"></script><script src="js/oralgen.js" charset="utf-8"></script><script src="js/tbook.js" charset="utf-8"></script><script src="js/nextclass.js" charset="utf-8"></script>
 <script>
 Gate.start({admin:true,kinds:[]},function(ctx){
   (function(){var b=document.getElementById('streakBox');if(b&&window.Streak)Streak.admin(b);})();
@@ -373,8 +374,8 @@ function exStat(uid,st){
 function exPill(p,st){
   const def=XDEF[st],rel=XREL.find(x=>x.user_id===p.id&&x.stage===st),res=XRES.find(x=>x.user_id===p.id&&x.stage===st);
   if(!def)return el('span',{class:'pl bad'},'Prova não cadastrada');
-  if(res&&res.submitted_at){const sc=res.scores||{},mx=res.maxes||{};let T=0,M=0;Object.keys(mx).forEach(k=>{T+=sc[k]||0;M+=mx[k];});
-    return el('span',{class:'pl '+(res.score_visible?'ok':'wt')},'Concluída · '+T+'/'+M+(res.score_visible?'':' · oculta'));}
+  if(res&&res.submitted_at){const c=BL_EXAM.compose(res.scores,res.maxes,res.oral);
+    return el('span',{class:'pl '+(res.score_visible?'ok':'wt')},'Concluída · '+BL_EXAM.line(c)+(res.score_visible?'':' · oculta'));}
   if(res)return el('span',{class:'pl wt'},'Em andamento');
   if(rel)return el('span',{class:'pl ok'},'Liberada');
   return el('span',{class:'pl gr'},'Não liberada');
@@ -718,9 +719,9 @@ async function loadExams(){
 }
 function xStatus(rel,res,def){
   if(!def)return el('span',{class:'msg bad'},'Prova deste Stage ainda não cadastrada');
-  if(res&&res.submitted_at){const sc=res.scores||{},mx=res.maxes||{};let t=0,m=0;Object.keys(mx).forEach(k=>{t+=sc[k]||0;m+=mx[k];});
+  if(res&&res.submitted_at){const c=BL_EXAM.compose(res.scores,res.maxes,res.oral);
     const nrev=Object.values(res.review||{}).reduce((s,x)=>s+x.length,0);
-    return el('span',{},'Concluída: ',el('b',{},t+'/'+m),nrev?' ('+nrev+' p/ revisar)':'',res.late?' · enviada após o tempo':'',' · ',el('span',{class:'st '+(res.score_visible?'approved':'pending')},res.score_visible?'nota liberada ao aluno':'nota oculta'));}
+    return el('span',{},'Concluída: ',el('b',{},BL_EXAM.line(c)),nrev?' ('+nrev+' p/ revisar)':'',res.late?' · enviada após o tempo':'',' · ',el('span',{class:'st '+(res.score_visible?'approved':'pending')},res.score_visible?'nota liberada ao aluno':'nota oculta'));}
   if(res)return el('span',{class:'st pending'},'Em andamento desde '+fmt(res.started_at));
   if(rel)return el('span',{class:'st approved'},'Liberada, ainda não iniciada');
   return el('span',{},'Não liberada');
@@ -734,7 +735,7 @@ document.addEventListener('click',e=>{if(!e.target.closest('.mn,.mnb'))document.
 function xbtn(t,cls,fn){const b=el('button',{type:'button',class:cls||''},t);b.addEventListener('click',fn);return b;}
 function certDialog(p,st,c,res,cert){
   const def=XDEF[st],sub=!!(res&&res.submitted_at);let pct=null;
-  if(sub){const sc=res.scores||{},mx=res.maxes||{};let T=0,M=0;Object.keys(mx).forEach(k=>{T+=sc[k]||0;M+=mx[k];});pct=M?Math.round(100*T/M):null;}
+  if(sub){const c=BL_EXAM.compose(res.scores,res.maxes,res.oral);pct=c.M?c.pct:null;}
   const why=[];
   if(c.miss.length)why.push('faltam os Lesson Checks das lessons '+c.miss.join(', '));
   if(c.avg==null||c.avg<0.7)why.push('média dos Lesson Checks: '+(c.avg==null?'sem notas':Math.round(c.avg*100)+'% (mínimo 70%)'));
@@ -775,10 +776,10 @@ function examCard(p,st){
     const rel=XREL.find(x=>x.user_id===p.id&&x.stage===st),res=XRES.find(x=>x.user_id===p.id&&x.stage===st),c=xChecks(p.id,st),un=XUN.find(x=>x.user_id===p.id&&x.stage===st),cert=certOf(p.id,st);
     const sub=!!(res&&res.submitted_at),prog=!!(res&&!res.submitted_at);
     const nrev=sub?Object.values(res.review||{}).reduce((s,x)=>s+x.length,0):0;
-    let T=0,M=0;if(sub){const sc=res.scores||{},mx=res.maxes||{};Object.keys(mx).forEach(k=>{T+=sc[k]||0;M+=mx[k];});}
+    const cx=sub?BL_EXAM.compose(res.scores,res.maxes,res.oral):null;
     let pill;
     if(!def)pill=el('span',{class:'pl bad'},'Prova não cadastrada');
-    else if(sub)pill=el('span',{class:'pl '+(res.score_visible?'ok':'wt')},'Concluída · '+T+'/'+M+(res.score_visible?'':' · nota oculta'));
+    else if(sub)pill=el('span',{class:'pl '+(res.score_visible?'ok':'wt')},'Concluída · '+BL_EXAM.line(cx)+(res.score_visible?'':' · nota oculta'));
     else if(prog)pill=el('span',{class:'pl wt'},'Em andamento');
     else if(rel)pill=el('span',{class:'pl ok'},'Liberada');
     else pill=el('span',{class:'pl gr'},'Não liberada');
@@ -845,8 +846,11 @@ async function showExam(p,st){
   const res=XRES.find(x=>x.user_id===p.id&&x.stage===st);if(!res)return;
   const K={};XKEY[st].parts.forEach(x=>{K[x.id]=x;});const A=res.answers||{};
   const card=el('div',{class:'card'},el('h3',{},p.name+' · Stage '+st+' · '+fmt(res.submitted_at)));
-  const sc=res.scores||{},mx=res.maxes||{};let T=0,M=0;Object.keys(mx).forEach(k=>{T+=sc[k]||0;M+=mx[k];});
-  card.append(el('p',{},el('b',{},'Total '+T+'/'+M+' ('+Math.round(100*T/(M||1))+'%)'),'  ·  '+Object.keys(mx).map(k=>k+' '+(sc[k]||0)+'/'+mx[k]).join(' · ')));
+  const sc=res.scores||{},mx=res.maxes||{};
+  {const c=BL_EXAM.compose(sc,mx,res.oral);
+   card.append(el('p',{},el('b',{},'Exam '+BL_EXAM.fmt(c.T)+'/'+c.M+' ('+c.pct+'%)'),'  ·  '+c.rows.map(r=>r.label+' '+BL_EXAM.fmt(r.s)+'/'+r.m).join(' · '),' · ',el('span',{class:'pl '+(c.ok?'ok':'bad')},c.ok?'Exam OK (mín. 30)':'Abaixo do mínimo de 30 no exam')));
+   card.append(el('p',{class:'hint'},'A prova oficial do livro vale 50 pontos. A conversa abaixo é uma nota a mais, de 15 pontos, que não entra nos 50.'));}
+  xOralCard(p,st,res,card);
   if(K.dictation){const d=xdiff(K.dictation.text,A.dictation||'');const p1=el('p',{style:'line-height:2'});
     d.parts.forEach(x=>{if(x[0]==='ok')p1.append(x[1]+' ');
       else if(x[0]==='sub'){p1.append(el('span',{style:'background:var(--bad-bg);color:var(--bad);font-weight:700;padding:0 3px'},x[1]),el('span',{style:'color:var(--ok);font-weight:700'},'['+x[2]+'] '));}
@@ -868,6 +872,52 @@ async function showExam(p,st){
       tb.append(el('tr',{},el('td',{class:'c'},n),el('td',{},got||'(em branco)'),el('td',{},want,el('div',{class:'sm'},(K.err.hint||{})[n]||'')),td));});
     const t2=el('table');t2.append(th(['#','Aluno escreveu','Esperado','']),tb);const w=el('div',{class:'tw'});w.append(t2);card.append(w);}
   box.append(card);card.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function xOralCard(p,st,res,card){
+  const O=res.oral&&res.oral.q?JSON.parse(JSON.stringify(res.oral)):{q:[]};
+  const box=el('div',{class:'orq'});card.append(el('h4',{},'Conversa (15 pontos, fora dos 50 da prova)'),el('p',{class:'hint'},'Três perguntas do livro, com pequena troca de palavra. Todas as palavras já foram estudadas até o fim do Stage. Edite o texto se quiser. Dê a nota de cada critério enquanto ouve o aluno.'),box);
+  const CR=BL_EXAM.CRIT,sumEl=el('p',{}),msg=el('p',{class:'hint'}),warn={};
+  function save(){
+    O.at=new Date().toISOString();
+    return sb.from('exam_results').update({oral:O}).eq('user_id',p.id).eq('stage',st).then(r=>{
+      if(r.error){msg.textContent='Não foi possível salvar: '+r.error.message+(/oral/i.test(r.error.message)?' (a coluna da nota oral ainda não existe no Supabase)':'');msg.className='msg bad';return;}
+      res.oral=JSON.parse(JSON.stringify(O));msg.textContent='Nota oral salva.';msg.className='msg ok';});
+  }
+  function refresh(){
+    const o=BL_EXAM.oralTot(O),c=BL_EXAM.compose(res.scores,res.maxes,O);
+    sumEl.textContent='';sumEl.append(el('b',{},'Conversa '+o.s+'/15'),'  ·  Exam '+BL_EXAM.fmt(c.T)+'/'+c.M+' ',el('span',{class:'pl '+(c.ok?'ok':'bad')},c.ok?'Exam OK (mín. 30)':'Abaixo do mínimo de 30'),o.done?'':el('span',{class:'pl wt'},'faltam notas'),'  ·  Prova + conversa ',el('b',{},BL_EXAM.fmt(c.T+o.s)+'/'+(c.M+15)));
+  }
+  async function check(i,q,e){
+    const w=await BL_ORAL.unknown(sb,st,q+' '+e).catch(()=>[]);
+    if(warn[i])warn[i].textContent=w.length?'Palavra ainda não estudada: '+[...new Set(w)].join(', '):'';
+  }
+  function draw(){
+    box.textContent='';
+    const tb=el('tbody',{});
+    O.q.forEach((x,i)=>{
+      const qi=el('input',{type:'text',value:x.q,'aria-label':'Pergunta '+(i+1)}),ei=el('input',{type:'text',value:x.e,'aria-label':'Resposta esperada '+(i+1)});
+      const wl=el('div',{class:'orw'});warn[i]=wl;
+      qi.addEventListener('change',()=>{x.q=qi.value;check(i,x.q,x.e);});ei.addEventListener('change',()=>{x.e=ei.value;check(i,x.q,x.e);});
+      const sc=el('td',{class:'c'},'');
+      const upd=()=>{sc.textContent=((x.s||[]).reduce((a,v)=>a+(v||0),0))+'/5';};
+      const cells=CR.map((c,j)=>{const g=el('span',{class:'ob',role:'group','aria-label':c[0]});
+        for(let v=0;v<=c[1];v++){const b=el('button',{type:'button',class:x.s[j]===v?'on':'','aria-pressed':String(x.s[j]===v)},String(v));
+          b.addEventListener('click',()=>{x.s[j]=(x.s[j]===v)?null:v;g.querySelectorAll('button').forEach((bb,k)=>{bb.classList.toggle('on',x.s[j]===k);bb.setAttribute('aria-pressed',String(x.s[j]===k));});upd();refresh();});g.append(b);}
+        return el('td',{},g);});
+      const re=el('button',{type:'button',class:'ghost',title:'Trocar esta pergunta'},'↻');
+      re.addEventListener('click',async()=>{re.disabled=true;try{const n=await BL_ORAL.gen(sb,st,1,O.q.map(y=>y.q));if(n[0]){O.q[i]=n[0];draw();refresh();}}catch(er){msg.textContent='Erro ao sortear: '+(er.message||er);msg.className='msg bad';}re.disabled=false;});
+      upd();
+      tb.append(el('tr',{},el('td',{},el('div',{},el('b',{},(i+1)+'. '),x.alt?el('span',{class:'pl'},'com troca'):el('span',{class:'pl'},'do livro'),' ',x.lesson?el('span',{class:'exp'},'lesson '+x.lesson):null),qi,el('div',{class:'exp'},'Esperada:'),ei,wl),...cells,sc,el('td',{},re)));
+      check(i,x.q,x.e);
+    });
+    const t=el('table');t.append(th(['Pergunta','Entendeu 0-1','Completa 0-1','Gramática 0-2','Pronúncia 0-1','Nota','']),tb);const w=el('div',{class:'tw'});w.append(t);box.append(w,sumEl,el('div',{style:'display:flex;gap:8px;flex-wrap:wrap;margin:8px 0'},
+      (()=>{const b=el('button',{type:'button',class:'ghost'},'Sortear outras perguntas');b.addEventListener('click',async()=>{b.disabled=true;try{O.q=await BL_ORAL.gen(sb,st,3,O.q.map(y=>y.q));draw();refresh();}catch(er){msg.textContent='Erro ao sortear: '+(er.message||er);msg.className='msg bad';}b.disabled=false;});return b;})(),
+      (()=>{const b=el('button',{type:'button'},'Salvar nota oral');b.addEventListener('click',()=>save());return b;})()),msg);
+    refresh();
+  }
+  if(O.q.length){draw();}
+  else{box.append(el('p',{class:'hint'},'Sorteando perguntas…'));BL_ORAL.gen(sb,st,3,[]).then(q=>{O.q=q;draw();return sb.from('exam_results').update({oral:{q:O.q,at:new Date().toISOString()}}).eq('user_id',p.id).eq('stage',st).then(r=>{if(!r.error)res.oral={q:O.q};});}).catch(er=>{box.textContent='';box.append(el('p',{class:'msg bad'},'Não foi possível sortear as perguntas: '+(er.message||er)));});}
 }
 async function xReview(uid,st,n,accept){
   const res=XRES.find(x=>x.user_id===uid&&x.stage===st);if(!res)return;

@@ -352,7 +352,15 @@ function fillLessons(n){
   for(let i=t.from;i<=Math.min(t.to,UPTO);i++)lsSel.append(el('option',{value:String(i)},'Lesson '+i));
 }
 /* Revisao do dia (link do painel do professor): ?rv=103-111&w=Germany&p=68&who=Tatyely&n=11 */
-const RV=(function(){try{if(BUS)return null;const q=new URLSearchParams(location.search),m=/^(\d+)-(\d+)$/.exec(q.get('rv')||'');if(!m)return null;return {a:+m[1],b:+m[2],w:q.get('w')||'',p:q.get('p')||'',who:q.get('who')||'',n:q.get('n')||''};}catch(e){return null;}})();
+const RV=(function(){try{if(BUS)return null;const q=new URLSearchParams(location.search),m=/^(\d+)-(\d+)$/.exec(q.get('rv')||''),ml=/^(\d+)-(\d+)$/.exec(q.get('rl')||'');
+  let A=null,B=null;
+  if(m){A=+m[1];B=+m[2];}
+  else if(ml&&window.PARANUM){/* revisao por LICOES (ex.: REV 83-84): converte para o intervalo de paragrafos */
+    const l1=+ml[1],l2=+ml[2];let lo=1e9,hi=0;
+    for(let l=l1;l<=l2;l++)(PARANUM[l]||[]).forEach(x=>{if(+x[0]<lo)lo=+x[0];if(+x[0]>hi)hi=+x[0];});
+    if(hi){A=lo;B=hi;}}
+  if(A==null)return null;
+  return {a:A,b:B,w:q.get('w')||'',p:q.get('p')||'',who:q.get('who')||'',n:q.get('n')||''};}catch(e){return null;}})();
 const PLES=(function(){const r={};if(window.PARANUM)for(const k in PARANUM)PARANUM[k].forEach(x=>{if(r[x[0]]==null)r[x[0]]=+k;});return r;})();
 function rvApply(){
   const old=document.getElementById('rvbar');if(old)old.remove();if(!RV)return;

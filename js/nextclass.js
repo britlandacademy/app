@@ -99,11 +99,14 @@ function render(box,ev,deps,opts){opts=opts||{};
       var sc=window.screen||{},L=sc.availLeft||0,T=sc.availTop||0,W=Math.floor((sc.availWidth||1280)/2),H=sc.availHeight||800;
       return window.open(url,'blrev','popup=yes,left='+L+',top='+T+',width='+W+',height='+H);}
     function openRevision(){
-      var rv=nx&&nx.review,sh=ln&&ln.sheet_name;if(!rv||rv.from==null||!sh)return;
+      var rv=nx&&nx.review,sh=ln&&ln.sheet_name;if(!sh)return;
+      var rl=null;
+      if(!rv||rv.from==null){/* sem revisao por paragrafo: tenta "REV a-b" do conteudo (licoes) */
+        var mm=/\bREV\s+(\d+)\s*-\s*(\d+)/i.exec(String((nx&&(nx.contents||nx.activity))||''));if(!mm||/2nd/i.test(sh))return;rl=mm[1]+'-'+mm[2];rv={from:0,to:0};}
       var sm=/(?:stage|stg)\s*(\d+)/i.exec(sh),stg=+(fd.stage||(sm?sm[1]:0)),from=+rv.from,to=rv.to!=null?+rv.to:from,
           who=String(name(d.uids[0])).trim().split(/\s+/)[0],enc=encodeURIComponent,w=cp.lastWord||(first&&first.last_word)||'',par=cp.paragraph||cp.lastNewWord||'';
-      if(/3rd/i.test(sh)){
-        revWin('lessons.html?stage='+stg+'&rv='+from+'-'+to+'&w='+enc(w)+'&p='+enc(par)+'&who='+enc(who)+'&n='+enc(nx.classNumber||''));return;}
+      if(!/2nd/i.test(sh)){
+        revWin('lessons.html?stage='+stg+(rl?'&rl='+rl:'&rv='+from+'-'+to)+'&w='+enc(w)+'&p='+enc(par)+'&who='+enc(who)+'&n='+enc(nx.classNumber||''));return;}
       var T=window.BL_TBOOK,file=T&&T.file(stg),page=T&&T.pageFor(stg,from);
       var win=revWin('about:blank');if(!win)return;
       var say=function(t){try{win.document.body.style.cssText='font:16px system-ui;padding:24px;background:#0b1733;color:#f3f4f6';win.document.body.textContent=t;}catch(e){}};
