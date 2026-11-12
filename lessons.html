@@ -211,7 +211,7 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 .par::before{content:"";position:absolute;right:18px;top:4px;bottom:4px;width:2px;background:var(--line);border-radius:2px}
 .par .pn{position:absolute;right:0;top:0;width:38px;height:26px;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:700;color:#1a1405;background:#c9a13b;border-radius:6px;font-variant-numeric:tabular-nums}
 .par>:first-child{margin-top:0}
-.par{scroll-margin-top:84px}
+.par{scroll-margin-top:var(--rvh,84px)}
 .par.rv{background:rgba(240,195,106,.10);border-left:4px solid var(--warn);padding-left:12px;margin-left:-16px;padding-top:6px;padding-bottom:8px;border-radius:0 8px 8px 0}
 .par.rv .pn{outline:2px solid var(--warn);outline-offset:1px}
 .rvbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:0 0 10px}
@@ -374,6 +374,9 @@ function rvApply(){
     el('button',{type:'button',class:'g',onclick:()=>{if(l1&&l1!==cur)show(l1,true);const f=out.querySelector('.par.rv');if(f)f.scrollIntoView({behavior:'smooth',block:'start'});}},'Ir ao par. '+RV.a),
     el('button',{type:'button',onclick:()=>{if(cur<HI)show(cur+1);}},'Pr\u00f3xima li\u00e7\u00e3o \u2192'));
   out.parentNode.insertBefore(bar,out);
+  /* fica logo abaixo da barra de navegação do app (que também é fixa no topo) */
+  const fit=()=>{const g=document.querySelector('.g-top,.g-bar');const h=g?Math.ceil(g.getBoundingClientRect().bottom):0;const top=Math.max(0,h+6);bar.style.top=top+'px';document.documentElement.style.setProperty('--rvh',(top+bar.offsetHeight+12)+'px');};
+  fit();setTimeout(fit,400);setTimeout(fit,1500);addEventListener('resize',fit);
 }
 function show(id,noscroll){
   cur=id;const t=stageOf(id),n=t.n;
