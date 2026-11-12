@@ -18,7 +18,8 @@ function create(sb,c,done){
   var pl={sheetName:tab,lesson:1,action:'newStudent',tabName:tab,template:TPL,firstName:first,vip:!!c.vip,stage:c.stage,lessonsText:P.lessons,plan:P.rows,start:ymd(c.start_at)+'T'+hm(c.start_at)};
   if(c.fee)pl.fee=c.fee;
   sb.functions.invoke('sheet-push',{body:pl}).then(function(r){var q=r&&r.data;
-    if(q&&q.ok){sb.from('plan_links').upsert({user_id:c.uid,sheet_name:tab,student_col:first}).then(function(){done(null,tab);},function(){done(null,tab);});return;}
+    if(q&&q.ok){var fin=function(){done(null,tab);},gd=function(){if(!q.gid)return Promise.resolve();return Promise.resolve(sb.from('teacher_cfg').select('value').eq('key','plans_gids').limit(1)).then(function(g){var v=Object.assign({},(g&&g.data&&g.data[0]&&g.data[0].value)||{});v[tab]=q.gid;return sb.from('teacher_cfg').upsert({key:'plans_gids',value:v},{onConflict:'key'});}).catch(function(){});};
+      Promise.resolve(sb.from('plan_links').upsert({user_id:c.uid,sheet_name:tab,student_col:first})).catch(function(){}).then(gd).then(fin,fin);return;}
     done(ERR[q&&q.error]||('Falhou'+(q&&q.error?' ('+q.error+')':'')));
   },function(){done('Falhou ao falar com a planilha.');});
 }
