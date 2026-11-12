@@ -125,7 +125,7 @@ a.btnl{display:inline-flex;align-items:center;min-height:46px;padding:8px 20px;b
 <body>
 <div id="app"></div>
 <script src="js/config.js" charset="utf-8"></script>
-<script src="js/gate.js" charset="utf-8"></script><script src="js/examcalc.js" charset="utf-8"></script>
+<script src="js/gate.js" charset="utf-8"></script><script src="js/dialog.js" data-lang="en" charset="utf-8"></script><script src="js/examcalc.js" charset="utf-8"></script>
 <script>
 Gate.start({kinds:[],bare:true},function(ctx){
 'use strict';
@@ -363,7 +363,7 @@ async function send(){
   const r=await sb.rpc('exam_submit',{p_stage:stage,p_answers:answers});
   if(r.error&&!/already submitted/i.test(r.error.message)){
     sent=false;document.querySelectorAll('button,input,textarea').forEach(x=>x.disabled=false);
-    alert('Could not send the exam: '+r.error.message+'\nCheck your connection and try again.');tick=setInterval(onTick,500);return;}
+    await BL_DLG.alert('Could not send the exam: '+r.error.message+'\nCheck your connection and try again.',{title:'Exam not sent',ok:'Try again'});tick=setInterval(onTick,500);return;}
   const s=await sb.rpc('exam_state',{p_stage:stage});finished(s.data||{state:'done'});
 }
 function finished(st){

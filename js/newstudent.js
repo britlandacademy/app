@@ -49,9 +49,8 @@ function mount(w,before,evl,stu,sb){
           var msg=el('div','ns-m'),r2=el('div','ns-r'),go=el('button','ag-btn','Criar aba na planilha');go.type='button';r2.appendChild(go);i.appendChild(r2);i.appendChild(msg);c.appendChild(b);c.appendChild(i);before.parentNode.insertBefore(c,before);
           go.onclick=function(){var stg=Number(sel.value);if(!stg){msg.textContent='Escolha o Stage.';return;}
             var tab=inN.value.trim()+(vip.checked?' VIP':'')+' - Stage '+stg+' 3rd Edition';
-            if(!window.confirm('Criar a aba "'+tab+'" na planilha?'))return;
-            go.disabled=true;msg.textContent='Criando…';
-            create(sb,{uid:uid,name:inN.value.trim(),vip:vip.checked,stage:stg,start_at:x.start_at,fee:fee},function(e,t){if(e){go.disabled=false;msg.textContent=e;}else{msg.textContent='Aba criada ✅ '+t;go.hidden=true;}});};
+            var run=function(){go.disabled=true;msg.textContent='Criando…';
+            create(sb,{uid:uid,name:inN.value.trim(),vip:vip.checked,stage:stg,start_at:x.start_at,fee:fee},function(e,t){if(e){go.disabled=false;msg.textContent=e;}else{msg.textContent='Aba criada ✅ '+t;go.hidden=true;}});};var q='Criar a aba "'+tab+'" na planilha?';if(window.BL_DLG)BL_DLG.confirm(q,{danger:false}).then(function(k){if(k)run();});else if(window.confirm(q))run();};
     });});
   },function(){});
 }

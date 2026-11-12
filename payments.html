@@ -169,7 +169,7 @@ td input[type=number]{width:7em}
 </div>
 <script src="js/i18n.js" charset="utf-8"></script>
 <script src="js/config.js" charset="utf-8"></script>
-<script src="js/gate.js" charset="utf-8"></script>
+<script src="js/gate.js" charset="utf-8"></script><script src="js/dialog.js" data-lang="pt" charset="utf-8"></script>
 <script>
 Gate.start({admin:true,kinds:[]},function(ctx){
 'use strict';
@@ -224,7 +224,7 @@ function rowForOld(c,showMonth){
   const pay=c.paid_on?el('button',{type:'button',class:'ghost'},'Desfazer'):el('button',{type:'button'},'Marcar como pago');
   pay.addEventListener('click',()=>upd(c.id,{paid_on:c.paid_on?null:today()}));
   const del=ib('del','Excluir','danger');
-  del.addEventListener('click',()=>{if(confirm('Excluir esta mensalidade?'))sb.from('charges').delete().eq('id',c.id).then(loadAll);});
+  del.addEventListener('click',async()=>{if(await BL_DLG.confirm('Excluir esta mensalidade?'))sb.from('charges').delete().eq('id',c.id).then(loadAll);});
   return el('tr',{class:(!c.paid_on&&c.due_date<today())?'late':''},
     el('td',{},s.student_name||'?'),el('td',{},s.plan||''),el('td',{class:'c'},br(c.due_date)),
     el('td',{},el('span',{},SYM[c.currency]+' '),inp),el('td',{},status(c)),el('td',{},el('div',{class:'row'},pay,sv,del)));
@@ -287,7 +287,7 @@ function renderSubs(){
     const ac=ib(s.active?'pause':'play',s.active?'Pausar':'Reativar');
     ac.addEventListener('click',()=>sb.from('subs').update({active:!s.active}).eq('id',s.id).then(loadAll));
     const del=ib('del','Excluir','danger');
-    del.addEventListener('click',()=>{if(confirm('Excluir este aluno e TODAS as mensalidades dele?'))sb.from('subs').delete().eq('id',s.id).then(loadAll);});
+    del.addEventListener('click',async()=>{if(await BL_DLG.confirm('Excluir este aluno e TODAS as mensalidades dele?'))sb.from('subs').delete().eq('id',s.id).then(loadAll);});
     b.append(el('tr',{},el('td',{class:'nm'},s.student_name+(s.user_id?'':' (sem conta)')),el('td',{},s.plan),
       el('td',{},el('div',{class:'mny'},el('span',{},SYM[s.currency]),am)),el('td',{},dd),el('td',{},pm),el('td',{},ob),el('td',{class:'c'},s.start_month.slice(5,7)+'/'+s.start_month.slice(0,4)),
       el('td',{class:'c'},el('span',{class:'dot'+(s.active?'':' off')}),s.active?'Sim':'Não'),el('td',{},el('div',{class:'ab'},sv,ac,del))));});
@@ -361,7 +361,7 @@ function rowFor(c){
   const ck=el('input',{type:'checkbox','aria-label':'Pago'});ck.checked=!!c.paid_on;
   ck.addEventListener('change',()=>upd(c.id,{paid_on:ck.checked?today():null}));
   const del=ib('del','Excluir','danger');
-  del.addEventListener('click',()=>{if(confirm('Excluir esta cobrança?'))sb.from('charges').delete().eq('id',c.id).then(loadAll);});
+  del.addEventListener('click',async()=>{if(await BL_DLG.confirm('Excluir esta cobrança?'))sb.from('charges').delete().eq('id',c.id).then(loadAll);});
   const s=subOf(c.sub_id),late=!c.paid_on&&c.due_date<today();
   return el('tr',{class:c.paid_on?'pd':(late?'late':'')},
     el('td',{class:'ck c'},ck),

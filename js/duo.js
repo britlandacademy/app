@@ -690,7 +690,7 @@
     }
     function leave(){close();var nv=function(){W.location.href='index.html';};Promise.all(pending).then(nv,nv);}
     function quit(){var done=idx>=total;if(done)return close();
-      if(!game){if(W.confirm(T('quit')))close();return;}
+      if(!game){var qd=function(a){return a[ix()];};if(W.BL_DLG)W.BL_DLG.confirm(T('quit'),{danger:false,title:qd(['Leave this practice?','Sair desta prática?','¿Salir de esta práctica?']),ok:qd(['Leave','Sair','Salir']),cancel:qd(['Keep going','Continuar','Seguir'])}).then(function(k){if(k)close();});else if(W.confirm(T('quit')))close();return;}
       var made=idx+(state==='ask'?0:1);if(made<1)return leave();
       if(root.querySelector('.dz-xq'))return;
       var pop=el('div','dz-pop dz-xq'),card=el('div','dz-card');pop.setAttribute('role','alertdialog');pop.setAttribute('data-noi18n','');pop.setAttribute('aria-label',T('qtitle'));
