@@ -914,6 +914,10 @@ async function avisosToday(av,stu){
     Object.keys(by).forEach(st=>{const L=by[st].sort((x,y)=>x.par-y.par);L.forEach((u,i)=>{const w=L.filter((v,j)=>j>=i&&v.par-u.par<=20);if(w.length<2)return;const idl=w.flatMap(v=>v.ids).sort(),key=idl.join(',');if(seen.some(s=>idl.every(x=>s.includes(x))))return;seen.push(idl);if(dis.has(key))return;
       const btn=el('button',{type:'button',class:'small'},'Dispensar');btn.onclick=async()=>{if(!confirm('Dispensar este aviso de possível turma?'))return;btn.disabled=true;const ks=[...dis,key];await sb.from('teacher_cfg').upsert({key:'group_dismissed',value:{keys:ks}});avisosToday(av,stu);};
       av.append(band('\uD83D\uDC65 Possível turma · Stage '+st,idl.map(x=>nm[x].split(' ')[0]).join(', '),'Parágrafos '+w[0].par+' a '+w[w.length-1].par+' ('+(w[w.length-1].par-w[0].par)+' de diferença)',btn));});});
+    // atrasos no plano (parágrafo registrado x início do New Work da próxima aula)
+    if(window.NextClass&&NextClass.lag){const LG=[];(pp.data||[]).forEach(r=>{if(!ids.has(r.user_id))return;const g=NextClass.lag(r.data);if(g)LG.push({n:nm[r.user_id],g,s:(r.data&&r.data.sheetName)||''});});
+      if(LG.length){LG.sort((x,y)=>y.g.lag-x.g.lag);const c=el('div',{class:'avc'},el('div',{class:'avb'},'\u26A0\uFE0F Atrasos no plano'));
+        LG.forEach(x=>c.append(el('div',{class:'hint',style:'margin:4px 0 0;color:inherit'},el('b',{},String(x.n).split(' ')[0]),' \u00B7 '+(x.g.edit?'registro par. '+x.g.reg+', plano par. '+x.g.plan+' (o plano parece ser de outra edição)':x.g.lag+' parágrafos atrás (parou no par. '+x.g.reg+'; o plano pede o par. '+x.g.plan+')'))));av.append(c);}}
   }catch(e){}
 }
 function renderToday(){
