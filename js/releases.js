@@ -2,6 +2,7 @@
    Newest first. Written for students (no technical terms). Each entry: v, d [pt, es], t [pt, es] short title, p [pt, es] one sentence,
    show:1 = also shown once in the notice after the update, c:'en'|'es' = only that course (omit = both). */
 window.BL_RELEASES=[
+{v:'2.0.65',d:['12 de novembro','12 de noviembre'],t:['Cartão My profile: a foto agora dá um zoom lento e passa de cinza para cor, em ciclos de 12 segundos (desligado se o aparelho pedir menos animações).','Tarjeta Mi perfil: la foto hace un zoom lento y pasa de gris a color, en ciclos de 12 segundos (desactivado si el dispositivo pide menos animaciones).'],p:['','']},
 {v:'2.0.64',d:['12 de novembro','12 de noviembre'],t:['O botão Home da barra do topo não tem mais o traço sublinhado.','El botón Home de la barra superior ya no tiene el trazo subrayado.'],p:['','']},
 {v:'2.0.63',d:['12 de novembro','12 de noviembre'],t:['Sons da interface: abrir, fechar e seguir agora fazem um clique seco e macio, bem baixinho, no estilo de teclado de celular.','Sonidos de la interfaz: abrir, cerrar y avanzar ahora hacen un clic seco y suave, muy bajito, al estilo del teclado del móvil.'],p:['','']},
 {v:'2.0.62',d:['12 de novembro','12 de noviembre'],t:['Sons da interface: os sons de abrir, fechar e seguir ficaram bem mais suaves e discretos (tilintar curto de vidro).','Sonidos de la interfaz: los sonidos de abrir, cerrar y avanzar son ahora mucho más suaves y discretos (tintineo corto de cristal).'],p:['','']},

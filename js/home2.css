@@ -97,8 +97,10 @@ a.card.hc .go{position:absolute;right:16px;top:16px;width:32px;height:32px;borde
 a.card.hc:hover .go,a.card.hc:focus-visible .go{transform:translateX(3px)}
 /* profile card */
 .grid a.card.hp{grid-column:1/-1;min-height:210px;padding:26px 30px}
-.hp .ph{position:absolute;right:0;top:0;bottom:0;width:62%;z-index:0;background:rgba(255,255,255,.05);-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 55%);mask-image:linear-gradient(90deg,transparent 0,#000 55%)}
-.hp .ph img{width:100%;height:100%;object-fit:cover;object-position:center 28%;display:block;filter:sepia(.2)}
+.hp .ph{position:absolute;right:0;top:0;bottom:0;width:62%;z-index:0;overflow:hidden;background:rgba(255,255,255,.05);-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 55%);mask-image:linear-gradient(90deg,transparent 0,#000 55%)}
+.hp .ph img{width:100%;height:100%;object-fit:cover;object-position:center 28%;display:block;filter:sepia(.2);transform-origin:60% 35%;animation:hpZoom 12s ease-in-out infinite,hpTone 12s ease-in-out infinite}
+@keyframes hpZoom{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
+@keyframes hpTone{0%,15%,85%,100%{filter:grayscale(1) contrast(1.05)}40%,60%{filter:sepia(.2)}}
 .hp .ph svg{position:absolute;right:8%;top:8%;height:84%;width:auto;opacity:.9}
 .hp:after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(circle at 85% 20%,rgba(240,207,107,.28),transparent 45%)}
 .hp .tt{max-width:56%}
@@ -130,7 +132,7 @@ html.fx-off .art .sB,html.fx-off .art .pw,html.fx-off .art .pen3,html.fx-off .ar
 html.fx-off .art .ln{stroke-dashoffset:0}
 html.fx-off .art .fl1,html.fx-off .art .fl2{display:none}
 .hc-off .art *{animation-play-state:paused!important}
-@media(prefers-reduced-motion:reduce){.art *{animation:none!important}}
+@media(prefers-reduced-motion:reduce){.art *{animation:none!important}.hp .ph img{animation:none!important;filter:sepia(.2)}}
 
 /* ---- next lesson (agenda), weekly tips, what to do today, numbers ---- */
 .ag h2{font-family:BLSerif,Georgia,serif}
