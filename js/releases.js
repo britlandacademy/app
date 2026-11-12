@@ -2,6 +2,7 @@
    Newest first. Written for students (no technical terms). Each entry: v, d [pt, es], t [pt, es] short title, p [pt, es] one sentence,
    show:1 = also shown once in the notice after the update, c:'en'|'es' = only that course (omit = both). */
 window.BL_RELEASES=[
+{v:'2.0.39',d:['12 de novembro','12 de noviembre'],t:['Entrar na aula abre a revisão em outra aba; faixa de revisão com última palavra em Lessons; busca de dictations por número','Entrar en clase abre la revisión en otra pestaña; barra de revisión con última palabra en Lessons; búsqueda de dictations por número'],p:['','']},
 {v:'2.0.38',d:['12 de novembro','12 de noviembre'],t:['Aviso de atraso no plano na Próxima aula e na aba Hoje','Aviso de retraso respecto al plan en Próxima clase y en Hoy'],p:['','']},
 {v:'2.0.37',d:['12 de novembro','12 de noviembre'],t:['Registro da aula usa o parágrafo anotado na planilha','El registro de la clase usa el párrafo anotado en la hoja'],p:['','']},
 {v:'2.0.36',d:['12 de novembro','12 de noviembre'],t:['Próxima aula em largura total, campo Palavra corrigido e parágrafos escritos como par.','Próxima clase a todo el ancho, campo Palabra corregido y párrafos escritos como par.'],p:['','']},

@@ -91,7 +91,25 @@ function render(box,ev,deps,opts){opts=opts||{};
     if(sub.length)hd.appendChild(el('div','nc-sub',sub.join(' · ')));
     top.appendChild(hd);top.appendChild(el('span','sp'));
     if(sid){var sa=el('a','nc-btn','Abrir planilha');sa.href='https://docs.google.com/spreadsheets/d/'+sid+'/edit'+(gid?'#gid='+gid:'');sa.target='_blank';sa.rel='noopener';top.appendChild(sa);}
-    var za=el('a','nc-btn go','Entrar na aula');za.href=meet;za.target='_blank';za.rel='noopener';top.appendChild(za);wrap.appendChild(top);
+    var za=el('a','nc-btn go','Entrar na aula');za.href=meet;za.target='_blank';za.rel='noopener';
+    za.addEventListener('click',function(){try{openRevision();}catch(e){}});
+    /* revisao do dia em outra aba: 3a edicao = Lessons do app (parágrafo); 2a edicao = livro do professor (PDF privado) na página */
+    function openRevision(){
+      var rv=nx&&nx.review,sh=ln&&ln.sheet_name;if(!rv||rv.from==null||!sh)return;
+      var sm=/(?:stage|stg)\s*(\d+)/i.exec(sh),stg=+(fd.stage||(sm?sm[1]:0)),from=+rv.from,to=rv.to!=null?+rv.to:from,
+          who=String(name(d.uids[0])).trim().split(/\s+/)[0],enc=encodeURIComponent,w=cp.lastWord||(first&&first.last_word)||'',par=cp.paragraph||cp.lastNewWord||'';
+      if(/3rd/i.test(sh)){
+        window.open('lessons.html?stage='+stg+'&rv='+from+'-'+to+'&w='+enc(w)+'&p='+enc(par)+'&who='+enc(who)+'&n='+enc(nx.classNumber||''),'_blank');return;}
+      var T=window.BL_TBOOK,file=T&&T.file(stg),page=T&&T.pageFor(stg,from);
+      var win=window.open('about:blank','_blank');if(!win)return;
+      var say=function(t){try{win.document.body.style.cssText='font:16px system-ui;padding:24px;background:#0b1733;color:#f3f4f6';win.document.body.textContent=t;}catch(e){}};
+      if(!file){say('O livro do professor do Stage '+stg+' (2ª edição) ainda não está disponível no app.');return;}
+      say('Abrindo o livro do professor, p. '+page+'…');
+      deps.sb.storage.from('teacher-books').createSignedUrl(file,3600).then(function(r){
+        if(r&&r.data&&r.data.signedUrl){win.location.href=r.data.signedUrl+'#page='+page;}
+        else say('O livro do Stage '+stg+' ainda não foi enviado. Painel → Conteúdo → Livros do professor (2ª edição).');
+      },function(){say('Não consegui abrir o livro do professor agora.');});
+    }top.appendChild(za);wrap.appendChild(top);
     /* three boxes */
     var g3=el('div','nc-grid'),b1=el('div','nc-box'),b2=el('div','nc-box'),b3=el('div','nc-box today');
     add(b1,el('div','nc-k','Revisão de hoje'));

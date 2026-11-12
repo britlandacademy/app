@@ -111,7 +111,7 @@ LS.init=function(cfg){
           else if(k==='d'){disp=text=b[2]||'';}
           else return;
           if(!text)return;
-          arr.push({id:id,bi:bi,k:k,stage:sn,par:par?par[bi]:null,disp:disp,n:norm(disp)});
+          arr.push({id:id,bi:bi,k:k,stage:sn,par:par?par[bi]:null,disp:disp,n:norm(disp),dn:k==='d'?Number(b[1]):null});
         });
       });
       index=arr;loading=false;return arr;
@@ -120,11 +120,15 @@ LS.init=function(cfg){
   }
   var rtmr=null;
   inp2.addEventListener('input',function(){clearTimeout(rtmr);rtmr=setTimeout(function(){q=inp2.value.trim();render();},160);});
+  /* "d6", "dict 6", "dictation 6", "ditado 6" -> numero do ditado */
+  function dictNum(t){var m=/^\s*(?:d|dict|dictation|ditado|dictado)\.?\s*(\d{1,3})\s*$/i.exec(String(t));return m?+m[1]:0;}
   function filtered(){
     var nq=norm(q);if(nq.length<2||!index)return [];
+    var dm=dictNum(q);if(dm)return index.filter(function(r){return r.k==='d'&&r.dn===dm&&(!stageF||r.stage===stageF);});
     return index.filter(function(r){return (typeF==='all'||r.k===typeF)&&(!stageF||r.stage===stageF)&&find(r.n,nq)>=0;});
   }
   function snippet(r,nq){
+    if(dictNum(q)&&r.k==='d')return ['Dictation '+r.dn+' \u2014 ',r.disp.length>150?r.disp.slice(0,150)+'\u2026':r.disp];
     var s=r.disp,i=find(r.n,nq),a=Math.max(0,i-50),b=Math.min(s.length,i+nq.length+90);
     var pre=(a>0?'…':'')+s.slice(a,i),mid=s.slice(i,i+nq.length),post=s.slice(i+nq.length,b)+(b<s.length?'…':'');
     return [pre,el('mark',{class:'sr'},mid),post];

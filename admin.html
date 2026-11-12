@@ -239,7 +239,8 @@ details.h{background:var(--surface);border:1px solid var(--line);border-radius:1
   <div class="tw"><table id="mat"></table></div>
   <div class="row"><label for="who">Detalhe de um aluno</label><select id="who"></select></div>
   <div class="tw"><table id="det"></table></div>
-</section></div>
+</section>
+</div>
 <div class="sc" id="s-content"><section class="card" aria-labelledby="h-ct"><h2 id="h-ct">Conteúdo (texto, checks e exercícios)</h2>
   <p class="hint" id="ctinfo"></p>
   <div class="row fpk"><input type="file" id="ctfile" accept=".json,application/json" aria-label="Arquivo content.json" hidden><button type="button" class="ghost" data-pick="ctfile">Escolher arquivo</button><span class="fpn" id="ctname" aria-live="polite">Nenhum arquivo escolhido</span></div>
@@ -253,7 +254,15 @@ details.h{background:var(--surface);border:1px solid var(--line);border-radius:1
   <p class="hint">Escolha vários arquivos de uma vez (Ctrl+A na pasta). Os nomes devem ser como já estão: <i>Stage 1 Lesson 1.mp3</i> e <i>Stage 1 Lesson 6 Dictation 1.mp3</i> e, para os ditados do Workbook, <i>Workbook Lesson 005 J1.mp3</i> (J1, J2, J3 = frase 1, 2, 3). O site organiza nas pastas certas sozinho.</p>
   <p class="msg" id="aumsg" aria-live="polite"></p>
   <div class="tw"><table id="aulist" hidden></table></div>
-</section></div>
+</section>
+<section class="card" aria-labelledby="h-tb"><h2 id="h-tb">Livros do professor (2ª edição)</h2>
+  <p class="hint" id="tbinfo"></p>
+  <div class="row fpk"><input type="file" id="tbfile" accept=".pdf,application/pdf" multiple aria-label="PDFs do livro do professor" hidden><button type="button" class="ghost" data-pick="tbfile">Escolher PDFs…</button><span class="fpn" id="tbname" aria-live="polite">Nenhum arquivo escolhido</span></div>
+  <div class="row"><button type="button" id="tbgo">Enviar livros</button></div>
+  <p class="hint">Escolha os arquivos <i>1 e 2.pdf</i>, <i>3 e 4.pdf</i> … <i>11 e 12.pdf</i>. Ficam em armazenamento privado: só administradores conseguem abri-los (o botão “Entrar na aula” usa um link temporário).</p>
+  <p class="msg" id="tbmsg" aria-live="polite"></p>
+</section>
+</div>
 <div class="sc" id="s-stats"><section class="card" aria-labelledby="h-st"><h2 id="h-st">Estatísticas</h2><div id="statsBox" data-noi18n="1"></div></section></div>
 <div class="sc" id="s-tips"><section class="card" aria-labelledby="h-tips"><h2 id="h-tips">Dicas semanais</h2><div id="tipsBox" data-noi18n="1"></div></section></div>
 <div class="sc" id="s-social"><section class="card" aria-labelledby="h-soc"><h2 id="h-soc">Redes sociais</h2><div id="socialBox" data-noi18n="1"></div></section></div>
@@ -280,7 +289,7 @@ details.h{background:var(--surface);border:1px solid var(--line);border-radius:1
 <script src="js/newstudent.js" charset="utf-8"></script>
 <script src="js/holidays.js" charset="utf-8"></script>
 <script src="js/agenda.js" charset="utf-8"></script>
-<script src="js/nextclass.js" charset="utf-8"></script>
+<script src="js/tbook.js" charset="utf-8"></script><script src="js/nextclass.js" charset="utf-8"></script>
 <script>
 Gate.start({admin:true,kinds:[]},function(ctx){
   (function(){var b=document.getElementById('streakBox');if(b&&window.Streak)Streak.admin(b);})();
@@ -553,7 +562,7 @@ function ctInfo(){
     $('ctinfo').textContent='No servidor agora: '+c.text+' lessons (texto), '+c.check+' Lesson Checks, '+c.ex+' conjuntos de exercícios.';
   });
 }
-document.querySelectorAll('[data-pick]').forEach(b=>{const inp=$(b.dataset.pick),nm=$(b.dataset.pick==='ctfile'?'ctname':'auname');
+document.querySelectorAll('[data-pick]').forEach(b=>{const inp=$(b.dataset.pick),nm=$(b.dataset.pick==='ctfile'?'ctname':b.dataset.pick==='tbfile'?'tbname':'auname');
   b.addEventListener('click',()=>inp.click());
   inp.addEventListener('change',()=>{const fs=Array.from(inp.files);if(!fs.length){nm.textContent='Nenhum arquivo escolhido';return;}
     const kb=fs.reduce((a,f)=>a+f.size,0)/1024,sz=kb>=1024?(kb/1024).toFixed(1)+' MB':Math.round(kb)+' KB';
@@ -622,6 +631,30 @@ $('augo').addEventListener('click',async()=>{
   $('augo').disabled=false;auInfo();
 });
 
+
+/* ----- livros do professor (2a edicao): armazenamento privado "teacher-books" ----- */
+function tbName(n){const m=/^\s*(\d+)\s*(?:e|&|-)\s*(\d+)\s*\.pdf\s*$/i.exec(n);return m?'2nd/stages-'+m[1]+'-'+m[2]+'.pdf':null;}
+function tbInfo(){const el_=$('tbinfo');if(!el_)return;return sb.storage.from('teacher-books').list('2nd').then(r=>{
+  if(r.error){el_.textContent='Armazenamento dos livros ainda não está pronto.';return;}
+  const n=(r.data||[]).filter(x=>/\.pdf$/i.test(x.name)).map(x=>x.name.replace(/^stages-/,'').replace(/\.pdf$/,'').replace('-',' e '));
+  el_.textContent=n.length?'Enviados: Stages '+n.join(', ')+'.':'Nenhum livro enviado ainda.';});}
+$('tbgo').addEventListener('click',async()=>{
+  const files=Array.from($('tbfile').files);
+  if(!files.length){setMsg('tbmsg','Escolha os PDFs.','bad');return;}
+  $('tbgo').disabled=true;let ok=0,skip=[],fail=[];
+  for(let i=0;i<files.length;i++){
+    const f=files[i],p=tbName(f.name);
+    if(!p){skip.push(f.name);continue;}
+    setMsg('tbmsg','Enviando '+(i+1)+' de '+files.length+': '+f.name);
+    const r=await sb.storage.from('teacher-books').upload(p,f,{upsert:true,contentType:'application/pdf',cacheControl:'3600'});
+    if(r.error)fail.push(f.name+' ('+r.error.message+')');else ok++;
+  }
+  let m=ok+' enviado(s).';
+  if(skip.length)m+=' Ignorados (nome fora do padrão "1 e 2.pdf"): '+skip.join(', ')+'.';
+  if(fail.length)m+=' Falharam: '+fail.join('; ')+'.';
+  setMsg('tbmsg',m,fail.length||skip.length?'bad':'ok');
+  $('tbgo').disabled=false;tbInfo();
+});
 
 /* ----- placement test results ----- */
 function tl(p){return p.test_lang||(p.answers&&p.answers.lang)||'en';}
@@ -1033,7 +1066,7 @@ window.addEventListener('hashchange',()=>go((location.hash||'#home').slice(1)));
 
 loadPlacement();
 loadProfiles().then(loadAttempts).then(()=>{renderMat();renderWho();renderHome();loadHomeExtras();return loadExams();}).then(renderHome).catch(e=>setMsg('scmsg','Erro ao carregar: '+(e.message||e),'bad'));
-ctInfo();auInfo();
+ctInfo();auInfo();tbInfo();
 });
 </script>
 </body></html>
