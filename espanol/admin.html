@@ -342,6 +342,21 @@ function renderPend(){
   box.append(el('div',{class:'tw'},el('table',{},th(['Nome','E-mail','Pedido em','Ação']),tb)));
 }
 let PLAN={links:{},cols:{},prog:{},tabs:{}},OPEN=new Set(),EXS={},SAVED={};
+/* nome de cadastro editavel (vai para o certificado): corrige o perfil e os certificados ja emitidos */
+function nameBlock(p){
+  const ok=el('span',{class:'sv',style:'margin-left:8px'}),inp=el('input',{type:'text',value:p.name||'','aria-label':'Nome de cadastro de '+(p.name||p.email),style:'width:100%;max-width:340px;min-height:38px;box-sizing:border-box',autocomplete:'off'});
+  const small=new Set(['da','de','do','das','dos','e','di','du','van','von','del','la','le']);
+  const fix=el('button',{type:'button',class:'ghost',title:'Coloca a primeira letra de cada nome em maiúscula'},'Aa Capitalizar');
+  fix.onclick=()=>{inp.value=inp.value.trim().replace(/\s+/g,' ').toLowerCase().split(' ').map((w,i)=>i>0&&small.has(w)?w:w.charAt(0).toUpperCase()+w.slice(1)).join(' ');inp.focus();};
+  const save=el('button',{type:'button'},'Salvar nome');
+  save.onclick=async()=>{const nv=inp.value.trim().replace(/\s+/g,' ');if(!nv||nv===p.name)return;
+    if(!(await BL_DLG.confirm('Trocar o nome de cadastro para "'+nv+'"? Os certificados já emitidos deste aluno também serão atualizados.',{danger:false,title:'Trocar nome',ok:'Trocar',cancel:'Cancelar'})))return;
+    save.disabled=true;const r=await sb.from('profiles').update({name:nv}).eq('id',p.id);
+    if(r.error){save.disabled=false;setMsg('xmsg','Erro ao salvar: '+r.error.message,'bad');return;}
+    try{await sb.from('certificates').update({student_name:nv}).eq('user_id',p.id);}catch(e){}
+    p.name=nv;save.disabled=false;okTag(ok);renderStu();};
+  return el('div',{},el('div',{style:'display:flex;flex-wrap:wrap;gap:8px;align-items:center'},inp,fix,save,ok),el('p',{class:'hint',style:'margin:6px 0 0'},'É o nome que sai no certificado.'));
+}
 function startBlock(p){
   const ok=el('span',{class:'sv',style:'margin-left:8px'});
   const sel=el('select',{'aria-label':'Começou no Stage, '+p.name,title:'Se o aluno entrou direto num Stage mais alto, marque aqui. Os Stages anteriores aparecem como pulados na home dele.'});
@@ -428,7 +443,7 @@ function renderStu(){
         showDetail(true);}
     });
     const tr=el('tr',{class:'sr'+(open?' op':''),'data-d':String(idleDays(p)),'data-q':((p.name||'')+' '+(p.email||'')).toLowerCase()},
-      el('td',{class:'nmc'},el('span',{style:'display:flex;align-items:center'},avThumb(p,n),el('span',{},el('b',{},p.name||'(sem nome)',p.status==='approved'?null:el('span',{class:'st '+p.status,style:'margin-left:8px'},STATUS[p.status])),el('small',{},p.email),p.display_name?el('small',{},'Apelido: '+p.display_name):null)),stuMeta(p,sst),tgb),
+      el('td',{class:'nmc'},el('span',{style:'display:flex;align-items:center'},avThumb(p,n),el('span',{},el('b',{},p.name||'(sem nome)',p.status==='approved'?null:el('span',{class:'st '+p.status,style:'margin-left:8px'},STATUS[p.status])),el('small',{},p.email),p.display_name?el('small',{},'Apelido: '+p.display_name):null,(()=>{const t=window.NextClass&&NextClass.tzTag(p.tz,Date.now());return t?el('small',{style:'color:var(--warn);font-weight:700'},'\uD83C\uDF0D '+t.city+' ('+t.diff+')'):null;})())),stuMeta(p,sst),tgb),
             el('td',{},lim),el('td',{},XOK?strip:null),el('td',{},XOK?exPill(p,gst):null),
       null);
     tb.append(tr);
@@ -440,6 +455,7 @@ function renderStu(){
       const planRow=swRow('Plano pela planilha',p.auto_release!==false,false,'Libera só até a lição em que o aluno está'+(p.lessons_auto!=null?' (lição '+p.lessons_auto+')':' (sem dados)'),on=>{upd(p,{auto_release:on},()=>okTag(autoOk));},true);
       planRow.append(autoOk);
       box.append(fc('Liberações',planRow,...(ex?ex.rows:[]),ex?ex.info:el('p',{class:'hint'},'Provas indisponíveis.')));
+      box.append(fc('Nome de cadastro',nameBlock(p)));
       box.append(fc('Plano e início',startBlock(p),el('div',{style:'height:8px'}),planBlock(p),p.display_name?el('div',{style:'margin-top:8px'},el('button',{type:'button',class:'ghost',onclick:async()=>{if(await BL_DLG.confirm('Remover o apelido "'+p.display_name+'" de '+(p.name||p.email)+'?'))upd(p,{display_name:null,display_name_at:null},()=>renderStu());}},'Remover apelido')):null));
       const blk=p.status==='blocked';
       const accRow=swRow('Acesso ativo',!blk,false,blk?'Aluno bloqueado':'Desligar bloqueia o acesso do aluno',on=>on?(update(p.id,{status:'approved'}),undefined):BL_DLG.confirm('Bloquear '+(p.name||p.email)+'?').then(k=>k?(update(p.id,{status:'blocked'}),undefined):false));

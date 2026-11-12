@@ -77,6 +77,15 @@ function zoomApp(u){var m=/\/j\/(\d+)/.exec(String(u||''));if(!m)return u;var pw
 function screens(){
   if(!window.getScreenDetails)return Promise.resolve(null);
   return window.getScreenDetails().then(function(d){return d.screens.filter(function(x){return x.isPrimary;})[0]||null;},function(){return null;});}
+/* etiqueta de fuso: so aparece quando o aluno esta com o relogio diferente do de Brasilia */
+function tzTag(tz,iso){
+  if(!tz||tz==='America/Sao_Paulo'||tz==='America/Fortaleza'||tz==='America/Bahia'||tz==='America/Recife'||tz==='America/Belem')return null;
+  try{var d=new Date(iso||Date.now()),f=function(z){return new Intl.DateTimeFormat('en-US',{timeZone:z,hour:'numeric',minute:'numeric',hourCycle:'h23',year:'numeric',month:'numeric',day:'numeric'}).formatToParts(d).reduce(function(o,x){o[x.type]=x.value;return o;},{});},
+    ms=function(o){return Date.UTC(+o.year,+o.month-1,+o.day,+o.hour,+o.minute);},df=(ms(f(tz))-ms(f('America/Sao_Paulo')))/36e5;
+    if(Math.abs(df)<.01)return null;
+    var city=tz.split('/').pop().replace(/_/g,' '),hm=new Intl.DateTimeFormat('pt-BR',{timeZone:tz,hour:'2-digit',minute:'2-digit'}).format(d),
+      sg=(df>0?'+':'\u2212')+Math.abs(Math.round(df*2)/2).toString().replace('.',',')+' h';
+    return {city:city,hm:hm,diff:sg,tz:tz};}catch(e){return null;}}
 function render(box,ev,deps,opts){opts=opts||{};
   css();box.textContent='';var wrap=el('div','nc');box.appendChild(wrap);
   var name=function(id){var p=deps.profiles().filter(function(x){return x.id===id;})[0];return p?(p.display_name||p.name||p.email):'Aluno';};
@@ -93,7 +102,9 @@ function render(box,ev,deps,opts){opts=opts||{};
     /* header */
     var top=el('div','nc-top'),hd=el('div');if(!opts.compact)add(hd,el('div','mu','PRÓXIMA AULA · '+when(start).toUpperCase()),el('div','nc-who',ev.title||'Aula'));
     var sub=[];if(nx&&nx.classNumber)sub.push('aula nº '+nx.classNumber);if(fd.classesDone!=null&&fd.classesTotal)sub.push(fd.classesDone+' de '+fd.classesTotal+' aulas feitas');if(group)sub.push(d.uids.length+' alunos');
-    if(sub.length)hd.appendChild(el('div','nc-sub',sub.join(' · ')));
+    var tzs=d.uids.map(function(u){var pp=deps.profiles().filter(function(x){return x.id===u;})[0];return pp&&tzTag(pp.tz,ev.start_at);}).filter(Boolean);
+    if(tzs.length&&d.uids.length===1)sub.push('\uD83C\uDF0D fuso: '+tzs[0].tz.replace(/_/g,' ')+' ('+tzs[0].diff+')');
+    if(sub.length){var sd=el('div','nc-sub',sub.join(' · '));if(tzs.length&&d.uids.length===1){sd.textContent='';sd.appendChild(document.createTextNode(sub.slice(0,-1).join(' · ')+(sub.length>1?' · ':'')));var tb=el('b',null,sub[sub.length-1]);tb.style.color='var(--warn)';sd.appendChild(tb);}hd.appendChild(sd);}
     top.appendChild(hd);top.appendChild(el('span','sp'));
     if(sid){var sa=el('a','nc-btn','Abrir planilha');sa.href='https://docs.google.com/spreadsheets/d/'+sid+'/edit'+(gid?'#gid='+gid:'');sa.target='_blank';sa.rel='noopener';top.appendChild(sa);}
     var zUrl=zoomApp(meet),za=el('a','nc-btn go','Entrar na aula');za.href=zUrl;if(!/^zoommtg:/.test(zUrl)){za.target='_blank';za.rel='noopener';}
@@ -256,5 +267,5 @@ function summaries(sb,evs,students){
     a[4].forEach(function(x){out.cfg[x.key]=x.value;});out.sid=out.cfg.plans_sheet&&out.cfg.plans_sheet.id;out.gids=out.cfg.plans_gids||{};return out;});
 }
 function sheetUrl(S,uid){if(!S||!S.sid)return null;var g=S.gids[S.links[uid]];return 'https://docs.google.com/spreadsheets/d/'+S.sid+'/edit'+(g?'#gid='+g:'');}
-W.NextClass={lag:lagOf,render:render,css:css,summaries:summaries,sheetUrl:sheetUrl,zoom:ZOOM,pf:pf,pw:pw};
+W.NextClass={tzTag:tzTag,lag:lagOf,render:render,css:css,summaries:summaries,sheetUrl:sheetUrl,zoom:ZOOM,pf:pf,pw:pw};
 })(window);

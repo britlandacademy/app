@@ -735,6 +735,8 @@ function saveAttempt(kind,a){
     if(stamp){pqSet(pq().filter(function(x){return x.created_at!==stamp;}));}   /* it did arrive after all: drop the queued copy */
     settled=true;
     if(!OPTS.admin){try{sb.rpc('ping_activity').then(function(){},function(){});}catch(e){}}
+    /* guarda o fuso do aparelho do aluno (o professor vê no painel quando é diferente do Brasil) */
+    if(!OPTS.admin&&!prof.is_admin){try{var tzv=Intl.DateTimeFormat().resolvedOptions().timeZone;if(tzv&&tzv!==prof.tz){sb.rpc('set_my_tz',{p_tz:tzv}).then(function(){prof.tz=tzv;},function(){});}}catch(e){}}
   },function(e){if(isNet(e)){if(!stamp)later();settled=true;return;}settled=true;throw e;});
   return Promise.race([req,guard]);
 }
