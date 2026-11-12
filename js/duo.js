@@ -55,7 +55,10 @@
     combo:['{n} of 5 in a row for a new lion','{n} de 5 seguidas para ganhar um leão','{n} de 5 seguidas para ganar un león']
   };
   function ix(){var h=W.I18N&&W.I18N.hint;return h==='pt'?1:h==='es'?2:0;}
-  function T(k,v){var s=S[k][ix()];if(v)for(var p in v)s=s.replace('{'+p+'}',v[p]);return s;}
+  /* Labels (buttons, titles, counters) follow the language chosen in the menu; warnings, corrections, instructions and encouragement stay on the forced/hint language. */
+  var FORCED={ctaOnHint:1,ok:1,bad:1,model:1,done:1,qtitle:1,saved:1,nosave:1,quit:1,lostall:1,back:1,fixQ:1,fixTap:1,fixPick:1,fixA:1,fixC:1,bankHint:1,rvIntro:1,rvPerfect:1,combo:1,ctaHint:1};
+  function uix(){var l=W.I18N&&W.I18N.lang;return l==='pt'?1:l==='es'?2:l==='en'?0:ix();}
+  function T(k,v){var s=S[k][FORCED[k]?ix():uix()];if(v)for(var p in v)s=s.replace('{'+p+'}',v[p]);return s;}
   /* Game Mode in the English course: footer buttons follow Verificar (Portuguese), never a mix */
   function TB(k,v){var i=ix();if(i===0&&!(W.BL_COURSE&&W.BL_COURSE.id==='es'))i=1;var s=S[k][i];if(v)for(var p in v)s=s.replace('{'+p+'}',v[p]);return s;}
   function el(tag,cls,txt){var e=D.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
@@ -712,7 +715,7 @@
       inn.textContent='';
       var s=steps[idx],g=s.g;
       if(game){var sc=el('div','dz-scene'),pw=el('div','dz-peep'),pi=el('img');pi.src=nextPeep();pi.alt='';pw.style.background=PBG[Math.floor(Math.random()*PBG.length)];if(Math.random()<.5)pi.style.transform='scaleX(-1)';pw.appendChild(pi);
-      var bub=el('div','dz-bub'),chip=el('div','dz-chip',((rv?T('rvTitle'):(g.title?(W.I18N&&W.I18N.ptx?W.I18N.ptx(g.title):g.title)+' · ':''))+(rv?' · ':'')+T('q',{a:idx+1,b:total})).toUpperCase());
+      var bub=el('div','dz-bub'),chip=el('div','dz-chip',((rv?T('rvTitle'):(g.title?g.title+' · ':''))+(rv?' · ':'')+T('q',{a:idx+1,b:total})).toUpperCase());
       sc.appendChild(pw);sc.appendChild(bub);inn.appendChild(chip);}else inn.appendChild(el('p','dz-lab',(g.title?g.title+' · ':'')+T('q',{a:idx+1,b:total})));
       if(g.pre){if(!g.pre_){g.pre_=g.pre()||[];if(game&&W.I18N&&W.I18N.ptx){var pn=[];g.pre_.forEach(function(n){pn.push(n);if(n&&n.className==='instr'){var tt=W.I18N.ptx(n.textContent),mm=/^([\s\S]*?)\s*(?:Gramática|Grammar):\s*([\s\S]+)$/.exec(tt);if(mm){n.textContent=mm[1];var gl=el('p','dz-gram','Gramática: '+mm[2]);gl.setAttribute('data-noi18n','');pn.push(gl);}else n.textContent=tt;n.setAttribute('data-noi18n','');}});g.pre_=pn;}}if(g.pre_.length){var pw=el('div','dz-pre');g.pre_.forEach(function(n){if(n)pw.appendChild(n);});inn.appendChild(pw);}}
       if(game)inn.appendChild(sc);
@@ -808,7 +811,7 @@
       cervantes:['Miguel de Cervantes','Escritor'],frida:['Frida Kahlo','Pintora'],goya:['Francisco de Goya','Pintor'],picasso:['Pablo Picasso','Pintor'],velazquez:['Diego Velázquez','Pintor'],bolivar:['Simón Bolívar','Libertador'],isabel:['Isabel la Católica','Reina de Castilla'],sanmartin:['José de San Martín','Libertador']};
     var CTRY={usa:'USA',england:'England',poland:'Poland',scotland:'Scotland',wales:'Wales',ireland:'Ireland',uk:'UK','flag-es.png':'España','flag-mx.png':'México','flag-ve.png':'Venezuela','flag-ar.png':'Argentina'};
     function buildTicketPop(){
-      var X=TKT[B?'es':(ix()===1?'pt':'en')],pct=total?right/total:0,stars=pct>=.9?3:pct>=.6?2:1,passMin=typeof o.passMin==='number'?o.passMin:0,passed=pct>=passMin;
+      var X=TKT[B?'es':(uix()===1?'pt':uix()===2?'es':'en')],pct=total?right/total:0,stars=pct>=.9?3:pct>=.6?2:1,passMin=typeof o.passMin==='number'?o.passMin:0,passed=pct>=passMin;
       (function(){var si=o.station;if(!game||!passed)return;var k=si&&si.city&&si.station?si.city+'|'+si.station:null,hr=new Date().getHours(),td=new Date(),ds=td.getFullYear()+'-'+String(td.getMonth()+1).padStart(2,'0')+'-'+String(td.getDate()).padStart(2,'0'),clean=!noLives&&lives===3&&!rv;
         gm(function(d){if(k){d.st=d.st||{};d.st[k]=1;}if(clean&&k)d.fl=1;if(hr<5)d.mn=1;d.gd=d.gd||[];if(d.gd.indexOf(ds)<0){d.gd.push(ds);if(d.gd.length>90)d.gd.shift();}});})();
       var nx=null;try{nx=o.next?o.next():null;}catch(e){}

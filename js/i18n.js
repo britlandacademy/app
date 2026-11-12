@@ -741,7 +741,7 @@ D.forEach(function(e,i){if(e[0]==='Request access'&&!F1)F1=i;if(e[0]==='Wrong e-
 (function(){function ix(k){return D.findIndex(function(z){return z[0]===k;});}
  var R=[['My account','Receipts'],['I\'ve paid','Other'],['Next medal','All paid. Thank you!']],ex={'Talk to the school':1};
  R.forEach(function(r){var a=ix(r[0]),b=ix(r[1]);if(a<0||b<0)return;for(var i=a;i<=b;i++)D[i].nf=1;});
- ['My Profile','Change picture','Dark mode','Game mode','Help'].forEach(function(k){var i=ix(k);if(i>=0)D[i].nf=1;});
+ ['My Profile','Game Mode','Change picture','Dark mode','Game mode','Help'].forEach(function(k){var i=ix(k);if(i>=0)D[i].nf=1;});
  D.forEach(function(e){if(ex[e[0]])e.nf=0;});
  ['Skip to content','Continue →','Start over','Lesson {0} Check','Back to the stage','Exercise {0} of {1}'].forEach(function(k){D.concat(X).forEach(function(e){if(e[0]===k)e.nf=1;});});})();
 D.forEach(function(e,i){if(!e.nf&&(i<F1||(i>=F2&&i<D.findIndex(function(z){return z[0]==='Signed in:';}))))e.f=1;add(e);});
