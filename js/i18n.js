@@ -743,7 +743,7 @@ D.forEach(function(e,i){if(e[0]==='Request access'&&!F1)F1=i;if(e[0]==='Wrong e-
  R.forEach(function(r){var a=ix(r[0]),b=ix(r[1]);if(a<0||b<0)return;for(var i=a;i<=b;i++)D[i].nf=1;});
  ['My Profile','Game Mode','Change picture','Dark mode','Game mode','Help'].forEach(function(k){var i=ix(k);if(i>=0)D[i].nf=1;});
  D.forEach(function(e){if(ex[e[0]])e.nf=0;});
- ['Skip to content','Continue →','Start over','Lesson {0} Check','Back to the stage','Exercise {0} of {1}'].forEach(function(k){D.concat(X).forEach(function(e){if(e[0]===k)e.nf=1;});});})();
+ ['Skip to content','Check','Continue','Finish','Why?','Try again','Close','Redo','Continue →','Start over','Lesson {0} Check','Back to the stage','Exercise {0} of {1}'].forEach(function(k){D.concat(X).forEach(function(e){if(e[0]===k)e.nf=1;});});})();
 D.forEach(function(e,i){if(!e.nf&&(i<F1||(i>=F2&&i<D.findIndex(function(z){return z[0]==='Signed in:';}))))e.f=1;add(e);});
 X.forEach(function(e){e.f=e.nf?0:1;add(e);});
 TPL.sort(function(a,b){return b.re.source.length-a.re.source.length;});
