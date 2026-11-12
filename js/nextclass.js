@@ -92,7 +92,7 @@ function render(box,ev,deps,opts){opts=opts||{};
     if(nx&&nx.review&&nx.review.from!=null){add(b1,el('div','nc-v',pf(nx.review)),el('div','nc-m',pw(nx.review)));}else add(b1,el('div','nc-m','Sem revisão indicada na planilha'));
     d.uids.forEach(function(u){var pd=(d.prog[u]||{}).data||{},ms=(pd.me&&pd.me.missed)||[];ms.forEach(function(m){var t='Reposição'+(m.classNumber?' da aula '+m.classNumber:'')+(group?' · '+name(u):'')+(m.review&&m.review.from!=null?' · '+pf(m.review):'');b1.appendChild(el('span','nc-pill warn',t));});});
     add(b2,el('div','nc-k',group?'Onde a turma parou':'Onde parou'));
-    var lw=cp.lastWord||(first&&first.last_word),pn=cp.lastNewWord;
+    var lw=cp.lastWord||(first&&first.last_word),pn=cp.paragraph||cp.lastNewWord;
     if(lw||cp.lesson){add(b2,el('div','nc-v',(cp.lesson?'Lição '+cp.lesson:'')+(pn?' · par. '+pn:'')),el('div','nc-m',lw?'Última palavra: '+lw:''));}else add(b2,el('div','nc-m','Sem leitura da planilha ainda'));
     if(cp.classNumber)b2.appendChild(el('div','nc-m','Aula nº '+cp.classNumber));
     /* registro da aula: grava na planilha (Apps Script via sheet-push) */
@@ -100,13 +100,13 @@ function render(box,ev,deps,opts){opts=opts||{};
       var ct=String(nx.contents||''),isExam=/OFFICIAL.*EXAM/i.test(ct),isMock=/MOCK\s*EXAM/i.test(ct),isRev=!isExam&&!isMock&&/FULL\s*REVISION|REVIS/i.test(ct);
       var sm=/(?:stage|stg)\s*(\d+)/i.exec(sh),stg=+(first&&first.stage)||(sm?+sm[1]:0);
       var f=el('div','nc-reg'),ip=el('input'),iw=el('input'),stSel=null,auto=true;
-      ip.type='text';ip.inputMode='numeric';ip.setAttribute('aria-label','Parágrafo');ip.style.width='84px';ip.value=cp.lastNewWord||'';
+      ip.type='text';ip.inputMode='numeric';ip.setAttribute('aria-label','Parágrafo');ip.style.width='84px';ip.value=cp.paragraph||cp.lastNewWord||'';
       iw.type='text';iw.value=lw||'';iw.setAttribute('aria-label','Última palavra ensinada');iw.style.flex='1 1 150px';iw.style.minWidth='150px';
       if(!isExam){var r1=el('div','nc-rw');
         if(isRev&&stg){stSel=document.createElement('select');stSel.setAttribute('aria-label','Stage revisto');var ss=stg%2===0?[stg-1,stg]:[stg];ss.forEach(function(n){var o=document.createElement('option');o.value=n;o.textContent='Stage '+n;stSel.appendChild(o);});stSel.value=stg;r1.appendChild(el('span','nc-m','Revisão'));r1.appendChild(stSel);}
         add(r1,el('span','nc-m','Parágrafo'),ip,el('span','nc-m','Palavra'),iw);f.appendChild(r1);
         var chips=el('div','nc-rw');f.appendChild(chips);
-        var ed=/3rd/i.test(sh)?'e3':'e2',tgt=+((nx.newWords||{}).to||cp.lastNewWord)||0;
+        var ed=/3rd/i.test(sh)?'e3':'e2',tgt=+(cp.paragraph||cp.lastNewWord)||0;
         function norm(x){return String(x).trim().toLowerCase().replace(/\u2019/g,"'");}
         function suggest(){chips.textContent='';var v=norm(iw.value);if(!v||!stg)return;
           loadIdx(function(X){var m=X&&X[ed]&&X[ed][String(stg)];if(!m)return;var c=m[v];
