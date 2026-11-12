@@ -194,6 +194,7 @@ details.h{background:var(--surface);border:1px solid var(--line);border-radius:1
  #todayBox tr,#pltab tr{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px 12px;margin:0 0 8px}
  #todayBox td,#pltab td{border:0;padding:2px 0}#todayBox td:first-child,#pltab td:nth-child(2){font-weight:700;font-size:1.05rem}
  #todayBox td:last-child button{margin-top:6px}
+ #todayAvisos .avc{background:var(--card);border:2px solid var(--warn);border-radius:16px;padding:10px 12px;margin:0 0 8px;overflow:hidden}#todayAvisos .avb{background:var(--warn-bg);color:var(--warn);font-weight:800;font-size:.82rem;padding:6px 12px;margin:-10px -12px 8px;border-bottom:1px solid var(--warn)}#todayAvisos .avc button{margin-top:8px}
  #todayBox td[data-l]::before{content:attr(data-l)': ';color:var(--muted);font-size:.85rem}
  #pltab td[data-l]::before{content:attr(data-l)': ';color:var(--muted);font-size:.8rem}#pltab td:nth-child(2)::before{content:''}
  #pltab td:last-child{margin-top:6px}#pltab td:last-child::before{content:''}
@@ -275,6 +276,9 @@ details.h{background:var(--surface);border:1px solid var(--line);border-radius:1
 <script src="js/tarja.js" charset="utf-8"></script>
 <script src="js/social.js" charset="utf-8"></script>
 <script src="js/tipsadmin.js" charset="utf-8"></script>
+<script src="js/plans.js" charset="utf-8"></script>
+<script src="js/newstudent.js" charset="utf-8"></script>
+<script src="js/holidays.js" charset="utf-8"></script>
 <script src="js/agenda.js" charset="utf-8"></script>
 <script src="js/nextclass.js" charset="utf-8"></script>
 <script>
@@ -887,6 +891,31 @@ function homeStats(){
   return {stu:stu.length,pend,rev,done,idle,over:OVERDUE,lreq:LREQ||0,lcan:LCAN||0};
 }
 function nudgeP(p,btn){btn.disabled=true;sb.rpc('teacher_nudge',{p_user:p.id}).then(r=>{if(r.error){btn.disabled=false;btn.textContent='Erro';return;}btn.textContent=r.data==='queued'?'Na fila ✓':'Sem notificações';}).catch(()=>{btn.disabled=false;btn.textContent='Erro';});}
+
+async function avisosToday(av,stu){
+  try{
+    const H=window.BL_HOL,tz='America/Sao_Paulo',dk=t=>new Date(t).toLocaleDateString('en-CA',{timeZone:tz}),hm=t=>new Date(t).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',timeZone:tz});
+    const ids=new Set(stu.map(p=>p.id)),nm={};stu.forEach(p=>nm[p.id]=p.name||p.email||'');
+    const t0=dk(Date.now()),dow=new Date(t0+'T12:00:00Z').getUTCDay(),endK=new Date(new Date(t0+'T12:00:00Z').getTime()+((7-dow)%7+7)*864e5).toISOString().slice(0,10),a=new Date(t0+'T03:00:00Z'),b=new Date(new Date(endK+'T03:00:00Z').getTime()+864e5);
+    const dl=k=>{const x=new Date(k+'T12:00:00Z').getTime(),d0=new Date(t0+'T12:00:00Z').getTime();return x===d0?'Hoje':x===d0+864e5?'Amanhã':new Date(x).toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',timeZone:'UTC'});};
+    const [ct,ls,pp,cf]=await Promise.all([sb.from('contracts').select('user_id,country'),sb.from('lessons').select('user_id,start_at').gte('start_at',a.toISOString()).lt('start_at',b.toISOString()),sb.from('plan_progress').select('user_id,data'),sb.from('teacher_cfg').select('value').eq('key','group_dismissed').maybeSingle()]);
+    av.textContent='';
+    const cc={};(ct.data||[]).forEach(c=>{const k=H?H.cc(c.country):null;cc[c.user_id]=k||(c.country?'XX':null);});
+    const band=(t,h,body,btn)=>{const c=el('div',{class:'avc'},el('div',{class:'avb'},t),el('b',{},h),el('div',{class:'hint',style:'margin:2px 0 0'},body));if(btn)c.append(btn);return c;};
+    // feriados desta semana e da próxima
+    if(H){const LS={};(ls.data||[]).forEach(l=>{if(ids.has(l.user_id))(LS[dk(l.start_at)]=LS[dk(l.start_at)]||[]).push(l);});
+      for(let x=new Date(t0+'T12:00:00Z').getTime();x<=new Date(endK+'T12:00:00Z').getTime();x+=864e5){const k=new Date(x).toISOString().slice(0,10),mine={};
+        H.of(k,['IE','BR']).forEach(h=>{const L=(LS[k]||[]).filter(l=>{const c=cc[l.user_id];return c!=='XX'&&(!c||c===h.c);}).map(l=>nm[l.user_id].split(' ')[0]+' às '+hm(l.start_at));mine[h.c+'|'+h.n]={h,L};});
+        Object.values(mine).forEach(m=>av.append(band((m.h.c==='IE'?'\uD83C\uDDEE\uD83C\uDDEA Feriado na Irlanda':'\uD83C\uDDE7\uD83C\uDDF7 Feriado no Brasil')+' · '+dl(k),m.h.n,m.L.length?'Aulas: '+m.L.join(', '):'Nenhuma aula marcada nesse dia')));}}
+    // possíveis turmas
+    const dis=new Set(((cf.data&&cf.data.value&&cf.data.value.keys)||[])),U={};
+    (pp.data||[]).forEach(r=>{const d=r.data||{},par=d.currentPosition&&Number(d.currentPosition.paragraph),st=Number(d.stage);if(!ids.has(r.user_id)||!par||!st)return;const k=st+'|'+(d.sheetName||r.user_id),u=U[k]=U[k]||{st,par,ids:[]};u.ids.push(r.user_id);u.par=Math.min(u.par,par);});
+    const by={};Object.values(U).forEach(u=>(by[u.st]=by[u.st]||[]).push(u));const seen=[];
+    Object.keys(by).forEach(st=>{const L=by[st].sort((x,y)=>x.par-y.par);L.forEach((u,i)=>{const w=L.filter((v,j)=>j>=i&&v.par-u.par<=20);if(w.length<2)return;const idl=w.flatMap(v=>v.ids).sort(),key=idl.join(',');if(seen.some(s=>idl.every(x=>s.includes(x))))return;seen.push(idl);if(dis.has(key))return;
+      const btn=el('button',{type:'button',class:'small'},'Dispensar');btn.onclick=async()=>{if(!confirm('Dispensar este aviso de possível turma?'))return;btn.disabled=true;const ks=[...dis,key];await sb.from('teacher_cfg').upsert({key:'group_dismissed',value:{keys:ks}});avisosToday(av,stu);};
+      av.append(band('\uD83D\uDC65 Possível turma · Stage '+st,idl.map(x=>nm[x].split(' ')[0]).join(', '),'Parágrafos '+w[0].par+' a '+w[w.length-1].par+' ('+(w[w.length-1].par-w[0].par)+' de diferença)',btn));});});
+  }catch(e){}
+}
 function renderToday(){
   const box=$('todayBox');if(!box)return;
   const pad=n=>String(n).padStart(2,'0'),d0=new Date();d0.setHours(0,0,0,0);const t0=d0.getTime();
@@ -895,6 +924,7 @@ function renderToday(){
   const act=stu.filter(p=>by[p.id]),none=stu.filter(p=>!by[p.id]);
   const last={};ATT.forEach(a=>{if(!last[a.user_id]||a.created_at>last[a.user_id])last[a.user_id]=a.created_at;});
   box.textContent='';
+  const av=el('div',{id:'todayAvisos'});box.append(av);avisosToday(av,stu);
   const nEx=act.reduce((n,p)=>n+by[p.id].length,0);
   box.append(el('p',{class:'hint'},act.length?act.length+' aluno(s) estudaram hoje, '+nEx+' exercício(s) feito(s).':'Ninguém estudou hoje ainda.'));
   if(act.length){

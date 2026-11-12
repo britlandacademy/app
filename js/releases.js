@@ -2,6 +2,13 @@
    Newest first. Written for students (no technical terms). Each entry: v, d [pt, es], t [pt, es] short title, p [pt, es] one sentence,
    show:1 = also shown once in the notice after the update, c:'en'|'es' = only that course (omit = both). */
 window.BL_RELEASES=[
+{v:'2.0.35',d:['11 de novembro','11 de noviembre'],t:['Aula de conversação no registro da aula','Clase de conversación en el registro de la clase'],p:['','']},
+{v:'2.0.34',d:['11 de novembro','11 de noviembre'],t:['Lesson Check só abre no fim da lição','El Lesson Check solo se abre al terminar la lección'],p:['','']},
+{v:'2.0.33',d:['11 de novembro','11 de noviembre'],t:['Feriados da semana e da próxima e possíveis turmas no painel Hoje','Avisos de feriados y posibles grupos en el panel Hoy'],p:['','']},
+{v:'2.0.32',d:['11 de novembro','11 de noviembre'],t:['Aulas canceladas a repor','Clases canceladas por recuperar'],p:['','']},
+{v:'2.0.31',d:['11 de novembro','11 de noviembre'],t:['Feriados na Agenda','Feriados en la agenda'],p:['','']},
+{v:'2.0.30',d:['11 de novembro','11 de noviembre'],t:['Remarcar e cancelar aulas e registrar a aula na planilha','Reprogramar, cancelar y registrar la clase en la planilla'],p:['','']},
+{v:'2.0.29',d:['11 de novembro','11 de noviembre'],t:['Agenda do professor mais completa','Agenda del profesor más completa'],p:['','']},
 {v:'2.0.28',d:['11 de novembro','11 de noviembre'],t:['Próxima aula completa no painel do professor','Próxima clase completa en el panel del profesor'],p:['','']},
 {v:'2.0.27',d:['11 de novembro','11 de noviembre'],t:['Contador, barra inferior e Stage 4 mais variado','Contador, barra inferior y Stage 4 más variado'],p:['No Modo Jogo, o "Corrija o erro" alterna com escolher a frase certa e montar a frase. A contagem de acertos seguidos não reinicia mais na revisão, e a barra Mapa/Perfil agora segue o idioma escolhido em todas as telas.','En el Modo Juego, "Corrige el error" alterna con elegir la frase correcta y ordenar la frase. El conteo de aciertos seguidos ya no se reinicia en la revisión, y la barra Mapa/Perfil sigue el idioma elegido en todas las pantallas.']},
 {v:'2.0.26',d:['11 de novembro','11 de noviembre'],t:['Ajustes no Modo Jogo','Ajustes en el Modo Juego'],p:['O botão Limpar dos exercícios de montar frase ficou igual ao das outras telas, e a pergunta de uma palavra no Check aparece dentro do cartão.','El botón Borrar de los ejercicios de ordenar frases quedó igual al de las otras pantallas, y la pregunta de una palabra en Check aparece dentro de la tarjeta.']},

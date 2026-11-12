@@ -35,12 +35,12 @@ begin
   select count(*)+1 into pos from public.profiles q cross join lateral public.streak_calc(q.id) k
     where q.status='approved' and not q.is_admin and (q.show_in_ranking or q.id=auth.uid()) and k.cur > c.cur;
   select count(*) into ex from public.attempts where user_id=p_uid and kind='ex';
-  select count(distinct lesson), coalesce(avg(b),0) into ck, av from (select lesson, max(score::numeric/nullif(total,0)) b from public.attempts where user_id=p_uid and kind='check' group by lesson) t;
-  select coalesce(xp,0) into xp from public.game_xp where user_id=p_uid;
-  select coalesce(jsonb_agg(jsonb_build_object('id',medal_id,'tier',tier,'at',earned_at) order by earned_at desc),'[]') into med from public.user_medals where user_id=p_uid and medal_id<>'_sync';
+  select count(*), coalesce(avg(b),0) into ck, av from (select lesson, max(score::numeric/nullif(total,0)) b from public.attempts where user_id=p_uid and kind='check' group by lesson) t;
+  select coalesce(g.xp,0) into xpv from public.game_xp g where g.user_id=p_uid;
+  select coalesce(jsonb_agg(jsonb_build_object('id',medal_id,'tier',tier,'at',earned_at) order by earned_at desc),'[]'::jsonb) into med from public.user_medals where user_id=p_uid and medal_id<>'_sync';
   return jsonb_build_object(
     'name',(split_part(trim(p.name),' ',1)||case when position(' ' in trim(p.name))>0 then ' '||upper(left(regexp_replace(trim(p.name),'^.* ',''),1))||'.' else '' end),
     'avatar',p.avatar,'uid',case when p.avatar like 'photo:%' then p.id else null end,'upto',p.lessons_upto,
-    'cur',coalesce(c.cur,0),'best',coalesce(c.best,0),'rank',pos,'ex',ex,'checks',ck,'avg',av,'xp',coalesce(xp,0),'medals',med,'me',p.id=auth.uid());
+    'cur',coalesce(c.cur,0),'best',coalesce(c.best,0),'rank',pos,'ex',ex,'checks',ck,'avg',av,'xp',coalesce(xpv,0),'medals',med,'me',p.id=auth.uid());
 end $f$;
 grant execute on function public.public_profile(uuid) to authenticated;
