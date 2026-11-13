@@ -236,7 +236,7 @@ function settings(){
     var b=el('button','g-sw'+(on?' on':''));b.type='button';b.setAttribute('role','switch');b.setAttribute('aria-checked',String(!!on));b.setAttribute('aria-label',label);b.appendChild(el('i'));
     b.onclick=function(){on=!on;b.classList.toggle('on',on);b.setAttribute('aria-checked',String(on));fn(on);};w.appendChild(b);return w;}
   var h=el('h3','','Privacy and effects');s.insertBefore(h,s.children[1]);
-  var ranking=sw('Show me in the class ranking',!(S.me&&S.me.show_in_ranking===false),function(v){S.sb.rpc('set_my_ranking',{p_show:v});},'Other students can see your first name and streak.');
+  var ranking=sw('Show me in the class ranking',!(S.me&&S.me.show_in_ranking===false),function(v){if(S.me)S.me.show_in_ranking=v;S.sb.rpc('set_my_ranking',{p_show:v}).then(function(r){if(r&&r.error){if(S.me)S.me.show_in_ranking=!v;if(window.BL_DLG)BL_DLG.alert('Não consegui salvar esta opção. Verifique a conexão e tente de novo.',{title:'Não salvo'});}},function(){});},'Other students can see your first name and streak. You still see yourself in your own list.');
   var fx=sw('Animations and sounds',window.BLFX?BLFX.on():true,function(v){if(window.BLFX)BLFX.set(v);});
   s.insertBefore(fx,h.nextSibling);s.insertBefore(ranking,h.nextSibling);
 }
