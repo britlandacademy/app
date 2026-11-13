@@ -165,11 +165,13 @@ function countMine(sb){return Promise.resolve(sb.from('class_suggestions').selec
 function medalsRefresh(){try{if(window.Medals&&Medals.reload)Medals.reload();}catch(e){}}
 function medal(){var m=document.createElement('div');m.className='cdmd';m.innerHTML='<div class="cdmc" role="dialog" aria-modal="true"><div class="k">'+t('medalK')+'</div><div class="cdmb" aria-hidden="true">'+IC.bulb+'</div><h3>'+t('medalN')+'</h3><p>'+t('medalT')+'</p><button class="btn" type="button">'+t('great')+'</button></div>';var b=m.querySelector('button');b.onclick=function(){m.remove();};document.body.appendChild(m);b.focus();boom(m.querySelector('.cdmc'),30);}
 /* ---------- Home card ---------- */
+/* shows for 48 h after a class; one-off: every class given since Mon 9 Nov 2026 stays visible until Sun 15 Nov (launch week) */
+function isFresh(iso){var t=new Date(iso).getTime(),n=Date.now();return n-t<48*3600e3||(t>=Date.UTC(2026,10,9,3)&&n<Date.UTC(2026,10,16,3));}
 function mount(box,o){
  if(!box||!o||!o.sb)return;css();var sb=o.sb;
  var P=function(q){return Promise.resolve(q).then(function(r){return r&&!r.error?r.data:null;},function(){return null;});};
  Promise.all([P(sb.rpc('my_last_class')),o.uid?P(sb.from('plan_progress').select('stage,lesson,data').eq('user_id',o.uid).maybeSingle()):null,o.uid?P(sb.from('lessons').select('start_at,end_at,meet_url').eq('user_id',o.uid).gte('end_at',new Date().toISOString()).order('start_at').limit(1)):null]).then(function(a){
-  var c=a[0]&&a[0][0],fresh=!!c&&(Date.now()-new Date(c.given_at).getTime())<48*3600e3,pre=preOf(a[1],a[2]&&a[2][0]);
+  var c=a[0]&&a[0][0],fresh=!!c&&isFresh(c.given_at),pre=preOf(a[1],a[2]&&a[2][0]);
   if(!pre&&!fresh)return;
   if(!fresh)c=null;
   var from=c?(c.par_from||c.par_to):0,to=c?(c.par_to||from):0;
