@@ -252,6 +252,7 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 <script src="js/home2.js" charset="utf-8"></script>
 <script src="js/protect.js" charset="utf-8"></script>
 <script src="js/paranums.js" charset="utf-8"></script>
+<script src="js/classday.js" charset="utf-8"></script>
 <script src="js/lsearch.js" charset="utf-8"></script>
 <script>
 Gate.start({kinds:['text'],noStageBox:true},function(ctx){
@@ -387,6 +388,7 @@ function show(id,noscroll){
   box.append(player('Listen to Lesson '+id,BUS?'Business/Business Lesson '+String(id).padStart(3,'0')+'.mp3':'Stage '+n+'/Stage '+n+' Lesson '+id+'.mp3'));
   renderText(id,box);
   out.append(box);
+  try{if(window.ClassDay&&!window.CBUS)ClassDay.lessonCards(out,{sb:Gate.sb});}catch(e){}
   prevs.forEach(b=>{b.disabled=id<=LO;});nexts.forEach(b=>{b.disabled=id>=HI;});
   try{localStorage.setItem((BUS?'bus-lesson-last':'callan-lesson-last'),String(id));}catch(e){}
   if(!noscroll)window.scrollTo({top:0});

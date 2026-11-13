@@ -63,6 +63,16 @@ function render(host,x){css();
     nIn.addEventListener('change',function(){if(!iL.value||iL.dataset.auto){var m=/LESSON\s*(\d+)/i.exec(plan(stSel.value,+nIn.value));if(m){iL.value=m[1];iL.dataset.auto=1;}}});
     iL.addEventListener('input',function(){delete iL.dataset.auto;});
     var det=D.createElement('details'),sm2=el('summary','cc-m',group?'Anotação da aula (opcional)':'Anotação (opcional)'),ta=D.createElement('textarea');ta.value=L.note||'';det.appendChild(sm2);det.appendChild(ta);if(L.note)det.open=true;box.appendChild(det);
+    var sgW=el('div','cc-tk'),sgR=el('div','cc-act'),sgK=D.createElement('select'),sgT=D.createElement('input');
+    sgW.appendChild(el('div','cc-k','Sugestão para os alunos (opcional)'));
+    [['song','Música'],['video','Vídeo'],['film','Filme'],['activity','Atividade']].forEach(function(k){var o3=D.createElement('option');o3.value=k[0];o3.textContent=k[1];sgK.appendChild(o3);});sgK.setAttribute('aria-label','Tipo da sugestão');
+    sgT.type='text';sgT.placeholder='Link ou nome';sgT.maxLength=300;sgT.style.flex='1';sgT.setAttribute('aria-label','Link ou nome da sugestão');
+    sgR.appendChild(sgK);sgR.appendChild(sgT);sgW.appendChild(sgR);sgW.appendChild(el('div','cc-m','Aparece no card "Sua aula de hoje" e na lição, nos parágrafos desta aula, e vai para a coluna Notes / Callan Method da planilha.'));box.appendChild(sgW);
+    function parRange(){var n=+nIn.value,to=parseInt(iP.value,10)||0,from=0,bn=-1;logs.forEach(function(l){var c=l.class_number||0;if(l.user_id===u0&&l.status==='given'&&l.event_key!==key&&c<n&&c>bn&&parseInt(l.paragraph,10)){bn=c;from=parseInt(l.paragraph,10)+1;}});if(!from||from>to)from=to;return {from:from,to:to};}
+    function notesFor(){var r=parRange();if(!r.to)return Promise.resolve('');var KN={song:'Song',video:'Video',film:'Film',activity:'Activity'};
+      return Promise.resolve(sb.from('class_suggestions').select('kind,title').eq('status','approved').lte('par_from',r.to).gte('par_to',r.from).order('created_at',{ascending:true})).then(function(q){return ((q&&q.data)||[]).map(function(z){return KN[z.kind]+': '+z.title;}).join(' | ');},function(){return '';});}
+    function saveSug(){var v=sgT.value.trim(),r=parRange();if(!v||!r.to)return Promise.resolve();
+      return Promise.resolve(sb.from('class_suggestions').insert({kind:sgK.value,title:v,par_from:r.from,par_to:r.to,status:'approved',source:'teacher'})).then(function(q){if(q&&q.error)throw q.error;sgT.value='';});}
     var ex=el('div','cc-seg'),xc={};
     function ckx(k,txt,on){var l=el('label','cc-ck'),c=D.createElement('input');c.type='checkbox';c.checked=on;l.appendChild(c);l.appendChild(D.createTextNode(' '+txt));ex.appendChild(l);xc[k]=c;l.hidden=false;return l;}
     var thm=D.createElement('input');thm.type='text';thm.placeholder='Tema da conversação';thm.style.display='none';
@@ -83,7 +93,7 @@ function render(host,x){css();
         if(s==='missed'&&!(x.att[u]&&x.att[u].status==='ns'))att.push({event_key:key,user_id:u,status:'ns',late_min:null,class_start:x.ev.start_at,updated_at:now});});
       go.disabled=true;st.textContent='Salvando…';
       var P=function(q){return Promise.resolve(q).then(function(r){if(r&&r.error)throw r.error;return r;});};
-      P(sb.from('class_log').upsert(rows)).then(function(){return att.length?P(sb.from('class_attendance').upsert(att)):0;}).then(function(){
+      P(sb.from('class_log').upsert(rows)).then(function(){return att.length?P(sb.from('class_attendance').upsert(att)):0;}).then(function(){return status==='given'||group?saveSug():0;}).then(function(){
         return Promise.all(rows.map(function(r){var old=x.prog[r.user_id]||{},d=JSON.parse(JSON.stringify(old.data||{}));d.currentPosition=d.currentPosition||{};d.me=d.me||{};d.me.missed=(d.me.missed||[]).filter(function(m){return m.classNumber!==n;});
           if(r.status==='given'){var cp=d.currentPosition;cp.classNumber=n;if(r.lesson)cp.lesson=r.lesson;if(r.paragraph)cp.paragraph=r.paragraph;if(r.last_word)cp.lastWord=r.last_word;if(r.reading)cp.reading=r.reading;if(r.dictation)cp.dictation=r.dictation;if(r.lesson_check)cp.lessonCheck=r.lesson_check;d.classesDone=Math.max(d.classesDone||0,n);}
           else if(r.status==='missed')d.me.missed.push({classNumber:n,lesson:r.lesson||''});
@@ -99,7 +109,7 @@ function render(host,x){css();
       else if(xc.conv&&xc.conv.checked){pl.conversation=true;pl.theme=thm.value.trim();pl.insert=true;pl.paragraph='E';pl.lastWord='CONVERSATION';}
       else{if(!keep){if(iP.value.trim())pl.paragraph=iP.value.trim();if(iW.value.trim())pl.lastWord=iW.value.trim();}if(xc.ins&&xc.ins.checked)pl.insert=true;if(iR.value.trim())pl.readingGiven=true;if(iD.value.trim())pl.dictationGiven=true;pl.lessonCheck=iC.value.trim()||'—';if(pl.readingGiven||pl.dictationGiven)pl.done=true;}
       st.textContent='Enviando à planilha…';
-      return sb.functions.invoke('sheet-push',{body:pl}).then(function(r){var q=r&&r.data;
+      return notesFor().then(function(nt){if(nt)pl.notes=nt;return sb.functions.invoke('sheet-push',{body:pl});}).then(function(r){var q=r&&r.data;
         if(q&&q.ok){st.textContent='';var ex=[];
           var sum=function(){var L=['Aula '+n+' salva no app e na planilha ✓'],pc=[];if(pl.paragraph)pc.push('par. '+pl.paragraph);if(pl.lastWord)pc.push('última palavra: '+pl.lastWord);if(pc.length)L.push(pc.join(' · '));
             var ab=Object.keys(a).filter(function(k){return !a[k];}),pr=Object.keys(a).filter(function(k){return a[k];});if(pr.length)L.push('Presente: '+pr.join(', '));if(ab.length)L.push('Faltou: '+ab.join(', '));

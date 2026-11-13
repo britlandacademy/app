@@ -109,6 +109,7 @@ a.card:hover .i-tg .r2,a.card:focus-visible .i-tg .r2{animation:rp 1.8s ease inf
 <h1 id="hi">Welcome</h1><p class="sub" id="sub">Choose an activity.</p>
 <section id="plan" hidden></section>
 <section id="agenda" hidden></section>
+<section id="classday" hidden></section>
 <section class="cont" id="cont" hidden></section>
 
 <section id="tips" hidden></section>
@@ -133,6 +134,7 @@ a.card:hover .i-tg .r2,a.card:focus-visible .i-tg .r2{animation:rp 1.8s ease inf
 <script src="js/streak.js" charset="utf-8"></script><script src="js/pubprofile.js" charset="utf-8"></script>
 <script src="js/holidays.js" charset="utf-8"></script>
 <script src="js/agenda.js" charset="utf-8"></script>
+<script src="js/classday.js" charset="utf-8"></script>
 <script src="js/today.js" charset="utf-8"></script>
 <script src="js/tips.js" charset="utf-8"></script>
 <script src="js/home2.js" charset="utf-8"></script>
@@ -185,6 +187,7 @@ Gate.start({kinds:[],attempts:['check','ex']},function(ctx){
     try{Gate.sb.from('review_results').select('tab,rid,score,total').then(function(r){((r&&r.data)||[]).forEach(function(x){var q=x.total?x.score/x.total:0,t=RV[x.tab];if(t&&(t[x.rid]===undefined||q>t[x.rid]))t[x.rid]=q;});ltp.then(go);},function(){ltp.then(go);});}catch(e){go();}}
   if(window.Streak)Streak.mount(document.getElementById('streak'),{head:document.querySelector('.head')});
   if(window.Agenda)Agenda.mount(document.getElementById('agenda'),ctx);
+  try{if(window.ClassDay&&!(ctx.profile&&ctx.profile.is_admin))ClassDay.mount(document.getElementById('classday'),{sb:Gate.sb,uid:ctx.user&&ctx.user.id});}catch(e){}
   document.getElementById('s1').textContent=upto;
   document.getElementById('s2').textContent=done;
   document.getElementById('s3').textContent=done?Math.round(sum/done*100)+'%':'–';

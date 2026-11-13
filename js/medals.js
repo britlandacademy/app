@@ -9,7 +9,7 @@ var ES=/\/espanol\//.test(location.pathname),L=ES?1:0;
 var STG=((window.BL_COURSE&&BL_COURSE.stages)||(ES?[[1,16],[17,32],[33,52],[53,72],[73,92],[93,112]]:[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[139,156],[157,174],[175,190],[191,206]])).filter(function(r){return r[0]<1000;});
 function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function el(t,c,x){var n=document.createElement(t);if(c)n.className=c;if(x!==undefined&&x!==null)n.textContent=x;return n;}
-var STR={unlocked:['Conquista desbloqueada','Logro desbloqueado'],earned:['Conquistada em ','Conseguida el '],notyet:['Ainda não conquistada','Aún sin conseguir'],secret:['Medalha secreta. Continue estudando para descobrir.','Medalla secreta. Sigue estudiando para descubrirla.'],snd:['Achievement sound','Sonido de logros'],on:['on','activado'],off:['off','desactivado'],next:['Next medal','Próxima medalla'],g:{streak:['Streaks','Constancia'],checks:['Lesson Checks','Lesson Checks'],ex:['Exercises','Ejercicios'],stages:['Stages','Etapas'],special:['Special','Especiales'],game:['Game Mode','Modo Juego'],secret:['Secret','Secretas']}};
+var STR={unlocked:['Conquista desbloqueada','Logro desbloqueado'],earned:['Conquistada em ','Conseguida el '],notyet:['Ainda não conquistada','Aún sin conseguir'],secret:['Medalha secreta. Continue estudando para descobrir.','Medalla secreta. Sigue estudiando para descubrirla.'],snd:['Achievement sound','Sonido de logros'],on:['on','activado'],off:['off','desactivado'],next:['Next medal','Próxima medalla'],g:{class:['Class','Clase'],streak:['Streaks','Constancia'],checks:['Lesson Checks','Lesson Checks'],ex:['Exercises','Ejercicios'],stages:['Stages','Etapas'],special:['Special','Especiales'],game:['Game Mode','Modo Juego'],secret:['Secret','Secretas']}};
 function s(k){return STR[k][L];}
 /* ---------- icons (24x24 line paths) ---------- */
 /* ---------- medal art: metallic medallion with ribbon (style A), tier gradients, detailed two-tone icons ---------- */
@@ -49,6 +49,8 @@ function glyph(k,G,H){var N=NV;switch(k){
  case 'mount':return '<path d="M12 80L38 34l14 22 10-14 26 38z" fill="'+G+'"/><path d="M38 34l-7 12 7-4 5 6zM62 42l-5 8 5-3 4 4z" fill="'+N+'" opacity=".4"/><path d="M38 34V18l12 4-12 5" fill="'+G+'" stroke="'+G+'" stroke-width="3" stroke-linejoin="round"/>';
  case 'chain':return '<rect x="14" y="40" width="40" height="22" rx="11" fill="none" stroke="'+G+'" stroke-width="7" transform="rotate(-35 34 51)"/><rect x="46" y="40" width="40" height="22" rx="11" fill="none" stroke="'+G+'" stroke-width="7" transform="rotate(-35 66 51)"/><path d="M44 18v10M30 24l6 8M58 24l-6 8" stroke="'+H+'" stroke-width="3.2" stroke-linecap="round"/>';
  case 'sprout':return '<path d="M50 80V44" stroke="'+G+'" stroke-width="5" stroke-linecap="round"/><path d="M50 50C50 34 38 26 24 28c0 16 12 26 26 22z" fill="'+G+'"/><path d="M50 44c0-14 10-22 26-20 0 16-12 24-26 20z" fill="'+G+'" opacity=".88"/><ellipse cx="50" cy="82" rx="26" ry="6" fill="'+G+'" opacity=".7"/><path d="M34 34c5 1 9 4 11 9" stroke="'+N+'" stroke-width="2.2" stroke-linecap="round" fill="none" opacity=".6"/>';
+ case 'bulb':return '<path d="M50 16a24 24 0 0 0-14 43.5c2.4 1.9 4 4.6 4 7.5v2h20v-2c0-2.9 1.6-5.6 4-7.5A24 24 0 0 0 50 16z" fill="'+G+'"/><path d="M42 74h16M44 81h12" stroke="'+G+'" stroke-width="5" stroke-linecap="round"/><path d="M50 34v18M43 41h14" stroke="'+N+'" stroke-width="4.5" stroke-linecap="round" opacity=".8"/><path d="M36 30a18 18 0 0 1 9-8" stroke="'+H+'" stroke-width="2.6" stroke-linecap="round" fill="none" opacity=".85"/>';
+ case 'chat':return '<path d="M20 24h60a6 6 0 0 1 6 6v32a6 6 0 0 1-6 6H48L32 82V68H20a6 6 0 0 1-6-6V30a6 6 0 0 1 6-6z" fill="'+G+'"/><path d="M50 33l4.6 9.4 10.4 1.5-7.5 7.3 1.8 10.3L50 56.5l-9.3 4.9 1.8-10.3-7.5-7.3 10.4-1.5z" fill="'+N+'" opacity=".85"/><path d="M24 32h14" stroke="'+H+'" stroke-width="2.4" stroke-linecap="round" opacity=".85"/>';
  }return '';}
 var BADGE={streak3:'3',streak7:'7',streak30:'30',goal4:'4',checks10:'10',checks25:'25',checks50:'50',checks100:'100',perfect3:'×3',ex50:'50',ex100:'100',ex250:'250',ex500:'500',wb10:'10',grammar10:'10',top3:'3',hunter:'20'};
 function medalSvg(m,has,hidden){
@@ -125,6 +127,10 @@ M('trip','game','b','Train driver','Maquinista','Faça o passeio de trem até a 
 M('lost3','secret','b','Out of lions','Sin leones','Perdeu os 3 leões numa estação.','Perdiste los 3 leones en una estación.','warn',function(S){return S.g.l3?1:0;},1,1);
 M('ltfail','secret','b','Next time','La próxima','Não passou num teste de nível.','No superaste una prueba de nivel.','door',function(S){return S.ltFail?1:0;},1,1);
 M('missed','secret','b','Missed the train','Perdiste el tren','Jogou o Modo Jogo depois da meia-noite.','Jugaste el Modo Juego pasada la medianoche.','moon',function(S){return S.g.mn?1:0;},1,1);
+M('coteacher','class','b','Co-Teacher','Co-profesor','Sua primeira sugestão. Obrigado por ajudar a deixar a aula mais interessante!','Tu primera sugerencia. ¡Gracias por ayudar a que la clase sea más interesante!','bulb',function(S){return S.sug;},1);
+M('reviewer10','class','b','Class Reviewer','Revisor de clase','Avalie suas aulas por completo (I can + nota + motivo). Medalha difícil de conseguir.','Valora tus clases por completo (I can + nota + motivo). Medalla difícil de conseguir.','chat',function(S){return S.rev;},10);
+M('reviewer30','class','s','Class Reviewer','Revisor de clase','Avalie suas aulas por completo (I can + nota + motivo). Medalha difícil de conseguir.','Valora tus clases por completo (I can + nota + motivo). Medalla difícil de conseguir.','chat',function(S){return S.rev;},30);
+M('reviewer100','class','g','Class Reviewer','Revisor de clase','Avalie suas aulas por completo (I can + nota + motivo). Medalha difícil de conseguir.','Valora tus clases por completo (I can + nota + motivo). Medalla difícil de conseguir.','chat',function(S){return S.rev;},100);
 var BYID={};CAT.forEach(function(m){BYID[m.id]=m;});
 /* ---------- statistics ---------- */
 function pc(a){return a.total?a.score/a.total:0;}
@@ -174,7 +180,7 @@ function stats(all,x){
   var hit=Object.keys(wk).filter(function(k){return wk[k]>=goal;}).sort();S.weeksHit=hit.length;
   var gr2=0,gm=0,pv=null;hit.forEach(function(k){var t=new Date(k+'T12:00:00').getTime();gr2=(pv!==null&&Math.round((t-pv)/864e5)===7)?gr2+1:1;pv=t;if(gr2>gm)gm=gr2;});S.goalRun=gm;
   S.weekend=Object.keys(wend).some(function(k){return wend[k][5]&&wend[k][6];});
-  S.certs=x.certs||0;S.top3=!!x.top3;S.days=days;
+  S.certs=x.certs||0;S.top3=!!x.top3;S.sug=x.sug||0;S.rev=x.rev||0;S.days=days;
   var g=x.g||{};S.g=g;S.xp=x.xp||0;S.lvl=S.xp>0?lvlOfXP(S.xp):0;
   var lines={},stN=0;Object.keys(g.st||{}).forEach(function(k){stN++;var c=k.split('|')[0];lines[c]=(lines[c]||0)+1;});
   S.stN=stN;var lv=Object.keys(lines).map(function(c){return lines[c];}).sort(function(a,b){return b-a;});
@@ -200,6 +206,8 @@ async function loadExtra(){
   try{var u=C.uid;if(u){var p=await sb.from('profiles').select('weekly_goal').eq('id',u).maybeSingle();if(p&&p.data&&p.data.weekly_goal)x.goal=+p.data.weekly_goal;}}catch(e){}
   try{var c=await sb.from('certificates').select('id',{count:'exact',head:true});x.certs=(c&&c.count)||((c&&c.data&&c.data.length)||0);}catch(e){}
   try{var b=await sb.rpc('streak_board');var rows=(b&&b.data)||[];for(var i=0;i<Math.min(3,rows.length);i++)if(rows[i].me&&rows[i].cur>=3)x.top3=true;}catch(e){}
+  try{var qs=await sb.from('class_suggestions').select('id',{count:'exact',head:true});x.sug=(qs&&qs.count)||0;}catch(e){}
+  try{var qr=await sb.from('class_ratings').select('id',{count:'exact',head:true}).not('reason','is',null).not('can_do','is',null);x.rev=(qr&&qr.count)||0;}catch(e){}
   try{var u2=C.uid;var q=await sb.from('game_xp').select('xp').eq('user_id',u2).maybeSingle();x.xp=(q&&q.data&&q.data.xp)||0;}catch(e){}
   try{var q2=await sb.from('game_stats').select('data').eq('user_id',C.uid).maybeSingle();C.gs=(q2&&q2.data&&q2.data.data)||{};}catch(e){C.gs={};}
   x.g=C.gs||{};
@@ -283,7 +291,7 @@ async function render(box,all){
   var S=stats(all||await loadAll(),x),res=evalAll(S);
   var wrap=el('div','mgw'),tip=el('div','mtip');wrap.appendChild(tip);
   var tot=0,got=0;
-  ['streak','checks','ex','stages','special','game','secret'].forEach(function(g){
+  ['streak','checks','ex','stages','class','special','game','secret'].forEach(function(g){
     var items=res.filter(function(r){return r.m.g===g;});if(!items.length)return;
     var n=items.filter(function(r){return r.have||mine[r.m.id];}).length;tot+=items.length;got+=n;
     var h=el('div','mgt');h.appendChild(el('span','',STR.g[g][L]));h.appendChild(el('span','',n+'/'+items.length));wrap.appendChild(h);
@@ -303,7 +311,7 @@ async function render(box,all){
   document.addEventListener('click',function(){tip.classList.remove('on');});
   box.appendChild(wrap);
   /* next medal */
-  var nx=res.filter(function(r){return !r.have&&!mine[r.m.id]&&!r.m.secret;}).sort(function(a,b){return b.p-a.p;})[0];
+  var nx=res.filter(function(r){return !r.have&&!mine[r.m.id]&&!r.m.secret&&!/^reviewer/.test(r.m.id);}).sort(function(a,b){return b.p-a.p;})[0];
   if(nx){var nb=el('div','pbar');var sm=el('span','sm',s('next'));nb.appendChild(sm);nb.appendChild(el('b','',' · '+nx.m.n[L]));var bar=el('div','bar');var i=el('i');i.style.width=Math.round(nx.p*100)+'%';bar.appendChild(i);nb.appendChild(bar);box.appendChild(nb);}
   /* sound switch */
   var sb2=el('button','btn msnd');sb2.type='button';function lab(){sb2.textContent=s('snd')+': '+(sndOn()?s('on'):s('off'));}lab();
@@ -328,6 +336,6 @@ function game(fn){
       sbx().from('game_stats').upsert({user_id:C.uid,data:C.gs,updated_at:new Date().toISOString()}).then(function(){C.extra=null;setTimeout(check,2500);},function(){});},1500);})();
   }catch(e){}
 }
-window.Medals={svg:function(id){var m=BYID[id];if(!m)return '';defsSvg();return medalSvg(m,true,false);},game:game,render:render,check:check,cat:CAT,stats:stats,evalAll:evalAll,_C:C,_harp:harp,_announce:function(id){var m=BYID[id];if(m){enq(m);run();}}};
+window.Medals={reload:function(){C.extra=null;return check();},svg:function(id){var m=BYID[id];if(!m)return '';defsSvg();return medalSvg(m,true,false);},game:game,render:render,check:check,cat:CAT,stats:stats,evalAll:evalAll,_C:C,_harp:harp,_announce:function(id){var m=BYID[id];if(m){enq(m);run();}}};
 hook();
 })();

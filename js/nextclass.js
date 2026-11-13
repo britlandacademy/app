@@ -209,9 +209,10 @@ function render(box,ev,deps,opts){opts=opts||{};
       var ex=[];if(nx.hasReading)ex.push('Leitura');if(nx.hasDictation)ex.push('Ditado');if(nx.hasQuiz)ex.push('Quiz');if(nx.lessonCheck)ex.push('Lesson Check');if(nx.conversation)ex.push('Conversation');if(nx.activity)ex.push(nx.activity);
       if(ex.length)b3.appendChild(el('div','nc-m','+ '+ex.join(' · ')));}else add(b3,el('div','nc-m','Sem próxima aula indicada na planilha'));
     add(g3,b1,b2,b3);wrap.appendChild(g3);
+    var sgBox=el('div','nc-box');wrap.appendChild(sgBox);if(window.ClassDayAdmin&&nx&&nx.newWords&&nx.newWords.from!=null)ClassDayAdmin.panel(sgBox,{sb:deps.sb,from:nx.newWords.from,to:nx.newWords.to||nx.newWords.from});else sgBox.remove();
     /* per-student table */
     var tb=el('div'),h=el('div','nc-st h');['Aluno','Estudou desde a última aula','Dificuldades (21 dias)','Presença hoje'].forEach(function(x){h.appendChild(el('span','nc-k',x));});tb.appendChild(h);
-    var errsBy={},reinf={};d.uids.forEach(function(u){errsBy[u]={};});
+    var rowEls={};var errsBy={},reinf={};d.uids.forEach(function(u){errsBy[u]={};});
     d.errs.forEach(function(e){var k=diffKey(e);if(!k||!errsBy[e.user_id])return;errsBy[e.user_id][k]=(errsBy[e.user_id][k]||0)+1;var rk=(e.kind||'ex')+'|'+e.lesson;(reinf[rk]=reinf[rk]||{kind:e.kind||'ex',lesson:e.lesson,n:0,who:{}});reinf[rk].n++;reinf[rk].who[e.user_id]=(reinf[rk].who[e.user_id]||0)+1;});
     var saveMsg=el('span','nc-msg','');
     function save(u,status,late,btns){var row={event_key:d.key,user_id:u,status:status,late_min:status==='late'?late:null,class_start:ev.start_at,updated_at:new Date().toISOString()};saveMsg.textContent='Salvando…';
@@ -229,8 +230,8 @@ function render(box,ev,deps,opts){opts=opts||{};
       var paint=function(){var s=d.att[u]&&d.att[u].status;bs.came.classList.toggle('on',s==='came');bs.late.classList.toggle('on',s==='late');bs.ns.classList.toggle('on',s==='ns');mins.hidden=s!=='late';};
       [['came','✔ Veio',''],['late','⏱ Atrasou','late'],['ns','NS · faltou','ns']].forEach(function(x){var b=el('button',x[2],x[1]);b.type='button';b.addEventListener('click',function(){save(u,x[0],+mins.value||10,paint);});bs[x[0]]=b;c4.appendChild(b);});
       mins.addEventListener('change',function(){if(d.att[u]&&d.att[u].status==='late')save(u,'late',+mins.value||10,paint);});c4.appendChild(mins);c4._paint=paint;row._paint=paint;
-      add(row,c1,c2,c3,c4);tb.appendChild(row);paint();});
-    wrap.appendChild(tb);
+      add(row,c1,c2,c3,c4);tb.appendChild(row);rowEls[u]=row;paint();});
+    wrap.appendChild(tb);if(window.ClassDayAdmin)ClassDayAdmin.rates(rowEls,{sb:deps.sb,uids:d.uids,name:name});
     /* reinforcement */
     var rs=Object.keys(reinf).map(function(k){return reinf[k];}).sort(function(a,b){return b.n-a.n;}).slice(0,4);
     var sel={},rw=el('div'),rmsg=el('span','nc-msg','');

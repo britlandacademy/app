@@ -238,6 +238,7 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 <script src="js/i18n-es.js" charset="utf-8"></script>
 <script src="../js/i18n.js" charset="utf-8"></script>
 <script src="../js/gate.js" charset="utf-8"></script><script src="../js/sheet.js" charset="utf-8"></script><script src="../js/motion.js" charset="utf-8"></script><script src="../js/medals.js" charset="utf-8"></script>
+<script src="../js/classday.js" charset="utf-8"></script>
 <script src="../js/lsearch.js" charset="utf-8"></script>
 <script src="../js/home2.js" charset="utf-8"></script>
 <script src="../js/protect.js" charset="utf-8"></script>
@@ -327,6 +328,7 @@ function show(id,noscroll){
   box.append(player('Escucha la Lección '+id,'Etapa '+n+'/Etapa '+n+' Lección '+String(id).padStart(3,'0')+'.mp3'));
   renderText(id,box);
   out.append(box);
+  try{if(window.ClassDay&&!window.CBUS)ClassDay.lessonCards(out,{sb:Gate.sb});}catch(e){}
   prevs.forEach(b=>{b.disabled=id<=LO;});nexts.forEach(b=>{b.disabled=id>=HI;});
   try{localStorage.setItem('callan-lesson-last-es',String(id));}catch(e){}
   if(!noscroll)window.scrollTo({top:0});
