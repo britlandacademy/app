@@ -6,8 +6,12 @@ var IC={
  song:'<path d="M9 18V5.5l10-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>',
  video:'<rect x="3" y="5.5" width="18" height="13" rx="3"/><path d="M10.2 9.4v5.2l4.4-2.6z"/>',
  film:'<rect x="3.5" y="9.5" width="17" height="10" rx="2"/><path d="M3.8 9.5l-.6-3.8 15.4-2.4.6 3.8M8 7.1l1.6 2.4M12.6 6.3l1.6 2.4"/>',
+ series:'<rect x="3" y="5.5" width="18" height="12" rx="2.5"/><path d="M8 21h8M12 17.5V21"/>',
+ podcast:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0013 0M12 17.5V21"/>',
+ text:'<path d="M6 3.5h9l3 3v14H6z"/><path d="M9 8h3M9 11.5h6M9 15h6"/>',
+ game:'<rect x="3" y="8" width="18" height="9" rx="4.5"/><path d="M8 10.8v3.4M6.3 12.5h3.4"/><circle cx="15.5" cy="11.8" r=".8"/><circle cx="17.5" cy="13.6" r=".8"/>',
  activity:'<path d="M4 20.5h16"/><path d="M4 18l1-3.5L15.5 4a2 2 0 013 3L8 17.5z"/><path d="M13.5 6l3 3"/>'};
-var KN={song:'canção',video:'vídeo',film:'filme',activity:'atividade'};
+var KN={song:'canção',video:'vídeo',film:'filme',series:'série',podcast:'podcast',text:'leitura',game:'jogo',activity:'atividade'};
 function ic(k){return '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;vertical-align:middle">'+(IC[k]||IC.song)+'</svg>';}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function css(){if(document.getElementById('cda-css'))return;var s=document.createElement('style');s.id='cda-css';

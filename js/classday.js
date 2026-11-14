@@ -13,12 +13,16 @@ var TX={
  your:['your suggestion','tu sugerencia'],pend:['PENDING','PENDIENTE'],sent:['Sent. It will be reviewed before others see it.','Enviado. Lo revisaremos antes de que otros lo vean.'],
  medalK:['NEW MEDAL · BRONZE','NUEVA MEDALLA · BRONCE'],medalN:['Co-Teacher','Co-profesor'],medalT:['Your first suggestion. Thanks for helping us make the class more interesting!','Tu primera sugerencia. ¡Gracias por ayudarnos a hacer la clase más interesante!'],great:['Great!','¡Genial!']
 };
-var KINDS=[['song',['Song','Canción']],['video',['Video','Vídeo']],['film',['Film','Película']],['activity',['Activity','Actividad']]];
+var KINDS=[['song',['Song','Canción']],['video',['Video','Vídeo']],['film',['Film','Película']],['series',['Series','Serie']],['podcast',['Podcast','Pódcast']],['text',['Reading','Lectura']],['game',['Game','Juego']],['activity',['Activity','Actividad']]];
 function t(k){return TX[k][L];}
 var IC={
  song:'<svg class="i" viewBox="0 0 24 24"><path d="M9 18V5.5l10-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg>',
  video:'<svg class="i" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="3"/><path d="M10.2 9.4v5.2l4.4-2.6z"/></svg>',
  film:'<svg class="i" viewBox="0 0 24 24"><rect x="3.5" y="9.5" width="17" height="10" rx="2"/><path d="M3.8 9.5l-.6-3.8 15.4-2.4.6 3.8M8 7.1l1.6 2.4M12.6 6.3l1.6 2.4"/></svg>',
+ series:'<svg class="i" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="12" rx="2.5"/><path d="M8 21h8M12 17.5V21"/></svg>',
+ podcast:'<svg class="i" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0013 0M12 17.5V21"/></svg>',
+ text:'<svg class="i" viewBox="0 0 24 24"><path d="M6 3.5h9l3 3v14H6z"/><path d="M9 8h3M9 11.5h6M9 15h6"/></svg>',
+ game:'<svg class="i" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="9" rx="4.5"/><path d="M8 10.8v3.4M6.3 12.5h3.4"/><circle cx="15.5" cy="11.8" r=".8"/><circle cx="17.5" cy="13.6" r=".8"/></svg>',
  activity:'<svg class="i" viewBox="0 0 24 24"><path d="M4 20.5h16"/><path d="M4 18l1-3.5L15.5 4a2 2 0 013 3L8 17.5z"/><path d="M13.5 6l3 3"/></svg>',
  bm:'<svg class="i" viewBox="0 0 24 24"><path d="M6.5 3.5h11v17L12 16.5l-5.5 4z"/></svg>',
  rf:'<svg class="i" viewBox="0 0 24 24"><path d="M19 11a7 7 0 00-12.5-3.5M5 4v4h4"/><path d="M5 13a7 7 0 0012.5 3.5M19 20v-4h-4"/></svg>',
@@ -246,7 +250,9 @@ var LCSS='.cdl{display:flex;align-items:center;gap:10px;margin:10px 0;padding:8p
 '.cdl svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;color:#d9ae3a;flex:none}.cdl .tt{min-width:0;flex:1}.cdl b{display:block;font-family:Georgia,serif;overflow-wrap:anywhere}.cdl small{color:var(--mut,#a9b4cf)}'+
 '.cdl .op{flex:none;display:inline-flex;align-items:center;min-height:36px;padding:0 14px;border-radius:99px;border:2px solid #d9ae3a;background:transparent;color:inherit;font:inherit;font-weight:800;font-size:.85rem;text-decoration:none}'+
 '.cdl.sg{border-left-color:var(--line,#32457a)}.cdl.sg button.op{cursor:pointer}';
-function searchUrl(x){return /^https?:\/\//i.test(x.title)?x.title:((x.kind==='song'||x.kind==='video'||x.kind==='film')?'https://www.youtube.com/results?search_query='+encodeURIComponent(x.title+(x.kind==='film'?' trailer':'')):'');}
+function searchUrl(x){if(/^https?:\/\//i.test(x.title))return x.title;var k=x.kind,q=encodeURIComponent(x.title);
+ if(k==='song'||k==='video'||k==='film'||k==='series')return 'https://www.youtube.com/results?search_query='+(k==='film'||k==='series'?encodeURIComponent(x.title+' trailer'):q);
+ if(k==='podcast'||k==='text'||k==='game')return 'https://www.google.com/search?q='+encodeURIComponent(x.title+(k==='podcast'?' podcast':k==='game'?' online game':''));return '';}
 function lessonCards(out,o){
  if(!out||!o||!o.sb)return;css();
  if(!document.getElementById('cdl-css')){var st=document.createElement('style');st.id='cdl-css';st.textContent=LCSS;document.head.appendChild(st);}

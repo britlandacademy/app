@@ -65,11 +65,11 @@ function render(host,x){css();
     var det=D.createElement('details'),sm2=el('summary','cc-m',group?'Anotação da aula (opcional)':'Anotação (opcional)'),ta=D.createElement('textarea');ta.value=L.note||'';det.appendChild(sm2);det.appendChild(ta);if(L.note)det.open=true;box.appendChild(det);
     var sgW=el('div','cc-tk'),sgR=el('div','cc-act'),sgK=D.createElement('select'),sgT=D.createElement('input');
     sgW.appendChild(el('div','cc-k','Sugestão para os alunos (opcional)'));
-    [['song','Música'],['video','Vídeo'],['film','Filme'],['activity','Atividade']].forEach(function(k){var o3=D.createElement('option');o3.value=k[0];o3.textContent=k[1];sgK.appendChild(o3);});sgK.setAttribute('aria-label','Tipo da sugestão');
+    [['song','Música'],['video','Vídeo'],['film','Filme'],['series','Série'],['podcast','Podcast'],['text','Leitura'],['game','Jogo'],['activity','Atividade']].forEach(function(k){var o3=D.createElement('option');o3.value=k[0];o3.textContent=k[1];sgK.appendChild(o3);});sgK.setAttribute('aria-label','Tipo da sugestão');
     sgT.type='text';sgT.placeholder='Link ou nome';sgT.maxLength=300;sgT.style.flex='1';sgT.setAttribute('aria-label','Link ou nome da sugestão');
     sgR.appendChild(sgK);sgR.appendChild(sgT);sgW.appendChild(sgR);sgW.appendChild(el('div','cc-m','Aparece no card "Sua aula de hoje" e na lição, nos parágrafos desta aula, e vai para a coluna Notes / Callan Method da planilha.'));box.appendChild(sgW);
     function parRange(){var n=+nIn.value,to=parseInt(iP.value,10)||0,from=0,bn=-1;logs.forEach(function(l){var c=l.class_number||0;if(l.user_id===u0&&l.status==='given'&&l.event_key!==key&&c<n&&c>bn&&parseInt(l.paragraph,10)){bn=c;from=parseInt(l.paragraph,10)+1;}});if(!from||from>to)from=to;return {from:from,to:to};}
-    function notesFor(){var r=parRange();if(!r.to)return Promise.resolve('');var KN={song:'Song',video:'Video',film:'Film',activity:'Activity'};
+    function notesFor(){var r=parRange();if(!r.to)return Promise.resolve('');var KN={song:'Song',video:'Video',film:'Film',series:'Series',podcast:'Podcast',text:'Reading',game:'Game',activity:'Activity'};
       return Promise.resolve(sb.from('class_suggestions').select('kind,title').eq('status','approved').lte('par_from',r.to).gte('par_to',r.from).order('created_at',{ascending:true})).then(function(q){return ((q&&q.data)||[]).map(function(z){return KN[z.kind]+': '+z.title;}).join(' | ');},function(){return '';});}
     function saveSug(){var v=sgT.value.trim(),r=parRange();if(!v||!r.to)return Promise.resolve();
       return Promise.resolve(sb.from('class_suggestions').insert({kind:sgK.value,title:v,par_from:r.from,par_to:r.to,status:'approved',source:'teacher'})).then(function(q){if(q&&q.error)throw q.error;sgT.value='';});}
