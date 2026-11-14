@@ -179,6 +179,7 @@ function mount(ctx,o){
         else r2.append(el('a',{class:'pr li',href:x.h},[el('span',{class:'bx',text:'☐'}),el('div',{},[el('b',{text:x.t}),x.x?el('span',{class:'s',text:x.x}):(x===first?el('span',{class:'s',text:L10.recd}):null)]),el('i',{class:'go','aria-hidden':'true',text:'→'})]));
       });
     }
+    if(o&&o.takeover)return;   /* English home: the merged next-class card (classday.js) replaces the next-class card and this list */
     sec.append(r2);sec.hidden=false;
   }).catch(function(){});
 }
