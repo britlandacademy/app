@@ -175,11 +175,18 @@ function medal(){var m=document.createElement('div');m.className='cdmd';m.innerH
 /* ---------- Home card ---------- */
 /* shows for 48 h after a class; one-off: every class given since Mon 9 Nov 2026 stays visible until Sun 15 Nov (launch week) */
 function isFresh(iso){var t=new Date(iso).getTime(),n=Date.now();return n-t<48*3600e3||(t>=Date.UTC(2026,10,9,3)&&n<Date.UTC(2026,10,16,3));}
+/* the class log can lag behind the plan (sheet sync): if the plan is further ahead, trust the plan; a class the student missed is not shown as "your class today" */
+function reconcile(c,pr){
+ var cp=pr&&pr.data&&pr.data.currentPosition;if(!c||!cp||!(cp.classNumber>c.class_number))return c;
+ var miss=((pr.data.me||{}).missed||[]).some(function(m){return m.classNumber===cp.classNumber;});if(miss)return null;
+ var par=parseInt(cp.paragraph,10)||c.par_to;
+ return {event_key:null,given_at:c.given_at,stage:pr.stage||c.stage,class_number:cp.classNumber,par_from:par,par_to:par,last_word:cp.lastWord||'',rating:null};
+}
 function mount(box,o){
  if(!box||!o||!o.sb)return;css();var sb=o.sb;
  var P=function(q){return Promise.resolve(q).then(function(r){return r&&!r.error?r.data:null;},function(){return null;});};
  Promise.all([P(sb.rpc('my_last_class')),o.uid?P(sb.from('plan_progress').select('stage,lesson,data').eq('user_id',o.uid).maybeSingle()):null,o.uid?P(sb.from('lessons').select('start_at,end_at,meet_url').eq('user_id',o.uid).gte('end_at',new Date().toISOString()).order('start_at').limit(1)):null]).then(function(a){
-  var c=a[0]&&a[0][0],fresh=!!c&&isFresh(c.given_at),pre=preOf(a[1],a[2]&&a[2][0],o);
+  var c=reconcile(a[0]&&a[0][0],a[1]),fresh=!!c&&isFresh(c.given_at),pre=preOf(a[1],a[2]&&a[2][0],o);
   if(!pre&&!fresh)return;
   if(!fresh)c=null;
   var from=c?(c.par_from||c.par_to):0,to=c?(c.par_to||from):0;
@@ -205,7 +212,7 @@ function preOf(row,ls,o){
  if(!row||!row.data)return null;var d=row.data,nx=d.nextClass,cp=d.currentPosition||{},me=d.me||{};ls=ls||null;
  var ms=ls?new Date(ls.start_at).getTime()-Date.now():1e12;if(!nx||!nx.classNumber||(ls&&new Date(ls.end_at)<new Date()))return null;
  var L=row.lesson||0;if(o&&o.upto>0&&L>o.upto)L=o.upto;var St=(window.Covers&&Covers.stageOf&&L)?Covers.stageOf(L):(row.stage||1);
- return {todo:L?todoOf(row,o,L,row.stage||1):[],row:row,near:ms<=24*3600e3,num:nx.classNumber,stage:row.stage||St,start:ls?ls.start_at:'',meet:ls?ls.meet_url||'':'',rev:nx.review&&nx.review.from!=null?nx.review:null,nw:nx.newWords&&nx.newWords.from!=null?nx.newWords:null,stopPar:cp.paragraph,stopWord:me.lastWord||cp.lastWord||'',L:L,St:St,
+ return {todo:L?todoOf(row,o,L,row.stage||1):[],row:row,near:ms<=24*3600e3,num:nx.classNumber,stage:row.stage||St,start:ls?ls.start_at:'',meet:ls?ls.meet_url||'':'',rev:nx.review&&nx.review.from!=null?nx.review:null,nw:nx.newWords&&nx.newWords.from!=null?nx.newWords:null,stopPar:cp.paragraph,stopWord:cp.lastWord||me.lastWord||'',L:L,St:St,
   Lc:(window.Covers&&Covers.stageOf&&L>1)?Covers.stageOf(L-1):St};
 }
 function when(iso){if(!iso)return '';var d=new Date(iso),n=new Date(),tm=d.toLocaleTimeString(ES?'es':'en',{hour:'numeric',minute:'2-digit'}),dd=Math.round((new Date(d.getFullYear(),d.getMonth(),d.getDate())-new Date(n.getFullYear(),n.getMonth(),n.getDate()))/864e5);return (dd<=0?t('today'):dd===1?t('tmrw'):d.toLocaleDateString(ES?'es':'en',{weekday:'short',day:'numeric',month:'short'}))+' · '+tm;}
