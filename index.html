@@ -148,7 +148,7 @@ Gate.start({kinds:[],attempts:['check','ex']},function(ctx){
     if(/[?&]aluno=1/.test(location.search)){ST=NOW;}
     if(ctx.profile&&ctx.profile.is_admin&&!(ST&&NOW-ST<12*3600e3)){location.replace('admin.html');return;}
     if(ST)localStorage.setItem('bl-stay-student',String(NOW));}catch(e){}
-  try{Plan.mount(ctx,{es:false});}catch(e){}
+  try{Plan.mount(ctx,{es:false,takeover:!(ctx.profile&&ctx.profile.is_admin)});}catch(e){}
   try{Tips.mount(document.getElementById('tips'),Gate.sb,(ctx.profile&&ctx.profile.name||'').split(' ')[0]);}catch(e){}
   var name=(ctx.profile&&ctx.profile.name||'').split(' ')[0];
   (function(){
