@@ -169,7 +169,7 @@ td input[type=number]{width:7em}
 </div>
 <script src="js/i18n.js" charset="utf-8"></script>
 <script src="js/config.js" charset="utf-8"></script>
-<script src="js/gate.js" charset="utf-8"></script><script src="js/dialog.js" data-lang="pt" charset="utf-8"></script>
+<script src="js/gate.js" charset="utf-8"></script><script src="js/flags.js" charset="utf-8"></script><script src="js/dialog.js" data-lang="pt" charset="utf-8"></script>
 <script>
 Gate.start({admin:true,kinds:[]},function(ctx){
 'use strict';
@@ -190,7 +190,7 @@ $('mes').value=today().slice(0,7);$('f-sm').value=today().slice(0,7);
 async function loadAll(){
   const a=await sb.from('subs').select('*').order('student_name');if(a.error)return fail(a.error);
   SUBS=a.data||[];
-  const p=await sb.from('profiles').select('id,name,email,status,is_admin').order('name');PROF=p.data||[];
+  const p=await sb.from('profiles').select('id,name,email,status,is_admin,country,tz,course').order('name');PROF=p.data||[];
   const c=await sb.from('charges').select('*').order('due_date');if(c.error)return fail(c.error);
   CH=c.data||[];
   fillStudents();renderAll();
@@ -226,7 +226,7 @@ function rowForOld(c,showMonth){
   const del=ib('del','Excluir','danger');
   del.addEventListener('click',async()=>{if(await BL_DLG.confirm('Excluir esta mensalidade?'))sb.from('charges').delete().eq('id',c.id).then(loadAll);});
   return el('tr',{class:(!c.paid_on&&c.due_date<today())?'late':''},
-    el('td',{},s.student_name||'?'),el('td',{},s.plan||''),el('td',{class:'c'},br(c.due_date)),
+    el('td',{},flgS(s),s.student_name||'?'),el('td',{},s.plan||''),el('td',{class:'c'},br(c.due_date)),
     el('td',{},el('span',{},SYM[c.currency]+' '),inp),el('td',{},status(c)),el('td',{},el('div',{class:'row'},pay,sv,del)));
 }
 function renderTableOld(){
@@ -240,7 +240,7 @@ function renderLate(){
   {const sb2=L.reduce((n,c)=>n+(toBRL(c)||0),0);box.append(el('p',{},'Total em atraso: '+fmBRL(sb2)));}
   const t=el('table');t.append(th(['Aluno','Vencimento','Valor','Dias de atraso']));const b=el('tbody');
   L.sort((x,y)=>x.due_date<y.due_date?-1:1).forEach(c=>{const d=Math.floor((new Date(today())-new Date(c.due_date))/864e5);
-    b.append(el('tr',{class:'late'},el('td',{},nm(c)),el('td',{class:'c'},br(c.due_date)),el('td',{class:'n'},money(c.amount,c.currency)),el('td',{class:'c'},String(d))));});
+    b.append(el('tr',{class:'late'},el('td',{},flgS(subOf(c.sub_id)),nm(c)),el('td',{class:'c'},br(c.due_date)),el('td',{class:'n'},money(c.amount,c.currency)),el('td',{class:'c'},String(d))));});
   t.append(b);const w=el('div',{class:'tw'});w.append(t);box.append(w);
 }
 function renderChart(){
@@ -288,7 +288,7 @@ function renderSubs(){
     ac.addEventListener('click',()=>sb.from('subs').update({active:!s.active}).eq('id',s.id).then(loadAll));
     const del=ib('del','Excluir','danger');
     del.addEventListener('click',async()=>{if(await BL_DLG.confirm('Excluir este aluno e TODAS as mensalidades dele?'))sb.from('subs').delete().eq('id',s.id).then(loadAll);});
-    b.append(el('tr',{},el('td',{class:'nm'},s.student_name+(s.user_id?'':' (sem conta)')),el('td',{},s.plan),
+    b.append(el('tr',{},el('td',{class:'nm'},flgS(s),s.student_name+(s.user_id?'':' (sem conta)')),el('td',{},s.plan),
       el('td',{},el('div',{class:'mny'},el('span',{},SYM[s.currency]),am)),el('td',{},dd),el('td',{},pm),el('td',{},ob),el('td',{class:'c'},s.start_month.slice(5,7)+'/'+s.start_month.slice(0,4)),
       el('td',{class:'c'},el('span',{class:'dot'+(s.active?'':' off')}),s.active?'Sim':'Não'),el('td',{},el('div',{class:'ab'},sv,ac,del))));});
   t.append(b);
@@ -327,6 +327,7 @@ $('gen').addEventListener('click',async()=>{
 /* ---- cotação automática EUR→BRL, totais em reais, lista do mês ---- */
 let RATE=null,RATE_AT='';
 const nm=c=>subOf(c.sub_id).student_name||c.title||'?';
+const flgS=s=>{try{const p=PROF.find(x=>x.id===s.user_id);return p?BL_FLAG.el(p,{w:18,base:'',round:true}):null;}catch(e){return null;}};
 const toBRL=c=>c.currency==='BRL'?+c.amount:(RATE?+c.amount*RATE:null);
 const fmBRL=v=>v==null?'—':money(v,'BRL');
 async function loadRate(force){
@@ -365,7 +366,7 @@ function rowFor(c){
   const s=subOf(c.sub_id),late=!c.paid_on&&c.due_date<today();
   return el('tr',{class:c.paid_on?'pd':(late?'late':'')},
     el('td',{class:'ck c'},ck),
-    el('td',{class:'nm'},nm(c),el('small',{class:(!c.paid_on&&late)?'lt':''},c.paid_on?'Pago em '+br(c.paid_on):(late?'venceu '+br(c.due_date).slice(0,5)+' · '+Math.floor((new Date(today())-new Date(c.due_date))/864e5)+' dia(s) de atraso · '+(s.plan||c.note||'Avulsa'):(s.plan||c.note||'Avulsa')),/^Baixa autom/.test(c.note||'')?el('span',{class:'tag'},'automático'):null)),
+    el('td',{class:'nm'},flgS(subOf(c.sub_id)),nm(c),el('small',{class:(!c.paid_on&&late)?'lt':''},c.paid_on?'Pago em '+br(c.paid_on):(late?'venceu '+br(c.due_date).slice(0,5)+' · '+Math.floor((new Date(today())-new Date(c.due_date))/864e5)+' dia(s) de atraso · '+(s.plan||c.note||'Avulsa'):(s.plan||c.note||'Avulsa')),/^Baixa autom/.test(c.note||'')?el('span',{class:'tag'},'automático'):null)),
     el('td',{class:'vl'},el('div',{class:'mny'},el('span',{},SYM[c.currency]),inp)),
     el('td',{class:'dd c'},String(+c.due_date.slice(8))),
     el('td',{class:'n'},fmBRL(toBRL(c))),

@@ -187,7 +187,7 @@ function showLogin(mode){
     if(!pw){err.textContent='Type your password.';pass.focus();return;}
     go.disabled=true;
     var p=mode==='in'?sb.auth.signInWithPassword({email:em,password:pw})
-                     :sb.auth.signUp({email:em,password:pw,options:{data:{name:nm}}});
+                     :sb.auth.signUp({email:em,password:pw,options:{data:{name:nm,course:(COURSE.id==='es'?'es':'en')}}});
     p.then(function(r){
       go.disabled=false;
       if(r.error){err.textContent=niceError(r.error);return;}
@@ -980,6 +980,10 @@ function route(){
       if(pr.error||!pr.data){
         message('Account not ready',['We could not read your account. Try again in a moment.'],[btn('Try again',route),btn('Sign out',signOut,true)]);return;
       }
+      /* um so login: o aluno e levado ao site do curso dele (ingles na raiz, espanhol em /espanol/); o professor (admin) entra nos dois */
+      if(!pr.data.is_admin&&pr.data.course&&(pr.data.course==='es')!==(COURSE.id==='es')){
+        try{var ES1=COURSE.id==='es',u1=new URL(location.href);u1.pathname=ES1?u1.pathname.replace(/\/espanol\//,'/'):u1.pathname.replace(/\/([^\/]*)$/,'/espanol/$1');location.replace(u1.toString());return;}catch(e){}
+      }
       prof=pr.data;cacheAcct();ldProg(.55);
       return enter();
     });
@@ -1005,7 +1009,7 @@ function start(opts,cb){
   loadLib(0,function(err){
     ldProg(.2);
     if(err){message('No connection',['Could not load the sign-in system. Check your internet and reload the page.'],[btn('Reload',function(){location.reload();})]);return;}
-    sb=window.supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+    sb=window.supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false},db:{schema:CFG.schema||'public'}});
     window.Gate.sb=sb;
     if(!handleRecovery())route();
   });

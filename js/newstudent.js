@@ -1,7 +1,7 @@
 /* Aluno novo: a partir do evento "TN" da Agenda cria a aba do aluno na planilha (via sheet-push / Apps Script v4). Só no painel do professor (inglês). */
 (function(){
 'use strict';
-var TZ='America/Sao_Paulo',TPL='Lucas Rodrigues - Stage 6 3rd Edition';
+var TZ='America/Sao_Paulo',TPL_EN='Template - Inglês',TPL_ES='Template - Espanhol';
 function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
 function ymd(i){return new Date(i).toLocaleDateString('en-CA',{timeZone:TZ});}
 function hm(i){return new Date(i).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',timeZone:TZ});}
@@ -13,9 +13,9 @@ s.textContent='.ns-c .ag-btn{font:inherit;font-weight:700;min-height:42px;paddin
 document.head.appendChild(s);}
 var ERR={ja_existe:'Já existe uma aba com esse nome.',modelo_nao_encontrado:'Aba modelo não encontrada na planilha.',cabecalho_nao_encontrado:'Cabeçalho do modelo não encontrado.',not_configured:'Planilha não configurada.',forbidden:'Sem permissão.',dados_incompletos:'Dados incompletos.'};
 function create(sb,c,done){
-  var P=window.BL_PLANS&&window.BL_PLANS[c.stage];if(!P){done('Plano do Stage '+c.stage+' indisponível.');return;}
-  var tab=c.name+(c.vip?' VIP':'')+' - Stage '+c.stage+' 3rd Edition',first=String(c.name).split(' ')[0];
-  var pl={sheetName:tab,lesson:1,action:'newStudent',tabName:tab,template:TPL,firstName:first,vip:!!c.vip,stage:c.stage,lessonsText:P.lessons,plan:P.rows,start:ymd(c.start_at)+'T'+hm(c.start_at)};
+  var ES=c.course==='es',PP=ES?window.BL_PLANS_ES:window.BL_PLANS,P=PP&&PP[c.stage];if(!P){done('Plano '+(ES?'da Etapa ':'do Stage ')+c.stage+' indisponível.');return;}
+  var tab=c.name+(c.vip?' VIP':'')+(ES?' - ETP ':' - STG ')+c.stage,first=String(c.name).split(' ')[0];
+  var pl={sheetName:tab,lesson:1,action:'newStudent',tabName:tab,template:ES?TPL_ES:TPL_EN,firstName:first,vip:!!c.vip,stage:c.stage,lessonsText:P.lessons,plan:P.rows,start:ymd(c.start_at)+'T'+hm(c.start_at)};
   if(c.fee)pl.fee=c.fee;
   sb.functions.invoke('sheet-push',{body:pl}).then(function(r){var q=r&&r.data;
     if(q&&q.ok){var fin=function(){done(null,tab);},gd=function(){if(!q.gid)return Promise.resolve();return Promise.resolve(sb.from('teacher_cfg').select('value').eq('key','plans_gids').limit(1)).then(function(g){var v=Object.assign({},(g&&g.data&&g.data[0]&&g.data[0].value)||{});v[tab]=q.gid;return sb.from('teacher_cfg').upsert({key:'plans_gids',value:v},{onConflict:'key'});}).catch(function(){});};
@@ -29,21 +29,21 @@ function card(sb,p,ltr,su,hdr,vipDef,startAt,done){
           c=el('div','ns-c'),b=el('div','ns-b',hdr),i=el('div','ns-i'),
           r1=el('div','ns-r'),inN=el('input');inN.type='text';inN.value=nm;inN.setAttribute('aria-label','Nome na aba');
           var sel=el('select');sel.setAttribute('aria-label','Stage');var o0=el('option','','Stage…');o0.value='';sel.appendChild(o0);
-          for(var s=1;s<=12;s++){var o=el('option','','Stage '+s);o.value=s;if(s===st)o.selected=true;sel.appendChild(o);}
+          var ES=p.course==='es';for(var s=1;s<=(ES?6:12);s++){var o=el('option','',(ES?'Etapa ':'Stage ')+s);o.value=s;if(s===st)o.selected=true;sel.appendChild(o);}
           var vip=el('input');vip.type='checkbox';vip.checked=!!vipDef;var vl=el('label','','VIP (aula individual)');vl.insertBefore(vip,vl.firstChild);
           r1.appendChild(inN);r1.appendChild(sel);r1.appendChild(vl);i.appendChild(r1);
           var info=[];if(ltr)info.push('Teste de nível: Stage '+ltr.stage+(ltr.total?' ('+ltr.score+'/'+ltr.total+')':''));info.push(fee?('Mensalidade: '+fee):'Mensalidade: não encontrada em Pagamentos');
           i.appendChild(el('div','ns-m',info.join(' · ')));
           var msg=el('div','ns-m'),r2=el('div','ns-r'),go=el('button','ag-btn','Criar aba na planilha');go.type='button';r2.appendChild(go);i.appendChild(r2);i.appendChild(msg);c.appendChild(b);c.appendChild(i);
           go.onclick=function(){var stg=Number(sel.value);if(!stg){msg.textContent='Escolha o Stage.';return;}
-            var tab=inN.value.trim()+(vip.checked?' VIP':'')+' - Stage '+stg+' 3rd Edition';
+            var tab=inN.value.trim()+(vip.checked?' VIP':'')+(ES?' - ETP ':' - STG ')+stg;
             var run=function(){go.disabled=true;msg.textContent='Criando…';
-            create(sb,{uid:uid,name:inN.value.trim(),vip:vip.checked,stage:stg,start_at:startAt,fee:fee},function(e,t){if(e){go.disabled=false;msg.textContent=e;}else{msg.textContent='Aba criada ✅ '+t;go.hidden=true;if(done)done(t);}});};var q='Criar a aba "'+tab+'" na planilha?';if(window.BL_DLG)BL_DLG.confirm(q,{danger:false}).then(function(k){if(k)run();});else if(window.confirm(q))run();};
+            create(sb,{uid:uid,name:inN.value.trim(),vip:vip.checked,stage:stg,course:p.course,start_at:startAt,fee:fee},function(e,t){if(e){go.disabled=false;msg.textContent=e;}else{msg.textContent='Aba criada ✅ '+t;go.hidden=true;if(done)done(t);}});};var q='Criar a aba "'+tab+'" na planilha?';if(window.BL_DLG)BL_DLG.confirm(q,{danger:false}).then(function(k){if(k)run();});else if(window.confirm(q))run();};
           return c;
 }
 function form(sb,uid,done){
   css();
-  return Promise.all([sb.from('level_tests').select('user_id,stage,score,total,passed,taken_at').eq('user_id',uid),sb.from('subs').select('user_id,amount,currency,due_day,active').eq('user_id',uid),sb.from('profiles').select('id,name,display_name,start_stage').eq('id',uid).limit(1)]).then(function(R){
+  return Promise.all([sb.from('level_tests').select('user_id,stage,score,total,passed,taken_at').eq('user_id',uid),sb.from('subs').select('user_id,amount,currency,due_day,active').eq('user_id',uid),sb.from('profiles').select('id,name,display_name,start_stage,course').eq('id',uid).limit(1)]).then(function(R){
     var p=(R[2].data||[])[0];if(!p)return null;var l=null;(R[0].data||[]).forEach(function(x){if(x.taken_at&&(!l||x.taken_at>l.taken_at))l=x;});
     var su=null;(R[1].data||[]).forEach(function(x){if(x.active!==false)su=x;});
     return card(sb,p,l,su,'Sem planilha · criar agora',true,new Date().toISOString(),done);
@@ -56,7 +56,7 @@ function mount(w,before,evl,stu,sb){
   var ids=[];tn.forEach(function(x){(x.ids||[]).forEach(function(i){if(ids.indexOf(i)<0&&stu.some(function(q){return q.id===i;}))ids.push(i);});});
   if(!ids.length)return;
   Promise.all([sb.from('plan_links').select('user_id').in('user_id',ids),sb.from('level_tests').select('user_id,stage,score,total,passed,taken_at').in('user_id',ids),
-    sb.from('subs').select('user_id,amount,currency,due_day,active').in('user_id',ids),sb.from('profiles').select('id,name,display_name,start_stage').in('id',ids)]).then(function(R){
+    sb.from('subs').select('user_id,amount,currency,due_day,active').in('user_id',ids),sb.from('profiles').select('id,name,display_name,start_stage,course').in('id',ids)]).then(function(R){
     var linked={};(R[0].data||[]).forEach(function(x){linked[x.user_id]=1;});
     var lt={};(R[1].data||[]).forEach(function(x){if(x.taken_at&&(!lt[x.user_id]||x.taken_at>lt[x.user_id].taken_at))lt[x.user_id]=x;});
     var sb_={};(R[2].data||[]).forEach(function(x){if(x.active!==false)sb_[x.user_id]=x;});

@@ -326,7 +326,7 @@ function admin(box,lg){
       var mid=el('div');mid.style.minWidth='0';var ttl=el('div','ag2-tt',x.title||'Aula');
       if(NC&&NC.tzTag){var tg=null;v.forEach(function(u){if(!tg)tg=NC.tzTag(TZm[u],x.start_at);});if(tg){var pl=el('span','ag2-crpill','\uD83C\uDF0D '+tg.city+' \u00b7 '+tg.hm);pl.style.marginLeft='6px';pl.title='Fuso do aluno: '+tg.tz+' ('+tg.diff+')';ttl.appendChild(pl);}}
       mid.appendChild(ttl);
-      var nm=v.map(function(i){return sname(gr,i);});if(nm.length)mid.appendChild(el('div','ag2-sub',nm.join(', ')));
+      var nmL=el('div','ag2-sub');v.forEach(function(i,k){if(k)nmL.appendChild(document.createTextNode(', '));var f=flagOf(gr,i);if(f)nmL.appendChild(f);nmL.appendChild(document.createTextNode(sname(gr,i)));});if(v.length)mid.appendChild(nmL);
       var il=infoLine(x);if(il&&!isPast)mid.appendChild(el('div','ag2-sub',il));mid.appendChild(pillsFor(x,isPast));
       add2(mn,el('span','ag2-tm',hhmm(x.start_at)),mid);hd.appendChild(mn);
       if(v.length&&S){var su=NC.sheetUrl(S,v[0]);if(su&&!isPast){var a1=el('a','ag2-q','Planilha');a1.href=su;a1.target='_blank';a1.rel='noopener';hd.appendChild(a1);}}
@@ -370,7 +370,7 @@ function admin(box,lg){
     Promise.all([Gate.sb.rpc('gcal_status').then(function(r){return r&&r.data;},function(){return null;}),
       Gate.sb.from('lessons').select('id,title,start_at,end_at,user_id').gte('end_at',new Date(Date.now()-36*36e5).toISOString()).order('start_at').limit(90).then(function(r){return (r&&r.data)||[];},function(){return [];}),
       load('class_groups','id,name','name'),load('class_group_members','group_id,user_id'),
-      Gate.sb.from('profiles').select('id,name,email').eq('is_admin',false).order('name').then(function(r){return (r&&r.data)||[];},function(){return [];}),
+      Gate.sb.from('profiles').select('id,name,email,country,tz,course').eq('is_admin',false).order('name').then(function(r){return (r&&r.data)||[];},function(){return [];}),
       Gate.sb.from('lesson_requests').select('id,user_id,kind,lesson_id,old_start,new_start,new_end,status,created_at').in('status',['pending','approved']).gte('created_at',new Date(Date.now()-7*86400000).toISOString()).order('created_at',{ascending:false}).limit(40).then(function(r){return (r&&r.data)||[];},function(){return [];}),
       Gate.sb.from('availability').select('id,weekday,start_time,end_time').order('start_time').then(function(r){return (r&&r.data)||[];},function(){return [];}),
       Gate.sb.from('availability_blocks').select('id,day,note').gte('day',new Date(Date.now()-86400000).toISOString().slice(0,10)).order('day').then(function(r){return (r&&r.data)||[];},function(){return [];})
@@ -380,6 +380,7 @@ function admin(box,lg){
   /* ---- pedidos de aula, disponibilidade e datas bloqueadas (painel do professor, sempre em portugues) ---- */
   var BR='America/Sao_Paulo';
   function brF(iso){try{return new Intl.DateTimeFormat('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',timeZone:BR}).format(new Date(iso));}catch(e){return iso;}}
+  function flagOf(gr,id){try{var p=gr.students.filter(function(q){return q.id===id;})[0];return p&&window.BL_FLAG?BL_FLAG.el(p,{w:18,base:'',round:true}):null;}catch(e){return null;}}
   function sname(gr,id){var n=id,i;for(i=0;i<gr.students.length;i++)if(gr.students[i].id===id)n=gr.students[i].name||gr.students[i].email||id;return n;}
   var aov=null;
   function info(lbl,val){var c=el('div','ag-info');c.appendChild(el('span','ag-lbl',lbl));c.appendChild(el('b','',val));return c;}
@@ -440,7 +441,7 @@ function admin(box,lg){
     if(!pend.length&&!canc.length)sec.appendChild(el('p','ag-s','Nenhum pedido aguardando resposta.'));
     pend.forEach(function(q){
       var c=el('div','ag-row');c.style.flexDirection='column';c.style.alignItems='stretch';
-      var nm=el('b','',sname(gr,q.user_id));nm.style.fontSize='1.1rem';c.appendChild(nm);
+      var nm=el('b','',sname(gr,q.user_id));nm.style.fontSize='1.1rem';var qf=flagOf(gr,q.user_id);if(qf)nm.insertBefore(qf,nm.firstChild);c.appendChild(nm);
       function ln(l,iso,strong){var d=el('span','ag-ln');d.appendChild(el('span','ag-dim',l+' '));d.appendChild(el(strong?'b':'span','',fmtS(iso)));d.appendChild(el('span','ag-dim',' (Brasília)'));d.querySelector('b,span:nth-child(2)').style.display='inline';return d;}
       if(q.kind==='reschedule'){c.appendChild(ln('De:',q.old_start,false));c.appendChild(ln('Para:',q.new_start,true));}
       else c.appendChild(ln('Nova aula:',q.new_start,true));

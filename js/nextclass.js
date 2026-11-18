@@ -130,11 +130,11 @@ function render(box,ev,deps,opts){opts=opts||{};
       var rl=null;
       if(!rv||rv.from==null){/* sem revisao por paragrafo: tenta "REV a-b" do conteudo (licoes) */
         var mm=/\bREV\s+(\d+)\s*-\s*(\d+)/i.exec(String((nx&&(nx.contents||nx.activity))||''));if(!mm||/2nd/i.test(sh))return;rl=mm[1]+'-'+mm[2];rv={from:0,to:0};}
-      var sm=/(?:stage|stg)\s*(\d+)/i.exec(sh),stg=+(fd.stage||(sm?sm[1]:0)),from=+rv.from,to=rv.to!=null?+rv.to:from,
+      var pc0=deps.profiles().filter(function(x){return x.id===d.uids[0];})[0],crs=(pc0&&pc0.course)==='es'?'es':'en',sm=/(?:stage|stg|etapa)\s*(\d+)/i.exec(sh),stg=+(fd.stage||(sm?sm[1]:0)),from=+rv.from,to=rv.to!=null?+rv.to:from,
           who=String(name(d.uids[0])).trim().split(/\s+/)[0],enc=encodeURIComponent,w=cp.lastWord||(first&&first.last_word)||'',par=cp.paragraph||cp.lastNewWord||'';
       if(!/2nd/i.test(sh)){
-        revWin('lessons.html?stage='+stg+(rl?'&rl='+rl:'&rv='+from+'-'+to)+'&w='+enc(w)+'&p='+enc(par)+'&who='+enc(who)+'&n='+enc(nx.classNumber||''),ts);return;}
-      var T=window.BL_TBOOK,file=T&&T.file(stg),page=T&&T.pageFor(stg,from);
+        revWin((crs==='es'?'espanol/':'')+'lessons.html?stage='+stg+(rl?'&rl='+rl:'&rv='+from+'-'+to)+'&w='+enc(w)+'&p='+enc(par)+'&who='+enc(who)+'&n='+enc(nx.classNumber||''),ts);return;}
+      var T=window.BL_TBOOK,file=T&&T.file(stg,crs),page=T&&T.pageFor(stg,from,crs);
       var win=revWin('about:blank',ts);if(!win)return;
       var say=function(t){try{win.document.body.style.cssText='font:16px system-ui;padding:24px;background:#0b1733;color:#f3f4f6';win.document.body.textContent=t;}catch(e){}};
       if(!file){say('O livro do professor do Stage '+stg+' (2ª edição) ainda não está disponível no app.');return;}
@@ -249,7 +249,7 @@ function render(box,ev,deps,opts){opts=opts||{};
     var all=el('button','ghost','Marcar todos: ✔ Veio');all.type='button';all.addEventListener('click',function(){var rows=[];d.uids.forEach(function(u){rows.push({event_key:d.key,user_id:u,status:'came',late_min:null,class_start:ev.start_at,updated_at:new Date().toISOString()});});
       saveMsg.textContent='Salvando…';deps.sb.from('class_attendance').upsert(rows).then(function(r){if(r&&r.error){saveMsg.textContent='Não foi possível salvar a presença.';return;}rows.forEach(function(x){d.att[x.user_id]=x;});tb.querySelectorAll('.nc-st').forEach(function(rw2){if(rw2._paint)rw2._paint();});saveMsg.textContent='Presença salva ✓';});});
     add(ft,send,rmsg,el('span','sp'),saveMsg,group||d.uids.length>1?all:null);wrap.appendChild(ft);
-    if(window.BL_CLOSE&&!opts.past){var ch=el('div');wrap.appendChild(ch);window.BL_CLOSE.render(ch,{sb:deps.sb,ev:ev,key:d.key,uids:d.uids,prog:d.prog,att:d.att,name:name});}
+    if(window.BL_CLOSE&&!opts.past){var ch=el('div');wrap.appendChild(ch);window.BL_CLOSE.render(ch,{course:(function(){var q=deps.profiles().filter(function(x){return x.id===d.uids[0];})[0];return q&&q.course==='es'?'es':'en';})(),sb:deps.sb,ev:ev,key:d.key,uids:d.uids,prog:d.prog,att:d.att,name:name});}
   }).catch(function(e){wrap.textContent='';wrap.appendChild(el('div','nc-sub','Não foi possível carregar os detalhes da aula.'));});
 }
 function summaries(sb,evs,students){

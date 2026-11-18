@@ -212,6 +212,11 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 .dict .dtext{margin:8px 0 0;font-size:.95rem;line-height:1.6;overflow-wrap:anywhere}
 .dict .audio{margin:10px 0 0;background:var(--card)}
 .lesson{margin:0 0 20px}
+.par{position:relative;padding-right:46px;margin:14px 0 0}
+.par::before{content:"";position:absolute;right:18px;top:4px;bottom:4px;width:2px;background:var(--line);border-radius:2px}
+.par .pn{position:absolute;right:0;top:0;width:38px;height:26px;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:700;color:#310d10;background:#f5c542;border-radius:6px;font-variant-numeric:tabular-nums}
+.par>:first-child{margin-top:0}
+.par{scroll-margin-top:84px}
 .missing{padding:12px 14px;background:var(--warn-bg);color:var(--warn);border-radius:3px}
 </style>
 <link rel="stylesheet" href="../js/fonts.css"><link rel="stylesheet" href="../js/theme.css"><link rel="stylesheet" href="js/palette.css"><link rel="stylesheet" href="../js/wm.css"><link rel="stylesheet" href="../js/home2.css">
@@ -239,6 +244,7 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 <script src="../js/i18n.js" charset="utf-8"></script>
 <script src="../js/gate.js" charset="utf-8"></script><script src="../js/sheet.js" charset="utf-8"></script><script src="../js/motion.js" charset="utf-8"></script><script src="../js/medals.js" charset="utf-8"></script>
 <script src="../js/classday.js" charset="utf-8"></script>
+<script src="js/paranums-es.js" charset="utf-8"></script>
 <script src="../js/lsearch.js" charset="utf-8"></script>
 <script src="../js/home2.js" charset="utf-8"></script>
 <script src="../js/protect.js" charset="utf-8"></script>
@@ -274,12 +280,25 @@ function player(label,path,lazy){
   if(!lazy)load();
   return sec;
 }
-function renderText(id,box){
+function parOpen(id,data){
+  const fpb=b=>((b[0]==='v'?b[1].join(''):b[0]==='qa'?b[1]:b[0]==='c'?'grafico'+b[1]:'')+'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'').slice(0,28);
+  const pn=(window.PARANUM&&window.PARANUM[id])||[],at={},seen={};
+  data.forEach((b,i)=>{const t=b[0];if(t!=='v'&&t!=='qa'&&t!=='c')return;const key=t+'|'+fpb(b),o=seen[key]||0;seen[key]=o+1;at[key+'|'+o]=i;});
+  const open={};pn.forEach(r=>{const i=at[r[1]+'|'+r[2]+'|'+r[3]];if(i!=null&&!(i in open))open[i]=r[0];});
+  return open;
+}
+function parList(id,data){const o=parOpen(id,data),r=[];let c=null;data.forEach((b,i)=>{if(o[i]!=null)c=o[i];r.push(b[0]==='d'?null:c);});return r;}
+function renderText(id,box0){
   const data=(window.LESSON_TEXT||{})[id];
-  if(!data){box.append(el('p',{class:'missing'},'El texto de esta lección todavía no está disponible.'));return;}
+  if(!data){box0.append(el('p',{class:'missing'},'El texto de esta lección todavía no está disponible.'));return;}
   const n=stageOf(id).n,base='Etapa '+n+'/';
-  data.forEach(b=>{
+  const open=parOpen(id,data);
+  let cur=null;
+  data.forEach((b,i)=>{
     const k=b[0];
+    if(k==='d')cur=null;
+    if(open[i]!=null){cur=el('section',{class:'par'},el('span',{class:'pn'},String(open[i])));box0.append(cur);}
+    const box=cur||box0;
     if(k==='v')box.append(el('div',{class:'vrow'},b[1].map(c=>el('span',{},c))));
     else if(k==='qa'){box.append(el('div',{class:'qa'},el('p',{class:'qq'},b[1]),b[2]?el('p',{class:'qa-a'},b[2]):null));}
     else if(k==='s'||k==='ex')box.append(el('p',{class:'say'},b[1]));
@@ -290,6 +309,7 @@ function renderText(id,box){
       det.addEventListener('toggle',()=>{if(det.open)dp.load();});
       box.append(det);
     }
+    const lastEl=box.lastElementChild;if(lastEl&&!lastEl.dataset.bi&&!lastEl.classList.contains('pn'))lastEl.dataset.bi=String(i);
   });
 }
 const stSel=document.getElementById('st'),lsSel=document.getElementById('ls'),out=document.getElementById('out'),ttl=document.getElementById('ttl');
@@ -325,7 +345,7 @@ function show(id,noscroll){
   ttl.textContent='Lección '+id;
   out.textContent='';
   const box=el('div',{class:'lesson'});
-  box.append(player('Escucha la Lección '+id,'Etapa '+n+'/Etapa '+n+' Lección '+String(id).padStart(3,'0')+'.mp3'));
+  box.append(player('Escucha la Lección '+id,'Etapa '+n+'/Etapa '+n+' Leccion '+String(id).padStart(3,'0')+'.mp3'));
   renderText(id,box);
   out.append(box);
   try{if(window.ClassDay&&!window.CBUS)ClassDay.lessonCards(out,{sb:Gate.sb});}catch(e){}
@@ -340,7 +360,7 @@ prevs.forEach(b=>b.addEventListener('click',()=>{if(cur>LO)show(cur-1);}));
 nexts.forEach(b=>b.addEventListener('click',()=>{if(cur<HI)show(cur+1);}));
 show(cur,true);
 let ALLP=null;
-if(window.LSearch)LSearch.init({out:out,cur:()=>cur,show:show,stageOf:id=>stageOf(id).n,stages:STAGES,lessonWord:'Lección',stageWord:'Etapa',parWord:'párrafo',
+if(window.LSearch)LSearch.init({out:out,cur:()=>cur,show:show,stageOf:id=>stageOf(id).n,stages:STAGES,lessonWord:'Lección',stageWord:'Etapa',parWord:'párrafo',para:parList,
   fetchAll:()=>{if(ALLP)return ALLP;ALLP=Gate.sb.from('content').select('lesson,body').eq('kind','text').gte('lesson',1).lte('lesson',UPTO).order('lesson',{ascending:true}).then(r=>{if(r.error||!r.data)throw r.error;const m={};r.data.forEach(x=>{m[x.lesson]=x.body;});return m;}).catch(()=>{ALLP=null;return Object.assign({},window.LESSON_TEXT||{});});return ALLP;},
   t:{open:'Buscar en el texto',ph:'Buscar en las lecciones',close:'Cerrar',back:'Atrás',list:'Lista',all:'Buscar en todas las lecciones',none:'No se encontró nada en esta lección',inLesson:(i,n)=>i+' de '+n+' en esta lección',type2:'Escribe al menos 2 letras.',loading:'Cargando las lecciones…',noRes:'Sin resultados.',res:n=>n+(n===1?' resultado':' resultados'),first:n=>'mostrando los '+n+' primeros',of:(i,n)=>'Resultado '+i+' de '+n,fAll:'Todas',fWords:'Palabras',fQs:'Preguntas',fText:'Textos',fDict:'Dictados',allStages:'Todas las Etapas',prev:'Resultado anterior',next:'Siguiente resultado',end:'Terminar la búsqueda'}});
 });

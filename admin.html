@@ -51,7 +51,7 @@ td.g{background:var(--ok-bg)}td.m{background:var(--warn-bg)}td.r{background:var(
 .tp-tab.on{border-color:var(--accent);background:var(--chip,var(--card));color:var(--ink);font-weight:700}
 .tp-n{background:var(--bad);color:#fff;border-radius:99px;font-size:.72rem;padding:1px 7px;margin-left:6px;font-weight:700}
 .sc{display:none}.sc.on{display:block}
-.tp-alert{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;box-sizing:border-box;margin:0 0 14px;padding:12px 14px;border:0;border-radius:14px;background:#ff8a3d;color:#111;font:700 1rem var(--font-body);text-align:left;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}.tp-alert[hidden]{display:none}.tp-alert b{font-weight:700}.tp-alert i{font-style:normal;background:#111;color:#fff;border-radius:99px;padding:4px 12px;font-size:.85rem;flex:none}
+.bl-flag{border-radius:50%;object-fit:cover;vertical-align:-3px;margin-right:6px;flex:none}.tp-alert{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;box-sizing:border-box;margin:0 0 14px;padding:12px 14px;border:0;border-radius:14px;background:#ff8a3d;color:#111;font:700 1rem var(--font-body);text-align:left;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}.tp-alert[hidden]{display:none}.tp-alert b{font-weight:700;display:inline-flex;align-items:center;gap:8px}.tp-alert b svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}.tp-alert i{font-style:normal;background:#111;color:#fff;border-radius:99px;padding:4px 12px;font-size:.85rem;flex:none}
 .tp-attn{border:2px solid var(--accent);border-left-width:6px;border-radius:12px;padding:14px 16px;margin:0 0 18px;background:var(--card)}
 .tp-attn h2{margin:0 0 8px}
 .tp-attn ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
@@ -234,7 +234,8 @@ details.h{background:var(--surface);border:1px solid var(--line);border-radius:1
 </section>
 <div id="streakBox" hidden></div></div>
 <div class="sc" id="s-grades"><section class="card" aria-labelledby="h-sc"><h2 id="h-sc">Notas</h2>
-  <div class="row"><label for="kind">Mostrar</label><select id="kind"><option value="check">Lesson Checks</option><option value="ex">Exercises</option><option value="wb">Workbook</option></select>
+  <div class="row"><label for="mcourse">Curso</label><select id="mcourse"><option value="en">Inglês</option><option value="es">Espanhol</option></select>
+  <label for="kind">Mostrar</label><select id="kind"><option value="check">Lesson Checks</option><option value="ex">Exercises</option><option value="wb">Workbook</option></select>
   <label for="mst">Stage</label><select id="mst"></select>
   <button type="button" id="csv" class="ghost">Exportar todas as tentativas (CSV)</button><span class="msg" id="scmsg" aria-live="polite"></span></div>
   <p class="hint">Escolha o Stage para ver as lessons dele. Cada célula mostra a melhor nota do aluno na lesson (pontos / total). Verde: 80% ou mais. Amarelo: 50% a 79%. Vermelho: abaixo de 50%.</p>
@@ -244,6 +245,7 @@ details.h{background:var(--surface);border:1px solid var(--line);border-radius:1
 </section>
 </div>
 <div class="sc" id="s-content"><section class="card" aria-labelledby="h-ct"><h2 id="h-ct">Conteúdo (texto, checks e exercícios)</h2>
+  <div class="row"><select id="ctcourse" aria-label="Curso do conteúdo"><option value="en">Conteúdo do Inglês</option><option value="es">Conteúdo do Espanhol</option></select></div>
   <p class="hint" id="ctinfo"></p>
   <div class="row fpk"><input type="file" id="ctfile" accept=".json,application/json" aria-label="Arquivo content.json" hidden><button type="button" class="ghost" data-pick="ctfile">Escolher arquivo</button><span class="fpn" id="ctname" aria-live="polite">Nenhum arquivo escolhido</span></div>
   <div class="row"><button type="button" id="ctgo">Importar content.json</button><span class="msg" id="ctmsg" aria-live="polite"></span></div>
@@ -257,11 +259,11 @@ details.h{background:var(--surface);border:1px solid var(--line);border-radius:1
   <p class="msg" id="aumsg" aria-live="polite"></p>
   <div class="tw"><table id="aulist" hidden></table></div>
 </section>
-<section class="card" aria-labelledby="h-tb"><h2 id="h-tb">Livros do professor (2ª edição)</h2>
+<section class="card" aria-labelledby="h-tb"><h2 id="h-tb">Livros do professor (Inglês 2ª edição e Espanhol)</h2>
   <p class="hint" id="tbinfo"></p>
   <div class="row fpk"><input type="file" id="tbfile" accept=".pdf,application/pdf" multiple aria-label="PDFs do livro do professor" hidden><button type="button" class="ghost" data-pick="tbfile">Escolher PDFs…</button><span class="fpn" id="tbname" aria-live="polite">Nenhum arquivo escolhido</span></div>
   <div class="row"><button type="button" id="tbgo">Enviar livros</button></div>
-  <p class="hint">Escolha os arquivos <i>1 e 2.pdf</i>, <i>3 e 4.pdf</i> … <i>11 e 12.pdf</i>. Ficam em armazenamento privado: só administradores conseguem abri-los (o botão “Entrar na aula” usa um link temporário).</p>
+  <p class="hint">Inglês: <i>1 e 2.pdf</i>, <i>3 e 4.pdf</i> … <i>11 e 12.pdf</i>. Espanhol: <i>Etapas 1-2.pdf</i>, <i>Etapas 3-4.pdf</i>, <i>Etapas 5-6.pdf</i> (ou <i>1 y 2.pdf</i>). Ficam em armazenamento privado: só administradores conseguem abri-los (o botão “Entrar na aula” usa um link temporário).</p>
   <p class="msg" id="tbmsg" aria-live="polite"></p>
 </section>
 </div>
@@ -278,7 +280,7 @@ details.h{background:var(--surface);border:1px solid var(--line);border-radius:1
 </div>
 <script src="js/i18n.js" charset="utf-8"></script>
 <script src="js/config.js" charset="utf-8"></script>
-<script src="js/gate.js" charset="utf-8"></script>
+<script src="js/gate.js" charset="utf-8"></script><script src="js/unify.js" charset="utf-8"></script><script src="js/flags.js" charset="utf-8"></script>
 <script src="js/streak.js" charset="utf-8"></script>
 <script src="js/contract-admin.js" charset="utf-8"></script>
 <script src="js/stats-admin.js" charset="utf-8"></script>
@@ -288,12 +290,14 @@ details.h{background:var(--surface);border:1px solid var(--line);border-radius:1
 <script src="js/social.js" charset="utf-8"></script>
 <script src="js/tipsadmin.js" charset="utf-8"></script>
 <script src="js/plans.js" charset="utf-8"></script>
+<script src="espanol/js/plans-es.js" charset="utf-8"></script>
 <script src="js/newstudent.js" charset="utf-8"></script>
 <script src="js/holidays.js" charset="utf-8"></script>
 <script src="js/agenda.js" charset="utf-8"></script>
 <script src="js/dialog.js" data-lang="pt" charset="utf-8"></script><script src="js/examcalc.js" charset="utf-8"></script><script src="js/oralgen.js" charset="utf-8"></script><script src="js/tbook.js" charset="utf-8"></script><script src="js/closeclass.js" charset="utf-8"></script><script src="js/classday-admin.js" charset="utf-8"></script><script src="js/nextclass.js" charset="utf-8"></script>
 <script>
 Gate.start({admin:true,kinds:[]},function(ctx){
+  Gate.sb=BL_UNIFY.wrap(Gate.sb);
   (function(){var b=document.getElementById('streakBox');if(b&&window.Streak)Streak.admin(b);})();
   (function(){var b=document.getElementById('agendaBox');if(b&&window.Agenda)Agenda.admin(b,'pt');})();
 'use strict';
@@ -304,11 +308,18 @@ function fmt(ts){try{return new Date(ts).toLocaleString('pt-BR',{day:'2-digit',m
 function setMsg(id,t,cls){const m=$(id);m.textContent=t;m.className='msg'+(cls?' '+cls:'');}
 function th(list){return el('thead',{},el('tr',{},list.map(h=>el('th',{scope:'col'},h))));}
 const STATUS={pending:'Pendente',approved:'Aprovado',blocked:'Bloqueado'};
-const C=window.BL_COURSE||{},MAXL=C.maxLesson||206,BIZ=C.business!==false,DELE=!!C.dele;
+const C=window.BL_COURSE||{},MAXL=C.maxLesson||206,MAXC={en:206,es:112},BIZ=C.business!==false,DELE=!!C.dele;
 const STG_END=C.stages?C.stages.map(x=>x[1]):[12,27,44,63,82,101,120,138,156,174,190,206];
-function stageSel(inp){
-  const sel=el('select',{'aria-label':'Escolher o Stage'},el('option',{value:''},'ou escolha o Stage…'));
-  STG_END.forEach((e,i)=>sel.append(el('option',{value:String(e)},'Stage '+(i+1)+' (até a Lesson '+e+')')));
+/* painel unico: o curso vem do aluno (profiles.course), nao da pagina */
+const XST={en:[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[139,156],[157,174],[175,190],[191,206]],es:[[1,16],[17,32],[33,52],[53,72],[73,92],[93,112]]};
+const ends=c=>XST[c||'en'].map(x=>x[1]);
+const flg=p=>{try{return BL_FLAG.el(p,{w:18,base:'',round:true});}catch(e){return null;}};
+const crsOf=p=>p&&p.course==='es'?'es':'en';
+const crsU=uid=>crsOf(PROFILES.find(x=>x.id===uid));
+const SW=c=>c==='es'?'Etapa':'Stage',LCK=c=>c==='es'?'Ejercicios de repaso':'Lesson Checks',LSN=c=>c==='es'?'lecciones':'lessons',EXN=c=>c==='es'?'Prova':'Exam';
+function stageSel(inp,c){c=c||'en';
+  const sel=el('select',{'aria-label':'Escolher o Stage'},el('option',{value:''},'ou escolha '+(c==='es'?'a Etapa':'o Stage')+'…'));
+  ends(c).forEach((e,i)=>sel.append(el('option',{value:String(e)},SW(c)+' '+(i+1)+' (até '+(c==='es'?'a Lección ':'a Lesson ')+e+')')));
   sel.addEventListener('change',()=>{if(sel.value){inp.value=sel.value;sel.value='';inp.dispatchEvent(new Event('input'));}});
   return sel;
 }
@@ -326,7 +337,7 @@ function avThumb(p,inp){
   if(p.avatar&&window.Profile&&Profile.paint)(Profile.ready?Profile.ready():Promise.resolve()).then(()=>{try{Profile.paint(ph,p.avatar,p.id);}catch(e){}});
   return w;
 }
-function clampN(v){v=parseInt(v,10);return isNaN(v)?0:Math.max(0,Math.min(MAXL,v));}
+function clampN(v,c){v=parseInt(v,10);return isNaN(v)?0:Math.max(0,Math.min(MAXC[c||'en']||MAXL,v));}
 
 /* ----- profiles ----- */
 function loadProfiles(){
@@ -348,10 +359,10 @@ function renderPend(){
   if(!list.length){box.append(el('p',{class:'hint'},'Nenhum pedido pendente.'));return;}
   const tb=el('tbody',{});
   list.forEach(p=>{
-    const n=el('input',{type:'number',min:'0',max:String(MAXL),value:'12','aria-label':'Liberar até a Lesson, '+p.name});
+    const n=el('input',{type:'number',min:'0',max:String(MAXC[crsOf(p)]),value:crsOf(p)==='es'?'16':'12','aria-label':'Liberar até a Lesson, '+p.name});
     tb.append(el('tr',{},el('td',{},cvThumb(n,p.name||'(sem nome)')),el('td',{},p.email),el('td',{},fmt(p.created_at)),
-      el('td',{},el('div',{class:'row',style:'margin:0'},'Liberar até a Lesson ',n,' ',stageSel(n),' ',
-        el('button',{type:'button',onclick:()=>{const ap=()=>update(p.id,{status:'approved',lessons_upto:clampN(n.value)});if(window.ContractAdmin&&ContractAdmin.on())ContractAdmin.open({el:el,sb:sb,profile:p,approve:ap,reload:loadProfiles});else ap();}},'Aprovar'),
+      el('td',{},el('div',{class:'row',style:'margin:0'},'Liberar até '+(crsOf(p)==='es'?'a Lección ':'a Lesson '),n,' ',stageSel(n,crsOf(p)),' ',
+        el('button',{type:'button',onclick:()=>{const ap=()=>update(p.id,{status:'approved',lessons_upto:clampN(n.value,crsOf(p))});if(window.ContractAdmin&&ContractAdmin.on())ContractAdmin.open({el:el,sb:sb,profile:p,approve:ap,reload:loadProfiles});else ap();}},'Aprovar'),
         el('button',{type:'button',class:'danger',onclick:()=>update(p.id,{status:'blocked'})},'Recusar')))));
   });
   box.append(el('div',{class:'tw'},el('table',{},th(['Nome','E-mail','Pedido em','Ação']),tb)));
@@ -376,7 +387,7 @@ function startBlock(p){
   const ok=el('span',{class:'sv',style:'margin-left:8px'});
   const sel=el('select',{'aria-label':'Começou no Stage, '+p.name,title:'Se o aluno entrou direto num Stage mais alto, marque aqui. Os Stages anteriores aparecem como pulados na home dele.'});
   sel.append(el('option',{value:''},'Automático'));
-  for(let i=2;i<=STG_END.length;i++)sel.append(el('option',{value:String(i)},'Stage '+i));
+  for(let i=2;i<=ends(crsOf(p)).length;i++)sel.append(el('option',{value:String(i)},SW(crsOf(p))+' '+i));
   sel.value=p.start_stage?String(p.start_stage):'';
   sel.addEventListener('change',()=>{const v=sel.value?parseInt(sel.value,10):null;upd(p,{start_stage:v},()=>okTag(ok));});
   return el('label',{style:'display:block;font-size:.88rem;margin:0'},'Começou no Stage: ',sel,ok);
@@ -388,9 +399,9 @@ function exStat(uid,st){
   if(cert&&!cert.revoked)return 'cert';if(res&&res.submitted_at)return 'done';if(res)return 'prog';if(rel)return 'rel';return 'none';
 }
 function exPill(p,st){
-  const def=XDEF[st],rel=XREL.find(x=>x.user_id===p.id&&x.stage===st),res=XRES.find(x=>x.user_id===p.id&&x.stage===st);
+  const def=XDEF[crsOf(p)+st],rel=XREL.find(x=>x.user_id===p.id&&x.stage===st),res=XRES.find(x=>x.user_id===p.id&&x.stage===st);
   if(!def)return el('span',{class:'pl bad'},'Prova não cadastrada');
-  if(res&&res.submitted_at){const c=BL_EXAM.compose(res.scores,res.maxes,res.oral);
+  if(res&&res.submitted_at){const c=BL_EXAM.compose(res.scores,res.maxes,res.oral,crsOf(p));
     return el('span',{class:'pl '+(res.score_visible?'ok':'wt')},'Concluída · '+BL_EXAM.line(c)+(res.score_visible?'':' · oculta'));}
   if(res)return el('span',{class:'pl wt'},'Em andamento');
   if(rel)return el('span',{class:'pl ok'},'Liberada');
@@ -422,9 +433,9 @@ function planBlock(p){
   if(!cur&&window.BL_NS&&BL_NS.form)BL_NS.form(sb,p.id,()=>{loadPlan();}).then(c=>{if(c)nsBox.append(c);}).catch(()=>{});
   return el('div',{},el('div',{class:'pr'},ab,cl,m),el('div',{class:'sm lr'},'Última leitura: '+last),nsBox);
 }
-function stuMeta(p,sst){const d=idleDays(p),a=sst>1?STG_END[sst-2]+1:1,b=STG_END[sst-1]||MAXL,up=p.lessons_upto||0,pct=Math.max(0,Math.min(100,Math.round((up-a+1)/(b-a+1)*100)));
+function stuMeta(p,sst){const E=ends(crsOf(p)),d=idleDays(p),a=sst>1?E[sst-2]+1:1,b=E[sst-1]||MAXC[crsOf(p)],up=p.lessons_upto||0,pct=Math.max(0,Math.min(100,Math.round((up-a+1)/(b-a+1)*100)));
   const cls=d<=3?'ok':d<=7?'warn':'bad',txt=d<=3?'Em dia':d>=999?'Ainda não estudou':'Sem estudar há '+d+' dias';
-  return el('div',{class:'sm2'},el('span',{class:'bd '+cls},txt),el('div',{class:'bar3'},el('i',{style:'width:'+pct+'%'})),el('small',{},'Stage '+sst+' · liberado até a lição '+up+' ('+pct+'% do Stage)'));}
+  return el('div',{class:'sm2'},el('span',{class:'bd '+cls},txt),el('div',{class:'bar3'},el('i',{style:'width:'+pct+'%'})),el('small',{},SW(crsOf(p))+' '+sst+' · liberado até a lição '+up+' ('+pct+'% d'+(crsOf(p)==='es'?'a Etapa':'o Stage')+')'));}
 let STF='all';
 const MOB=()=>!!(window.matchMedia&&matchMedia('(max-width:900px)').matches);
 function applyF(){const v=(($('stq')||{}).value||'').trim().toLowerCase();document.querySelectorAll('#stt tr.sr,#stt tr.dr').forEach(r=>{const d=+(r.dataset.d||0),ok=STF==='all'||(STF==='idle'&&d>7)||(STF==='today'&&d===0);r.hidden=!(ok&&(!v||(r.dataset.q||'').includes(v)));});}
@@ -438,16 +449,16 @@ function renderStu(){
   const tb=el('tbody',{});
   if(!list.length)tb.append(el('tr',{},el('td',{colspan:5},'Nenhum aluno ainda.')));
   list.forEach(p=>{
-    const open=OPEN.has(p.id),sst=EXS[p.id]||(()=>{const i=STG_END.findIndex(e=>p.lessons_upto<=e);return i<0?XSTG.length:i+1;})()||gst;
-    const n=el('input',{type:'number',min:'0',max:String(MAXL),value:String(p.lessons_upto),'aria-label':'Liberado até, '+p.name});
-    const okS=el('span',{class:'sv'});let tm=null;const sv=()=>{const v=clampN(n.value);if(v===p.lessons_upto)return;upd(p,{lessons_upto:v},()=>okTag(okS));};
+    const open=OPEN.has(p.id),sst=EXS[p.id]||(()=>{const E=XST[crsOf(p)].map(x=>x[1]),i=E.findIndex(e=>p.lessons_upto<=e);return i<0?XST[crsOf(p)].length:i+1;})()||gst;
+    const n=el('input',{type:'number',min:'0',max:String(MAXC[crsOf(p)]),value:String(p.lessons_upto),'aria-label':'Liberado até, '+p.name});
+    const okS=el('span',{class:'sv'});let tm=null;const sv=()=>{const v=clampN(n.value,crsOf(p));if(v===p.lessons_upto)return;upd(p,{lessons_upto:v},()=>okTag(okS));};
     n.addEventListener('input',()=>{clearTimeout(tm);tm=setTimeout(sv,700);});n.addEventListener('change',()=>{clearTimeout(tm);sv();});
     const stop=e=>e.stopPropagation();
-    const lim=el('div',{class:'lim',onclick:stop},n,stageSel(n),okS);
+    const lim=el('div',{class:'lim',onclick:stop},n,stageSel(n,crsOf(p)),okS);
     const strip=el('div',{class:'sdw',onclick:stop});
-    if(XOK)for(let i=1;i<=XSTG.length;i++){
+    if(XOK)for(let i=1;i<=XST[crsOf(p)].length;i++){
       const k=exStat(p.id,i);
-      strip.append(el('button',{type:'button',class:'sd '+k+(open&&i===sst?' cur':''),title:'Stage '+i+(k==='cert'?' · certificado':k==='done'?' · concluída':k==='prog'?' · em andamento':k==='rel'?' · liberada':' · sem prova liberada'),'aria-label':'Stage '+i,
+      strip.append(el('button',{type:'button',class:'sd '+k+(open&&i===sst?' cur':''),title:SW(crsOf(p))+' '+i+(k==='cert'?' · certificado':k==='done'?' · concluída':k==='prog'?' · em andamento':k==='rel'?' · liberada':' · sem prova liberada'),'aria-label':SW(crsOf(p))+' '+i,
         onclick:()=>{EXS[p.id]=i;strip.querySelectorAll('.sd').forEach((x,j)=>x.classList.toggle('cur',j+1===i));showDetail(false);}},k==='cert'?'★':String(i)));
     }
     const showDetail=anim=>{const c=tr.nextElementSibling;if(c&&c.classList.contains('dr'))c.remove();const d=detail();if(anim)d.querySelector('.dg').classList.add('in');tr.after(d);};
@@ -460,7 +471,7 @@ function renderStu(){
         showDetail(true);}
     });
     const tr=el('tr',{class:'sr'+(open?' op':''),'data-d':String(idleDays(p)),'data-q':((p.name||'')+' '+(p.email||'')).toLowerCase()},
-      el('td',{class:'nmc'},el('span',{style:'display:flex;align-items:center'},avThumb(p,n),el('span',{},el('b',{},p.name||'(sem nome)',p.status==='approved'?null:el('span',{class:'st '+p.status,style:'margin-left:8px'},STATUS[p.status])),el('small',{},p.email),p.display_name?el('small',{},'Apelido: '+p.display_name):null,(()=>{const t=window.NextClass&&NextClass.tzTag(p.tz,Date.now());return t?el('small',{style:'color:var(--warn);font-weight:700'},'\uD83C\uDF0D '+t.city+' ('+t.diff+')'):null;})())),stuMeta(p,sst),tgb),
+      el('td',{class:'nmc'},el('span',{style:'display:flex;align-items:center'},avThumb(p,n),el('span',{},el('b',{},flg(p),p.name||'(sem nome)',p.status==='approved'?null:el('span',{class:'st '+p.status,style:'margin-left:8px'},STATUS[p.status])),el('small',{},p.email),p.display_name?el('small',{},'Apelido: '+p.display_name):null,(()=>{const t=window.NextClass&&NextClass.tzTag(p.tz,Date.now());return t?el('small',{style:'color:var(--warn);font-weight:700'},'\uD83C\uDF0D '+t.city+' ('+t.diff+')'):null;})())),stuMeta(p,sst),tgb),
             el('td',{},lim),el('td',{},XOK?strip:null),el('td',{},XOK?exPill(p,gst):null),
       null);
     tb.append(tr);
@@ -493,7 +504,7 @@ function renderStu(){
 $('bulkstage').append(stageSel($('bulk')));
 $('bulkgo').addEventListener('click',()=>{
   const n=clampN($('bulk').value);
-  sb.from('profiles').update({lessons_upto:n}).eq('status','approved').eq('is_admin',false).then(r=>{
+  sb.from('profiles').update({lessons_upto:n}).eq('status','approved').eq('is_admin',false).eq('course','en').then(r=>{
     if(r.error){setMsg('bulkmsg','Erro: '+r.error.message,'bad');return;}
     setMsg('bulkmsg','Pronto: alunos aprovados liberados até a Lesson '+n+'.','ok');loadProfiles();
   });
@@ -511,30 +522,35 @@ async function loadAttempts(){
   ATT=all;
 }
 function best(uid,kind,lesson){
-  const per={};const wb=kind===(DELE?'dele':'wb'),kk=wb?'ex':kind;
-  ATT.forEach(a=>{if(a.user_id===uid&&a.kind===kk&&a.lesson===lesson&&(kk!=='ex'||wb===(DELE?/^dele:/:/^wb/).test(String(a.ex)))){
+  const per={};const DL=crsU(uid)==='es',wb=kind===(DL?'dele':'wb'),kk=wb?'ex':kind;
+  ATT.forEach(a=>{if(a.user_id===uid&&a.kind===kk&&a.lesson===lesson&&(kk!=='ex'||wb===(DL?/^dele:/:/^wb/).test(String(a.ex)))){
     const o=per[a.ex]||(per[a.ex]={s:0,t:a.total});if(a.score>o.s)o.s=a.score;if(a.total>o.t)o.t=a.total;}});
   const k=Object.keys(per);if(!k.length)return null;
   let s=0,t=0;k.forEach(e=>{s+=per[e].s;t+=per[e].t;});return {s:s,t:t};
 }
 const STG=C.stages||[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[139,156],[157,174],[175,190],[191,206],[1001,1017]];
+let MCRS='';
 function fillStages(){
-  const s=$('mst');if(s.options.length)return;
-  STG.forEach((r,k)=>s.append(el('option',{value:String(k)},r[0]>1000?'Business (Lessons 1 a 17)':'Stage '+(k+1)+' (Lessons '+r[0]+' a '+r[1]+')')));
+  const c=$('mcourse').value,s=$('mst'),kd=$('kind');if(MCRS===c&&s.options.length)return;MCRS=c;
+  s.textContent='';kd.textContent='';
+  const ST=c==='es'?XST.es:STG;
+  ST.forEach((r,k)=>s.append(el('option',{value:String(k)},r[0]>1000?'Business (Lessons 1 a 17)':SW(c)+' '+(k+1)+' ('+(c==='es'?'Lecciones ':'Lessons ')+r[0]+' a '+r[1]+')')));
+  (c==='es'?[['check','Ejercicios de repaso (nº = repaso)'],['dele','DELE (nº 1–6 = A1…C2)']]:[['check','Lesson Checks'],['ex','Exercises'],['wb','Workbook']]).forEach(o=>kd.append(el('option',{value:o[0]},o[1])));
+  $('mat').dataset.k='';
 }
 function renderMat(){
   fillStages();
   const t=$('mat');t.textContent='';
   const kind=$('kind').value;
-  const studs=PROFILES.filter(p=>p.status!=='pending'&&!p.is_admin);
+  const mc=$('mcourse').value,studs=PROFILES.filter(p=>p.status!=='pending'&&!p.is_admin&&crsOf(p)===mc);
   let lo=1,hi=12;
-  {const r=STG[parseInt($('mst').value,10)||0];lo=r[0];hi=r[1];}
+  {const r=(mc==='es'?XST.es:STG)[parseInt($('mst').value,10)||0]||[1,12];lo=r[0];hi=r[1];}
   $('mst').disabled=false;
   const heads=['Aluno'];for(let i=lo;i<=hi;i++)heads.push(String(i>1000?i-1000:i));heads.push('Média');
   const tb=el('tbody',{});
   if(!studs.length)tb.append(el('tr',{},el('td',{colspan:String(hi-lo+3)},'Nenhum aluno ainda.')));
   studs.forEach(p=>{
-    const cells=[el('td',{},p.name||p.email)];let sp=0,st=0;
+    const cells=[el('td',{},flg(p),p.name||p.email)];let sp=0,st=0;
     for(let i=lo;i<=hi;i++){
       const b=best(p.id,kind,i);
       if(!b){cells.push(el('td',{class:'c'},(i>1000?i-1000<=(p.business_upto||0):i<=p.lessons_upto)?'·':'–'));continue;}
@@ -553,7 +569,7 @@ function renderWho(){
   renderDet();
 }
 function typeLbl(a,full){
-  const x=String(a.ex);
+  const x=String(a.ex),DELE=crsU(a.user_id)==='es';
   if(DELE)return a.kind==='check'?'Ejercicio de repaso':(/^dele:/.test(x)?(full?'DELE '+x.split(':')[1]+' '+x.split(':')[2]:'DELE'):'Ejercicio');
   return a.kind==='check'?'Lesson Check':(/^wb/.test(x)?(full?'Workbook '+x.slice(-1):'Workbook'):'Exercise');
 }
@@ -563,10 +579,11 @@ function renderDet(){
   const rows=ATT.filter(a=>a.user_id===uid).reverse();
   const tb=el('tbody',{});
   if(!rows.length)tb.append(el('tr',{},el('td',{colspan:'5'},'Sem tentativas ainda.')));
-  rows.forEach(a=>tb.append(el('tr',{},el('td',{},fmt(a.created_at)),el('td',{},typeLbl(a,1)),el('td',{},DELE&&/^dele:/.test(String(a.ex))?'Nivel '+a.lesson:(DELE?'Repaso ':'Lesson ')+a.lesson),el('td',{},a.score+' / '+a.total),el('td',{},Math.round(a.score/a.total*100)+'%'))));
+  rows.forEach(a=>tb.append(el('tr',{},el('td',{},fmt(a.created_at)),el('td',{},typeLbl(a,1)),el('td',{},crsU(a.user_id)==='es'&&/^dele:/.test(String(a.ex))?'Nivel '+a.lesson:(crsU(a.user_id)==='es'?'Repaso ':'Lesson ')+a.lesson),el('td',{},a.score+' / '+a.total),el('td',{},Math.round(a.score/a.total*100)+'%'))));
   t.append(th(['Data','Tipo','Lesson','Nota','%']),tb);
 }
 $('kind').addEventListener('change',renderMat);
+$('mcourse').addEventListener('change',renderMat);
 $('mst').addEventListener('change',renderMat);
 $('who').addEventListener('change',renderDet);
 $('csv').addEventListener('click',()=>{
@@ -581,10 +598,10 @@ $('csv').addEventListener('click',()=>{
 
 /* ----- content ----- */
 function ctInfo(){
-  return sb.from('content').select('lesson,kind').limit(1000).then(r=>{
+  return sb.course($('ctcourse').value).from('content').select('lesson,kind').limit(1000).then(r=>{
     if(r.error){$('ctinfo').textContent='Não foi possível ler o conteúdo: '+r.error.message;return;}
     const c={text:0,check:0,ex:0};(r.data||[]).forEach(x=>{c[x.kind]=(c[x.kind]||0)+1;});
-    $('ctinfo').textContent='No servidor agora: '+c.text+' lessons (texto), '+c.check+' Lesson Checks, '+c.ex+' conjuntos de exercícios.';
+    $('ctinfo').textContent='No servidor agora ('+($('ctcourse').value==='es'?'Espanhol':'Inglês')+'): '+c.text+(($('ctcourse').value==='es')?' lecciones (texto), '+c.check+' Ejercicios de repaso, '+c.ex+' conjuntos de exercícios.':' lessons (texto), '+c.check+' Lesson Checks, '+c.ex+' conjuntos de exercícios.');
   });
 }
 document.querySelectorAll('[data-pick]').forEach(b=>{const inp=$(b.dataset.pick),nm=$(b.dataset.pick==='ctfile'?'ctname':b.dataset.pick==='tbfile'?'tbname':'auname');
@@ -592,6 +609,7 @@ document.querySelectorAll('[data-pick]').forEach(b=>{const inp=$(b.dataset.pick)
   inp.addEventListener('change',()=>{const fs=Array.from(inp.files);if(!fs.length){nm.textContent='Nenhum arquivo escolhido';return;}
     const kb=fs.reduce((a,f)=>a+f.size,0)/1024,sz=kb>=1024?(kb/1024).toFixed(1)+' MB':Math.round(kb)+' KB';
     nm.textContent='';const t=document.createElement('b');t.textContent=fs.length===1?fs[0].name:fs.length+' arquivos';nm.append(t,fs.length===1?sz:fs[0].name+' … · '+sz);});});
+$('ctcourse').addEventListener('change',ctInfo);
 $('ctgo').addEventListener('click',async()=>{
   const f=$('ctfile').files[0];
   if(!f){setMsg('ctmsg','Escolha o arquivo content.json.','bad');return;}
@@ -600,7 +618,7 @@ $('ctgo').addEventListener('click',async()=>{
     if(!Array.isArray(rows)||!rows.length)throw new Error('arquivo vazio ou inválido');
     $('ctgo').disabled=true;
     for(let i=0;i<rows.length;i+=10){
-      const r=await sb.from('content').upsert(rows.slice(i,i+10),{onConflict:'lesson,kind'});
+      const r=await sb.course($('ctcourse').value).from('content').upsert(rows.slice(i,i+10),{onConflict:'lesson,kind'});
       if(r.error)throw r.error;
       setMsg('ctmsg','Enviando… '+Math.min(i+10,rows.length)+' de '+rows.length);
     }
@@ -612,6 +630,7 @@ $('ctgo').addEventListener('click',async()=>{
 
 /* ----- audio ----- */
 function audioPath(name){
+  name=String(name).normalize('NFC');
   let mb=/^Business Lesson (\d+) Dictation (\d+)\.mp3$/i.exec(name);
   if(mb)return 'Business/Dictations/'+name;
   mb=/^Business Lesson (\d+)\.mp3$/i.exec(name);
@@ -622,18 +641,25 @@ function audioPath(name){
   if(m){const l=+m[1],S=STG_END;let n=1;while(n<S.length&&l>S[n-1])n++;return 'Stage '+n+'/Workbook/'+name;}
   m=/^Stage (\d+) Lesson (\d+)\.mp3$/i.exec(name);
   if(m)return 'Stage '+m[1]+'/'+name;
+  /* espanhol: aceita "Etapa N Lección N.mp3" (com ou sem acento, ate "Leccióón"), "Etapa N Dictado D.mp3" e "Etapa N Lección L Dictation D.mp3";
+     no servidor o nome fica SEM acento (chave de armazenamento): Etapa N/Etapa N Leccion 0LL.mp3 e Etapa N/Dictados/Etapa N Dictado D.mp3 */
+  m=/^Etapa (\d+) Lecci[oó]+n (\d+) (?:Dictation|Dictado) (\d+)\.mp3$/i.exec(name)||/^Etapa (\d+) () ?Dictado (\d+)\.mp3$/i.exec(name);
+  if(m)return 'Etapa '+m[1]+'/Dictados/Etapa '+m[1]+' Dictado '+m[3]+'.mp3';
+  m=/^Etapa (\d+) Lecci[oó]+n (\d+)\.mp3$/i.exec(name);
+  if(m)return 'Etapa '+m[1]+'/Etapa '+m[1]+' Leccion '+String(+m[2]).padStart(3,'0')+'.mp3';
   return null;
 }
 async function auInfo(){
   const t=$('aulist');t.textContent='';
   const tb=el('tbody',{});let total=0;
-  for(const n of STG_END.map((_,i)=>i+1)){
-    const a=await sb.storage.from('audio').list('Stage '+n,{limit:1000});
-    const d=await sb.storage.from('audio').list('Stage '+n+'/Dictations',{limit:1000});
-    const w=await sb.storage.from('audio').list('Stage '+n+'/Workbook',{limit:1000});
+  for(const [c,n] of [].concat(ends('en').map((_,i)=>['en',i+1]),ends('es').map((_,i)=>['es',i+1]))){
+    const pf=SW(c)+' '+n;
+    const a=await sb.storage.from('audio').list(pf,{limit:1000});
+    const d=await sb.storage.from('audio').list(pf+(c==='es'?'/Dictados':'/Dictations'),{limit:1000});
+    const w=c==='es'?{data:[]}:await sb.storage.from('audio').list(pf+'/Workbook',{limit:1000});
     const na=(a.data||[]).filter(x=>/\.mp3$/i.test(x.name)).length,nd=(d.data||[]).filter(x=>/\.mp3$/i.test(x.name)).length,nw=(w.data||[]).filter(x=>/\.mp3$/i.test(x.name)).length;
     total+=na+nd+nw;
-    tb.append(el('tr',{},el('td',{},'Stage '+n),el('td',{},String(na)),el('td',{},String(nd)),el('td',{},String(nw))));
+    tb.append(el('tr',{},el('td',{},pf),el('td',{},String(na)),el('td',{},String(nd)),el('td',{},String(nw))));
   }
   t.append(th(['','Áudios das lessons','Ditados','Ditados do Workbook']),tb);t.hidden=false;
   $('auinfo').textContent='No servidor agora: '+total+' arquivos de áudio.';
@@ -658,11 +684,14 @@ $('augo').addEventListener('click',async()=>{
 
 
 /* ----- livros do professor (2a edicao): armazenamento privado "teacher-books" ----- */
-function tbName(n){const m=/^\s*(\d+)\s*(?:e|&|-)\s*(\d+)\s*\.pdf\s*$/i.exec(n);return m?'2nd/stages-'+m[1]+'-'+m[2]+'.pdf':null;}
-function tbInfo(){const el_=$('tbinfo');if(!el_)return;return sb.storage.from('teacher-books').list('2nd').then(r=>{
-  if(r.error){el_.textContent='Armazenamento dos livros ainda não está pronto.';return;}
-  const n=(r.data||[]).filter(x=>/\.pdf$/i.test(x.name)).map(x=>x.name.replace(/^stages-/,'').replace(/\.pdf$/,'').replace('-',' e '));
-  el_.textContent=n.length?'Enviados: Stages '+n.join(', ')+'.':'Nenhum livro enviado ainda.';});}
+function tbName(n){const e=/etapa|^\s*\d\s*y\s*\d\s*\.pdf/i.test(n)&&(/^\s*(\d)\s*(?:y|&|-)\s*(\d)\s*\.pdf\s*$/i.exec(n)||/Etapas?\s*(\d)\s*[-y]\s*(\d)/i.exec(n));
+  if(e)return (+e[2]===+e[1]+1&&+e[1]%2===1)?'etapas-'+e[1]+'-'+e[2]+'.pdf':null;
+  const m=/^\s*(\d+)\s*(?:e|&|-)\s*(\d+)\s*\.pdf\s*$/i.exec(n);return m?'2nd/stages-'+m[1]+'-'+m[2]+'.pdf':null;}
+function tbInfo(){const el_=$('tbinfo');if(!el_)return;return Promise.all([sb.storage.from('teacher-books').list('2nd'),sb.storage.from('teacher-books').list('')]).then(rs=>{
+  if(rs[0].error){el_.textContent='Armazenamento dos livros ainda não está pronto.';return;}
+  const n=(rs[0].data||[]).filter(x=>/\.pdf$/i.test(x.name)).map(x=>x.name.replace(/^stages-/,'').replace(/\.pdf$/,'').replace('-',' e ')),
+    e=((rs[1].data)||[]).filter(x=>/^etapas-.*\.pdf$/i.test(x.name)).map(x=>x.name.replace(/^etapas-/,'').replace(/\.pdf$/,'').replace('-',' e '));
+  el_.textContent=(n.length||e.length)?'Enviados: '+(n.length?'Stages '+n.join(', ')+'. ':'')+(e.length?'Etapas (espanhol) '+e.join(', ')+'.':''):'Nenhum livro enviado ainda.';});}
 $('tbgo').addEventListener('click',async()=>{
   const files=Array.from($('tbfile').files);
   if(!files.length){setMsg('tbmsg','Escolha os PDFs.','bad');return;}
@@ -675,7 +704,7 @@ $('tbgo').addEventListener('click',async()=>{
     if(r.error)fail.push(f.name+' ('+r.error.message+')');else ok++;
   }
   let m=ok+' enviado(s).';
-  if(skip.length)m+=' Ignorados (nome fora do padrão "1 e 2.pdf"): '+skip.join(', ')+'.';
+  if(skip.length)m+=' Ignorados (nome fora do padrão "1 e 2.pdf" ou "Etapas 1-2.pdf"): '+skip.join(', ')+'.';
   if(fail.length)m+=' Falharam: '+fail.join('; ')+'.';
   setMsg('tbmsg',m,fail.length||skip.length?'bad':'ok');
   $('tbgo').disabled=false;tbInfo();
@@ -704,7 +733,7 @@ function loadPlacement(){
   });
 }
 /* ----- Stage Exams ----- */
-const XSTG=C.stages||[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[139,156],[157,174],[175,190],[191,206]];
+const XSTG=XST.en;
 let XREL=[],XRES=[],XDEF={},XKEY={},XOK=false;
 function xnorm(t){return String(t||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9' ]/g,' ').replace(/\s+/g,' ').trim();}
 function xdiff(key,ans){
@@ -721,7 +750,7 @@ function xdiff(key,ans){
   return {parts:out.reverse(),mistakes:D[n][m]};
 }
 function xChecks(uid,st){
-  const r=XSTG[st-1],done={};
+  const r=XST[crsU(uid)][st-1],done={};
   ATT.forEach(a=>{if(a.user_id===uid&&a.kind==='check'&&a.lesson>=r[0]&&a.lesson<=r[1]){const p=a.total?a.score/a.total:0;if(done[a.lesson]===undefined||p>done[a.lesson])done[a.lesson]=p;}});
   const miss=[];for(let l=r[0];l<=r[1];l++)if(done[l]===undefined)miss.push(l-r[0]+1);
   const vals=Object.values(done);
@@ -729,21 +758,21 @@ function xChecks(uid,st){
 }
 let XUN=[],XLT=[],CERTS=[],CERT_OK=false;
 async function loadExams(){
-  const a=await sb.from('exam_release').select('*'),b=await sb.from('exam_results').select('*'),c=await sb.from('exam_defs').select('stage,minutes');
+  const a=await sb.from('exam_release').select('*'),b=await sb.from('exam_results').select('*'),c=await Promise.all([sb.course('en').from('exam_defs').select('stage,minutes'),sb.course('es').from('exam_defs').select('stage,minutes')]).then(rs=>({error:rs[0].error||rs[1].error,data:[].concat((rs[0].data||[]).map(x=>Object.assign({_c:'en'},x)),(rs[1].data||[]).map(x=>Object.assign({_c:'es'},x)))}));
   if(a.error||b.error||c.error){XOK=false;setMsg('xmsg','Tabelas da prova ainda não existem no Supabase. Rode o arquivo exam_setup.sql (e exam_data_stage1-2.sql) no SQL Editor.','bad');if($('xtab'))$('xtab').textContent='';renderStu();return;}
   {const d=await sb.from('stage_unlock').select('*');XUN=(d&&!d.error&&d.data)||[];}
   {const d=await sb.from('level_tests').select('*');XLT=(d&&!d.error&&d.data)||[];}
   {const d=await sb.from('certificates').select('*');CERT_OK=!!(d&&!d.error);CERTS=CERT_OK?(d.data||[]):[];}
-  XOK=true;XREL=a.data||[];XRES=b.data||[];XDEF={};(c.data||[]).forEach(x=>{XDEF[x.stage]=x;});
+  XOK=true;XREL=a.data||[];XRES=b.data||[];XDEF={};(c.data||[]).forEach(x=>{XDEF[x._c+x.stage]=x;});
   const sel=$('xst');if(!sel.options.length){for(let i=1;i<=XSTG.length;i++)sel.append(el('option',{value:String(i)},'Stage '+i));sel.addEventListener('change',()=>{$('xdet').textContent='';renderExam();});}
   if(!$('xall').dataset.on){$('xall').dataset.on='1';$('xall').addEventListener('click',async()=>{const st=parseInt($('xst').value,10)||1;
     if(!await BL_DLG.confirm('Liberar a nota do Stage '+st+' para todos os alunos que já enviaram?'))return;
     sb.from('exam_results').update({score_visible:true}).eq('stage',st).not('submitted_at','is',null).then(r=>{if(r.error)setMsg('xmsg','Erro: '+r.error.message,'bad');else{setMsg('xmsg','Notas liberadas.','ok');loadExams();}});});}
   setMsg('xmsg','');renderExam();if(typeof renderHome==='function')renderHome();
 }
-function xStatus(rel,res,def){
-  if(!def)return el('span',{class:'msg bad'},'Prova deste Stage ainda não cadastrada');
-  if(res&&res.submitted_at){const c=BL_EXAM.compose(res.scores,res.maxes,res.oral);
+function xStatus(rel,res,def,crs){
+  if(!def)return el('span',{class:'msg bad'},'Prova '+(crs==='es'?'desta Etapa':'deste Stage')+' ainda não cadastrada');
+  if(res&&res.submitted_at){const c=BL_EXAM.compose(res.scores,res.maxes,res.oral,crs);
     const nrev=Object.values(res.review||{}).reduce((s,x)=>s+x.length,0);
     return el('span',{},'Concluída: ',el('b',{},BL_EXAM.line(c)),nrev?' ('+nrev+' p/ revisar)':'',res.late?' · enviada após o tempo':'',' · ',el('span',{class:'st '+(res.score_visible?'approved':'pending')},res.score_visible?'nota liberada ao aluno':'nota oculta'));}
   if(res)return el('span',{class:'st pending'},'Em andamento desde '+fmt(res.started_at));
@@ -758,19 +787,19 @@ function xchips(){const w=$('xchips');if(!w)return;w.textContent='';const sel=$(
 document.addEventListener('click',e=>{if(!e.target.closest('.mn,.mnb'))document.querySelectorAll('.mn.open').forEach(x=>x.classList.remove('open'));});
 function xbtn(t,cls,fn){const b=el('button',{type:'button',class:cls||''},t);b.addEventListener('click',fn);return b;}
 function certDialog(p,st,c,res,cert){
-  const def=XDEF[st],sub=!!(res&&res.submitted_at);let pct=null;
-  if(sub){const c=BL_EXAM.compose(res.scores,res.maxes,res.oral);pct=c.M?c.pct:null;}
+  const def=XDEF[crsOf(p)+st],sub=!!(res&&res.submitted_at);let pct=null;
+  if(sub){const c=BL_EXAM.compose(res.scores,res.maxes,res.oral,crsOf(p));pct=c.M?c.pct:null;}
   const why=[];
-  if(c.miss.length)why.push('faltam os Lesson Checks das lessons '+c.miss.join(', '));
-  if(c.avg==null||c.avg<0.7)why.push('média dos Lesson Checks: '+(c.avg==null?'sem notas':Math.round(c.avg*100)+'% (mínimo 70%)'));
+  if(c.miss.length)why.push('faltam os '+LCK(crsOf(p))+' das '+LSN(crsOf(p))+' '+c.miss.join(', '));
+  if(c.avg==null||c.avg<0.7)why.push('média dos '+LCK(crsOf(p))+': '+(c.avg==null?'sem notas':Math.round(c.avg*100)+'% (mínimo 70%)'));
   if(def&&!sub)why.push('prova ainda não feita');else if(sub&&(pct==null||pct<70))why.push('prova com '+(pct==null?'—':pct+'%')+' (mínimo 70%)');
   const ov=el('div',{class:'ovl',role:'dialog','aria-modal':'true'}),d=el('div',{class:'dlg'});ov.append(d);
   const close=()=>ov.remove();ov.addEventListener('click',e=>{if(e.target===ov)close();});
-  d.append(el('h3',{},cert?'Certificado '+(cert.revoked?'revogado':'emitido'):'Emitir certificado'),el('p',{class:'sm'},(p.name||p.email)+' · English · Stage '+st));
+  d.append(el('h3',{},cert?'Certificado '+(cert.revoked?'revogado':'emitido'):'Emitir certificado'),el('p',{class:'sm'},(p.name||p.email)+' · '+(crsOf(p)==='es'?'Español':'English')+' · '+SW(crsOf(p))+' '+st));
   if(cert)d.append(el('p',{},'ID: ',el('b',{class:'cid'},cert.id)+(cert.revoked?' (revogado)':'')));
   const ban=el('div',{class:'cbn '+(why.length?'bad':'ok')});
-  if(why.length){ban.append(el('b',{},'⚠ Este aluno ainda não concluiu o Stage '+st+'.'),el('br'),why.join(' · ')+'.');}
-  else ban.append(el('b',{},'✓ Stage concluído:'),' prova '+(pct==null?'—':pct+'%')+', média '+(c.avg==null?'—':Math.round(c.avg*100)+'%')+', Lesson Checks em dia.');
+  if(why.length){ban.append(el('b',{},'⚠ Este aluno ainda não concluiu '+(crsOf(p)==='es'?'a Etapa ':'o Stage ')+st+'.'),el('br'),why.join(' · ')+'.');}
+  else ban.append(el('b',{},'✓ '+SW(crsOf(p))+' concluí'+(crsOf(p)==='es'?'da':'do')+':'),' prova '+(pct==null?'—':pct+'%')+', média '+(c.avg==null?'—':Math.round(c.avg*100)+'%')+', '+LCK(crsOf(p))+' em dia.');
   d.append(ban);
   let ovr=null;if(why.length&&!cert){ovr=el('input',{type:'checkbox',id:'cvr'});d.append(el('label',{class:'fl',for:'cvr'},ovr,' Emitir mesmo assim'));}
   const hrs=el('input',{type:'number',min:'1',max:'999',value:String(cert?cert.hours:(HRS[st-1]||50)),id:'chr'});
@@ -786,7 +815,7 @@ function certDialog(p,st,c,res,cert){
     const h=parseInt(hrs.value,10);if(!(h>0)){msg.textContent='Informe as horas.';msg.className='msg bad';return;}
     if(!dn.value){msg.textContent='Informe a data.';msg.className='msg bad';return;}
     go.disabled=true;msg.textContent='Salvando…';msg.className='msg';
-    const r=await sb.rpc('cert_issue',{p_user:p.id,p_stage:st,p_hours:h,p_exam_pct:ex.value===''?null:Math.max(0,Math.min(100,parseInt(ex.value,10)||0)),p_distinction:ds.checked,p_completed:dn.value,p_prefix:'STG'});
+    const r=await sb.rpc('cert_issue',{p_user:p.id,p_stage:st,p_hours:h,p_exam_pct:ex.value===''?null:Math.max(0,Math.min(100,parseInt(ex.value,10)||0)),p_distinction:ds.checked,p_completed:dn.value,p_prefix:crsOf(p)==='es'?'ETP':'STG'});
     if(r.error){msg.textContent='Erro: '+r.error.message;msg.className='msg bad';go.disabled=false;return;}
     close();setMsg('xmsg','Certificado '+r.data+' salvo.','ok');loadExams();});
   if(ovr){go.disabled=true;ovr.addEventListener('change',()=>{go.disabled=!ovr.checked;});}
@@ -796,11 +825,11 @@ function certDialog(p,st,c,res,cert){
   row.append(xbtn('Cancelar','ghost',close),go);d.append(row);document.body.append(ov);
 }
 function examCard(p,st){
-  const def=XDEF[st];
+  const def=XDEF[crsOf(p)+st];
     const rel=XREL.find(x=>x.user_id===p.id&&x.stage===st),res=XRES.find(x=>x.user_id===p.id&&x.stage===st),c=xChecks(p.id,st),un=XUN.find(x=>x.user_id===p.id&&x.stage===st),cert=certOf(p.id,st);
     const sub=!!(res&&res.submitted_at),prog=!!(res&&!res.submitted_at);
     const nrev=sub?Object.values(res.review||{}).reduce((s,x)=>s+x.length,0):0;
-    const cx=sub?BL_EXAM.compose(res.scores,res.maxes,res.oral):null;
+    const cx=sub?BL_EXAM.compose(res.scores,res.maxes,res.oral,crsOf(p)):null;
     let pill;
     if(!def)pill=el('span',{class:'pl bad'},'Prova não cadastrada');
     else if(sub)pill=el('span',{class:'pl '+(res.score_visible?'ok':'wt')},'Concluída · '+BL_EXAM.line(cx)+(res.score_visible?'':' · nota oculta'));
@@ -808,7 +837,7 @@ function examCard(p,st){
     else if(rel)pill=el('span',{class:'pl ok'},'Liberada');
     else pill=el('span',{class:'pl gr'},'Não liberada');
     const pc=c.total?Math.round(c.done/c.total*100):0;
-    const m1=el('span',c.miss.length?{style:'color:var(--bad)'}:{},c.done+'/'+c.total+' Lesson Checks'+(c.avg!=null?' · média '+Math.round(c.avg*100)+'%':'')+(c.miss.length?' · faltam lessons '+c.miss.join(', '):''));
+    const m1=el('span',c.miss.length?{style:'color:var(--bad)'}:{},c.done+'/'+c.total+' '+LCK(crsOf(p))+''+(c.avg!=null?' · média '+Math.round(c.avg*100)+'%':'')+(c.miss.length?' · faltam '+LSN(crsOf(p))+' '+c.miss.join(', '):''));
     const bits=[];if(sub&&nrev)bits.push(nrev+' resposta(s) para revisar');if(sub&&res.late)bits.push('enviada após o tempo');if(prog)bits.push('desde '+fmt(res.started_at));if(un)bits.push('passagem liberada');
     if(cert)bits.push('★ '+cert.id+(cert.revoked?' (revogado)':''));
     const act=el('div',{class:'act'});
@@ -821,24 +850,24 @@ function examCard(p,st){
     }
     if(rel&&!sub)act.append(xbtn('+5 min','ghost',()=>{sb.from('exam_release').update({extra_minutes:(rel.extra_minutes||0)+5}).eq('user_id',p.id).eq('stage',st).then(r=>{if(!fail(r)){setMsg('xmsg','+5 min para '+p.name+'.','ok');loadExams();}});}));
     if(CERT_OK)act.append(xbtn(cert&&!cert.revoked?'★ Certificado emitido':'★ Certificado','gold',()=>certDialog(p,st,c,res,cert)));
-    const passRow=swRow('Passagem do Stage '+st,!!un,false,'Libera o próximo Stage sem exigir prova, média e exercícios',async on=>{
+    const passRow=swRow('Passagem '+(crsOf(p)==='es'?'da Etapa ':'do Stage ')+st,!!un,false,'Libera '+(crsOf(p)==='es'?'a próxima Etapa':'o próximo Stage')+' sem exigir prova, média e exercícios',async on=>{
       if(!on){sb.from('stage_unlock').delete().eq('user_id',p.id).eq('stage',st).then(reload);return;}
-      if(!await BL_DLG.confirm('Liberar o próximo Stage para '+p.name+', ignorando a trava do Stage '+st+' (prova, média e exercícios)?'))return false;
+      if(!await BL_DLG.confirm('Liberar '+(crsOf(p)==='es'?'a próxima Etapa':'o próximo Stage')+' para '+p.name+', ignorando a trava '+(crsOf(p)==='es'?'da Etapa ':'do Stage ')+st+' (prova, média e exercícios)?'))return false;
       sb.from('stage_unlock').insert({user_id:p.id,stage:st}).then(reload);});
     const notaRow=sub?swRow('Nota visível ao aluno',!!res.score_visible,false,'A nota da prova aparece para ele',async on=>{
       if(on&&nrev&&!await BL_DLG.confirm('Ainda há '+nrev+' resposta(s) para você revisar. Liberar a nota assim mesmo?'))return false;
       sb.from('exam_results').update({score_visible:on}).eq('user_id',p.id).eq('stage',st).then(reload);}):null;
     const zerar=res?el('button',{type:'button',class:'lnk'},'Zerar prova'):null;
-    if(zerar)zerar.addEventListener('click',async()=>{if(!await BL_DLG.confirm('APAGAR a prova de '+p.name+' (Stage '+st+') para ele poder refazer? Isso não pode ser desfeito.'))return;
+    if(zerar)zerar.addEventListener('click',async()=>{if(!await BL_DLG.confirm('APAGAR a prova de '+p.name+' ('+SW(crsOf(p))+' '+st+') para ele poder refazer? Isso não pode ser desfeito.'))return;
       sb.from('exam_results').delete().eq('user_id',p.id).eq('stage',st).then(r=>{if(!fail(r)){$('xdet').textContent='';loadExams();}});});
     const lt=XLT.find(x=>x.user_id===p.id&&x.stage===st);
     const ltDo=(fn,args,okMsg)=>sb.rpc(fn,args).then(r=>{if(r.error){setMsg('xmsg','Erro: '+r.error.message,'bad');return;}const d=r.data||{};
       if(d.ok===false){setMsg('xmsg',d.why==='passed'?'Esse aluno já passou neste teste.':d.why==='wait'?'Nova tentativa só a partir de '+fmt(d.until)+'.':'Não foi possível.','bad');return;}
       setMsg('xmsg',okMsg||'','ok');loadExams();});
-    const liberar=async()=>{if(c.miss.length&&!await BL_DLG.confirm(p.name+' ainda não fez os Lesson Checks das lessons: '+c.miss.join(', ')+'.\n\nLiberar a prova mesmo assim?'))return false;
+    const liberar=async()=>{if(c.miss.length&&!await BL_DLG.confirm(p.name+' ainda não fez os '+LCK(crsOf(p))+' das '+LSN(crsOf(p))+': '+c.miss.join(', ')+'.\n\nLiberar a prova mesmo assim?'))return false;
       sb.from('exam_release').insert({user_id:p.id,stage:st}).then(reload);};
     const cancelRel=async()=>{if(!await BL_DLG.confirm('Cancelar a liberação para '+p.name+'?'))return false;sb.from('exam_release').delete().eq('user_id',p.id).eq('stage',st).then(reload);};
-    const provaRow=swRow('Prova · Stage '+st,!!(rel||prog||sub),!def||prog||sub,zerar?el('span',{},pill,' ',zerar):pill,on=>on?liberar():(rel&&!res?cancelRel():false));
+    const provaRow=swRow('Prova · '+SW(crsOf(p))+' '+st,!!(rel||prog||sub),!def||prog||sub,zerar?el('span',{},pill,' ',zerar):pill,on=>on?liberar():(rel&&!res?cancelRel():false));
     const taken=!!(lt&&lt.taken_at&&!lt.reverted),ltSub=el('span',{});
     if(taken){
       const pc2=lt.total?Math.round(lt.score/lt.total*100):0;
@@ -846,7 +875,7 @@ function examCard(p,st){
       if(lt.passed)ltSub.append(xbtn('Reverter','ghost',async()=>{if(!await BL_DLG.confirm('Reverter o teste de '+p.name+'? O "Liberado até" volta ao valor de antes.'))return;ltDo('level_test_revert',{p_user:p.id,p_stage:st},'Teste revertido.');}));
       else ltSub.append(xbtn('Liberar de novo','ghost',()=>ltDo('level_test_release',{p_user:p.id,p_stage:st},'Teste liberado para '+p.name+'.')));
     }else ltSub.append(lt?'Teste liberado ao aluno':'Precisa acertar todas · 20 perguntas');
-    const testeRow=swRow('Teste de nível · Stage '+st,!!lt,taken,ltSub,on=>on?ltDo('level_test_release',{p_user:p.id,p_stage:st},'Teste liberado para '+p.name+'.'):sb.from('level_tests').delete().eq('user_id',p.id).eq('stage',st).then(reload));
+    const testeRow=swRow('Teste de nível · '+SW(crsOf(p))+' '+st,!!lt,taken,ltSub,on=>on?ltDo('level_test_release',{p_user:p.id,p_stage:st},'Teste liberado para '+p.name+'.'):sb.from('level_tests').delete().eq('user_id',p.id).eq('stage',st).then(reload));
     return {rows:[el('div',{class:'sub2'},'Prova e teste'),provaRow,testeRow,el('div',{class:'sub2'},'Passagem e nota'),passRow,notaRow].filter(Boolean),info:el('div',{},el('div',{class:'bar2'},el('i',{style:'width:'+pc+'%'})),el('div',{class:'m'},m1,el('span',{},bits.join(' · ')))),acts:act};
 }
 function swRow(title,on,dis,sub,fn,keep){
@@ -866,14 +895,14 @@ function renderExam(){
 }
 async function showExam(p,st){
   const box=$('xdet');box.textContent='';
-  if(!XKEY[st]){const k=await sb.from('exam_keys').select('keys').eq('stage',st).maybeSingle();if(k.error||!k.data){box.append(el('p',{class:'msg bad'},'Não foi possível ler o gabarito.'));return;}XKEY[st]=k.data.keys;}
+  const kc=crsOf(p)+st;if(!XKEY[kc]){const k=await sb.course(crsOf(p)).from('exam_keys').select('keys').eq('stage',st).maybeSingle();if(k.error||!k.data){box.append(el('p',{class:'msg bad'},'Não foi possível ler o gabarito.'));return;}XKEY[kc]=k.data.keys;}
   const res=XRES.find(x=>x.user_id===p.id&&x.stage===st);if(!res)return;
-  const K={};XKEY[st].parts.forEach(x=>{K[x.id]=x;});const A=res.answers||{};
-  const card=el('div',{class:'card'},el('h3',{},p.name+' · Stage '+st+' · '+fmt(res.submitted_at)));
+  const K={};XKEY[kc].parts.forEach(x=>{K[x.id]=x;});const A=res.answers||{};
+  const card=el('div',{class:'card'},el('h3',{},flg(p),p.name+' · '+SW(crsOf(p))+' '+st+' · '+fmt(res.submitted_at)));
   const sc=res.scores||{},mx=res.maxes||{};
-  {const c=BL_EXAM.compose(sc,mx,res.oral);
-   card.append(el('p',{},el('b',{},'Exam '+BL_EXAM.fmt(c.T)+'/'+c.M+' ('+c.pct+'%)'),'  ·  '+c.rows.map(r=>r.label+' '+BL_EXAM.fmt(r.s)+'/'+r.m).join(' · '),' · ',el('span',{class:'pl '+(c.ok?'ok':'bad')},c.ok?'Exam OK (mín. 30)':'Abaixo do mínimo de 30 no exam')));
-   card.append(el('p',{class:'hint'},'A prova oficial do livro vale 50 pontos. A conversa abaixo é uma nota a mais, de 15 pontos, que não entra nos 50.'));}
+  {const c=BL_EXAM.compose(sc,mx,res.oral,crsOf(p));
+   card.append(el('p',{},el('b',{},EXN(crsOf(p))+' '+BL_EXAM.fmt(c.T)+'/'+c.M+' ('+c.pct+'%)'),'  ·  '+c.rows.map(r=>r.label+' '+BL_EXAM.fmt(r.s)+'/'+r.m).join(' · '),' · ',el('span',{class:'pl '+(c.ok?'ok':'bad')},c.ok?EXN(crsOf(p))+' OK (mín. '+BL_EXAM.fmt(c.min)+')':'Abaixo do mínimo de '+BL_EXAM.fmt(c.min)+' '+(crsOf(p)==='es'?'na prova':'no exam'))));
+   card.append(el('p',{class:'hint'},'A prova '+(crsOf(p)==='es'?'':'oficial do livro ')+'vale '+c.M+' pontos. A conversa abaixo é uma nota a mais, de 15 pontos, que não entra nos '+c.M+'.'));}
   xOralCard(p,st,res,card);
   if(K.dictation){const d=xdiff(K.dictation.text,A.dictation||'');const p1=el('p',{style:'line-height:2'});
     d.parts.forEach(x=>{if(x[0]==='ok')p1.append(x[1]+' ');
@@ -900,7 +929,7 @@ async function showExam(p,st){
 
 function xOralCard(p,st,res,card){
   const O=res.oral&&res.oral.q?JSON.parse(JSON.stringify(res.oral)):{q:[]};
-  const box=el('div',{class:'orq'});card.append(el('h4',{},'Conversa (15 pontos, fora dos 50 da prova)'),el('p',{class:'hint'},'Três perguntas do livro, com pequena troca de palavra. Todas as palavras já foram estudadas até o fim do Stage. Edite o texto se quiser. Dê a nota de cada critério enquanto ouve o aluno.'),box);
+  const box=el('div',{class:'orq'});card.append(el('h4',{},'Conversa (15 pontos, fora dos '+BL_EXAM.compose(res.scores,res.maxes,null,crsOf(p)).M+' da prova)'),el('p',{class:'hint'},'Três perguntas do livro, com pequena troca de palavra. Todas as palavras já foram estudadas até o fim do Stage. Edite o texto se quiser. Dê a nota de cada critério enquanto ouve o aluno.'),box);
   const CR=BL_EXAM.CRIT,sumEl=el('p',{}),msg=el('p',{class:'hint'}),warn={};
   function save(){
     O.at=new Date().toISOString();
@@ -909,11 +938,11 @@ function xOralCard(p,st,res,card){
       res.oral=JSON.parse(JSON.stringify(O));msg.textContent='Nota oral salva.';msg.className='msg ok';});
   }
   function refresh(){
-    const o=BL_EXAM.oralTot(O),c=BL_EXAM.compose(res.scores,res.maxes,O);
-    sumEl.textContent='';sumEl.append(el('b',{},'Conversa '+o.s+'/15'),'  ·  Exam '+BL_EXAM.fmt(c.T)+'/'+c.M+' ',el('span',{class:'pl '+(c.ok?'ok':'bad')},c.ok?'Exam OK (mín. 30)':'Abaixo do mínimo de 30'),o.done?'':el('span',{class:'pl wt'},'faltam notas'),'  ·  Prova + conversa ',el('b',{},BL_EXAM.fmt(c.T+o.s)+'/'+(c.M+15)));
+    const o=BL_EXAM.oralTot(O),c=BL_EXAM.compose(res.scores,res.maxes,O,crsOf(p));
+    sumEl.textContent='';sumEl.append(el('b',{},'Conversa '+o.s+'/15'),'  ·  '+EXN(crsOf(p))+' '+BL_EXAM.fmt(c.T)+'/'+c.M+' ',el('span',{class:'pl '+(c.ok?'ok':'bad')},c.ok?EXN(crsOf(p))+' OK (mín. '+BL_EXAM.fmt(c.min)+')':'Abaixo do mínimo de '+BL_EXAM.fmt(c.min)),o.done?'':el('span',{class:'pl wt'},'faltam notas'),'  ·  Prova + conversa ',el('b',{},BL_EXAM.fmt(c.T+o.s)+'/'+(c.M+15)));
   }
   async function check(i,q,e){
-    const w=await BL_ORAL.unknown(sb,st,q+' '+e).catch(()=>[]);
+    const w=await BL_ORAL.unknown(sb,st,q+' '+e,crsOf(p)).catch(()=>[]);
     if(warn[i])warn[i].textContent=w.length?'Palavra ainda não estudada: '+[...new Set(w)].join(', '):'';
   }
   function draw(){
@@ -936,12 +965,12 @@ function xOralCard(p,st,res,card){
       check(i,x.q,x.e);
     });
     const t=el('table');t.append(th(['Pergunta','Entendeu 0-1','Completa 0-1','Gramática 0-2','Pronúncia 0-1','Nota','']),tb);const w=el('div',{class:'tw'});w.append(t);box.append(w,sumEl,el('div',{style:'display:flex;gap:8px;flex-wrap:wrap;margin:8px 0'},
-      (()=>{const b=el('button',{type:'button',class:'ghost'},'Sortear outras perguntas');b.addEventListener('click',async()=>{b.disabled=true;try{O.q=await BL_ORAL.gen(sb,st,3,O.q.map(y=>y.q));draw();refresh();}catch(er){msg.textContent='Erro ao sortear: '+(er.message||er);msg.className='msg bad';}b.disabled=false;});return b;})(),
+      (()=>{const b=el('button',{type:'button',class:'ghost'},'Sortear outras perguntas');b.addEventListener('click',async()=>{b.disabled=true;try{O.q=await BL_ORAL.gen(sb,st,3,O.q.map(y=>y.q),crsOf(p));draw();refresh();}catch(er){msg.textContent='Erro ao sortear: '+(er.message||er);msg.className='msg bad';}b.disabled=false;});return b;})(),
       (()=>{const b=el('button',{type:'button'},'Salvar nota oral');b.addEventListener('click',()=>save());return b;})()),msg);
     refresh();
   }
   if(O.q.length){draw();}
-  else{box.append(el('p',{class:'hint'},'Sorteando perguntas…'));BL_ORAL.gen(sb,st,3,[]).then(q=>{O.q=q;draw();return sb.from('exam_results').update({oral:{q:O.q,at:new Date().toISOString()}}).eq('user_id',p.id).eq('stage',st).then(r=>{if(!r.error)res.oral={q:O.q};});}).catch(er=>{box.textContent='';box.append(el('p',{class:'msg bad'},'Não foi possível sortear as perguntas: '+(er.message||er)));});}
+  else{box.append(el('p',{class:'hint'},'Sorteando perguntas…'));BL_ORAL.gen(sb,st,3,[],crsOf(p)).then(q=>{O.q=q;draw();return sb.from('exam_results').update({oral:{q:O.q,at:new Date().toISOString()}}).eq('user_id',p.id).eq('stage',st).then(r=>{if(!r.error)res.oral={q:O.q};});}).catch(er=>{box.textContent='';box.append(el('p',{class:'msg bad'},'Não foi possível sortear as perguntas: '+(er.message||er)));});}
 }
 async function xReview(uid,st,n,accept){
   const res=XRES.find(x=>x.user_id===uid&&x.stage===st);if(!res)return;
@@ -1100,7 +1129,7 @@ function renderHome(){
   const TI=k=>TABS.findIndex(t=>t[0]===k);TABS[TI('students')][3]=()=>h.pend+h.rev;TABS[TI('pay')][3]=()=>h.over||0;TABS[TI('agenda')][3]=()=>h.lreq+h.lcan;TABS[TI('social')][3]=()=>socSoon();renderToday();
   buildTabs();markTabs();renderRings(h);renderMore(h);renderNext();
   {const al=$('tpAlert');if(al){const parts=[];if(h.lreq)parts.push(h.lreq+(h.lreq===1?' pedido':' pedidos'));if(h.lcan)parts.push(h.lcan+(h.lcan===1?' cancelamento':' cancelamentos'));
-    al.hidden=!parts.length;al.textContent='';if(parts.length){al.append(el('b',{},'\uD83D\uDD14 '+parts.join(' \u00B7 ')),el('i',{},'Ver'));al.onclick=()=>{const b=$('agendaBox');if(b)b.scrollIntoView({behavior:'smooth',block:'start'});};}}}
+    al.hidden=!parts.length;al.textContent='';if(parts.length){const bb=el('b',{},parts.join(' \u00B7 '));bb.insertAdjacentHTML('afterbegin','<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 17V11a6 6 0 0112 0v6l1.5 2h-15z"/><path d="M10 21h4"/></svg>');al.append(bb,el('i',{},'Ver'));al.onclick=()=>{const g=$('agendaBox');if(g)g.scrollIntoView({behavior:'smooth',block:'start'});};}}}
   const rows=[];
   if(h.pend)rows.push([h.pend+' pedido(s) de acesso para aprovar','students']);
   if(h.rev)rows.push([h.rev+' prova(s) com respostas para você revisar','exams']);

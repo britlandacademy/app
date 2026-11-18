@@ -35,8 +35,8 @@ function tabsInfo_() {
         var v = sh.getRange(1, 1, rows, cols).getDisplayValues();
         for (var i = 0; i < v.length; i++) {
           var d = -1, s = -1;
-          v[i].forEach(function (c, k) { c = String(c).trim(); if (/^done$/i.test(c)) d = k; if (/^status$/i.test(c)) s = k; });
-          if (d >= 0 && s > d) { for (var j = d + 1; j < s; j++) { var n = String(v[i][j]).trim(); if (n) students.push(n); } break; }
+          v[i].forEach(function (c, k) { c = String(c).trim(); if (/^(done|hecho)$/i.test(c)) d = k; if (/^(status|estado)$/i.test(c)) s = k; });
+          if (d >= 0 && s > d) { for (var j = d + 1; j < s; j++) { var n = String(v[i][j]).trim(); if (n && !/^[—–-]+$/.test(n)) students.push(n); } break; }
         }
       }
     } catch (e) {}
@@ -66,7 +66,7 @@ function syncAll() {
     if (!res.ok || !res.currentPosition) { bad.push(l.sheet_name + ': ' + (res.error || 'sem aula dada')); return; }
     /* each student only gets his own column (never the other students' attendance) */
     if (l.student_col && res.students && res.students[l.student_col]) { res.me = res.students[l.student_col]; res.studentCol = l.student_col; }
-    if (res.currentPosition) { var lp = lessonByPar_(res.currentPosition.paragraph, res.stage); if (lp) { res.currentPosition.lesson = lp; res.currentPosition.lessonFinished = false; } }
+    if (res.currentPosition) { var lp = res.lang === 'es' ? lessonByParEs_(res.currentPosition.paragraph, res.stage) : lessonByPar_(res.currentPosition.paragraph, res.stage); if (lp) { res.currentPosition.lesson = lp; res.currentPosition.lessonFinished = false; } }
     if (res.currentPosition && res.currentPosition.lesson == null) fillLesson_(res.currentPosition, res.stage && SB[res.stage]);
     if (res.me && res.me.missed) res.me.missed.forEach(function (x) { if (x.lesson == null && x.newWords) { var t = { lastNewWord: x.newWords.to }; fillLesson_(t, res.stage && SB[res.stage]); x.lesson = t.lesson; } });
     delete res.bounds;
@@ -88,6 +88,13 @@ function lessonByPar_(par, stage) {
   var a = STAGE_LESSON_[stage - 1], b = stage < 12 ? STAGE_LESSON_[stage] - 1 : 206;
   return (k >= a && k <= b) ? k : null;
 }
+/* Espanhol: lição pelo número do parágrafo, dentro da etapa da aba. */
+function lessonByParEs_(par, stage) {
+  if (par == null || !stage || stage < 1 || stage > ES_STAGES_.length) return null;
+  var k = 0;
+  for (var i = 0; i < ES_LESSON_PAR_.length; i++) if (ES_LESSON_PAR_[i] <= par) k = i + 1;
+  return (k >= ES_STAGES_[stage - 1][0] && k <= ES_STAGES_[stage - 1][1]) ? k : null;
+}
 /* Descobre a lição pela última palavra nova, usando o fim de cada lição conhecido na etapa. */
 function fillLesson_(pos, map) {
   if (!map || pos.lastNewWord == null) return;
@@ -103,6 +110,10 @@ function installTrigger() {
 
 /* Britland: reads ONE tab of the "Planos de Aula" sheet and returns the pedagogical position of the student.
    Pure function of the tab's values (2D array) + the tab name, so it can be tested without Google. */
+/* Callan Español: first paragraph of each lesson (1-112) and lessons of each Etapa. */
+var ES_LESSON_PAR_ = [1,8,15,23,31,38,45,52,58,65,70,75,80,85,90,95,101,107,113,118,123,129,134,139,145,150,155,160,165,170,175,180,185,190,196,202,208,213,219,225,231,237,243,249,255,261,267,272,278,284,290,296,302,308,316,322,328,334,340,346,353,359,365,371,377,382,388,393,398,404,411,416,422,427,434,441,446,451,456,461,467,472,477,483,489,494,501,506,513,519,524,530,537,542,547,553,561,568,572,576,582,587,592,598,602,607,613,618,625,630,635,641];
+var ES_STAGES_ = [[1, 16], [17, 32], [33, 52], [53, 72], [73, 92], [93, 112]];
+function esLessonEnd_(L) { return L < ES_LESSON_PAR_.length ? ES_LESSON_PAR_[L] - 1 : 646; }
 function parsePlanTab(values, sheetName) {
   var norm = function (v) { return String(v == null ? '' : v).trim(); };
   var num = function (v) { var m = norm(v).match(/^\d+$/); return m ? parseInt(m[0], 10) : null; };
@@ -111,45 +122,46 @@ function parsePlanTab(values, sheetName) {
   /* 1. Header row: the row that has a "Contents" cell (it moves between tabs, row 7 or 8). */
   var h = -1, i, j;
   for (i = 0; i < values.length && h < 0; i++)
-    for (j = 0; j < values[i].length; j++) if (/^contents$/i.test(norm(values[i][j]))) { h = i; break; }
+    for (j = 0; j < values[i].length; j++) if (/^(contents|contenido(\s*\/\s*materia)?)$/i.test(norm(values[i][j]))) { h = i; break; }
   if (h < 0) return parseOldLayout_(values, sheetName);
-  var col = {};
+  var col = {}, es = false;
+  values[h].forEach(function (c) { if (/^contenido/i.test(norm(c))) es = true; });
   values[h].forEach(function (c, k) {
     c = norm(c);
-    if (/^date$/i.test(c)) { col.date = k; col.cls = k - 1; }
-    else if (/^contents$/i.test(c)) col.contents = k;
-    else if (/^paragraph$/i.test(c)) col.par = k;
-    else if (/^last word/i.test(c)) col.word = k;
-    else if (/^read/i.test(c)) col.read = k;
+    if (/^(date|fecha)$/i.test(c)) { col.date = k; col.cls = k - 1; }
+    else if (/^(contents|contenido(\s*\/\s*materia)?)$/i.test(c)) col.contents = k;
+    else if (/^(paragraph|p[aá]rrafo)$/i.test(c)) col.par = k;
+    else if (/^(last word|[uú]ltima palabra)/i.test(c)) col.word = k;
+    else if (/^(read|lect)/i.test(c)) col.read = k;
     else if (/^dict/i.test(c)) col.dict = k;
-    else if (/^lc$/i.test(c)) col.lc = k;
-    else if (/^status$/i.test(c)) col.status = k;
-    else if (/^done$/i.test(c)) col.done = k;
+    else if (/^(lc|er)$/i.test(c)) col.lc = k;
+    else if (/^(status|estado)$/i.test(c)) col.status = k;
+    else if (/^(done|hecho)$/i.test(c)) col.done = k;
   });
   if (col.contents == null || col.status == null) return { ok: false, error: 'columns-not-found', sheetName: sheetName };
   /* Student columns: between "Done" and "Status" (a checked box = the student came to that class). */
   var scols = [];
-  if (col.done != null) for (j = col.done + 1; j < col.status; j++) { var nm = norm(values[h][j]); if (nm) scols.push({ name: nm, k: j }); }
+  if (col.done != null) for (j = col.done + 1; j < col.status; j++) { var nm = norm(values[h][j]); if (nm && !/^[—–-]+$/.test(nm)) scols.push({ name: nm, k: j }); }
 
-  /* 2. Stage: from the tab name (Stage 1 / Stg 2 / Etapa 3), then from the "STAGE N PROGRESS" label. */
-  var stage = null, m = String(sheetName).match(/(?:stage|stg|etapa)\s*(\d+)/i);
+  /* 2. Stage: from the tab name (Stage 1 / STG 2 / Etapa 3 / ETP 3), then from the "STAGE N PROGRESS" label. */
+  var stage = null, m = String(sheetName).match(/(?:stage|stg|etapa|etp)\s*(\d+)/i);
   if (m) stage = parseInt(m[1], 10);
   for (i = 0; i < h && stage == null; i++)
-    for (j = 0; j < values[i].length; j++) { m = norm(values[i][j]).match(/STAGE\s*(\d+)\s*PROGRESS/i); if (m) { stage = parseInt(m[1], 10); break; } }
+    for (j = 0; j < values[i].length; j++) { m = norm(values[i][j]).match(/STAGE\s*(\d+)\s*PROGRESS/i) || norm(values[i][j]).match(/PROGRESO\s*ETAPA\s*(\d+)/i); if (m) { stage = parseInt(m[1], 10); break; } }
 
   /* 3. Class rows: from the header down while there is a status. */
   var rows = [];
   for (i = h + 1; i < values.length; i++) {
     var r = values[i], status = norm(r[col.status]), contents = norm(r[col.contents]);
     if (!contents || !status) { if (rows.length) break; else continue; }
-    if (/^(lançamento|nota|pontua|b[oô]nus|resultado)/i.test(contents)) break;
+    if (/^(lançamento|nota|pontua|b[oô]nus|resultado|bonificaci|conversaci[oó]n con)/i.test(contents)) break;
     var word = col.word != null ? norm(r[col.word]) : '', par = col.par != null ? norm(r[col.par]) : '';
-    var noShow = /no.?show/i.test(word) || /^ns$/i.test(par);
+    var noShow = /no.?show/i.test(word) || /^ns$/i.test(par) || /^falta$/i.test(status);
     rows.push({
       row: i + 1, cls: col.cls != null ? num(r[col.cls]) : null, contents: contents,
       att: scols.map(function (sc) { return { name: sc.name, here: /^true$/i.test(norm(r[sc.k])) }; }),
-      conv: /^e$/i.test(par) || /conversation/i.test(contents),
-      status: status, noShow: noShow, done: /^completed$/i.test(status) && !noShow,
+      conv: /^e$/i.test(par) || /conversation|conversaci[oó]n/i.test(contents),
+      status: status, noShow: noShow, done: /^(completed|realizada|completada)$/i.test(status) && !noShow,
       paragraph: num(par), word: noShow ? '' : word,
       read: col.read != null ? norm(r[col.read]) : '', dict: col.dict != null ? norm(r[col.dict]) : '',
       lc: col.lc != null ? norm(r[col.lc]) : ''
@@ -158,10 +170,14 @@ function parsePlanTab(values, sheetName) {
 
   /* 4. Contents: "REV 1 hello - 9 number / NW 10 on - 12 where" */
   var rng = function (txt, tag) {
-    var rx = new RegExp(tag + '\\s+(\\d+)\\s+(.+?)\\s+[-–]\\s+(\\d+)\\s+(.+?)\\s*(?:/|$)', 'i'), q = txt.match(rx);
-    return q ? { from: parseInt(q[1], 10), fromWord: q[2], to: parseInt(q[3], 10), toWord: q[4] } : null;
+    var rx = new RegExp('(?:' + tag + ')\\s+(\\d+)(?:\\s+([^/]+?))?\\s+[-–]\\s+(\\d+)(?:\\s+([^/]+?))?\\s*(?:/|$)', 'i'), q = txt.match(rx);
+    return q ? { from: parseInt(q[1], 10), fromWord: q[2] || '', to: parseInt(q[3], 10), toWord: q[4] || '' } : null;
   };
-  rows.forEach(function (x) { x.rev = rng(x.contents, 'REV'); x.nw = rng(x.contents, 'NW'); });
+  /* Spanish: "REP 1 bolígrafo - 4 mesa / NP 5 silla - 9 largo"; whole-review class: "REPASO EXCLUSIVO 1 • Párrafos 1 a 50 (...)" */
+  rows.forEach(function (x) {
+    x.rev = rng(x.contents, 'REV|REP'); x.nw = rng(x.contents, 'NW|NP');
+    if (!x.rev && !x.nw) { var q = x.contents.match(/p[aá]rrafos\s+(\d+)\s+a\s+(\d+)/i); if (q) x.rev = { from: parseInt(q[1], 10), fromWord: '', to: parseInt(q[2], 10), toWord: '' }; }
+  });
 
   /* 5. Where the student stopped = last taught class; next = first class after it that is not done. */
   var last = -1;
@@ -174,6 +190,11 @@ function parsePlanTab(values, sheetName) {
         the words up to the last new word of the class where "LC k" is scheduled. */
   var bounds = [];
   rows.forEach(function (x) { var n = num(x.lc); if (n != null && x.nw) bounds.push({ lesson: n, endWord: x.nw.to }); });
+  /* Spanish tabs: the numbers in REP/NP are paragraphs, and the ER numbers do not follow the lessons, so the end of each lesson comes from the book's paragraph table. */
+  if (es && stage >= 1 && stage <= ES_STAGES_.length) {
+    bounds = [];
+    for (var L = ES_STAGES_[stage - 1][0]; L <= ES_STAGES_[stage - 1][1]; L++) bounds.push({ lesson: L, endWord: esLessonEnd_(L) });
+  }
   bounds.sort(function (a, b) { return a.lesson - b.lesson; });
   var lastNW = null;
   rows.forEach(function (x) { if (x.done && x.nw) lastNW = x.nw.to; });
@@ -202,7 +223,7 @@ function parsePlanTab(values, sheetName) {
   rows.forEach(function (x) { if (x.done && !x.conv && x.word && !/^[—–-]+$/.test(x.word)) wordRow = x; if (x.done && x.paragraph != null) parRow = x; });
   var pending = function (v) { return v !== '' && !dash.test(v); };
   return {
-    ok: true, sheetName: sheetName, stage: stage, students: students,
+    ok: true, sheetName: sheetName, stage: stage, lang: es ? 'es' : 'en', students: students,
     currentPosition: lastRow ? {
       classNumber: lastRow.cls, lesson: current, lessonFinished: finished, paragraph: parRow ? parRow.paragraph : null,
       lastWord: wordRow ? wordRow.word : '', lastNewWord: lastNW,
@@ -229,7 +250,7 @@ function parseOldLayout_(values, sheetName) {
   for (i = 0; i < values.length && h < 0; i++)
     for (j = 0; j < values[i].length; j++) if (/^last word taught$/i.test(norm(values[i][j]))) { h = i; w = j; break; }
   if (h < 0) return { ok: false, error: 'header-not-found', sheetName: sheetName };
-  var stage = null, m = String(sheetName).match(/(?:stage|stg|etapa)\s*(\d+)/i);
+  var stage = null, m = String(sheetName).match(/(?:stage|stg|etapa|etp)\s*(\d+)/i);
   if (m) stage = parseInt(m[1], 10);
   if (stage == null) for (i = 0; i < h; i++) for (j = 0; j < values[i].length; j++) { m = norm(values[i][j]).match(/stage\s*(\d+)/i); if (m && stage == null) stage = parseInt(m[1], 10); }
   var rows = [];
