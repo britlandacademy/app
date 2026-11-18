@@ -77,7 +77,9 @@ function open(uid,from){
   var fr=null;try{if(from&&from.getBoundingClientRect){fr=from.getBoundingClientRect();if(!(fr.width>0&&fr.height>0))fr=null;}}catch(e){}
   var prev=document.body.style.overflow;document.body.style.overflow='hidden';
   var closing=false;
-  function close(){if(closing)return;closing=true;document.removeEventListener('keydown',kd);document.body.style.overflow=prev;
+  function sfx(n){try{window.BLFX&&BLFX.snd&&BLFX.snd(n,.3);}catch(e){}}
+  sfx('open');
+  function close(){if(closing)return;closing=true;sfx('close');document.removeEventListener('keydown',kd);document.body.style.overflow=prev;
     var calm=document.documentElement.classList.contains('fx-off')||(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches);
     if(calm||!ov.animate){ov.remove();return;}
     var tg=pp.querySelector('.av'),back=null;
