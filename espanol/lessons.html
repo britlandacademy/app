@@ -215,6 +215,14 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 .par{position:relative;padding-right:46px;margin:14px 0 0}
 .par::before{content:"";position:absolute;right:18px;top:4px;bottom:4px;width:2px;background:var(--line);border-radius:2px}
 .par .pn{position:absolute;right:0;top:0;width:38px;height:26px;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:700;color:#310d10;background:#f5c542;border-radius:6px;font-variant-numeric:tabular-nums}
+.par{scroll-margin-top:var(--rvh,84px)}
+.par.rv{background:rgba(240,195,106,.10);border-left:4px solid var(--warn);padding-left:12px;margin-left:-16px;padding-top:6px;padding-bottom:8px;border-radius:0 8px 8px 0}
+.par.rv .pn{outline:2px solid var(--warn);outline-offset:1px}
+.rvbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:0 0 10px}
+.rvbar .chipx{background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn);border-radius:999px;padding:3px 12px;font-weight:800;font-size:.85rem}
+.rvbar small{color:var(--muted)}.rvbar .sp{flex:1}
+.rvbar button{background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;padding:6px 12px;font:inherit;font-weight:800;cursor:pointer;min-height:34px}
+.rvbar button.g{background:transparent;color:var(--ink);border:1px solid var(--line)}
 .par>:first-child{margin-top:0}
 .par{scroll-margin-top:84px}
 .missing{padding:12px 14px;background:var(--warn-bg);color:var(--warn);border-radius:3px}
@@ -339,6 +347,32 @@ function fillLessons(n){
   const t=STAGES.find(x=>x.n===n);lsSel.textContent='';
   for(let i=t.from;i<=Math.min(t.to,UPTO);i++)lsSel.append(el('option',{value:String(i)},'Lección '+i));
 }
+/* Repaso del dia (enlace del panel del profesor): ?rv=103-111&w=palabra&p=68&who=Nombre&n=11 */
+const RV=(function(){try{const q=new URLSearchParams(location.search),m=/^(\d+)-(\d+)$/.exec(q.get('rv')||''),ml=/^(\d+)-(\d+)$/.exec(q.get('rl')||'');
+  let A=null,B=null;
+  if(m){A=+m[1];B=+m[2];}
+  else if(ml&&window.PARANUM){/* repaso por LECCIONES: convierte al intervalo de parrafos */
+    const l1=+ml[1],l2=+ml[2];let lo=1e9,hi=0;
+    for(let l=l1;l<=l2;l++)(PARANUM[l]||[]).forEach(x=>{if(+x[0]<lo)lo=+x[0];if(+x[0]>hi)hi=+x[0];});
+    if(hi){A=lo;B=hi;}}
+  if(A==null)return null;
+  return {a:A,b:B,w:q.get('w')||'',p:q.get('p')||'',who:q.get('who')||'',n:q.get('n')||''};}catch(e){return null;}})();
+const PLES=(function(){const r={};if(window.PARANUM)for(const k in PARANUM)PARANUM[k].forEach(x=>{if(r[x[0]]==null)r[x[0]]=+k;});return r;})();
+function rvApply(){
+  const old=document.getElementById('rvbar');if(old)old.remove();if(!RV)return;
+  out.querySelectorAll('.par').forEach(sc=>{const n=+((sc.querySelector('.pn')||{}).textContent);if(n>=RV.a&&n<=RV.b)sc.classList.add('rv');});
+  const l1=PLES[RV.a],l2=PLES[RV.b],tot=RV.b-RV.a+1;
+  const bar=el('div',{class:'rvbar',id:'rvbar',role:'region','aria-label':'Repaso de hoy'},
+    el('span',{class:'chipx'},'REP '+RV.a+'\u2013'+RV.b),
+    el('small',{},tot+' p\u00e1rrafos'+(l1?' \u00b7 '+(l2&&l2!==l1?'lecciones '+l1+' y '+l2:'lecci\u00f3n '+l1):'')+(RV.who?' \u00b7 '+RV.who+(RV.n?' \u00b7 clase n.\u00ba '+RV.n:''):'')),
+    RV.w?el('span',{class:'chipx',style:'background:transparent'},'\u00daltima palabra ense\u00f1ada: '+RV.w+(RV.p?' \u00b7 p\u00e1rr. '+RV.p:'')):null,
+    el('span',{class:'sp'}),
+    el('button',{type:'button',class:'g',onclick:()=>{if(l1&&l1!==cur)show(l1,true);const f=out.querySelector('.par.rv');if(f)f.scrollIntoView({behavior:'smooth',block:'start'});}},'Ir al p\u00e1rr. '+RV.a),
+    el('button',{type:'button',onclick:()=>{if(cur<HI)show(cur+1);}},'Pr\u00f3xima lecci\u00f3n \u2192'));
+  out.parentNode.insertBefore(bar,out);
+  const fit=()=>{const g=document.querySelector('.g-top,.g-bar');const h=g?Math.ceil(g.getBoundingClientRect().bottom):0;const top=Math.max(0,h+6);bar.style.top=top+'px';document.documentElement.style.setProperty('--rvh',(top+bar.offsetHeight+12)+'px');};
+  fit();setTimeout(fit,400);setTimeout(fit,1500);addEventListener('resize',fit);
+}
 function show(id,noscroll){
   cur=id;const t=stageOf(id),n=t.n;
   stSel.value=String(n);fillLessons(n);lsSel.value=String(id);
@@ -352,13 +386,16 @@ function show(id,noscroll){
   prevs.forEach(b=>{b.disabled=id<=LO;});nexts.forEach(b=>{b.disabled=id>=HI;});
   try{localStorage.setItem('callan-lesson-last-es',String(id));}catch(e){}
   if(!noscroll)window.scrollTo({top:0});
+  rvApply();
   if(window.LSearch)LSearch.after();
 }
 stSel.addEventListener('change',()=>show(STAGES.find(t=>t.n===+stSel.value).from));
 lsSel.addEventListener('change',()=>show(+lsSel.value));
 prevs.forEach(b=>b.addEventListener('click',()=>{if(cur>LO)show(cur-1);}));
 nexts.forEach(b=>b.addEventListener('click',()=>{if(cur<HI)show(cur+1);}));
+if(RV&&PLES[RV.a]&&PLES[RV.a]>=LO&&PLES[RV.a]<=HI)cur=PLES[RV.a];
 show(cur,true);
+if(RV){setTimeout(()=>{const f=out.querySelector('.par.rv');if(f)f.scrollIntoView({block:'start'});},60);}
 let ALLP=null;
 if(window.LSearch)LSearch.init({out:out,cur:()=>cur,show:show,stageOf:id=>stageOf(id).n,stages:STAGES,lessonWord:'Lección',stageWord:'Etapa',parWord:'párrafo',para:parList,
   fetchAll:()=>{if(ALLP)return ALLP;ALLP=Gate.sb.from('content').select('lesson,body').eq('kind','text').gte('lesson',1).lte('lesson',UPTO).order('lesson',{ascending:true}).then(r=>{if(r.error||!r.data)throw r.error;const m={};r.data.forEach(x=>{m[x.lesson]=x.body;});return m;}).catch(()=>{ALLP=null;return Object.assign({},window.LESSON_TEXT||{});});return ALLP;},

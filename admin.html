@@ -361,7 +361,7 @@ function renderPend(){
   list.forEach(p=>{
     const n=el('input',{type:'number',min:'0',max:String(MAXC[crsOf(p)]),value:crsOf(p)==='es'?'16':'12','aria-label':'Liberar até a Lesson, '+p.name});
     tb.append(el('tr',{},el('td',{},cvThumb(n,p.name||'(sem nome)')),el('td',{},p.email),el('td',{},fmt(p.created_at)),
-      el('td',{},el('div',{class:'row',style:'margin:0'},'Liberar até '+(crsOf(p)==='es'?'a Lección ':'a Lesson '),n,' ',stageSel(n,crsOf(p)),' ',
+      el('td',{},el('div',{class:'row',style:'margin:0'},(function(){const cs=el('select',{'aria-label':'Curso de '+(p.name||p.email)},el('option',{value:'en'},'Inglês'),el('option',{value:'es'},'Espanhol'));cs.value=crsOf(p);cs.addEventListener('change',()=>{cs.disabled=true;update(p.id,{course:cs.value},'bulkmsg').catch(()=>{cs.disabled=false;cs.value=crsOf(p);});});return cs;})(),' ','Liberar até '+(crsOf(p)==='es'?'a Lección ':'a Lesson '),n,' ',stageSel(n,crsOf(p)),' ',
         el('button',{type:'button',onclick:()=>{const ap=()=>update(p.id,{status:'approved',lessons_upto:clampN(n.value,crsOf(p))});if(window.ContractAdmin&&ContractAdmin.on())ContractAdmin.open({el:el,sb:sb,profile:p,approve:ap,reload:loadProfiles});else ap();}},'Aprovar'),
         el('button',{type:'button',class:'danger',onclick:()=>update(p.id,{status:'blocked'})},'Recusar')))));
   });

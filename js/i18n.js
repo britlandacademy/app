@@ -189,7 +189,7 @@ var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they 
 ['Student Area - Teacher Paulo Cruz','Área do Aluno - Prof. Paulo Cruz','Área del Alumno - Prof. Paulo Cruz'],
 ['Callan Method · Teacher: Paulo S. Cruz','Método Callan · Professor: Paulo S. Cruz','Método Callan · Profesor: Paulo S. Cruz'],
 ['First time here? Fill in the form. Your teacher will approve your access.','Primeira vez aqui? Preencha o formulário. Seu professor vai aprovar o seu acesso.','¿Primera vez aquí? Rellena el formulario. Tu profesor aprobará tu acceso.'],
-['Your name','Seu nome','Tu nombre'],
+['Your name','Seu nome','Tu nombre'],['Date of birth','Data de nascimento','Fecha de nacimiento'],
 ['E-mail','E-mail','Correo electrónico'],
 ['Password','Senha','Contraseña'],
 ['Choose a password (at least 6 characters)','Escolha uma senha (mínimo de 6 caracteres)','Elige una contraseña (mínimo 6 caracteres)'],
@@ -258,7 +258,7 @@ var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they 
 /* ---- top bar ---- */
 ['Signed in:','Conectado:','Sesión iniciada:'],
 ['Home','Início','Inicio'],
-['Spanish app','App em espanhol','App en español'],
+['Privacy','Privacidade','Privacidad'],['Spanish app','App em espanhol','App en español'],
 ['English app','App em inglês','App en inglés'],
 ['Teacher panel','Painel do professor','Panel del profesor'],
 ['Text size {0}/{1}','Tamanho do texto {0}/{1}','Tamaño del texto {0}/{1}'],
