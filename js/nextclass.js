@@ -1,7 +1,7 @@
 /* Teacher panel · "Próxima aula" card: review, where they stopped, what is taught today, difficulties, reinforcement, attendance. */
 (function(W){
 'use strict';
-var D=document,ZOOM='https://us06web.zoom.us/j/2447679341',TZ='America/Sao_Paulo',CACHE={};
+var D=document,ZOOM='https://us06web.zoom.us/j/2447679341',ZOOM_REV='https://us06web.zoom.us/j/2447679341?pwd=U0xuSmU0ek15MGlEd0phWHdoMllUUT09',ZOOM_NW='https://us05web.zoom.us/j/5570483003?pwd=ChsyesNjuUJ598ysbcNtwynWBLzxEv.1',TZ='America/Sao_Paulo',CACHE={};
 function el(t,c,x){var e=D.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
 function add(p){for(var i=1;i<arguments.length;i++){var c=arguments[i];if(c==null)continue;p.appendChild(typeof c==='string'?D.createTextNode(c):c);}return p;}
 function css(){if(D.getElementById('nc-css'))return;var s=el('style');s.id='nc-css';s.textContent=
@@ -16,6 +16,7 @@ function css(){if(D.getElementById('nc-css'))return;var s=el('style');s.id='nc-c
 '.nc .nc-tg input{width:58px;min-height:34px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);padding:0 6px}'+
 '.nc .nc-chip{display:inline-block;border:2px solid var(--line);border-radius:12px;padding:6px 12px;margin:3px 6px 3px 0;background:var(--surface);color:var(--ink);font-weight:700;font-size:.86rem;min-height:0}.nc .nc-chip.on{border-color:var(--accent);background:var(--card)}'+
 '.nc .nc-foot{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-top:1px solid var(--line);padding-top:10px}.nc .nc-foot .sp{flex:1}.nc .nc-msg{color:var(--muted);font-size:.84rem}'+
+'.nc-toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:99999;display:flex;align-items:center;gap:10px;max-width:min(92vw,420px);padding:12px 18px;border-radius:99px;background:var(--card,#10224a);color:var(--ink,#f2f5fa);border:1px solid var(--line,#27407a);border-top:3px solid var(--accent,#c9a13b);box-shadow:0 12px 36px rgba(0,0,0,.5);font-weight:700;cursor:pointer;transition:opacity .3s}.nc-toast.out{opacity:0}.nc-toast-ic{display:inline-flex;width:30px;height:30px;border-radius:50%;background:var(--accent,#c9a13b);color:var(--accent-ink,#1a1405);align-items:center;justify-content:center;flex:none}'+
 '.nc a.nc-btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 16px;border-radius:12px;font-weight:700;text-decoration:none;border:2px solid var(--accent);color:var(--accent)}.nc a.nc-btn.go{background:var(--accent);color:var(--accent-ink)}';
 s.textContent+='.nc-atr{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn);border-radius:12px;padding:8px 12px;margin:0 0 10px;font-size:.88rem}.nc-atr b{font-weight:800}.nc-atr span{opacity:.9}.nc-reg{margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);display:grid;gap:8px}.nc-rw{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.nc-reg input[type=text],.nc-reg input[type=number]{min-height:38px;padding:4px 10px;border:1px solid var(--line);border-radius:10px;background:transparent;color:inherit;font:inherit;min-width:0}.nc-ck{display:flex;align-items:center;gap:4px;font-size:.88rem}';
 s.textContent+='.ag2 .ag2-it.ag2-hol{border:2px solid var(--warn);border-left-width:4px}.ag2 .ag2-holband{background:var(--warn-bg);color:var(--warn);font-weight:800;font-size:.82rem;padding:6px 12px;border-bottom:1px solid var(--warn)}';
@@ -107,15 +108,51 @@ function render(box,ev,deps,opts){opts=opts||{};
     if(sub.length){var sd=el('div','nc-sub',sub.join(' · '));if(tzs.length&&d.uids.length===1){sd.textContent='';sd.appendChild(document.createTextNode(sub.slice(0,-1).join(' · ')+(sub.length>1?' · ':'')));var tb=el('b',null,sub[sub.length-1]);tb.style.color='var(--warn)';sd.appendChild(tb);}hd.appendChild(sd);}
     top.appendChild(hd);top.appendChild(el('span','sp'));
     if(sid){var sa=el('a','nc-btn','Abrir planilha');sa.href='https://docs.google.com/spreadsheets/d/'+sid+'/edit'+(gid?'#gid='+gid:'');sa.target='_blank';sa.rel='noopener';top.appendChild(sa);}
-    var zUrl=zoomApp(meet),za=el('a','nc-btn go','Entrar na aula');za.href=zUrl;if(!/^zoommtg:/.test(zUrl)){za.target='_blank';za.rel='noopener';}
-    /* clique: abre a revisão (livro) no monitor auxiliar e abre o Zoom pelo app (equivale a "start zoommtg://...") */
-    za.addEventListener('click',function(e){
-      if(!/^zoommtg:/.test(zUrl)){try{openRevision(null);}catch(x){}return;}
-      e.preventDefault();
-      var launch=function(){var h=document.createElement('a');h.href=zUrl;h.style.display='none';document.body.appendChild(h);h.click();setTimeout(function(){h.remove();},500);};
+    /* botao de 2 etapas: copia o convite da Revision -> entra -> (30 min) copia o convite do New Work -> entra */
+    var isMeet=/meet\.google\.com/.test(String(meet||'')),zRev=zoomApp(ZOOM_REV),zNw=zoomApp(ZOOM_NW),za=el('a','nc-btn go','Copiar 1º link (REV)'),skey='blnc:'+d.key+':'+ev.start_at,stt={s:0,t:0};
+    try{stt=JSON.parse(localStorage.getItem(skey)||'')||stt;}catch(e){stt={s:0,t:0};}
+    function saveSt(){try{localStorage.setItem(skey,JSON.stringify(stt));}catch(e){}}
+    /* estados: 0 copiar REV, 1 entrar REV, 2 dentro da REV (espera 30 min), 3 copiar NW (w=1) ou 4 entrar NW */
+    function lab2(){if(stt.s===2&&Date.now()-stt.t>=30*6e4){stt.s=3;saveSt();}
+      if(isMeet){za.textContent=stt.s===0?'Copiar link da aula':'Entrar na aula';return;}
+      za.textContent=[ 'Copiar 1º link (REV)','Entrar Revision','Entrar Revision','Copiar 2º link (NW)','Entrar New Work'][stt.s]||'Copiar 1º link (REV)';}
+    za.href='#';za.setAttribute('role','button');lab2();
+    var tk=setInterval(function(){if(!za.isConnected){clearInterval(tk);return;}lab2();},20000);
+    function crs0(){var pc=deps.profiles().filter(function(x){return x.id===d.uids[0];})[0];return (pc&&pc.course)==='es'?'es':'en';}
+    function firstNames(){var ns=d.uids.map(function(u){return String(name(u)).trim().split(/\s+/)[0];}),es=crs0()==='es';
+      return ns.length<2?ns[0]||'':ns.slice(0,-1).join(', ')+(es?' y ':' and ')+ns[ns.length-1];}
+    function invite(kind){var es=crs0()==='es',pc=deps.profiles().filter(function(x){return x.id===d.uids[0];})[0],tz=(pc&&pc.tz)||TZ,h;
+      try{h=+new Intl.DateTimeFormat('en-GB',{hour:'2-digit',hourCycle:'h23',timeZone:tz}).format(new Date());}catch(e){h=new Date().getHours();}
+      var gr=es?(h<12?'Buenos días':h<19?'Buenas tardes':'Hola'):(h<12?'Good morning':h<18?'Good afternoon':'Hello');
+      var rg=function(x){return x&&x.from!=null?(x.from===x.to||x.to==null?String(x.from):x.from+'–'+x.to):'';};
+      var dt=new Date().toLocaleDateString(es?'es':'en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:TZ});
+      if(isMeet){var r0=rg(nx&&nx.review),n0=rg(nx&&nx.newWords);
+        return es?gr+', '+firstNames()+'. Aquí tienes el enlace de nuestra clase'+(r0?': Repaso (párrafos '+r0+')':'')+(n0?(r0?' + ':': ')+'Parte nueva (párrafos '+n0+')':'')+' ('+dt+') '+meet
+                 :gr+', '+firstNames()+'. Here\'s the link to our lesson'+(r0?': Revision (paragraphs '+r0+')':'')+(n0?(r0?' + ':': ')+'New Work (paragraphs '+n0+')':'')+' ('+dt+') '+meet;}
+      if(kind==='rev'){var r=rg(nx&&nx.review);
+        return es?gr+', '+firstNames()+'. Aquí tienes el enlace de nuestra clase: Repaso'+(r?' (párrafos '+r+')':'')+' ('+dt+') '+ZOOM_REV
+                 :gr+', '+firstNames()+'. Here\'s the link to our lesson: Revision'+(r?' (paragraphs '+r+')':'')+' ('+dt+') '+ZOOM_REV;}
+      var n=rg(nx&&nx.newWords);
+      return es?'Aquí tienes el enlace para la PARTE NUEVA'+(n?' (párrafos '+n+')':'')+': '+ZOOM_NW
+               :'Here\'s the link for the NEW WORK'+(n?' (paragraphs '+n+')':'')+' link: '+ZOOM_NW;}
+    function copyTxt(t){
+      if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(t);
+      return new Promise(function(ok,no){try{var ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();var r=document.execCommand('copy');ta.remove();r?ok():no();}catch(e){no(e);}});}
+    function toast(){var o=document.querySelector('.nc-toast');if(o)o.remove();
+      var t=el('div','nc-toast'),ic=el('span','nc-toast-ic');ic.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+      t.setAttribute('role','status');t.appendChild(ic);t.appendChild(el('span',null,'Convite copiado para a área de transferência'));document.body.appendChild(t);
+      t.addEventListener('click',function(){t.remove();});setTimeout(function(){t.classList.add('out');setTimeout(function(){t.remove();},300);},4000);}
+    function launch(u){var h=document.createElement('a');h.href=u;h.style.display='none';document.body.appendChild(h);h.click();setTimeout(function(){h.remove();},500);}
+    za.addEventListener('click',function(e){e.preventDefault();
+      if(isMeet&&stt.s===1){screens().then(function(sc){if(sc){try{openRevision(sc);}catch(x){}}window.open(meet,'_blank','noopener');});return;}
+      if(stt.s===0||stt.s===3){var k=stt.s===0?'rev':'nw';
+        copyTxt(invite(k)).then(function(){stt.s=isMeet?1:stt.s===0?1:4;saveSt();lab2();toast();},function(){if(window.BL_DLG)BL_DLG.alert('Não consegui copiar o convite. Tente de novo.',{title:'Não copiou'});});return;}
+      if(stt.s===4){launch(zNw);return;}
+      /* entrar na Revision: abre o livro de revisão no monitor principal e o Zoom pelo app */
+      if(stt.s===1){stt.s=2;stt.t=Date.now();saveSt();lab2();}
       screens().then(function(sc){
-        if(sc){try{openRevision(sc);}catch(x){}launch();}
-        else{launch();if(window.BL_DLG)BL_DLG.alert('Não consegui posicionar o livro no monitor principal (o acesso à posição das janelas foi negado ou o navegador não oferece). Abri só o Zoom. Para o livro abrir sozinho no monitor principal, permita "Gerenciar janelas" quando o navegador perguntar.',{title:'Só o Zoom foi aberto'});}
+        if(sc){try{openRevision(sc);}catch(x){}launch(zRev);}
+        else{launch(zRev);if(window.BL_DLG)BL_DLG.alert('Não consegui posicionar o livro no monitor principal (o acesso à posição das janelas foi negado ou o navegador não oferece). Abri só o Zoom. Para o livro abrir sozinho no monitor principal, permita "Gerenciar janelas" quando o navegador perguntar.',{title:'Só o Zoom foi aberto'});}
       });
     });
     /* revisao do dia em outra aba: 3a edicao = Lessons do app (parágrafo); 2a edicao = livro do professor (PDF privado) na página */
