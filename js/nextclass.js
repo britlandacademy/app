@@ -132,16 +132,16 @@ function render(box,ev,deps,opts){opts=opts||{};
         var mm=/\bREV\s+(\d+)\s*-\s*(\d+)/i.exec(String((nx&&(nx.contents||nx.activity))||''));if(!mm||/2nd/i.test(sh))return;rl=mm[1]+'-'+mm[2];rv={from:0,to:0};}
       var pc0=deps.profiles().filter(function(x){return x.id===d.uids[0];})[0],crs=(pc0&&pc0.course)==='es'?'es':'en',sm=/(?:stage|stg|etapa)\s*(\d+)/i.exec(sh),stg=+(fd.stage||(sm?sm[1]:0)),from=+rv.from,to=rv.to!=null?+rv.to:from,
           who=String(name(d.uids[0])).trim().split(/\s+/)[0],enc=encodeURIComponent,w=cp.lastWord||(first&&first.last_word)||'',par=cp.paragraph||cp.lastNewWord||'';
-      if(!/2nd/i.test(sh)){
+      if(!/2nd/i.test(sh)&&crs!=='es'){
         revWin((crs==='es'?'espanol/':'')+'lessons.html?stage='+stg+(rl?'&rl='+rl:'&rv='+from+'-'+to)+'&w='+enc(w)+'&p='+enc(par)+'&who='+enc(who)+'&n='+enc(nx.classNumber||''),ts);return;}
       var T=window.BL_TBOOK,file=T&&T.file(stg,crs),page=T&&T.pageFor(stg,from,crs);
       var win=revWin('about:blank',ts);if(!win)return;
       var say=function(t){try{win.document.body.style.cssText='font:16px system-ui;padding:24px;background:#0b1733;color:#f3f4f6';win.document.body.textContent=t;}catch(e){}};
-      if(!file){say('O livro do professor do Stage '+stg+' (2ª edição) ainda não está disponível no app.');return;}
+      if(!file){say('O livro do professor da '+(crs==='es'?'Etapa ':'Stage ')+stg+(crs==='es'?'':' (2ª edição)')+' ainda não está disponível no app.');return;}
       say('Abrindo o livro do professor, p. '+page+'…');
       deps.sb.storage.from('teacher-books').createSignedUrl(file,3600).then(function(r){
         if(r&&r.data&&r.data.signedUrl){win.location.href=r.data.signedUrl+'#page='+page;}
-        else say('O livro do Stage '+stg+' ainda não foi enviado. Painel → Conteúdo → Livros do professor (2ª edição).');
+        else say('O livro da '+(crs==='es'?'Etapa ':'Stage ')+stg+' ainda não foi enviado. Painel → Conteúdo → Livros do professor'+(crs==='es'?'.':' (2ª edição).'));
       },function(){say('Não consegui abrir o livro do professor agora.');});
     }top.appendChild(za);wrap.appendChild(top);
     /* three boxes */

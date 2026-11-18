@@ -564,7 +564,10 @@ function addBar(){
   if(window.I18N)mn.append(el('div',{class:'g-mr'},ico('globe'),el('span',{},'Language'),window.I18N.selector('ui')));
   (function(){try{localStorage.setItem(COURSE.id==='es'?'bl-has-es':'bl-has-en','1');}catch(e){}})();
   if(prof.is_admin&&/\/admin(\.html)?\/?$/.test(location.pathname))mn.append(mi('home','Student home',{href:'index.html?aluno=1'}));
-  if(prof.is_admin)mn.append(mi('panel','Teacher panel',{href:'admin.html'}));
+  if(prof.is_admin)(function(){var es=COURSE.id==='es',sw=el('button',{type:'button',class:'g-sw'+(es?' on':''),role:'switch','aria-checked':String(es),'aria-label':'Spanish app'},el('u'));
+    sw.addEventListener('click',function(){var to=!sw.classList.contains('on');sw.classList.toggle('on',to);sw.setAttribute('aria-checked',String(to));setTimeout(function(){location.href=to?(es?'index.html?aluno=1':'espanol/index.html?aluno=1'):(es?'../index.html?aluno=1':'index.html?aluno=1');},220);});
+    mn.append(el('div',{class:'g-mr'},ico('globe'),el('span',{},'Spanish app'),sw));})();
+  if(prof.is_admin)mn.append(mi('panel','Teacher panel',{href:COURSE.id==='es'?'../admin.html':'admin.html'}));
   if(prof.is_admin)mn.append(mi('panel','Loading test',{href:(window.BL_BASE||'')+'loadtest.html'}));
   mn.append(mi('help','Help',{onclick:function(){open(false);showHelp();}}),mi('out','Sign out',{class:'g-mi out',onclick:signOut}));
   mn.querySelectorAll('a.g-mi').forEach(function(a){a.addEventListener('click',function(){open(false);});});

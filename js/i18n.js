@@ -258,6 +258,8 @@ var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they 
 /* ---- top bar ---- */
 ['Signed in:','Conectado:','Sesión iniciada:'],
 ['Home','Início','Inicio'],
+['Spanish app','App em espanhol','App en español'],
+['English app','App em inglês','App en inglés'],
 ['Teacher panel','Painel do professor','Panel del profesor'],
 ['Text size {0}/{1}','Tamanho do texto {0}/{1}','Tamaño del texto {0}/{1}'],
 ['Smaller text','Texto menor','Texto más pequeño'],

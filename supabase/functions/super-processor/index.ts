@@ -22,20 +22,32 @@ const MISS = [
   (n: string) => `Oi, ${n}! Seu curso continua aqui esperando você. Que tal um exercício hoje?`,
 ];
 function build(r: any) {
+  const U = r.base || "/app/";
   const n = r.first_name || "aluno", s = (r.days || 0) + n.length;
   const T = "Britland Academy";
   switch (r.kind) {
-    case "idle": return { title: T, body: ((r.days || 0) >= 7 ? pick(MISS, s) : pick(IDLE, s))(n), url: "/app/" };
-    case "exam": return { title: T, body: `${n}, sua prova já está disponível. Boa sorte! 🍀`, url: "/app/" };
-    case "grade": return { title: T, body: `${n}, o resultado da sua prova saiu. Venha ver! 🎉`, url: "/app/" };
-    case "lesson1h": return { title: T, body: `${n}, sua aula começa em 1 hora (${r.info}). Até já! 🦁`, url: "/app/", tag: "lesson" };
-    case "lessonday": return { title: T, body: `Lembrete: você tem aula amanhã às ${r.info}.`, url: "/app/", tag: "lesson" };
-    case "birthday": return { title: T, body: `Feliz aniversário, ${n}! 🎂🦁`, url: "/app/" };
-    case "streak": return { title: T, body: `${n}, sua sequência de ${r.info} dias termina hoje à noite! 5 minutos bastam 🔥`, url: "/app/" };
-    case "newlesson": return { title: T, body: `Nova lição liberada: Lição ${r.info} 🎉`, url: "/app/" };
-    default: return { title: T, body: `${n}, lembrete: sua mensalidade vence em 2 dias. Você já enviou o comprovante de pagamento para o professor?`, url: "/app/" };
+    case "idle": return { title: T, body: ((r.days || 0) >= 7 ? pick(MISS, s) : pick(IDLE, s))(n), url: U };
+    case "exam": return { title: T, body: `${n}, sua prova já está disponível. Boa sorte! 🍀`, url: U };
+    case "grade": return { title: T, body: `${n}, o resultado da sua prova saiu. Venha ver! 🎉`, url: U };
+    case "lesson1h": return { title: T, body: `${n}, sua aula começa em 1 hora (${r.info}). Até já! 🦁`, url: U, tag: "lesson" };
+    case "lessonday": return { title: T, body: `Lembrete: você tem aula amanhã às ${r.info}.`, url: U, tag: "lesson" };
+    case "birthday": return { title: T, body: `Feliz aniversário, ${n}! 🎂🦁`, url: U };
+    case "streak": return { title: T, body: `${n}, sua sequência de ${r.info} dias termina hoje à noite! 5 minutos bastam 🔥`, url: U };
+    case "newlesson": return { title: T, body: `Nova lição liberada: Lição ${r.info} 🎉`, url: U };
+    default: return { title: T, body: `${n}, lembrete: sua mensalidade vence em 2 dias. Você já enviou o comprovante de pagamento para o professor?`, url: U };
   }
 }
+
+// curso de cada aluno (en/es): a notificação abre o app certo e o e-mail de aniversário sai no idioma do curso
+async function courseMap(ids: string[]) {
+  const m = new Map<string, string>();
+  const u = [...new Set(ids.filter(Boolean))];
+  if (!u.length) return m;
+  const { data } = await sb.from("profiles").select("id,course").in("id", u);
+  for (const p of data || []) m.set(p.id, p.course === "es" ? "es" : "en");
+  return m;
+}
+const baseOf = (m: Map<string, string>, id: string) => (m.get(id) === "es" ? "/app/espanol/" : "/app/");
 
 async function send(r: any, payload: any, ttl = 3600) {
   try {
@@ -82,7 +94,8 @@ async function sendBirthdayEmails() {
   const year = String(new Date(Date.now() - 3 * 3600_000).getUTCFullYear());
   for (const r of rows) {
     try {
-      const m = birthdayMail(r.first_name, Deno.env.get("MAIL_LANG") || "pt");
+      const cm = await courseMap([r.user_id]);
+      const m = birthdayMail(r.first_name, cm.get(r.user_id) === "es" ? "es" : (Deno.env.get("MAIL_LANG") || "pt"));
       await client.send({ from: Deno.env.get("MAIL_FROM") || user, to: r.email, subject: m.subject, content: m.text, html: m.html });
       await sb.from("notif_log").insert({ user_id: r.user_id, kind: "birthday_email", ref: year });
       sent++;
@@ -108,7 +121,10 @@ Deno.serve(async (req) => {
     // mensagens avulsas para alunos (pedido aprovado/recusado, aula remarcada/cancelada)
     let msgs = 0;
     const sm = await sb.rpc("take_student_msgs");
-    for (const r of sm.data || []) msgs += await send(r, { title: "Britland Academy", body: r.mbody, url: r.murl || "/app/", tag: "msg-" + r.mid }, 86400);
+    const { data: pss } = await sb.from("push_subs").select("endpoint,user_id").in("endpoint", (sm.data || []).map((r: any) => r.endpoint));
+    const epUser = new Map<string, string>((pss || []).map((p: any) => [p.endpoint, p.user_id]));
+    const cmm = await courseMap([...epUser.values()]);
+    for (const r of sm.data || []) msgs += await send(r, { title: "Britland Academy", body: r.mbody, url: r.murl || baseOf(cmm, epUser.get(r.endpoint) || ""), tag: "msg-" + r.mid }, 86400);
     return out({ events: (data || []).length, sent, msgs, msgErr: sm.error?.message || null });
   }
 
@@ -116,7 +132,8 @@ Deno.serve(async (req) => {
     const { data, error } = await sb.rpc("due_student_events");
     if (error) return new Response(error.message, { status: 500 });
     const rows = data || [], flags: number[] = [];
-    for (const r of rows) flags.push(await send(r, build(r), r.kind === "lesson1h" ? 3000 : 3600));
+    const cm = await courseMap(rows.map((r: any) => r.user_id));
+    for (const r of rows) { r.base = baseOf(cm, r.user_id); flags.push(await send(r, build(r), r.kind === "lesson1h" ? 3000 : 3600)); }
     await logSent(rows, flags);
     let mail: unknown = null;
     try { mail = await sendBirthdayEmails(); } catch (e) { mail = { error: String(e) }; }
@@ -126,13 +143,15 @@ Deno.serve(async (req) => {
   const { data, error } = await sb.rpc("due_reminders");
   if (error) return new Response(error.message, { status: 500 });
   const rows = data || [], flags: number[] = [];
-  for (const r of rows) flags.push(await send(r, build(r)));
+  const cm = await courseMap(rows.map((r: any) => r.user_id));
+  for (const r of rows) { r.base = baseOf(cm, r.user_id); flags.push(await send(r, build(r))); }
   await logSent(rows, flags);
   let ranks = 0;
   const rk = await sb.rpc("rank_events");
   const seen = new Set<string>();
+  const cmr = await courseMap((rk.data || []).map((r: any) => r.user_id));
   for (const r of rk.data || []) {
-    const ok = await send(r, { title: "Britland Academy", body: r.passer + " acabou de passar você no ranking de sequência 🦁 Hora de correr atrás!", url: "/app/", tag: "rank" });
+    const ok = await send(r, { title: "Britland Academy", body: r.passer + " acabou de passar você no ranking de sequência 🦁 Hora de correr atrás!", url: baseOf(cmr, r.user_id), tag: "rank" });
     ranks += ok;
     if (ok && !seen.has(r.user_id)) { seen.add(r.user_id); await sb.from("notif_log").insert({ user_id: r.user_id, kind: "rank", ref: "" }); }
   }
