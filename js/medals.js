@@ -9,7 +9,7 @@ var ES=/\/espanol\//.test(location.pathname),L=ES?1:0;
 var STG=((window.BL_COURSE&&BL_COURSE.stages)||(ES?[[1,16],[17,32],[33,52],[53,72],[73,92],[93,112]]:[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[139,156],[157,174],[175,190],[191,206]])).filter(function(r){return r[0]<1000;});
 function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function el(t,c,x){var n=document.createElement(t);if(c)n.className=c;if(x!==undefined&&x!==null)n.textContent=x;return n;}
-var STR={unlocked:['Conquista desbloqueada','Logro desbloqueado'],earned:['Conquistada em ','Conseguida el '],notyet:['Ainda não conquistada','Aún sin conseguir'],secret:['Medalha secreta. Continue estudando para descobrir.','Medalla secreta. Sigue estudiando para descubrirla.'],snd:['Achievement sound','Sonido de logros'],on:['on','activado'],off:['off','desactivado'],next:['Next medal','Próxima medalla'],g:{class:['Class','Clase'],streak:['Streaks','Constancia'],checks:['Lesson Checks','Lesson Checks'],ex:['Exercises','Ejercicios'],stages:['Stages','Etapas'],special:['Special','Especiales'],game:['Game Mode','Modo Juego'],secret:['Secret','Secretas']}};
+var STR={unlocked:['Conquista desbloqueada','Logro desbloqueado'],earned:['Conquistada em ','Conseguida el '],notyet:['Ainda não conquistada','Aún sin conseguir'],secret:['Medalha secreta. Continue estudando para descobrir.','Medalla secreta. Sigue estudiando para descubrirla.'],snd:['Achievement sound','Sonido de logros'],on:['on','activado'],off:['off','desactivado'],next:['Next medal','Próxima medalla'],g:{class:['Class','Clase'],streak:['Streaks','Constancia'],checks:['Lesson Checks','Ejercicios de repaso'],ex:['Exercises','Ejercicios'],stages:['Stages','Etapas'],special:['Special','Especiales'],game:['Game Mode','Modo Juego'],secret:['Secret','Secretas']}};
 function s(k){return STR[k][L];}
 /* ---------- icons (24x24 line paths) ---------- */
 /* ---------- medal art: metallic medallion with ribbon (style A), tier gradients, detailed two-tone icons ---------- */
@@ -131,6 +131,12 @@ M('coteacher','class','b','Co-Teacher','Co-profesor','Sua primeira sugestão. Ob
 M('reviewer10','class','b','Class Reviewer','Revisor de clase','Avalie suas aulas por completo (I can + nota + motivo). Medalha difícil de conseguir.','Valora tus clases por completo (I can + nota + motivo). Medalla difícil de conseguir.','chat',function(S){return S.rev;},10);
 M('reviewer30','class','s','Class Reviewer','Revisor de clase','Avalie suas aulas por completo (I can + nota + motivo). Medalha difícil de conseguir.','Valora tus clases por completo (I can + nota + motivo). Medalla difícil de conseguir.','chat',function(S){return S.rev;},30);
 M('reviewer100','class','g','Class Reviewer','Revisor de clase','Avalie suas aulas por completo (I can + nota + motivo). Medalha difícil de conseguir.','Valora tus clases por completo (I can + nota + motivo). Medalla difícil de conseguir.','chat',function(S){return S.rev;},100);
+/* Spanish course: the book calls them "Ejercicios de repaso" (not Lesson Checks); Workbook is not in the Spanish app */
+if(ES){
+  for(var wi=CAT.length-1;wi>=0;wi--)if(CAT[wi].id==='workbook'||CAT[wi].id==='wb10')CAT.splice(wi,1);
+  var rp=function(t){return String(t).replace(/Primer check/g,'Primer ejercicio de repaso').replace(/^(\d+) checks$/,'$1 ejercicios de repaso').replace(/primer Lesson Check/g,'primer ejercicio de repaso').replace(/un Lesson Check/g,'un ejercicio de repaso').replace(/Lesson Checks/g,'ejercicios de repaso').replace(/Lesson Check/g,'ejercicio de repaso');};
+  CAT.forEach(function(c){c.n[1]=rp(c.n[1]);c.h[1]=rp(c.h[1]);});
+}
 var BYID={};CAT.forEach(function(m){BYID[m.id]=m;});
 /* ---------- statistics ---------- */
 function pc(a){return a.total?a.score/a.total:0;}

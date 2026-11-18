@@ -19,16 +19,17 @@ function stats(att,kind,n,upto){
   var lo=STG[n-1][0],hi=STG[n-1][1],best={},cnt={},k,a,e,p,l;
   for(k=0;k<att.length;k++){a=att[k];l=a.l;if(l<lo||l>hi)continue;e=String(a.e);
     if(kind==='wb'){if(!/^wb/.test(e))continue;}
-    else if(kind==='ex'){if(a.k==='check'||!/^l\d+e/.test(e))continue;}
+    else if(kind==='ex'){if(a.k==='check'||!/^l\d+[eg]\d/.test(e))continue;}
     else{if(a.k&&a.k!=='check')continue;if(!/^c\d+$/.test(e))continue;}
     p=a.t?a.s/a.t:0;if(best[e]===undefined||p>best[e])best[e]=p;}
   var done=0,sum=0,total=tot(kind,lo,hi),byL={};
   for(e in best){var m=e.match(/\d+/);l=m?+m[0]:0;if(kind==='wb'){l=+(e.match(/^wb(\d+)/)||[0,0])[1];}
     (byL[l]=byL[l]||[]).push(best[e]);}
-  for(l in byL){var arr=byL[l].sort(function(x,y){return y-x;}).slice(0,PER[kind]);done+=arr.length;arr.forEach(function(v){sum+=v;});}
+  var doneAv=0;
+  for(l in byL){var arr=byL[l].sort(function(x,y){return y-x;}).slice(0,PER[kind]);done+=arr.length;if(!upto||+l<=upto)doneAv+=arr.length;arr.forEach(function(v){sum+=v;});}
   var avg=done?sum/done:0;
   var avail=upto?tot(kind,lo,Math.min(hi,upto)):total;
-  return {done:done,total:total,avail:avail,avg:avg,complete:done>=total&&avg>=MIN};
+  return {done:done,doneAv:doneAv,total:total,avail:avail,avg:avg,complete:done>=total&&avg>=MIN};
 }
 /* header: cover + title + progress */
 function head(o){

@@ -85,8 +85,8 @@ function mount(o){
     var top=el('div','bkn'),stk=el('div','bks'),rings=[],cv=new Image();cv.src=Covers.src(n,es);cv.alt=es?'Libro del Estudiante \u00b7 Etapa '+n:"Student's Book \u00b7 Stage "+n;cv.width=90;cv.height=128;cv.className='cvr bkcv';cv.decoding='async';var cw=cv,cr=certOf(n);if(cr){cw=el('div','bkcw');cw.append(cv,ribbon(cr));}top.append(cw);
     KINDS.forEach(function(a){var s=st(a.kind,n),d=el('a','bkg'),r=el('div','bkr'+(sk?' dash':'')),b=el('b','',sk?'—':'0%');r.append(b);d.append(r);
       d.href=href(a,n);d.setAttribute('aria-label',a.label);d.style.cssText='text-decoration:none;color:inherit;display:block';d.append(el('strong','',a.label));
-      d.append(el('span','',sk?T('not done'):(s.avail?F('{0} of {1}',[s.done,s.avail]):'—')));stk.append(d);
-      if(!sk&&s.avail)rings.push([d,Math.min(100,Math.round(100*s.done/s.avail)),COL[a.kind]]);});
+      d.append(el('span','',sk?T('not done'):(s.avail?F('{0} of {1}',[Math.min(s.doneAv==null?s.done:s.doneAv,s.avail),s.avail]):'—')));stk.append(d);
+      if(!sk&&s.avail)rings.push([d,Math.min(100,Math.round(100*Math.min(s.doneAv==null?s.done:s.doneAv,s.avail)/s.avail)),COL[a.kind]]);});
     stk.append(stageTest(n));top.append(stk);
     var bt=el('div','bkb'),go=el('a','bkgo','Continue →');go.href=href(KINDS[0],n);bt.append(go);
     top.append(bt);
