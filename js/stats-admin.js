@@ -157,7 +157,7 @@
   /* ---------- uso ---------- */
   var PG = { 'lessons': 'Aulas', 'index': 'Início', 'exercicios': 'Exercícios', 'exercises': 'Exercícios', 'gramatica': 'Gramática', 'grammar': 'Gramática', 'workbook': 'Workbook', 'check': 'Lesson Check', 'payments': 'Pagamentos', 'pagamentos': 'Pagamentos', 'account': 'Perfil', 'conta': 'Perfil', 'audio': 'Áudios', 'exam': 'Provas', 'placement': 'Placement', 'verify': 'Certificado', 'dele': 'DELE' };
   function pname(p) { var k = String(p || '').replace(/\.html$/, '').toLowerCase(); return PG[k] || k || 'Início'; }
-  function exLabel(a) { var x = String(a.ex || ''); var t = a.kind === 'check' ? 'Lesson Check' : /^wb/.test(x) ? 'Workbook' : /^dele:/.test(x) ? 'DELE' : 'Exercise'; return t + ' · Lesson ' + a.lesson + (a.kind === 'check' ? '' : ' · ' + x.replace(/^(wb|dele):?/, '')); }
+  function exLabel(a) { var x = String(a.ex || ''); var t = a.kind === 'check' ? 'Lesson Check' : /^wb/.test(x) ? 'Workbook' : /^dele:/.test(x) ? 'DELE' : /^gram:/.test(x) ? 'Gramática' : 'Exercise'; return t + (/^gram:/.test(x) ? ' · Unidad ' : ' · Lesson ') + a.lesson + (a.kind === 'check' ? '' : ' · ' + x.replace(/^(wb|dele|gram):?/, '')); }
   function usage() {
     var el = X.el, out = [], since = Date.now() - 30 * DAY;
     out.push(el('h2', { style: 'margin:6px 0' }, 'Uso · últimos 30 dias'));

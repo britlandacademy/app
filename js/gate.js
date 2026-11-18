@@ -649,7 +649,7 @@ function prefetch(lo,hi){
       idbPut(r.data.map(function(x){return {k:okey()+':'+x.kind+':'+x.lesson,lesson:x.lesson,kind:x.kind,body:x.body};}));
       try{localStorage.setItem(tag,String(now));}catch(e){}
     },function(){});
-    var b=window.BL_BASE||'',own=window.BL_COURSE?['dele.html']:['exercises.html','workbook.html'];
+    var b=window.BL_BASE||'',own=window.BL_COURSE?['dele.html','gramatica.html']:['exercises.html','workbook.html'];
     ['index.html','lessons.html','check.html'].concat(own,['js/gate.js','js/config.js','js/i18n.js','js/theme.css','js/wm.css','js/fonts.css','js/brand.css','js/ui.css','js/protect.js','js/lsearch.js','js/paranums.js','js/covers.js','js/profile.js','js/push.js','js/streak.js','js/avatars.js','js/facts.js','js/facts_i18n.js','js/pwa.js']).forEach(function(u){try{fetch(b+u,{credentials:'same-origin'}).catch(function(){});}catch(e){}});
   },2500);
 }
@@ -832,6 +832,7 @@ function startTour(force){
   S.push({h:'Lessons',p:['Read each lesson and listen to the audio. It also works offline after you open a lesson once.'],sel:['a.card[href="lessons.html"]']});
   if(SP){
     S.push({h:'Review exercises',p:['Do the review exercises from the book. When you get one wrong, the app explains why.'],sel:['a.card[href="check.html"]']});
+    S.push({h:'Gramática',p:['Read the theory of each unit and do its exercises.'],sel:['a.card[href="gramatica.html"]']});
     S.push({h:'DELE',p:['Prepare for the DELE exam, levels A1 to C2.'],sel:['a.card[href="dele.html"]']});
   }else{
     S.push({h:'The three activities',p:['Always do all three: Lesson Checks (the questions from the book), Grammar Exercises and Workbook (pictures, matching, reading and dictation). When you get one wrong, the app explains why.'],sel:['a.card[href="exercises.html"]','a.card[href="workbook.html"]','a.card[href="check.html"]']});

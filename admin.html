@@ -570,7 +570,7 @@ function renderWho(){
 }
 function typeLbl(a,full){
   const x=String(a.ex),DELE=crsU(a.user_id)==='es';
-  if(DELE)return a.kind==='check'?'Ejercicio de repaso':(/^dele:/.test(x)?(full?'DELE '+x.split(':')[1]+' '+x.split(':')[2]:'DELE'):'Ejercicio');
+  if(DELE)return a.kind==='check'?'Ejercicio de repaso':(/^dele:/.test(x)?(full?'DELE '+x.split(':')[1]+' '+x.split(':')[2]:'DELE'):(/^gram:/.test(x)?'Gramática '+x.slice(5):'Ejercicio'));
   return a.kind==='check'?'Lesson Check':(/^wb/.test(x)?(full?'Workbook '+x.slice(-1):'Workbook'):'Exercise');
 }
 function renderDet(){
@@ -579,7 +579,7 @@ function renderDet(){
   const rows=ATT.filter(a=>a.user_id===uid).reverse();
   const tb=el('tbody',{});
   if(!rows.length)tb.append(el('tr',{},el('td',{colspan:'5'},'Sem tentativas ainda.')));
-  rows.forEach(a=>tb.append(el('tr',{},el('td',{},fmt(a.created_at)),el('td',{},typeLbl(a,1)),el('td',{},crsU(a.user_id)==='es'&&/^dele:/.test(String(a.ex))?'Nivel '+a.lesson:(crsU(a.user_id)==='es'?'Repaso ':'Lesson ')+a.lesson),el('td',{},a.score+' / '+a.total),el('td',{},Math.round(a.score/a.total*100)+'%'))));
+  rows.forEach(a=>tb.append(el('tr',{},el('td',{},fmt(a.created_at)),el('td',{},typeLbl(a,1)),el('td',{},crsU(a.user_id)==='es'&&/^dele:/.test(String(a.ex))?'Nivel '+a.lesson:(crsU(a.user_id)==='es'?(/^gram:/.test(String(a.ex))?'Unidad ':'Repaso '):'Lesson ')+a.lesson),el('td',{},a.score+' / '+a.total),el('td',{},Math.round(a.score/a.total*100)+'%'))));
   t.append(th(['Data','Tipo','Lesson','Nota','%']),tb);
 }
 $('kind').addEventListener('change',renderMat);
