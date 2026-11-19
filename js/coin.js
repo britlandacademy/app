@@ -164,9 +164,9 @@ function make(host,opts){
   }
   function down(e){if(!isLive)return;drag=true;vy=vx=0;lx0=e.clientX;ly0=e.clientY;try{host.setPointerCapture(e.pointerId);}catch(x){}}
   function move(e){if(!drag)return;var dx=e.clientX-lx0,dy=e.clientY-ly0;lx0=e.clientX;ly0=e.clientY;
-    ry+=dx*.7;rx+=dy*.55;vy=dx*.7;vx=dy*.55;spinSnd(Math.max(Math.abs(vy),Math.abs(vx)));}
-  function spinSnd(v){ /* giro forte: toca o som da moeda girando, volume pelo impulso */
-    var n=Date.now();if(v<16||n-snd.last<1600)return;snd.last=n;sfx('spin',.25+Math.min(.6,(v-16)/40),.92+Math.min(.25,(v-16)/90));}
+    ry+=dx*.7;rx-=dy*.55;vy=dx*.7;vx=-dy*.55;spinSnd(Math.max(Math.abs(vy),Math.abs(vx)));}
+  function spinSnd(v){ /* giro forte: som da moeda girando, volume pelo impulso */
+    var n=Date.now();if(v<16||n-snd.last<3000)return;snd.last=n;sfx('spin',.3+Math.min(.6,(v-16)/40),1);}
   function up(){if(!drag)return;drag=false;idleAt=Date.now()+1000;spinSnd(Math.max(Math.abs(vy),Math.abs(vx)));}
   host.addEventListener('pointerdown',down);host.addEventListener('pointermove',move);
   host.addEventListener('pointerup',up);host.addEventListener('pointercancel',up);
