@@ -33,7 +33,7 @@ s.textContent+='.ag2 .ag2-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 
 s.textContent+='.nc .nc-box.c-blue{background:rgba(55,138,221,.12);border:1.5px solid #378add}.nc .nc-box.c-ok{background:var(--ok-bg);border:1.5px solid var(--ok)}.nc .nc-box.c-ok .nc-k,.nc .nc-box.c-ok .nc-m{color:var(--ok)}.nc .nc-box.c-warn{background:var(--warn-bg);border:1.5px solid var(--warn)}.nc .nc-box.c-warn .nc-k,.nc .nc-box.c-warn .nc-m{color:var(--warn)}.nc .nc-box.c-bad{background:var(--bad-bg);border:1.5px solid var(--bad)}.nc .nc-box.c-bad .nc-k,.nc .nc-box.c-bad .nc-m{color:var(--bad)}.nc .nc-box.c-gold{background:color-mix(in srgb,#c9a13b 14%,var(--surface));border:1.5px solid #c9a13b}';
 s.textContent+='.nc-pend .nc-tm,.nc-pend a.nc-btn.go,.nc-pend a.nc-btn.ic{display:none!important}.nc-pb{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn);border-radius:12px;padding:8px 12px;margin:0 0 10px;font-size:.88rem}.nc-pb b{font-weight:800}';
 s.textContent+='.nc .nc-cr{display:inline-block;background:color-mix(in srgb,#c9a13b 18%,var(--surface));border:1px solid #c9a13b;color:var(--ink);border-radius:99px;padding:1px 10px;font-size:.78rem;font-weight:800}';
-s.textContent+='.nc .nc-tm{display:inline-flex;align-items:center;gap:8px;background:#0b1733;color:#fff;border-radius:10px;padding:4px 12px;min-width:116px;justify-content:center}.nc .nc-tm small{display:block;font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;color:#cfd7e6;line-height:1.1}.nc .nc-tm b{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums}.nc .nc-tm.run{background:#1d5e2e}.nc .nc-tm.extra{background:#854f0b}';
+s.textContent+='.nc .nc-tm{display:inline-flex;align-items:center;gap:8px;background:#0b1733;color:#fff;border-radius:10px;padding:4px 12px;min-width:116px;justify-content:center}.nc .nc-tm small{display:block;font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;color:#cfd7e6;line-height:1.1}.nc .nc-tm b{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums}.nc .nc-tm.run{background:#1d5e2e}.nc-tm.alarm{position:relative;background:#8c1d18}.nc-tm.alarm:before,.nc-tm.alarm:after{content:\'\';position:absolute;inset:-4px;border-radius:14px;border:2px solid #e5484d;pointer-events:none;animation:ncWave 1s ease-out infinite}.nc-tm.alarm:after{animation-delay:.5s}@keyframes ncWave{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.22,1.5);opacity:0}}html.fx-off .nc-tm.alarm:before,html.fx-off .nc-tm.alarm:after{animation:none;opacity:.5}@media (prefers-reduced-motion:reduce){.nc-tm.alarm:before,.nc-tm.alarm:after{animation:none;opacity:.5}}.nc .nc-tm.extra{background:#854f0b}';
 D.head.appendChild(s);}
 var LAGMAX=6,LAGEDIT=30;
 function lagOf(d){d=d||{};var cp=d.currentPosition||{},nw=d.nextClass&&d.nextClass.newWords,reg=Number(cp.paragraph),pl=nw&&Number(nw.from);
@@ -127,17 +127,18 @@ function render(box,ev,deps,opts){opts=opts||{};
       fr=BL_FORECAST.calc({done:dn,total:+fd.classesTotal,freq:BL_FORECAST.freq(d.futN,d.pastN),lagPar:lg&&!lg.edit?lg.lag:0,missRate:ms0.length/Math.max(1,dn+ms0.length)});
       if(fr)hd.appendChild(el('div','nc-sub nc-fc',BL_FORECAST.fmt(fr,'pt','Stage '+(((d.prog[d.uids[0]]||{}).stage)||'?'))));}
     top.appendChild(hd);top.appendChild(el('span','sp'));
+    function beep(){try{var AC=window.AudioContext||window.webkitAudioContext;if(!AC||document.hidden||document.documentElement.classList.contains('fx-off'))return;var c=new AC(),o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=880;g.gain.setValueAtTime(.0001,c.currentTime);g.gain.exponentialRampToValueAtTime(.25,c.currentTime+.02);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.28);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+.3);setTimeout(function(){try{c.close();}catch(e){}},600);}catch(e){}}
     /* cronometro: antes da aula conta o que falta; ao comecar, conta o tempo de aula (50 min) e depois o tempo extra */
     if(!opts.past){var tm=el('span','nc-tm'),tml=el('small'),tmb=el('b'),CLS=50*6e4;tm.setAttribute('role','timer');tm.appendChild(tml);tm.appendChild(tmb);top.appendChild(tm);
       var f2=function(n){return n<10?'0'+n:''+n;},fm=function(ms){var t=Math.floor(Math.abs(ms)/1000),h=Math.floor(t/3600),m=Math.floor(t%3600/60),sc=t%60;return h>0?h+':'+f2(m)+':'+f2(sc):f2(m)+':'+f2(sc);};
       var tmi=null,tick=function(){if(!tm.isConnected){clearInterval(tmi);return;}var ms=start-Date.now(),el0=-ms;
         if(ms>24*36e5||el0>3*36e5){tm.style.display='none';return;}tm.style.display='';
-        if(ms>0){tm.className='nc-tm';tml.textContent='Começa em';tmb.textContent=fm(ms);}
+        if(ms>0){var al=ms<=18e4;tm.className='nc-tm'+(al?' alarm':'');tml.textContent='Começa em';tmb.textContent=fm(ms);if(al&&!tm._beeped){tm._beeped=1;beep();}}
         else if(el0<=CLS){tm.className='nc-tm run';tml.textContent='Em aula';tmb.textContent=fm(el0)+' / 50:00';}
         else{tm.className='nc-tm extra';tml.textContent='Tempo extra';tmb.textContent='+'+fm(el0-CLS);}};
       tick();tmi=setInterval(tick,1000);}
     if(sid){var sa=el('a','nc-btn','Abrir planilha');sa.href='https://docs.google.com/spreadsheets/d/'+sid+'/edit'+(gid?'#gid='+gid:'');sa.target='_blank';sa.rel='noopener';top.appendChild(sa);}
-    /* botao de 2 etapas: envia o convite da Revision (WhatsApp) -> entra -> (30 min) envia o do New Work -> entra */
+    /* botao de 2 etapas: envia o convite da Revision (WhatsApp) -> entra -> (10 min de aula) envia o do New Work -> entra */
     var isMeet=/meet\.google\.com/.test(String(meet||'')),zRev=zoomApp(ZOOM_REV),zNw=zoomApp(ZOOM_NW),za=el('a','nc-btn go',''),cb=el('a','nc-btn ic'),skey='blnc:'+d.key+':'+ev.start_at,stt={s:0,t:0};
     try{stt=JSON.parse(localStorage.getItem(skey)||'')||stt;}catch(e){stt={s:0,t:0};}
     if(stt.s===0&&d.sentRev&&d.sentRev.status==='sent'){stt.s=1;try{localStorage.setItem(skey,JSON.stringify(stt));}catch(e){}}
@@ -145,7 +146,7 @@ function render(box,ev,deps,opts){opts=opts||{};
     var IW='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21l1.65-4.9A8.5 8.5 0 1 1 8 19.4L3 21z"/><path d="M9.2 9.2c.3 2 2.6 4.4 5.2 5.3l1.3-1.3-1.8-1-.9.7c-.8-.4-1.5-1.1-1.9-1.9l.7-.9-1-1.8-1.6 1.2z"/></svg>',
         IC='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>';
     function setLab(t,wa){za.innerHTML=(wa?IW+' ':'')+'<span></span>';za.lastChild.textContent=t;}
-    function lab2(){if(!isMeet&&stt.s===2&&Date.now()-stt.t>=30*6e4){stt.s=3;saveSt();}
+    function lab2(){if(!isMeet&&stt.s===2&&Date.now()-start>=10*6e4){stt.s=3;saveSt();}
       var sd=stt.s===0||stt.s===3;
       if(isMeet)setLab(stt.s===0?'Enviar link da aula':'Entrar na aula',stt.s===0);
       else setLab(['Enviar 1º link (REV)','Entrar Revision','Entrar Revision','Enviar 2º link (NW)','Entrar New Work'][stt.s]||'Enviar 1º link (REV)',sd);

@@ -30,13 +30,34 @@ var S={
  bCur:{en:'Current lesson',pt:'Aula atual',es:'Clase actual'},
  bPick:{en:'Choose a new time',pt:'Escolha um novo horário',es:'Elige un nuevo horario'},
  bSelDate:{en:'Select a date:',pt:'Selecione uma data:',es:'Selecciona una fecha:'},
- bSelNote:{en:'Only the next 5 days have times.',pt:'Só os próximos 5 dias têm horários.',es:'Solo los próximos 5 días tienen horarios.'},
+ bSelNote:{en:'Times are shown until the end of the month.',pt:'Os horários aparecem até o fim do mês.',es:'Los horarios se muestran hasta fin de mes.'},
  bDur:{en:'Lesson length:',pt:'Duração da aula:',es:'Duración de la clase:'},
  bPickN:{en:'Choose a time',pt:'Escolha o horário',es:'Elige el horario'},
  bNote:{en:'Only free times are shown, in your time zone. You can reschedule up to 2 hours before the lesson.',pt:'Só aparecem horários livres, no seu fuso. Dá para remarcar até 2 horas antes da aula.',es:'Solo se muestran horarios libres, en tu zona horaria. Puedes reprogramar hasta 2 horas antes de la clase.'},
  bNew2:{en:'New time',pt:'Novo horário',es:'Nuevo horario'},
- bAsk:{en:'REQUEST NEW TIME',pt:'PEDIR REMARCAÇÃO',es:'PEDIR CAMBIO'},
- bAskN:{en:'REQUEST LESSON',pt:'PEDIR AULA',es:'PEDIR CLASE'},
+ bAsk:{en:'CONFIRM NEW TIME',pt:'CONFIRMAR NOVO HORÁRIO',es:'CONFIRMAR NUEVO HORARIO'},
+ bAskN:{en:'BOOK LESSON',pt:'MARCAR AULA',es:'RESERVAR CLASE'},
+ bAskM:{en:'BOOK MAKE-UP CLASS',pt:'MARCAR REPOSIÇÃO',es:'RESERVAR REPOSICIÓN'},
+ bAskW:{en:'REQUEST WEEKLY LESSON',pt:'PEDIR AULA SEMANAL',es:'PEDIR CLASE SEMANAL'},
+ bHint:{en:'Days with free times are in gold.',pt:'Os dias com horário livre ficam em dourado.',es:'Los días con horario libre aparecen en dorado.'},
+ bPickD:{en:'Choose a day to see the times.',pt:'Escolha um dia para ver os horários.',es:'Elige un día para ver los horarios.'},
+ bRep:{en:'Repeat every week',pt:'Repetir toda semana',es:'Repetir cada semana'},
+ bRepS:{en:'Every {0}, until you cancel',pt:'Toda {0}, até você cancelar',es:'Cada {0}, hasta que canceles'},
+ bRepP:{en:'Pick a day and time first',pt:'Escolha antes o dia e o horário',es:'Elige antes el día y el horario'},
+ bRepL:{en:'Você já usou todos os horários fixos do seu plano ({0} por semana).',pt:'Você já usou todos os horários fixos do seu plano ({0} por semana).',es:'Ya usaste todos los horarios fijos de tu plan ({0} por semana).'},
+ eWkL:{en:'Você já usou todos os horários fixos do seu plano.',pt:'Você já usou todos os horários fixos do seu plano.',es:'Ya usaste todos los horarios fijos de tu plan.'},
+ bWkN:{en:'Toda semana: o professor precisa aprovar. Aulas avulsas são confirmadas na hora.',pt:'Toda semana: o professor precisa aprovar. Aulas avulsas são confirmadas na hora.',es:'Cada semana: el profesor debe aprobar. Las clases sueltas se confirman al instante.'},
+ sOkT:{en:'Lesson booked!',pt:'Aula marcada!',es:'¡Clase reservada!'},
+ sOkN:{en:'Your lesson on {0} is confirmed. It is already in your agenda.',pt:'Sua aula em {0} está confirmada. Ela já está na sua agenda.',es:'Tu clase del {0} está confirmada. Ya está en tu agenda.'},
+ sOkR:{en:'Your lesson was moved to {0}.',pt:'Sua aula foi movida para {0}.',es:'Tu clase se movió al {0}.'},
+ sConf:{en:'Confirmed',pt:'Confirmada',es:'Confirmada'},
+ sBodyW:{en:'I asked your teacher to approve your weekly lesson: every {0}. You will see the answer here in the app.',pt:'Pedi ao professor para aprovar sua aula semanal: toda {0}. Você recebe a resposta aqui no app.',es:'Le pedí al profesor aprobar tu clase semanal: cada {0}. Verás la respuesta aquí en la app.'},
+ wkB:{en:'Weekly',pt:'Semanal',es:'Semanal'},
+ wkReq:{en:'Weekly lesson',pt:'Aula semanal',es:'Clase semanal'},
+ wkStop:{en:'Stop repeating',pt:'Parar de repetir',es:'Dejar de repetir'},
+ wkQ:{en:'Stop repeating this weekly lesson?',pt:'Parar de repetir esta aula semanal?',es:'¿Dejar de repetir esta clase semanal?'},
+ wkN:{en:'A lesson starting in less than 2 hours stays. The later ones are removed, with no make-up classes for them. To cancel just one lesson, use Cancel lesson.',pt:'Uma aula que começa em menos de 2 horas continua. As seguintes são removidas, sem aulas a repor. Para cancelar só uma aula, use Cancelar aula.',es:'Una clase que empieza en menos de 2 horas continúa. Las siguientes se eliminan, sin clases por reponer. Para cancelar solo una clase, usa Cancelar clase.'},
+ wkYes:{en:'YES, STOP REPEATING',pt:'SIM, PARAR DE REPETIR',es:'SÍ, DEJAR DE REPETIR'},
  bNoSlots:{en:'No free times right now. Please message your teacher.',pt:'Nenhum horário livre agora. Fale com o professor.',es:'No hay horarios libres ahora. Habla con tu profesor.'},
  bBack:{en:'Back',pt:'Voltar',es:'Volver'},
  sTitle:{en:'Request sent!',pt:'Pedido enviado!',es:'¡Pedido enviado!'},
@@ -108,7 +129,8 @@ var CSS='.ag{margin:14px 0;font:inherit}.ag h2{font-size:1.05rem;margin:0 0 4px}
 '.ag-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px 0;text-align:center}.ag-gw{font-size:.8rem;opacity:.7;padding:4px 0}.ag-gd{border:0;background:none;color:inherit;font:inherit;padding:9px 0;margin:1px;border-radius:12px}.ag-gd.off{opacity:.3}.ag-gd.has{border:1px solid #c9a13b;cursor:pointer}.ag-gd.has:hover{background:rgba(201,161,59,.3)}.ag-shnote{text-align:center}'+
 '.ag-day{display:flex;flex-direction:column;gap:8px}.ag-chips{display:flex;gap:8px;flex-wrap:wrap}.ag-chip{min-height:44px;padding:0 16px;border-radius:10px;border:1px solid var(--line,rgba(127,127,127,.4));background:var(--card,transparent);color:inherit;font:inherit;font-weight:600;cursor:pointer}.ag-chip.on{border:2px solid #c9a23a;background:rgba(201,162,58,.25);font-weight:700}'+
 '.ag-tap{width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer}.ag-chev{font-size:1.6rem;opacity:.6}.ag-two{flex-wrap:nowrap}.ag-two .ag-btn{flex:1;min-height:46px}.ag-rej{color:#b4532f!important;border-color:var(--line,#c9a23a)!important}.ag-ln{font-size:.9rem}.ag-go{width:100%;min-height:54px;font-size:.95rem}.ag-m{min-height:1.2em}.ag-ok{background:#58cc02;border-bottom-color:#3f9a00}.ag-row .ag-m{min-height:0;margin:0}';
-function css(){if(document.getElementById('ag-css'))return;var s=document.createElement('style');s.id='ag-css';s.textContent=CSS;document.head.appendChild(s);}
+var CSS2='.ag-mn{display:flex;align-items:center;justify-content:space-between;gap:8px}.ag-mn b{font:700 1.05rem Georgia,serif}.ag-gd.has{background:rgba(201,162,58,.16);color:#f0c36a;font-weight:700}.ag-gd.on{background:#c9a23a;color:#1b1400!important;border-color:#c9a23a}.ag-gd.td{box-shadow:inset 0 0 0 2px rgba(201,162,58,.6)}.ag-hg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.ag-hg .ag-chip{padding:0;width:100%}.ag-rep{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--line,rgba(127,127,127,.3));background:var(--card,rgba(127,127,127,.1));border-radius:16px;padding:12px 14px;cursor:pointer;text-align:left;color:inherit;font:inherit;width:100%}.ag-rep[disabled]{opacity:.5;cursor:default}.ag-rep b{display:block}.ag-rep small{display:block;opacity:.75;font-size:.8rem;margin-top:2px}.ag-tg{width:48px;height:28px;border-radius:99px;background:#27407a;position:relative;flex:none;transition:background .2s}.ag-tg:after{content:\'\';position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left .2s,background .2s}.ag-tg.on{background:#c9a23a}.ag-tg.on:after{left:23px;background:#0b1733}.ag-wn{display:flex;gap:8px;align-items:flex-start;background:#fbf3dc;color:#0b1733;border:1px solid #e3cf94;border-radius:12px;padding:9px 11px;font-size:.8rem;line-height:1.35}.ag-wn svg{flex:none;color:#8f6f16;margin-top:1px}.ag-wb{display:inline-block;margin-left:8px;padding:2px 9px;border-radius:99px;background:rgba(201,162,58,.22);color:#f0c36a;font:700 .68rem system-ui;letter-spacing:.04em;vertical-align:middle}.ag-ds{font:700 1rem Georgia,serif;margin:2px 0 0}@media (prefers-reduced-motion:reduce){.ag-tg,.ag-tg:after{transition:none}}';
+function css(){if(document.getElementById('ag-css'))return;var s=document.createElement('style');s.id='ag-css';s.textContent=CSS+CSS2;document.head.appendChild(s);}
 
 /* ---------- student card ---------- */
 function dayKey(iso){try{return new Intl.DateTimeFormat('en-CA',{year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(iso));}catch(e){return iso.slice(0,10);}}
@@ -116,7 +138,7 @@ function fmtDay(iso){try{var t=new Intl.DateTimeFormat(loc(),{weekday:'long',day
 function fmtS(iso){try{var w=new Intl.DateTimeFormat(loc(),{weekday:'short'}).format(new Date(iso)).replace('.','');w=w.charAt(0).toUpperCase()+w.slice(1);return w+', '+new Intl.DateTimeFormat(loc(),{day:'2-digit',month:'2-digit'}).format(new Date(iso))+' · '+fmtT(iso);}catch(e){return iso;}}
 function fmtFull(iso){return fmtDay(iso)+' · '+fmtT(iso);}
 function tzName(){var z='';try{z=Intl.DateTimeFormat().resolvedOptions().timeZone||'';}catch(e){}return z.replace(/_/g,' ');}
-function errText(c){return {slot_taken:T('eTaken'),too_late:T('eLate'),already_pending:T('ePend'),too_many:T('eMany'),group:T('eGroup'),no_credit:T('eCred')}[c]||T('fail');}
+function errText(c){return {slot_taken:T('eTaken'),too_late:T('eLate'),already_pending:T('ePend'),too_many:T('eMany'),group:T('eGroup'),no_credit:T('eCred'),weekly_limit:T('eWkL')}[c]||T('fail');}
 function icsT(iso){return new Date(iso).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');}
 function icsE(t){return String(t||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n');}
 function icsOf(x){var L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Britland Academy//Aulas//PT','CALSCALE:GREGORIAN','METHOD:PUBLISH','BEGIN:VEVENT','UID:'+String(x.id).replace(/[^A-Za-z0-9:_-]/g,'')+'@britlandacademy','DTSTAMP:'+icsT(new Date().toISOString()),'DTSTART:'+icsT(x.start_at),'DTEND:'+icsT(x.end_at),'SUMMARY:'+icsE(x.title||'Britland Academy'),'DESCRIPTION:'+icsE('Britland Academy'+(x.meet_url?'\n'+x.meet_url:'')),'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+icsE(x.title||'Aula'),'TRIGGER:-PT15M','END:VALARM'];
@@ -124,12 +146,14 @@ function icsOf(x){var L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Britland Aca
 function gcalLink(x){return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(x.title||'Britland Academy')+'&dates='+icsT(x.start_at)+'/'+icsT(x.end_at)+'&details='+encodeURIComponent('Britland Academy'+(x.meet_url?'\n'+x.meet_url:''))+(x.meet_url?'&location='+encodeURIComponent(x.meet_url):'');}
 function mount(box,ctx){
   if(!box||!window.Gate||!Gate.sb||!ctx||!ctx.user)return;
-  css();var tm=null,sb=Gate.sb,uid=ctx.user.id,HOUR=3600000,H2=7200000,ov=null,CRN=0;
+  css();var tm=null,sb=Gate.sb,uid=ctx.user.id,HOUR=3600000,H2=7200000,ov=null,CRN=0,SER=[];
   window.Agenda.reschedule=function(x){book('reschedule',x);};
   function lessons(){return sb.from('lessons').select('id,title,start_at,end_at,meet_url,is_group').eq('user_id',uid).gte('end_at',new Date().toISOString()).order('start_at').limit(6).then(function(r){return ((r&&r.data)||[]).map(function(x){x.meet_url=x.meet_url||'https://us06web.zoom.us/j/2447679341';return x;});},function(){return [];});}
   function requests(){var since=new Date(Date.now()-3*86400000).toISOString();return sb.from('lesson_requests').select('id,kind,lesson_id,new_start,status,created_at').eq('user_id',uid).neq('kind','cancel').gte('created_at',since).order('created_at',{ascending:false}).limit(10).then(function(r){return (r&&r.data)||[];},function(){return [];});}
   function credits(){try{return Promise.resolve(sb.from('class_credits').select('id').eq('user_id',uid).is('made_up_at',null)).then(function(r){CRN=((r&&r.data)||[]).length;},function(){});}catch(e){return Promise.resolve();}}
-  function reload(){return Promise.all([lessons(),requests(),credits()]).then(function(v){draw(v[0],v[1]);});}
+  function series(){try{return Promise.resolve(sb.from('lesson_series').select('id,gcal_event_id,weekday').eq('user_id',uid).eq('status','active')).then(function(r){SER=(r&&r.data)||[];},function(){});}catch(e){return Promise.resolve();}}
+  function serOf(x){var b=String(x.id).split(':')[0].replace(/_\d{8}T\d{6}Z$/,'');return SER.filter(function(q){return q.gcal_event_id===b;})[0]||null;}
+  function reload(){return Promise.all([lessons(),requests(),credits(),series()]).then(function(v){draw(v[0],v[1]);});}
   function isPend(q){return q.status==='pending'&&Date.now()-new Date(q.created_at)<24*HOUR;}
   function draw(rows,reqs){
     clearTimeout(tm);box.textContent='';reqs=reqs||[];
@@ -155,7 +179,7 @@ function mount(box,ctx){
       if(x===rows[0]){if(window.Home2)r.insertAdjacentHTML('afterbegin',Home2.art('cal'));r.appendChild(el('span','ag-k',T('nk')));}
       var wd='';try{wd=new Intl.DateTimeFormat(loc(),{weekday:'short'}).format(dt).replace('.','');}catch(e){}
       db.appendChild(el('span','ag-wd',wd));db.appendChild(el('span','ag-dn',String(dt.getDate())));r.appendChild(db);
-      d.style.flex='1';d.style.minWidth='0';d.appendChild(el('b','',fmtT(x.start_at)+' – '+fmtT(x.end_at)));if(x.title)d.appendChild(el('small','',x.title));r.appendChild(d);
+      d.style.flex='1';d.style.minWidth='0';var sr=serOf(x),bt=el('b','',fmtT(x.start_at)+' – '+fmtT(x.end_at));if(sr)bt.appendChild(el('span','ag-wb',T('wkB')));d.appendChild(bt);if(x.title)d.appendChild(el('small','',x.title));r.appendChild(d);
       var q=pend.filter(function(p){return p.lesson_id===x.id;})[0];
       var acts=el('div','ag-racts');
       var kb=el('button','ag-btn alt',T('cal'));kb.type='button';kb.onclick=function(){calAsk(x);};acts.appendChild(kb);
@@ -163,10 +187,11 @@ function mount(box,ctx){
       else if(!x.is_group&&new Date(x.start_at)-now>0){
         var cb=el('button','ag-btn alt ag-dim',T('cx'));cb.type='button';cb.onclick=function(){cancelAsk(x);};
         if(new Date(x.start_at)-now>H2){var rb=el('button','ag-btn alt',T('rs'));rb.type='button';rb.onclick=function(){book('reschedule',x);};acts.appendChild(rb);}
-        acts.appendChild(cb);}
+        acts.appendChild(cb);
+        if(sr){var sb2=el('button','ag-btn alt ag-dim',T('wkStop'));sb2.type='button';sb2.onclick=function(){stopAsk(sr);};acts.appendChild(sb2);}}
       r.appendChild(acts);w.appendChild(r);});
-    pend.filter(function(q){return q.kind==='new'||q.kind==='makeup';}).forEach(function(q){
-      var r=el('div','ag-row'),d=el('div');d.style.flex='1';d.appendChild(el('b','',fmtFull(q.new_start)));d.appendChild(el('small','',T(q.kind==='makeup'?'mkReq':'newReq')));r.appendChild(d);
+    pend.filter(function(q){return q.kind==='new'||q.kind==='makeup'||q.kind==='weekly';}).forEach(function(q){
+      var r=el('div','ag-row'),d=el('div');d.style.flex='1';d.appendChild(el('b','',fmtFull(q.new_start)));d.appendChild(el('small','',T(q.kind==='makeup'?'mkReq':q.kind==='weekly'?'wkReq':'newReq')));r.appendChild(d);
       r.appendChild(el('span','ag-pill',T('pend')));w.appendChild(r);});
     if(CRN>0){var cs=el('div','ag-row');var cd=el('div');cd.style.flex='1';cd.appendChild(el('b','',T('mkCnt',CRN)));cs.appendChild(cd);w.appendChild(cs);}
     var nb=el('button','ag-btn',T(CRN>0?'mkBook':'bNew'));nb.type='button';nb.onclick=function(){book(CRN>0?'makeup':'new',null);};
@@ -187,84 +212,85 @@ function mount(box,ctx){
   function info(lbl,val){var c=el('div','ag-info');c.appendChild(el('span','ag-lbl',lbl));c.appendChild(el('b','',val));return c;}
 
   var CALSVG='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><circle cx="8.5" cy="14.5" r=".9" fill="currentColor"/><circle cx="12" cy="14.5" r=".9" fill="currentColor"/><circle cx="15.5" cy="14.5" r=".9" fill="currentColor"/></svg>';
-  function hourly(slots){var lim=Date.now()+5*86400000,first=null,keys={},out=[];
-    slots.forEach(function(iso){var t=new Date(iso);if(t.getMinutes()!==0||t.getTime()>lim)return;out.push(iso);});
-    var ks=[];out.forEach(function(iso){var k=dayKey(iso);if(ks.indexOf(k)<0)ks.push(k);});ks=ks.slice(0,5);
-    return out.filter(function(iso){return ks.indexOf(dayKey(iso))>-1;});}
+  function hourly(slots){var n=new Date(),lim=new Date(n.getFullYear(),n.getMonth()+1,1).getTime(),out=[];
+    slots.forEach(function(iso){var t=new Date(iso);if(t.getMinutes()!==0||t.getTime()>=lim)return;out.push(iso);});
+    return out;}
   function wdShort(d){try{return new Intl.DateTimeFormat(loc(),{weekday:'short'}).format(d).replace('.','').toUpperCase();}catch(e){return '';}}
   function monShort(d){try{return new Intl.DateTimeFormat(loc(),{month:'short'}).format(d).replace('.','').toUpperCase();}catch(e){return '';}}
-  function calSheet(order,pick){
-    var back=el('div','ag-sh'),box=el('div','ag-shb');back.appendChild(box);
-    var head=el('div','ag-shh');head.appendChild(el('b','',T('bSelDate')));var x=el('button','ag-shx','✕');x.type='button';x.onclick=function(){back.remove();};head.appendChild(x);box.appendChild(head);
-    var first=new Date(order[0]+'T12:00:00'),y=first.getFullYear(),m=first.getMonth();
-    var last=new Date(order[order.length-1]+'T12:00:00'),maxM=last.getFullYear()*12+last.getMonth(),minM=y*12+m,cur=minM;
-    var nav=el('div','ag-shn'),pv=el('button','ag-shv','‹'),nx=el('button','ag-shv','›'),tt=el('b','ag-sht');pv.type=nx.type='button';nav.appendChild(pv);nav.appendChild(tt);nav.appendChild(nx);box.appendChild(nav);
-    var grid=el('div','ag-grid');box.appendChild(grid);box.appendChild(el('p','ag-s ag-shnote',T('bSelNote')));
-    function mk(){grid.textContent='';var Y=Math.floor(cur/12),M=cur%12;
-      try{tt.textContent=new Intl.DateTimeFormat(loc(),{month:'long',year:'numeric'}).format(new Date(Y,M,1)).replace(/^./,function(c){return c.toUpperCase();});}catch(e){}
-      pv.disabled=cur<=minM;nx.disabled=cur>=maxM;
-      for(var w=0;w<7;w++){var dd=new Date(2024,0,7+w);grid.appendChild(el('span','ag-gw',new Intl.DateTimeFormat(loc(),{weekday:'short'}).format(dd).replace('.','')));}
-      var f=new Date(Y,M,1),n=new Date(Y,M+1,0).getDate();for(var i=0;i<f.getDay();i++)grid.appendChild(el('span','ag-gd off',''));
-      for(var d=1;d<=n;d++){(function(d){var k=Y+'-'+('0'+(M+1)).slice(-2)+'-'+('0'+d).slice(-2),has=order.indexOf(k)>-1,c=el('button','ag-gd'+(has?' has':' off'),String(d));c.type='button';c.disabled=!has;if(has)c.onclick=function(){back.remove();pick(k);};grid.appendChild(c);})(d);}}
-    pv.onclick=function(){if(cur>minM){cur--;mk();}};nx.onclick=function(){if(cur<maxM){cur++;mk();}};mk();
-    back.onclick=function(e){if(e.target===back)back.remove();};ov.appendChild(back);}
+  var WNI='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>',
+      RPI='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c9a13b" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/></svg>';
+  function wdLong(iso){try{return new Intl.DateTimeFormat(loc(),{weekday:'long'}).format(new Date(iso));}catch(e){return '';}}
   function book(kind,lesson){
     var body=el('div','ag-ovb');body.appendChild(el('p','ag-s',T('busy')));sheet(kind!=='reschedule'?T(kind==='makeup'?'mkBook':'bNew'):T('rsT'),body);
     sb.functions.invoke('gcal-book',{body:{action:'slots'}}).then(function(r){
       var slots=(r&&r.data&&r.data.slots)||[];body.textContent='';
       if(kind==='reschedule')body.appendChild(info(T('bCur'),fmtFull(lesson.start_at)+' – '+fmtT(lesson.end_at)));
-      body.appendChild(el('h2','',kind!=='reschedule'?T('bPickN'):T('bPick')));
       if(!slots.length){body.appendChild(el('p','ag-s',T('bNoSlots')));return;}
       slots=hourly(slots);
       if(!slots.length){body.appendChild(el('p','ag-s',T('bNoSlots')));return;}
       var days={},order=[];slots.forEach(function(iso){var k=dayKey(iso);if(!days[k]){days[k]=[];order.push(k);}days[k].push(iso);});
-      var sel=null,chips=[],page=0,per=3,dur=(r.data.dur||50);
+      var sel=null,selDay=null,rep=false,dur=(r.data.dur||50),wkOk=kind==='new'&&(r.data.weekly_used||0)<(r.data.weekly_limit||1),wkLim=r.data.weekly_limit||1;
+      var first=new Date(order[0]+'T12:00:00'),Y=first.getFullYear(),M=first.getMonth(),todayK=dayKey(new Date().toISOString());
+      body.appendChild(el('h2','',kind!=='reschedule'?T('bPickN'):T('bPick')));
+      var mn=el('div','ag-mn'),mt=el('b','');try{mt.textContent=new Intl.DateTimeFormat(loc(),{month:'long',year:'numeric'}).format(new Date(Y,M,1)).replace(/^./,function(c){return c.toUpperCase();});}catch(e){}
+      mn.appendChild(mt);body.appendChild(mn);
+      var grid=el('div','ag-grid'),dayBtns={};body.appendChild(grid);
+      for(var w=0;w<7;w++){grid.appendChild(el('span','ag-gw',new Intl.DateTimeFormat(loc(),{weekday:'short'}).format(new Date(2024,0,7+w)).replace('.','')));}
+      var f0=new Date(Y,M,1),nd=new Date(Y,M+1,0).getDate();for(var i0=0;i0<f0.getDay();i0++)grid.appendChild(el('span','ag-gd off',''));
+      for(var d=1;d<=nd;d++){(function(d){var k=Y+'-'+('0'+(M+1)).slice(-2)+'-'+('0'+d).slice(-2),has=!!days[k],c=el('button','ag-gd'+(has?' has':' off')+(k===todayK?' td':''),String(d));c.type='button';c.disabled=!has;if(has){dayBtns[k]=c;c.onclick=function(){pickDay(k);};}grid.appendChild(c);})(d);}
+      body.appendChild(el('p','ag-s ag-hint',T('bHint')));
+      var dsl=el('h2','ag-ds',T('bPickD')),hg=el('div','ag-hg');body.appendChild(dsl);body.appendChild(hg);
       var chosen=info(T('bNew2'),'—');chosen.className+=' ag-chosen';
-      var go=el('button','ag-btn ag-go',kind!=='reschedule'?T('bAskN'):T('bAsk'));go.type='button';go.disabled=true;
+      var go=el('button','ag-btn ag-go',kind==='reschedule'?T('bAsk'):kind==='makeup'?T('bAskM'):T('bAskN'));go.type='button';go.disabled=true;
       var msg=el('p','ag-s ag-m','');msg.setAttribute('role','status');
-      var hd=el('div','ag-dh');hd.appendChild(el('span','ag-dl',T('bSelDate')));
-      var bc=el('button','ag-sq');bc.type='button';bc.setAttribute('aria-label',T('bSelDate'));bc.innerHTML=CALSVG;
-      var bp=el('button','ag-sq','‹');bp.type='button';var bn=el('button','ag-sq on','›');bn.type='button';
-      hd.appendChild(bc);hd.appendChild(bp);hd.appendChild(bn);body.appendChild(hd);
-      var cols=el('div','ag-cols');body.appendChild(cols);
-      function draw(){
-        cols.textContent='';chips=[];var part=order.slice(page*per,page*per+per);
-        bp.disabled=page===0;bn.disabled=(page+1)*per>=order.length;
-        part.forEach(function(k){
-          var col=el('div','ag-col'),h=el('div','ag-dcard'),d=new Date(days[k][0]);
-          h.appendChild(el('small','',wdShort(d)));h.appendChild(el('b','',String(d.getDate())));h.appendChild(el('small','',monShort(d)));col.appendChild(h);
-          var list=el('div','ag-hrs');
-          days[k].forEach(function(iso){var c=el('button','ag-chip',fmtT(iso));c.type='button';if(iso===sel)c.classList.add('on');
-            c.onclick=function(){sel=iso;chips.forEach(function(x){x.classList.remove('on');});c.classList.add('on');chosen.querySelector('b').textContent=fmtFull(iso)+' – '+fmtT(new Date(new Date(iso).getTime()+dur*60000).toISOString());go.disabled=false;msg.textContent='';};
-            chips.push(c);list.appendChild(c);});
-          col.appendChild(list);cols.appendChild(col);});
+      var rb=null,rt=null,rs=null,wn=null;
+      if(kind==='new'){
+        rb=el('button','ag-rep');rb.type='button';rb.setAttribute('role','switch');rb.setAttribute('aria-checked','false');
+        var rl=el('span','');rl.style.cssText='display:flex;gap:10px;align-items:center;min-width:0';var ri=el('span','');ri.innerHTML=RPI;rl.appendChild(ri);
+        var rx=el('span','');rx.appendChild(el('b','',T('bRep')));rs=el('small','',T('bRepP'));rx.appendChild(rs);rl.appendChild(rx);rt=el('span','ag-tg');rb.appendChild(rl);rb.appendChild(rt);
+        if(!wkOk){rb.disabled=true;rs.textContent=T('bRepL',wkLim);}
+        rb.onclick=function(){if(!sel||!wkOk)return;rep=!rep;upd();};
+        wn=el('div','ag-wn');wn.innerHTML=WNI;wn.appendChild(el('span','',T('bWkN')));
       }
-      bp.onclick=function(){if(page>0){page--;draw();}};bn.onclick=function(){if((page+1)*per<order.length){page++;draw();}};
-      bc.onclick=function(){calSheet(order,function(k){page=Math.floor(order.indexOf(k)/per);draw();});};
-      draw();
+      function upd(){
+        if(rt){rt.className='ag-tg'+(rep?' on':'');rb.setAttribute('aria-checked',rep?'true':'false');if(wkOk)rs.textContent=sel?T('bRepS',wdLong(sel)+' '+fmtT(sel)):T('bRepP');}
+        if(kind==='new')go.textContent=rep?T('bAskW'):T('bAskN');
+        if(sel){chosen.querySelector('b').textContent=fmtFull(sel)+' – '+fmtT(new Date(new Date(sel).getTime()+dur*60000).toISOString());go.disabled=false;}
+      }
+      function pickDay(k){
+        selDay=k;sel=null;go.disabled=true;chosen.querySelector('b').textContent='—';
+        Object.keys(dayBtns).forEach(function(x){dayBtns[x].classList.toggle('on',x===k);});
+        var d0=new Date(days[k][0]);try{dsl.textContent=new Intl.DateTimeFormat(loc(),{weekday:'long',day:'numeric',month:'long'}).format(d0).replace(/^./,function(c){return c.toUpperCase();});}catch(e){}
+        hg.textContent='';
+        days[k].forEach(function(iso){var c=el('button','ag-chip',fmtT(iso));c.type='button';
+          c.onclick=function(){sel=iso;hg.querySelectorAll('.ag-chip').forEach(function(x){x.classList.remove('on');});c.classList.add('on');msg.textContent='';upd();};hg.appendChild(c);});
+        upd();
+      }
       body.appendChild(el('p','ag-s ag-dur',T('bDur')+' '+dur+' min'));
+      if(rb)body.appendChild(rb);if(wn)body.appendChild(wn);
       body.appendChild(el('p','ag-s',T('bNote')+(tzName()?' ('+tzName()+')':'')));
       var sp=el('div','ag-sp');body.appendChild(sp);body.appendChild(chosen);body.appendChild(msg);body.appendChild(go);
       go.onclick=function(){
         if(!sel)return;go.disabled=true;msg.textContent=T('busy');
-        sb.functions.invoke('gcal-book',{body:{action:'request',kind:kind,lesson_id:lesson?lesson.id:undefined,start:sel}}).then(function(q){
+        sb.functions.invoke('gcal-book',{body:{action:'request',kind:kind,lesson_id:lesson?lesson.id:undefined,start:sel,weekly:rep||undefined}}).then(function(q){
           var d=q&&q.data;
-          if(d&&d.ok){sent(kind,lesson,sel,d.id);}
+          if(d&&d.ok){sent(kind,lesson,sel,d.id,!!d.auto,!!d.weekly);}
           else{msg.textContent=errText(d&&d.error);if(d&&d.error==='slot_taken')setTimeout(function(){book(kind,lesson);},1200);else go.disabled=false;}
         },function(){msg.textContent=T('fail');go.disabled=false;});
       };
     },function(){body.textContent='';body.appendChild(el('p','ag-s',T('fail')));});
   }
-  function sent(kind,lesson,iso,id){
+  function sent(kind,lesson,iso,id,auto,weekly){
     var body=el('div','ag-ovb ag-center');var ck=el('div','ag-check','✓');body.appendChild(ck);
-    body.appendChild(el('h1','',T('sTitle')));body.appendChild(el('p','ag-lead',T(kind!=='reschedule'?'sBodyN':'sBodyR',fmtFull(iso).toLowerCase())));
+    body.appendChild(el('h1','',auto?T('sOkT'):T('sTitle')));
+    body.appendChild(el('p','ag-lead',auto?T(kind==='reschedule'?'sOkR':'sOkN',fmtFull(iso).toLowerCase()):weekly?T('sBodyW',wdLong(iso)+' '+fmtT(iso)):T(kind!=='reschedule'?'sBodyN':'sBodyR',fmtFull(iso).toLowerCase())));
     var c=el('div','ag-info ag-sum');
     if(lesson){var r1=el('div','ag-sr');r1.appendChild(el('span','',T('bCur')));r1.appendChild(el('b','',fmtS(lesson.start_at)));c.appendChild(r1);}
     var r2=el('div','ag-sr');r2.appendChild(el('span','',T('bNew2')));r2.appendChild(el('b','',fmtS(iso)));c.appendChild(r2);
-    var r3=el('div','ag-sr');r3.appendChild(el('span','',T('sSit')));r3.appendChild(el('span','ag-pill',T('pend')));c.appendChild(r3);body.appendChild(c);
-    body.appendChild(el('p','ag-s',T('sHold')));
+    var r3=el('div','ag-sr');r3.appendChild(el('span','',T('sSit')));r3.appendChild(el('span','ag-pill',T(auto?'sConf':'pend')));c.appendChild(r3);body.appendChild(c);
+    if(!auto)body.appendChild(el('p','ag-s',T('sHold')));
     var ok=el('button','ag-btn ag-go',T('sBackL'));ok.type='button';ok.onclick=close;body.appendChild(ok);
-    var sp2=el('div','ag-sp');body.insertBefore(sp2,ok);var wd=el('button','ag-btn ag-alt2',T('sWith'));wd.type='button';wd.onclick=function(){wd.disabled=true;sb.functions.invoke('gcal-book',{body:{action:'withdraw',id:id}}).then(close,close);};body.appendChild(wd);
+    if(!auto){var sp2=el('div','ag-sp');body.insertBefore(sp2,ok);var wd=el('button','ag-btn ag-alt2',T('sWith'));wd.type='button';wd.onclick=function(){wd.disabled=true;sb.functions.invoke('gcal-book',{body:{action:'withdraw',id:id}}).then(close,close);};body.appendChild(wd);}
     sheet(kind!=='reschedule'?T(kind==='makeup'?'mkBook':'bNew'):T('rsT'),body,true);
   }
   function calAsk(x){
@@ -274,6 +300,15 @@ function mount(box,ctx){
     b1.onclick=function(){try{var bl=new Blob([icsOf(x)],{type:'text/calendar;charset=utf-8'}),u=URL.createObjectURL(bl),a=document.createElement('a');a.href=u;a.download='aula.ics';document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(u);},4000);m.textContent=T('calOk');}catch(e){m.textContent=T('fail');}};
     var b2=el('a','ag-btn alt ag-go',T('calG'));b2.href=gcalLink(x);b2.target='_blank';b2.rel='noopener';
     body.appendChild(b1);body.appendChild(b2);body.appendChild(m);sheet(T('cal'),body);
+  }
+  function stopAsk(se){
+    var body=el('div','ag-ovb ag-center');
+    body.appendChild(el('h1','',T('wkQ')));body.appendChild(el('p','ag-lead',T('wkN')));
+    var msg=el('p','ag-s ag-m','');msg.setAttribute('role','status');
+    var yes=el('button','ag-btn ag-go',T('wkYes'));yes.type='button';
+    yes.onclick=function(){yes.disabled=true;msg.textContent=T('busy');sb.functions.invoke('gcal-book',{body:{action:'end_series',id:se.id}}).then(function(q){var d=q&&q.data;if(d&&d.ok)close();else{msg.textContent=T('fail');yes.disabled=false;}},function(){msg.textContent=T('fail');yes.disabled=false;});};
+    var no=el('button','ag-btn alt',T('bBack'));no.type='button';no.onclick=close;
+    body.appendChild(msg);body.appendChild(yes);body.appendChild(no);sheet(T('wkStop'),body);
   }
   function cancelAsk(x){
     var late=new Date(x.start_at)-Date.now()<=H2,body=el('div','ag-ovb ag-center');
@@ -353,7 +388,7 @@ function admin(box,lg){
         if(NC&&NC.render){NC.render(det,{id:x.k,title:x.title,start_at:x.start_at},{sb:Gate.sb,profiles:function(){return stu;},att:function(){return (S&&S.attempts)||[];}},{compact:true});}
         var ch=el('button','ag-btn alt','Mudar aluno');ch.type='button';ch.style.marginTop='10px';ch.onclick=function(){if(gr)assignUI(gr,x);};
         var bx=el('div','ag2-acts');bx.appendChild(ch);
-        if(!isPast){var rb=el('button','ag-btn alt','Remarcar'),cb=el('button','ag-btn alt ag2-danger','Cancelar aula');rb.type=cb.type='button';rb.onclick=function(){changeUI(x,'move',nm.join(', '));};cb.onclick=function(){changeUI(x,'cancel',nm.join(', '));};bx.appendChild(rb);bx.appendChild(cb);}
+        if(!isPast){var rb=el('button','ag-btn alt','Remarcar'),cb=el('button','ag-btn alt ag2-danger','Cancelar aula');rb.type=cb.type='button';var nms=v.map(function(i){return sname(gr,i);}).join(', ');rb.onclick=function(){changeUI(x,'ask',nms,v);};cb.onclick=function(){changeUI(x,'cancel',nms,v);};bx.appendChild(rb);bx.appendChild(cb);}
         det.appendChild(bx);};
       return it;}
     function add2(p){for(var i=1;i<arguments.length;i++)p.appendChild(arguments[i]);return p;}
@@ -406,29 +441,31 @@ function admin(box,lg){
     top.appendChild(bk);top.appendChild(el('h1','',title));aov.appendChild(top);aov.appendChild(body);document.body.appendChild(aov);document.body.style.overflow='hidden';
   }
 
-  function changeUI(x,mode,names){
+  function changeUI(x,mode,names,ids){
     var body=el('div','ag-ovb');
     body.appendChild(info(fmt(x.start_at),(x.title||'')+(names?' · '+names:'')));
     var nt=el('label','ag-ck'),nc=document.createElement('input');nc.type='checkbox';nc.checked=true;nt.appendChild(nc);nt.appendChild(document.createTextNode(' Avisar os alunos por mensagem'));
-    var inp=null,force=false;
-    if(mode==='move'){body.appendChild(el('h2','','Novo dia e horário'));inp=document.createElement('input');inp.type='datetime-local';inp.className='ag-inp';inp.step=600;
-      var d=new Date(x.start_at);d.setMinutes(d.getMinutes()-d.getTimezoneOffset());inp.value=d.toISOString().slice(0,16);body.appendChild(inp);}
-    else{body.appendChild(el('p','ag-s','A aula será apagada do Google Agenda e do app. Isso não pode ser desfeito.'));}
-    body.appendChild(nt);
+    var inp=null,force=false,credit=null;
+    if(mode==='ask'){body.appendChild(el('p','ag-s','O aluno recebe um aviso e escolhe o novo horário entre os seus horários livres. A aula atual sai da agenda agora e ele ganha uma aula a repor, que continua valendo se ele demorar a escolher.'));nc.checked=true;}
+    else{body.appendChild(el('p','ag-s','A aula será apagada do Google Agenda e do app. Isso não pode ser desfeito.'));
+      body.appendChild(el('h2','','O aluno ganha aula a repor?'));var cw=el('div','ag2-acts');var yb=el('button','ag-btn alt','Sim, dar crédito'),nb=el('button','ag-btn alt','Não dar crédito');yb.type=nb.type='button';
+      function pk(v){credit=v;yb.className='ag-btn'+(v===true?'':' alt');nb.className='ag-btn'+(v===false?'':' alt');m.textContent='';}
+      yb.onclick=function(){pk(true);};nb.onclick=function(){pk(false);};cw.appendChild(yb);cw.appendChild(nb);body.appendChild(cw);}
+    if(mode==='cancel')body.appendChild(nt);
     var m=el('p','ag-s ag-m','');m.setAttribute('role','status');body.appendChild(m);body.appendChild(el('div','ag-sp'));
-    var go=el('button','ag-btn ag-go',mode==='move'?'Remarcar':'Sim, cancelar a aula');go.type='button';
+    var go=el('button','ag-btn ag-go',mode==='ask'?'Pedir novo horário ao aluno':'Sim, cancelar a aula');go.type='button';
     var back=el('button','ag-btn alt','Voltar');back.type='button';back.onclick=close;
-    go.onclick=function(){var pl={action:mode,event:x.k,notify:nc.checked};
+    go.onclick=function(){var pl={action:mode,event:x.k,notify:mode==='ask'?true:nc.checked};if(mode==='cancel')pl.credit=false;if(mode==='cancel'){if(credit===null){m.textContent='Escolha se o aluno ganha aula a repor.';return;}pl.credit=credit;}
       if(mode==='move'){if(!inp.value){m.textContent='Escolha o novo horário.';return;}pl.start=new Date(inp.value).toISOString();pl.force=force;}
       go.disabled=back.disabled=true;m.textContent=T('busy');
       Gate.sb.functions.invoke('gcal-admin',{body:pl}).then(function(r){var q=r&&r.data;
-        if(q&&q.ok){if(mode==='cancel'&&x.ids&&x.ids.length){try{Gate.sb.from('class_credits').insert(x.ids.map(function(u){return {user_id:u,event_id:x.k,title:x.title||'Aula',class_at:x.start_at};})).then(function(){},function(){});}catch(e){}}m.textContent=mode==='move'?'Aula remarcada ✅':'Aula cancelada ✅';setTimeout(function(){Gate.sb.functions.invoke('gcal-sync',{body:{force:true}}).then(close,close);},700);return;}
+        if(q&&q.ok){m.textContent=mode==='ask'?'Aviso enviado ao aluno ✅':'Aula cancelada ✅';setTimeout(function(){Gate.sb.functions.invoke('gcal-sync',{body:{force:true}}).then(close,close);},700);return;}
         go.disabled=back.disabled=false;var e=q&&q.error;
         if(e==='conflict'){force=true;go.textContent='Remarcar mesmo assim';m.textContent='Já existe aula perto desse horário ('+fmt(q.at)+'). Toque de novo para confirmar mesmo assim.';}
         else if(e==='bad_time')m.textContent='Escolha um horário no futuro.';
         else m.textContent=T('fail')+(e?' ('+e+')':'');
       },function(){go.disabled=back.disabled=false;m.textContent=T('fail');});};
-    body.appendChild(go);body.appendChild(back);sheet(mode==='move'?'Remarcar aula':'Cancelar aula',body);
+    body.appendChild(go);body.appendChild(back);sheet(mode==='ask'?'Remarcar aula':'Cancelar aula',body);
   }
   function assignUI(gr,x){
     var body=el('div','ag-ovb'),chosen={};x.ids.forEach(function(i){chosen[i]=true;});
@@ -458,6 +495,7 @@ function admin(box,lg){
       var nm=el('b','',sname(gr,q.user_id));nm.style.fontSize='1.1rem';var qf=flagOf(gr,q.user_id);if(qf)nm.insertBefore(qf,nm.firstChild);c.appendChild(nm);
       function ln(l,iso,strong){var d=el('span','ag-ln');d.appendChild(el('span','ag-dim',l+' '));d.appendChild(el(strong?'b':'span','',fmtS(iso)));d.appendChild(el('span','ag-dim',' (Brasília)'));d.querySelector('b,span:nth-child(2)').style.display='inline';return d;}
       if(q.kind==='reschedule'){c.appendChild(ln('De:',q.old_start,false));c.appendChild(ln('Para:',q.new_start,true));}
+      else if(q.kind==='weekly'){var wdp='';try{wdp=new Intl.DateTimeFormat('pt-BR',{weekday:'long',timeZone:'America/Sao_Paulo'}).format(new Date(q.new_start));}catch(e){}var wl=el('span','ag-ln');wl.appendChild(el('span','ag-dim','Aula fixa: '));wl.appendChild(el('b','','toda '+wdp+' às '+fmtT(q.new_start)));wl.style.display='block';c.appendChild(wl);c.appendChild(ln('Começa em:',q.new_start,false));}
       else c.appendChild(ln('Nova aula:',q.new_start,true));
       var m=el('p','ag-s ag-m','');m.setAttribute('role','status');
       var acts=el('div','ag-acts ag-two'),ok=el('button','ag-btn ag-ok','Aprovar'),no=el('button','ag-btn alt ag-rej','Recusar');ok.type=no.type='button';

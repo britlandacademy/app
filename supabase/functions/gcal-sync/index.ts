@@ -89,6 +89,44 @@ Deno.serve(async (req) => {
         else if (!n && !evs.has(evId)) await db.from("student_msgs").insert({ user_id: o.user_id, body: "Sua aula de " + fmtP(o.start_at) + " foi cancelada." });
       }
     } catch (_) { /* aviso e opcional */ }
+    try { // aula fixa semanal: se o horario de uma semana ficou ocupado, so aquela aula e cancelada, o aluno ganha 1 aula a repor e a serie continua
+      const { data: ser } = await db.from("lesson_series").select("gcal_event_id,created_at,user_id").eq("status", "active");
+      if (ser && ser.length) {
+        const baseOf = (id: string) => String(id).split(":")[0].replace(/_\d{8}T\d{6}Z$/, "");
+        const sMap = new Map(ser.map((x: any) => [x.gcal_event_id, x]));
+        const { data: bl } = await db.from("availability_blocks").select("day");
+        const blocked = new Set((bl || []).map((b: any) => String(b.day)));
+        const now = Date.now();
+        const seen = new Set<string>();
+        for (const r of rows) {
+          const evId = String(r.id).split(":")[0];
+          const se = sMap.get(baseOf(r.id));
+          if (!se || evId === se.gcal_event_id || seen.has(evId) || Date.parse(r.start_at) <= now) continue; // so instancias futuras da serie
+          const s0 = Date.parse(r.start_at), e0 = Date.parse(r.end_at);
+          const day = new Date(s0 - 3 * 3600e3).toISOString().slice(0, 10);
+          let clash = blocked.has(day);
+          if (!clash) for (const o of rows) {
+            const oe = String(o.id).split(":")[0];
+            if (oe === evId) continue;
+            if (!(s0 < Date.parse(o.end_at) && e0 > Date.parse(o.start_at))) continue;
+            const os = sMap.get(baseOf(o.id));
+            if (os && os !== se && new Date(os.created_at) < new Date(se.created_at)) { clash = true; break; } // duas series: a mais nova cede
+            if (!os) { clash = true; break; } // outra aula ou compromisso na agenda
+          }
+          if (!clash) continue;
+          seen.add(evId);
+          const dr = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(link.calendar_id || "primary")}/events/${encodeURIComponent(evId)}?sendUpdates=none`, { method: "DELETE", headers: { Authorization: "Bearer " + t.access_token } });
+          if (!dr.ok && dr.status !== 404 && dr.status !== 410) continue;
+          await db.from("lessons").delete().like("id", evId + ":%");
+          const { count: dup } = await db.from("class_credits").select("id", { count: "exact", head: true }).eq("event_id", evId);
+          if (!dup) {
+            await db.from("class_credits").insert({ user_id: se.user_id, event_id: evId, title: r.title, class_at: r.start_at, note: "série" });
+            await db.from("student_msgs").insert({ user_id: se.user_id, body: "Sua aula fixa de " + fmtP(r.start_at) + " foi cancelada porque o horário ficou ocupado. Você ganhou 1 aula a repor. As próximas semanas continuam." });
+            await db.from("teacher_events").insert({ student_id: se.user_id, kind: "msg", label: "Aula fixa de " + fmtP(r.start_at) + " cancelada por conflito de horário (aluno ganhou 1 aula a repor)" });
+          }
+        }
+      }
+    } catch (_) { /* a guarda e opcional: o proximo sync tenta de novo */ }
     await db.from("gcal_link").update({ last_error: null }).eq("id", 1);
     return json({ ok: true, count: rows.length });
   } catch (err) {
