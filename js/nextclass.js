@@ -30,6 +30,8 @@ s.textContent+='.ag2 .ag2-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 
 '.ag2 .ag2-tm{font-weight:700;font-size:1.1rem;min-width:56px}.ag2 .ag2-tt{font-weight:700}.ag2 .ag2-sub{color:var(--muted);font-size:.86rem;margin-top:2px}.ag2 .ag2-chev{margin-left:auto;color:var(--muted)}'+
 '.ag2 a.ag2-q{display:inline-flex;align-items:center;min-height:36px;padding:0 12px;border-radius:10px;border:2px solid var(--accent);color:var(--accent);font-weight:700;font-size:.84rem;text-decoration:none;white-space:nowrap}.ag2 a.ag2-q.go{background:var(--accent);color:var(--accent-ink)}'+
 '.ag2 .ag2-det{padding:4px 14px 14px;border-top:1px solid var(--line)}.ag2 .ag2-det .nc{margin-top:10px}';
+s.textContent+='.nc .nc-box.c-blue{background:rgba(55,138,221,.12);border:1.5px solid #378add}.nc .nc-box.c-ok{background:var(--ok-bg);border:1.5px solid var(--ok)}.nc .nc-box.c-ok .nc-k,.nc .nc-box.c-ok .nc-m{color:var(--ok)}.nc .nc-box.c-warn{background:var(--warn-bg);border:1.5px solid var(--warn)}.nc .nc-box.c-warn .nc-k,.nc .nc-box.c-warn .nc-m{color:var(--warn)}.nc .nc-box.c-bad{background:var(--bad-bg);border:1.5px solid var(--bad)}.nc .nc-box.c-bad .nc-k,.nc .nc-box.c-bad .nc-m{color:var(--bad)}.nc .nc-box.c-gold{background:color-mix(in srgb,#c9a13b 14%,var(--surface));border:1.5px solid #c9a13b}';
+s.textContent+='.nc .nc-tm{display:inline-flex;align-items:center;gap:8px;background:#0b1733;color:#fff;border-radius:10px;padding:4px 12px;min-width:116px;justify-content:center}.nc .nc-tm small{display:block;font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;color:#cfd7e6;line-height:1.1}.nc .nc-tm b{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums}.nc .nc-tm.run{background:#1d5e2e}.nc .nc-tm.extra{background:#854f0b}';
 D.head.appendChild(s);}
 var LAGMAX=6,LAGEDIT=30;
 function lagOf(d){d=d||{};var cp=d.currentPosition||{},nw=d.nextClass&&d.nextClass.newWords,reg=Number(cp.paragraph),pl=nw&&Number(nw.from);
@@ -60,11 +62,12 @@ function loadData(sb,ev,deps){
       sb.from('lessons').select('user_id,start_at').in('user_id',u).lt('end_at',new Date().toISOString()).order('end_at',{ascending:false}).limit(80),
       sb.from('teacher_cfg').select('key,value').in('key',['plans_sheet','plans_gids']),
       sb.from('invite_state').select('vkey,idx').like('vkey',u[0]+':%'),
-      sb.from('invite_sent').select('status,via,kind').eq('event_key',key+'|'+new Date(ev.start_at).toISOString())
+      sb.from('invite_sent').select('status,via,kind').eq('event_key',key+'|'+new Date(ev.start_at).toISOString()),
+      sb.from('lessons').select('start_at').eq('user_id',u[0]).gte('start_at',new Date().toISOString()).lt('start_at',new Date(Date.now()+35*864e5).toISOString()).limit(60)
     ].map(function(q){return Promise.resolve(q).then(function(x){return x&&!x.error?x.data||[]:[];},function(){return [];});})).then(function(a){
       a[0].forEach(function(x){out.prog[x.user_id]=x;});a[1].forEach(function(x){out.links[x.user_id]=x;});out.errs=a[2];
       a[3].forEach(function(x){out.att[x.user_id]=x;});a[4].forEach(function(x){if(!out.prev[x.user_id])out.prev[x.user_id]=x.start_at;});
-      var c={};a[5].forEach(function(x){c[x.key]=x.value;});out.cfg=c;out.inv={};a[6].forEach(function(x){out.inv[x.vkey]=x.idx;});out.sentRev=(a[7].filter(function(x){return x.kind==='rev';})[0])||null;return out;});
+      var c={};a[5].forEach(function(x){c[x.key]=x.value;});out.cfg=c;out.inv={};a[6].forEach(function(x){out.inv[x.vkey]=x.idx;});out.sentRev=(a[7].filter(function(x){return x.kind==='rev';})[0])||null;out.futN=a[8].length;var c28=Date.now()-28*864e5;out.pastN=a[4].filter(function(x){return x.user_id===u[0]&&new Date(x.start_at).getTime()>c28;}).length;return out;});
   });
 }
 
@@ -115,7 +118,19 @@ function render(box,ev,deps,opts){opts=opts||{};
     var tzs=d.uids.map(function(u){var pp=deps.profiles().filter(function(x){return x.id===u;})[0];return pp&&tzTag(pp.tz,ev.start_at);}).filter(Boolean);
     if(tzs.length&&d.uids.length===1)sub.push('\uD83C\uDF0D fuso: '+tzs[0].tz.replace(/_/g,' ')+' ('+tzs[0].diff+')');
     if(sub.length){var sd=el('div','nc-sub',sub.join(' · '));if(tzs.length&&d.uids.length===1){sd.textContent='';sd.appendChild(document.createTextNode(sub.slice(0,-1).join(' · ')+(sub.length>1?' · ':'')));var tb=el('b',null,sub[sub.length-1]);tb.style.color='var(--warn)';sd.appendChild(tb);}hd.appendChild(sd);}
+    if(window.BL_FORECAST&&fd.classesTotal){var ms0=(d.prog[d.uids[0]]&&d.prog[d.uids[0]].data&&d.prog[d.uids[0]].data.me&&d.prog[d.uids[0]].data.me.missed)||[],dn=+fd.classesDone||0,
+      fr=BL_FORECAST.calc({done:dn,total:+fd.classesTotal,freq:BL_FORECAST.freq(d.futN,d.pastN),lagPar:lg&&!lg.edit?lg.lag:0,missRate:ms0.length/Math.max(1,dn+ms0.length)});
+      if(fr)hd.appendChild(el('div','nc-sub nc-fc',BL_FORECAST.fmt(fr,'pt','Stage '+(((d.prog[d.uids[0]]||{}).stage)||'?'))));}
     top.appendChild(hd);top.appendChild(el('span','sp'));
+    /* cronometro: antes da aula conta o que falta; ao comecar, conta o tempo de aula (50 min) e depois o tempo extra */
+    if(!opts.past){var tm=el('span','nc-tm'),tml=el('small'),tmb=el('b'),CLS=50*6e4;tm.setAttribute('role','timer');tm.appendChild(tml);tm.appendChild(tmb);top.appendChild(tm);
+      var f2=function(n){return n<10?'0'+n:''+n;},fm=function(ms){var t=Math.floor(Math.abs(ms)/1000),h=Math.floor(t/3600),m=Math.floor(t%3600/60),sc=t%60;return h>0?h+':'+f2(m)+':'+f2(sc):f2(m)+':'+f2(sc);};
+      var tmi=null,tick=function(){if(!tm.isConnected){clearInterval(tmi);return;}var ms=start-Date.now(),el0=-ms;
+        if(ms>24*36e5||el0>3*36e5){tm.style.display='none';return;}tm.style.display='';
+        if(ms>0){tm.className='nc-tm';tml.textContent='Começa em';tmb.textContent=fm(ms);}
+        else if(el0<=CLS){tm.className='nc-tm run';tml.textContent='Em aula';tmb.textContent=fm(el0)+' / 50:00';}
+        else{tm.className='nc-tm extra';tml.textContent='Tempo extra';tmb.textContent='+'+fm(el0-CLS);}};
+      tick();tmi=setInterval(tick,1000);}
     if(sid){var sa=el('a','nc-btn','Abrir planilha');sa.href='https://docs.google.com/spreadsheets/d/'+sid+'/edit'+(gid?'#gid='+gid:'');sa.target='_blank';sa.rel='noopener';top.appendChild(sa);}
     /* botao de 2 etapas: envia o convite da Revision (WhatsApp) -> entra -> (30 min) envia o do New Work -> entra */
     var isMeet=/meet\.google\.com/.test(String(meet||'')),zRev=zoomApp(ZOOM_REV),zNw=zoomApp(ZOOM_NW),za=el('a','nc-btn go',''),cb=el('a','nc-btn ic'),skey='blnc:'+d.key+':'+ev.start_at,stt={s:0,t:0};
@@ -129,7 +144,7 @@ function render(box,ev,deps,opts){opts=opts||{};
       var sd=stt.s===0||stt.s===3;
       if(isMeet)setLab(stt.s===0?'Enviar link da aula':'Entrar na aula',stt.s===0);
       else setLab(['Enviar 1º link (REV)','Entrar Revision','Entrar Revision','Enviar 2º link (NW)','Entrar New Work'][stt.s]||'Enviar 1º link (REV)',sd);
-      cb.style.display=(isMeet?stt.s===0:sd)?'':'none';}
+      cb.style.display='';}
     cb.innerHTML=IC;cb.href='#';cb.setAttribute('role','button');cb.setAttribute('aria-label','Copiar texto do convite');cb.title='Copiar texto do convite';
     za.href='#';za.setAttribute('role','button');lab2();
     var tk=setInterval(function(){if(!za.isConnected){clearInterval(tk);return;}lab2();},20000);
@@ -158,8 +173,8 @@ function render(box,ev,deps,opts){opts=opts||{};
       t.addEventListener('click',function(){t.remove();});setTimeout(function(){t.classList.add('out');setTimeout(function(){t.remove();},300);},4000);}
     function launch(u){var h=document.createElement('a');h.href=u;h.style.display='none';document.body.appendChild(h);h.click();setTimeout(function(){h.remove();},500);}
     function advance(){stt.s=isMeet?1:stt.s===0?1:4;saveSt();lab2();}
-    cb.addEventListener('click',function(e){e.preventDefault();var k=stt.s===0?'rev':'nw';
-      var r=invite(k);copyTxt(r.text).then(function(){commit(k,r);advance();toast();},function(){if(window.BL_DLG)BL_DLG.alert('Não consegui copiar o convite. Tente de novo.',{title:'Não copiou'});});});
+    cb.addEventListener('click',function(e){e.preventDefault();var k=stt.s<3?'rev':'nw',first1=stt.s===0||stt.s===3;/* nos passos 0 e 3 o convite conta como enviado; nos demais so copia de novo */
+      var r=invite(k);copyTxt(r.text).then(function(){if(first1){commit(k,r);advance();}toast();},function(){if(window.BL_DLG)BL_DLG.alert('Não consegui copiar o convite. Tente de novo.',{title:'Não copiou'});});});
     za.addEventListener('click',function(e){e.preventDefault();
       if(isMeet&&stt.s===1){screens().then(function(sc){if(sc){try{openRevision(sc);}catch(x){}}window.open(meet,'_blank','noopener');});return;}
       if(stt.s===0||stt.s===3){var kk=stt.s===0?'rev':'nw',r=invite(kk),go=function(){window.open('https://wa.me/?text='+encodeURIComponent(r.text),'_blank','noopener');commit(kk,r);advance();};
@@ -200,11 +215,13 @@ function render(box,ev,deps,opts){opts=opts||{};
       },function(){say('Não consegui abrir o livro do professor agora.');});
     }top.appendChild(cb);top.appendChild(za);wrap.appendChild(top);
     /* three boxes */
-    var g3=el('div','nc-grid'),b1=el('div','nc-box'),b2=el('div','nc-box'),b3=el('div','nc-box today');
+    var g3=el('div','nc-grid'),b1=el('div','nc-box c-blue'),b2=el('div','nc-box'),b3=el('div','nc-box today c-gold');
     add(b1,el('div','nc-k','Revisão de hoje'));
     if(nx&&nx.review&&nx.review.from!=null){add(b1,el('div','nc-v',pf(nx.review)),el('div','nc-m',pw(nx.review)));if(nx.adj)add(b1,el('div','nc-m',(nx.ahead?'Adiante do plano · ajustada':'Atrás do plano · ajustada')+' pela última palavra registrada (par. '+cp.paragraph+')'));if(!nx.adj&&!(Number(cp.paragraph)>0)&&nx.review&&!opts.past)add(b1,el('div','nc-m','Atenção: última palavra ainda não registrada: mostrando o Contents da planilha'));}else add(b1,el('div','nc-m','Sem revisão indicada na planilha'));
     d.uids.forEach(function(u){var pd=(d.prog[u]||{}).data||{},ms=(pd.me&&pd.me.missed)||[];ms.forEach(function(m){var t='Reposição'+(m.classNumber?' da aula '+m.classNumber:'')+(group?' · '+name(u):'')+(m.review&&m.review.from!=null?' · '+pf(m.review):'');b1.appendChild(el('span','nc-pill warn',t));});});
     add(b2,el('div','nc-k',group?'Onde a turma parou':'Onde parou'));
+    /* semaforo: em dia = verde; 1 a 3 par. atras = amarelo; 4 ou mais = vermelho; adiantado = azul (lag vem de BL_INVITE.adjust) */
+    if(nx&&typeof nx.lag==='number'&&!opts.past){var LG=nx.lag;b2.className+=' '+(LG<0?'c-blue':LG===0?'c-ok':LG<=3?'c-warn':'c-bad');b2.firstChild.textContent+=' · '+(LG<0?'adiantado':LG===0?'em dia':LG+' atrás');}
     var lw=cp.lastWord||(first&&first.last_word),pn=cp.paragraph||cp.lastNewWord;
     if(lw||cp.lesson){add(b2,el('div','nc-v',(cp.lesson?'Lição '+cp.lesson:'')+(pn?' · par. '+pn:'')),el('div','nc-m',lw?'Última palavra: '+lw:''));}else add(b2,el('div','nc-m','Sem leitura da planilha ainda'));
     if(cp.classNumber)b2.appendChild(el('div','nc-m','Aula nº '+cp.classNumber));
@@ -260,7 +277,8 @@ function render(box,ev,deps,opts){opts=opts||{};
       f.appendChild(go);f.appendChild(msg);b2.appendChild(f);})();
     add(b3,el('div','nc-k','Hoje será ensinado'));
     if(nx){var lm=/LESSON\s*(\d+)/i.exec(nx.contents||''),tl=[];if(lm)tl.push('Lição '+lm[1]);if(nx.newWords&&nx.newWords.from!=null)tl.push(pf(nx.newWords));
-      var nw=nx.newWords||{};add(b3,el('div','nc-v',tl.join(' · ')||(nx.contents||'—')));if(nw.from!=null){if(nw.fromWord)b3.appendChild(el('div','nc-m','Primeira palavra: '+nw.fromWord+' (par. '+nw.from+')'));b3.appendChild(el('div','nc-m','Última palavra: '+(nw.toWord||'—')+' (par. '+nw.to+')'));}
+      var nw=nx.newWords||{};add(b3,el('div','nc-v',tl.join(' · ')||(nx.contents||'—')));if(nw.from!=null){if(nw.fromWord)b3.appendChild(el('div','nc-m','Primeira palavra: '+nw.fromWord+' (par. '+nw.from+')'));b3.appendChild(el('div','nc-m','Última palavra: '+(nw.toWord||'—')+' (par. '+nw.to+')'));
+        var cnt=Number(nw.to)-Number(nw.from)+1,nt=cnt+(cnt===1?' parágrafo':' parágrafos');if(nx.lag>0&&nx.planTo){var rem=nx.planTo-Number(nw.to);nt+=rem>0?' · ainda '+rem+' atrás do plano':' · volta ao plano';}b3.appendChild(el('div','nc-m',nt));}
       var ex=[];if(nx.hasReading)ex.push('Leitura');if(nx.hasDictation)ex.push('Ditado');if(nx.hasQuiz)ex.push('Quiz');if(nx.lessonCheck)ex.push('Lesson Check');if(nx.conversation)ex.push('Conversation');if(nx.activity)ex.push(nx.activity);
       if(ex.length)b3.appendChild(el('div','nc-m','+ '+ex.join(' · ')));}else add(b3,el('div','nc-m','Sem próxima aula indicada na planilha'));
     add(g3,b1,b2,b3);wrap.appendChild(g3);

@@ -188,8 +188,9 @@ function reconcile(c,pr){
 function mount(box,o){
  if(!box||!o||!o.sb)return;css();var sb=o.sb;
  var P=function(q){return Promise.resolve(q).then(function(r){return r&&!r.error?r.data:null;},function(){return null;});};
- Promise.all([P(sb.rpc('my_last_class')),o.uid?P(sb.from('plan_progress').select('stage,lesson,data').eq('user_id',o.uid).maybeSingle()):null,o.uid?P(sb.from('lessons').select('start_at,end_at,meet_url').eq('user_id',o.uid).gte('end_at',new Date().toISOString()).order('start_at').limit(1)):null]).then(function(a){
+ Promise.all([P(sb.rpc('my_last_class')),o.uid?P(sb.from('plan_progress').select('stage,lesson,data').eq('user_id',o.uid).maybeSingle()):null,o.uid?P(sb.from('lessons').select('start_at,end_at,meet_url').eq('user_id',o.uid).gte('end_at',new Date().toISOString()).order('start_at').limit(1)):null,o.uid?P(sb.from('lessons').select('start_at').eq('user_id',o.uid).gte('start_at',new Date(Date.now()-28*864e5).toISOString()).lt('start_at',new Date(Date.now()+35*864e5).toISOString()).limit(60)):null]).then(function(a){
   var c=reconcile(a[0]&&a[0][0],a[1]),fresh=!!c&&isFresh(c.given_at),pre=preOf(a[1],a[2]&&a[2][0],o);
+  if(pre)pre.fc=fcOf(a[1],a[3]);
   if(!pre&&!fresh)return;
   if(!fresh)c=null;
   var from=c?(c.par_from||c.par_to):0,to=c?(c.par_to||from):0;
@@ -218,9 +219,12 @@ function preOf(row,ls,o){
  return {todo:L?todoOf(row,o,L,row.stage||1):[],row:row,near:ms<=24*3600e3,num:nx.classNumber,stage:row.stage||St,start:ls?ls.start_at:'',meet:ls?ls.meet_url||'':'',rev:nx.review&&nx.review.from!=null?nx.review:null,nw:nx.newWords&&nx.newWords.from!=null?nx.newWords:null,stopPar:cp.paragraph,stopWord:cp.lastWord||me.lastWord||'',L:L,St:St,
   Lc:(window.Covers&&Covers.stageOf&&L>1)?Covers.stageOf(L-1):St};
 }
+function fcOf(row,ls){try{var d=row&&row.data;if(!d||!d.classesTotal||!window.BL_FORECAST)return '';var n=Date.now(),f=0,q=0;(ls||[]).forEach(function(x){if(new Date(x.start_at).getTime()>n)f++;else q++;});
+ var ms=(d.me&&d.me.missed)||[],dn=+d.classesDone||0,r=BL_FORECAST.calc({done:dn,total:+d.classesTotal,freq:BL_FORECAST.freq(f,q),missRate:ms.length/Math.max(1,dn+ms.length)});
+ return BL_FORECAST.fmt(r,ES?'es':'en',t('stage')+' '+(row.stage||''));}catch(e){return '';}}
 function when(iso){if(!iso)return '';var d=new Date(iso),n=new Date(),tm=d.toLocaleTimeString(ES?'es':'en',{hour:'numeric',minute:'2-digit'}),dd=Math.round((new Date(d.getFullYear(),d.getMonth(),d.getDate())-new Date(n.getFullYear(),n.getMonth(),n.getDate()))/864e5);return (dd<=0?t('today'):dd===1?t('tmrw'):d.toLocaleDateString(ES?'es':'en',{weekday:'short',day:'numeric',month:'short'}))+' · '+tm;}
 function preTop(p){
- var h='<canvas class="fcv" aria-hidden="true"></canvas><span class="tag">'+t('next')+'</span><h3>'+t('cls')+' '+p.num+' · '+t('stage')+' '+p.stage+'</h3><p style="margin:0;color:#a9b4cf">'+esc(when(p.start))+'</p><div class="xwn"></div>';
+ var h='<canvas class="fcv" aria-hidden="true"></canvas><span class="tag">'+t('next')+'</span><h3>'+t('cls')+' '+p.num+' · '+t('stage')+' '+p.stage+'</h3><p style="margin:0;color:#a9b4cf">'+esc(when(p.start))+'</p>'+(p.fc?'<p style="margin:4px 0 0;color:#a9b4cf;font-size:.85em">'+esc(p.fc)+'</p>':'')+'<div class="xwn"></div>';
  if(p.stopPar||p.stopWord)h+='<div class="sec"><div class="k">'+t('stopped')+'</div><div class="pin"><span class="ic2">'+IC.bm+'</span><span><b>'+(p.stopPar?t('par')+' '+esc(p.stopPar):'')+(p.stopPar&&p.stopWord?' · ':'')+(p.stopWord?'“'+esc(p.stopWord)+'”':'')+'</b><small>'+t('stopT')+'</small></span></div></div>';
  if(p.rev||p.nw){h+='<div class="sec"><div class="k">'+t('study')+'</div>';
   if(p.rev)h+='<div class="pin"><span class="ic2">'+IC.rf+'</span><span><b>'+t('rev')+' · '+t('par')+' '+p.rev.from+'–'+p.rev.to+'</b><small>'+t('revT')+'</small></span></div>';

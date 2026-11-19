@@ -21,12 +21,15 @@ import { createClient } from "npm:@supabase/supabase-js@2";
     }
     var P=Number(cp.paragraph),rv=nx&&nx.review,nw=nx&&nx.newWords;
     if(!(P>0)||!rv||rv.from==null||!nw||nw.from==null)return nx;
-    if(Number(nw.from)===P+1)return nx;
+    var LAG=(Number(nw.from)-1)-P;/* >0 atras do plano, 0 em dia, <0 adiantado */
+    if(LAG===0)return Object.assign({},nx,{lag:0});
     var wd=cp.lastWord||(first&&first.last_word)||'';
-    if(P>=Number(nw.to))return Object.assign({},nx,{adj:true,ahead:true,planOk:false,contents:'Só REV · 20 par. (adiantado)',
+    if(P>=Number(nw.to))return Object.assign({},nx,{adj:true,ahead:true,lag:LAG,planOk:false,contents:'Só REV · 20 par. (adiantado)',
       review:{from:Math.max(1,P-19),to:P,fromWord:'',toWord:wd},newWords:null});
-    return Object.assign({},nx,{adj:true,planOk:false,review:{from:Math.max(1,P-10),to:P,fromWord:'',toWord:wd},
-      newWords:{from:P+1,to:P+3,fromWord:'',toWord:''}});
+    /* atras do plano: ensina ate 5 paragrafos para voltar ao plano (o fim do plano e o limite); em dia ou adiantado: 3 */
+    var to=LAG>0?Math.max(P+3,Math.min(Number(nw.to),P+5)):P+3;
+    return Object.assign({},nx,{adj:true,lag:LAG,planTo:Number(nw.to),planOk:false,review:{from:Math.max(1,P-10),to:P,fromWord:'',toWord:wd},
+      newWords:{from:P+1,to:to,fromWord:'',toWord:''}});
   }
 
   function kindOf(ctx){
