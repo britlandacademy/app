@@ -147,6 +147,7 @@ function mockLink(){return el('a',{class:'btnl',href:'exam.html?mock=1',style:'b
 function leave(){return el('a',{class:'btnl',href:'index.html'},'Back to the activities');}
 
 async function home(){
+  if(QS.get('teach'))return teachBegin();
   if(QS.get('mock')){const ms=parseInt(QS.get('stage'),10),mt=QS.get('test');return (ms&&(mt==='A'||mt==='B'))?mockIntro(ms,mt):mockHome();}
   const r=await sb.from('exam_release').select('stage').order('stage');
   const rel=(r.data||[]).map(x=>x.stage);
@@ -215,8 +216,8 @@ function shell(){
   minus.addEventListener('click',()=>{Gate.setSize(Gate.sizeIdx()-1);upd();});plus.addEventListener('click',()=>{Gate.setSize(Gate.sizeIdx()+1);upd();});norm.addEventListener('click',()=>{Gate.setSize(1);upd();});upd();
   app.append(
     el('header',{class:'xh'},el('div',{class:'xh-in'},
-      el('div',{class:'brand'},el('img',{src:'img/britland-shield.png',alt:''}),el('span',{class:'hl'},el('b',{},'BRITLAND'),el('i',{},'ACADEMY')),el('div',{},el('b',{},MOCK?'Stage '+stage+' Mock '+MOCK.test:'Stage '+stage+' Exam'),el('small',{id:'sub'},''))),
-      el('span',{class:'who'},NAME),el('span',{class:'sv',id:'sv','aria-live':'polite'},'Saved'),
+      el('div',{class:'brand'},el('img',{src:'img/britland-shield.png',alt:''}),el('span',{class:'hl'},el('b',{},'BRITLAND'),el('i',{},'ACADEMY')),el('div',{},el('b',{},MOCK&&MOCK.teach?'Stage '+stage+(MOCK.exam?' Exam':' Mock '+MOCK.test)+' · answers':(MOCK?'Stage '+stage+' Mock '+MOCK.test:'Stage '+stage+' Exam')),el('small',{id:'sub'},''))),
+      el('span',{class:'who'},MOCK&&MOCK.teach?'Teacher view':NAME),el('span',{class:'sv',id:'sv','aria-live':'polite'},'Saved'),
       el('div',{class:'fs',role:'group','aria-label':'Text size'},minus,norm,plus),
       el('div',{class:'timer',id:'tbox',role:'timer','aria-label':'Time left'},el('div',{},el('small',{id:'tlab'},'Time left'),el('b',{id:'tm'},'--:--'))))),
     el('button',{type:'button',class:'endb',id:'endb',hidden:true},'End exam'),
@@ -308,6 +309,7 @@ function question(p,n){
     const r=el('button',{type:'button',class:'clr',style:'margin-left:0'},'Start again with the original sentence');r.addEventListener('click',()=>{i.value=it.text;setA(p,n,'');card.classList.remove('ans');});
     card.append(el('div',{class:'inwrap'},i,r));
   }
+  if(MOCK&&MOCK.teach){const kp=MOCK.keys.parts.find(x=>x.id===p.id);const tx=kp&&kp.teacher&&kp.teacher[n];if(tx){const rd=el('div',{class:'src'},'You read: '+tx);card.insertBefore(rd,card.firstChild);}}
   if(isAns(p,n))card.classList.add('ans');
   return card;
 }
@@ -322,6 +324,9 @@ function footer(p){
       c.addEventListener('click',()=>{const q=document.getElementById('q'+n);if(q){q.scrollIntoView({behavior:'smooth',block:'center'});q.classList.add('flash');setTimeout(()=>q.classList.remove('flash'),900);const f1=q.querySelector('input,.opt');if(f1)f1.focus({preventScroll:true});}});chips.append(c);});}
   else chips.append(el('span',{class:'lab'},'Write the whole dictation in the box.'));
   const last=part===items.parts.length-1;
+  if(MOCK&&MOCK.teach){const nb=el('button',{type:'button',class:'xnext'},last?'Close':'Next part →');nb.addEventListener('click',()=>{if(last){window.close();setTimeout(()=>{location.href='admin.html';},250);}else{part++;draw();}});
+    if(part>0){const pb=el('button',{type:'button',class:'xnext',style:'background:#fff;color:var(--navy);border:2px solid var(--navy);margin-right:8px'},'← Previous part');pb.addEventListener('click',()=>{part--;draw();});f.append(chips,pb,nb);}else f.append(chips,nb);
+    const eb0=document.getElementById('endb');if(eb0)eb0.hidden=true;return;}
   const nx=el('button',{type:'button',class:'xnext'},last?'End exam':'Next part →');
   nx.addEventListener('click',()=>confirmNext(last));
   f.append(chips,nx);
@@ -428,6 +433,32 @@ function mockIntro(n,t){
       el('li',{},'Your teacher reads the dictation and the listening questions aloud.'),
       el('li',{},'At the end you see your score for each part and the correct answers. You can try again later.')),
     el('p',{class:'center'},go))]);
+}
+async function teachBegin(){
+  const n=parseInt(QS.get('stage'),10),t=QS.get('test')||'X',ed=QS.get('ed')||'3rd';
+  let it,keys,minutes;
+  try{
+    if(ctx.profile&&ctx.profile.is_admin===false)throw new Error('Only the teacher can open this page.');
+    if(t==='A'||t==='B'){const r=await fetch(mockFile(n,t),{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();it=d.items;keys=d.keys;minutes=d.minutes;}
+    else{
+      const c=sb.course?sb.course('en'):sb;
+      const a=await c.from('exam_defs').select('items,minutes').eq('stage',n).eq('edition',ed).maybeSingle();
+      const b=await c.from('exam_keys').select('keys').eq('stage',n).eq('edition',ed).maybeSingle();
+      if(a.error||b.error||!a.data||!b.data)throw new Error('Exam not found or only the teacher can open it.');
+      it=a.data.items;keys=b.data.keys;minutes=a.data.minutes;
+    }
+  }catch(e){screen([el('div',{class:'scr'},el('h1',{},'Could not open'),el('p',{class:'msg-bad'},String(e.message||e)),el('p',{},el('a',{class:'btnl',href:'admin.html'},'Back')))]);return;}
+  stage=n;items=it;answers={};part=0;
+  MOCK={test:t,stage:n,keys:keys,minutes:minutes,teach:true,exam:!(t==='A'||t==='B')};
+  keys.parts.forEach(k=>{
+    const ip=(it.parts||[]).find(x=>x.id===k.id)||{};
+    if(k.id==='dictation')answers.dictation=k.text;
+    else if(k.keys){answers[k.id]={};Object.keys(k.keys).forEach(q=>{let v=String(k.keys[q]);const o=((ip.items||[]).find(i=>String(i.n)===q)||{}).opts;if(o){const kk=Object.keys(o).find(x=>x.toLowerCase()===v.toLowerCase());if(kk)v=kk;}answers[k.id][q]=v;});}
+    else if(k.accept){answers[k.id]={};Object.keys(k.accept).forEach(q=>{answers[k.id][q]=(k.accept[q]||[])[0]||'';});}
+  });
+  shell();draw();
+  const sv=document.getElementById('sv');if(sv)sv.textContent='Answers shown';
+  const tl=document.getElementById('tlab');if(tl)tl.textContent='Time';const tm=document.getElementById('tm');if(tm)tm.textContent=String(minutes)+' min';
 }
 async function mockBegin(n,t){
   let d;
