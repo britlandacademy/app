@@ -142,32 +142,44 @@ function make(host,opts){
   var layers={front:[],back:[]},hooks={front:null,back:null};
   if(opts.back)layers.back=buildFace(back,opts.back,{intensity:o.intensity,onArt:function(a){if(hooks.back)hooks.back(a);}});
   if(opts.front)layers.front=buildFace(front,opts.front,{intensity:o.intensity,onArt:function(a){if(hooks.front)hooks.front(a);}});
-  var ry=0,rx=0,vy=0,vx=0,drag=false,lx0=0,ly0=0,idleAt=0,raf=0,isLive=false,onOri=null,sh=null;
-  function apply(){
-    coin.style.transform='rotateY('+ry.toFixed(2)+'deg) rotateX('+rx.toFixed(2)+'deg)';
-    var rel=ry-Math.round(ry/180)*180,rr=rx-Math.round(rx/180)*180;coin.style.setProperty('--bc-p',(60-rel*2.2+rr*1.2).toFixed(1)+'%');
+  var Q={w:1,x:0,y:0,z:0},spin=0,vy=0,vx=0,drag=false,lx0=0,ly0=0,idleAt=0,raf=0,isLive=false,onOri=null,sh=null,t0=Date.now(),last=0,mo={x:0,y:0};
+  function qm(a,b){return {w:a.w*b.w-a.x*b.x-a.y*b.y-a.z*b.z,x:a.w*b.x+a.x*b.w+a.y*b.z-a.z*b.y,y:a.w*b.y-a.x*b.z+a.y*b.w+a.z*b.x,z:a.w*b.z+a.x*b.y-a.y*b.x+a.z*b.w};}
+  function qa(d,x,y,z){var h=d*Math.PI/360,s=Math.sin(h);return {w:Math.cos(h),x:x*s,y:y*s,z:z*s};}
+  function qn(q){var l=Math.sqrt(q.w*q.w+q.x*q.x+q.y*q.y+q.z*q.z)||1;return {w:q.w/l,x:q.x/l,y:q.y/l,z:q.z/l};}
+  /* orientacao = precessao(t) * giro livre (arrasto) * giro proprio da moeda; tudo em quaternios */
+  function apply(calm){
+    var t=(Date.now()-t0)/1000,A=15*calm,P=t*Math.PI*2/6.5;
+    var w=qm(qa(A*Math.sin(P)+mo.x,1,0,0),qa(A*Math.cos(P)*.8,0,0,1));
+    w=qm(qa(mo.y,0,1,0),w);
+    var q=qn(qm(w,qm(Q,qa(spin,0,1,0))));
+    var xx=q.x*q.x,yy=q.y*q.y,zz=q.z*q.z,xy=q.x*q.y,xz=q.x*q.z,yz=q.y*q.z,wx=q.w*q.x,wy=q.w*q.y,wz=q.w*q.z;
+    var m00=1-2*(yy+zz),m01=2*(xy-wz),m02=2*(xz+wy),m10=2*(xy+wz),m11=1-2*(xx+zz),m12=2*(yz-wx),m20=2*(xz-wy),m21=2*(yz+wx),m22=1-2*(xx+yy);
+    coin.style.transform='matrix3d('+[m00,m10,m20,0,m01,m11,m21,0,m02,m12,m22,0,0,0,0,1].map(function(v){return v.toFixed(5);}).join(',')+')';
+    var yaw=Math.atan2(m02,m22)*180/Math.PI,pit=-Math.asin(clamp(m12,-1,1))*180/Math.PI,rel=yaw-Math.round(yaw/180)*180;
+    coin.style.setProperty('--bc-p',(60-rel*2.2+pit*1.2).toFixed(1)+'%');
   }
   function tick(){
     if(!isLive||!host.isConnected){raf=0;return;}
-    var now=Date.now();
+    var now=Date.now(),dt=clamp((now-(last||now))/16.67,0,3);last=now;
+    var calm=drag?0:clamp((now-idleAt)/3500,0,1);calm=calm*calm*(3-2*calm); /* depois de soltar, o giro lento volta aos poucos */
     if(!drag){
-      var back=now>idleAt; /* 1 s depois de soltar, volta devagar para a frente (nivel), pelo caminho mais curto */
-      if(Math.abs(vy)>.05||Math.abs(vx)>.05){ry+=vy;rx+=vx;var f=back?.9:.985;vy*=f;vx*=f;}
-      if(back){
-        var m=motion.ok&&motion.has,
-          ty=Math.round(ry/360)*360+(m?clamp(motion.g,-30,30)*.9:0),tx=Math.round(rx/360)*360+(m?clamp((motion.b-40)*-.6,-20,20):0),
-          sp=function(c,t){var d=t-c,st=d*.03;return c+(Math.abs(d)<.3?d:Math.abs(st)<.35?.35*(d<0?-1:1):st);};
-        ry=sp(ry,ty);rx=sp(rx,tx);
+      if(Math.abs(vy)>.03||Math.abs(vx)>.03){Q=qn(qm(qa(vy*dt,0,1,0),qm(qa(vx*dt,1,0,0),Q)));var f=Math.pow(now>idleAt?.97:.985,dt);vy*=f;vx*=f;}
+      if(calm>0){
+        spin+=calm*45*(1-.65*Math.cos(spin*Math.PI/180))*dt/60; /* frente (nivel) passa mais devagar */
+        if(spin>360)spin-=360;
+        var k=.007*calm*dt,s=Q.w<0?-1:1;Q=qn({w:s*Q.w*(1-k)+k,x:s*Q.x*(1-k),y:s*Q.y*(1-k),z:s*Q.z*(1-k)}); /* inclinacao do arrasto se desfaz devagar */
       }
     }
-    apply();raf=requestAnimationFrame(tick);
+    var m=motion.ok&&motion.has;
+    mo.x+=((m?clamp((motion.b-40)*-.5,-18,18):0)-mo.x)*.08;mo.y+=((m?clamp(motion.g,-30,30)*.7:0)-mo.y)*.08;
+    apply(calm);raf=requestAnimationFrame(tick);
   }
   function down(e){if(!isLive)return;drag=true;vy=vx=0;lx0=e.clientX;ly0=e.clientY;try{host.setPointerCapture(e.pointerId);}catch(x){}}
   function move(e){if(!drag)return;var dx=e.clientX-lx0,dy=e.clientY-ly0;lx0=e.clientX;ly0=e.clientY;
-    ry+=dx*.7;rx-=dy*.55;vy=dx*.7;vx=-dy*.55;spinSnd(Math.max(Math.abs(vy),Math.abs(vx)));}
+    Q=qn(qm(qa(dx*.7,0,1,0),qm(qa(-dy*.55,1,0,0),Q)));vy=dx*.7;vx=-dy*.55;spinSnd(Math.sqrt(vy*vy+vx*vx));}
   function spinSnd(v){ /* giro forte: som da moeda girando, volume pelo impulso */
     var n=Date.now();if(v<16||n-snd.last<3000)return;snd.last=n;sfx('spin',.3+Math.min(.6,(v-16)/40),1);}
-  function up(){if(!drag)return;drag=false;idleAt=Date.now()+1000;spinSnd(Math.max(Math.abs(vy),Math.abs(vx)));}
+  function up(){if(!drag)return;drag=false;idleAt=Date.now()+1000;spinSnd(Math.sqrt(vy*vy+vx*vx));}
   host.addEventListener('pointerdown',down);host.addEventListener('pointermove',move);
   host.addEventListener('pointerup',up);host.addEventListener('pointercancel',up);
   var ctl={coin:coin,host:host,front:front,back:back,
@@ -177,7 +189,7 @@ function make(host,opts){
       if(on&&!isLive){
         isLive=true;coin.style.animation='none';coin.style.transform='';
         host.querySelectorAll('.bc-shine').forEach(function(e){e.style.animation='none';e.style.opacity=0;});
-        ry=0;rx=0;vy=vx=0;idleAt=Date.now()+600;
+        Q={w:1,x:0,y:0,z:0};spin=0;vy=vx=0;last=0;idleAt=Date.now()+600;
         onOri=function(e){if(e.gamma==null)return;motion.has=true;motion.g=e.gamma;motion.b=e.beta==null?40:e.beta;};
         window.addEventListener('deviceorientation',onOri);
         if(!raf)raf=requestAnimationFrame(tick);
