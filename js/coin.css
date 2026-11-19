@@ -1,7 +1,7 @@
 /* BLCoin: moeda 3D em metal escovado com relevo (ver js/coin.js). Prefixo bc- */
 .bc{position:relative;perspective:900px;display:grid;place-items:center;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;--bc:150px}
 .bc-coin{position:relative;width:var(--bc);height:var(--bc);transform-style:preserve-3d;--bc-p:60%}
-.bc-edge{position:absolute;inset:0;border-radius:50%;background:linear-gradient(var(--bc-e1),var(--bc-e2) 40%,var(--bc-e3))}
+.bc-edge{position:absolute;inset:0;border-radius:50%;background:linear-gradient(105deg,transparent 41%,rgba(255,250,215,.75) 50%,transparent 59%) var(--bc-p) 0/300% 100% no-repeat,linear-gradient(var(--bc-e1),var(--bc-e2) 40%,var(--bc-e3))}
 .bc-face{position:absolute;inset:0;border-radius:50%;display:grid;place-items:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;background:var(--bc-metal);box-shadow:inset 0 0 0 3px rgba(255,240,170,.55),inset 0 0 14px rgba(70,45,0,.55)}
 .bc-face:before{content:"";position:absolute;inset:0;border-radius:50%;opacity:.9;mix-blend-mode:soft-light;background-size:200px 200px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='0.004 0.9' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1.1 -0.35'/></filter><rect width='200' height='200' filter='url(%23f)'/></svg>")}
 .bc-front{transform:translateZ(6px)}.bc-back{transform:translateZ(-6px) rotateY(180deg)}
@@ -11,3 +11,5 @@
 .bc-glint{z-index:3;mix-blend-mode:screen;-webkit-mask-position:center;mask-position:center;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-size:100% 100%;mask-size:100% 100%;background-image:linear-gradient(105deg,transparent 30%,rgba(255,255,235,0) 38%,rgba(255,252,225,.95) 50%,rgba(255,255,235,0) 62%,transparent 70%);background-size:300% 100%;background-position:var(--bc-p) 0}
 .bc-shine{position:absolute;inset:0;z-index:4;border-radius:50%;pointer-events:none;mix-blend-mode:overlay;background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.85) 50%,transparent 62%);background-size:300% 100%;background-position:130% 0;opacity:0}
 .bc-front .bc-glint{opacity:.4}
+
+.bc-sheen{position:absolute;inset:0;z-index:5;border-radius:50%;pointer-events:none;mix-blend-mode:overlay;background:linear-gradient(105deg,transparent 8%,rgba(70,40,0,.34) 27%,transparent 40%) var(--bc-p) 0/300% 100% no-repeat,linear-gradient(105deg,transparent 36%,rgba(255,253,228,.95) 50%,transparent 64%) var(--bc-p) 0/300% 100% no-repeat}

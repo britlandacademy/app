@@ -613,7 +613,7 @@ function paint(fx){var k;
   ctl.front.querySelector('.bc-shine').classList.add('rs-shine');
   if(!on&&!RM)ctl.live(true);
   if(on){
-    RT.push(setTimeout(function(){try{navigator.vibrate&&navigator.vibrate(30);}catch(e){}},2500));
+    RT.push(setTimeout(function(){try{navigator.vibrate&&navigator.vibrate(30);}catch(e){}try{BLCoin.sound('stamp',.7);}catch(e){}},2500));
     RT.push(setTimeout(function(){ctl.live(true);},3600));
   }
 }

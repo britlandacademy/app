@@ -10,6 +10,7 @@
  *   }) -> controle {coin, host, layers(face), live(on), destroy()}
  *   Cada face aceita {text} (gravado), {src} (silhueta pelo alfa sobe) ou {src, gold:true}.
  *   BLCoin.requestMotion() deve ser chamado dentro de um toque (iOS pede permissao do acelerometro).
+ * Giro livre com inercia nos dois eixos; 1 s depois de soltar volta devagar para a frente. Sons: js/sfx/coin-stamp.mp3 (BLCoin.sound("stamp")) e coin-spin.mp3 (automatico em giro forte).
  * O relevo e calculado uma vez em canvas (luz do alto-esquerda) e aplicado por cima do metal.
  */
 (function(){
@@ -20,6 +21,16 @@ var TONES={
 };
 var INT={med:{k:13,fd:.62},strong:{k:22,fd:.62}};
 var SZ=320,motion={ok:false,asked:false,g:0,b:40,has:false};
+var BASE=(function(){try{return document.currentScript.src.replace(/[^\/]*$/,'');}catch(e){return '';}})();
+var snd={cache:{},last:0};
+function sfx(n,vol,rate){
+  try{
+    if(localStorage.getItem('callan-mute')==='1'||localStorage.getItem('bl-fx')==='0')return;
+    var a=snd.cache[n]||(snd.cache[n]=new Audio(BASE+'sfx/coin-'+n+'.mp3'));
+    a=a.paused?a:a.cloneNode();a.volume=clamp(vol,0,1);a.playbackRate=rate||1;a.currentTime=0;
+    var p=a.play();if(p&&p.catch)p.catch(function(){});
+  }catch(e){}
+}
 var RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function box(a,w,h,r){
@@ -113,6 +124,7 @@ function buildFace(face,spec,o){
     im.onload=function(){var s=fromCanvas(drawImg(im),!!spec.gold);s.gold=!!spec.gold;apply(s,false);};
     im.src=spec.src;
   }
+  face.append(div('bc-sheen'));
   face.append(div('bc-shine'));
   return arts;
 }
@@ -133,25 +145,29 @@ function make(host,opts){
   var ry=0,rx=0,vy=0,vx=0,drag=false,lx0=0,ly0=0,idleAt=0,raf=0,isLive=false,onOri=null,sh=null;
   function apply(){
     coin.style.transform='rotateY('+ry.toFixed(2)+'deg) rotateX('+rx.toFixed(2)+'deg)';
-    var rel=ry-Math.round(ry/180)*180;coin.style.setProperty('--bc-p',(60-rel*2.2).toFixed(1)+'%');
+    var rel=ry-Math.round(ry/180)*180,rr=rx-Math.round(rx/180)*180;coin.style.setProperty('--bc-p',(60-rel*2.2+rr*1.2).toFixed(1)+'%');
   }
   function tick(){
     if(!isLive||!host.isConnected){raf=0;return;}
     var now=Date.now();
     if(!drag){
-      if(Math.abs(vy)>.05||Math.abs(vx)>.05){ry+=vy;rx+=vx;vy*=.94;vx*=.94;idleAt=now+900;}
-      else if(now>idleAt){
-        var face=Math.round(ry/180)*180,m=motion.ok&&motion.has,
-          ty=face+(m?clamp(motion.g,-30,30)*.9:0),tx=m?clamp((motion.b-40)*-.6,-20,20):0;
-        ry+=(ty-ry)*.08;rx+=(tx-rx)*.08;
+      var back=now>idleAt; /* 1 s depois de soltar, volta devagar para a frente (nivel), pelo caminho mais curto */
+      if(Math.abs(vy)>.05||Math.abs(vx)>.05){ry+=vy;rx+=vx;var f=back?.9:.985;vy*=f;vx*=f;}
+      if(back){
+        var m=motion.ok&&motion.has,
+          ty=Math.round(ry/360)*360+(m?clamp(motion.g,-30,30)*.9:0),tx=Math.round(rx/360)*360+(m?clamp((motion.b-40)*-.6,-20,20):0),
+          sp=function(c,t){var d=t-c,st=d*.03;return c+(Math.abs(d)<.3?d:Math.abs(st)<.35?.35*(d<0?-1:1):st);};
+        ry=sp(ry,ty);rx=sp(rx,tx);
       }
     }
-    rx=clamp(rx,-40,40);apply();raf=requestAnimationFrame(tick);
+    apply();raf=requestAnimationFrame(tick);
   }
   function down(e){if(!isLive)return;drag=true;vy=vx=0;lx0=e.clientX;ly0=e.clientY;try{host.setPointerCapture(e.pointerId);}catch(x){}}
   function move(e){if(!drag)return;var dx=e.clientX-lx0,dy=e.clientY-ly0;lx0=e.clientX;ly0=e.clientY;
-    ry+=dx*.7;rx=clamp(rx-dy*.4,-40,40);vy=dx*.7;vx=-dy*.4;}
-  function up(){if(!drag)return;drag=false;idleAt=Date.now()+900;}
+    ry+=dx*.7;rx+=dy*.55;vy=dx*.7;vx=dy*.55;spinSnd(Math.max(Math.abs(vy),Math.abs(vx)));}
+  function spinSnd(v){ /* giro forte: toca o som da moeda girando, volume pelo impulso */
+    var n=Date.now();if(v<16||n-snd.last<1600)return;snd.last=n;sfx('spin',.25+Math.min(.6,(v-16)/40),.92+Math.min(.25,(v-16)/90));}
+  function up(){if(!drag)return;drag=false;idleAt=Date.now()+1000;spinSnd(Math.max(Math.abs(vy),Math.abs(vx)));}
   host.addEventListener('pointerdown',down);host.addEventListener('pointermove',move);
   host.addEventListener('pointerup',up);host.addEventListener('pointercancel',up);
   var ctl={coin:coin,host:host,front:front,back:back,
@@ -183,5 +199,5 @@ function requestMotion(){
   motion.ok=!!D;return Promise.resolve(motion.ok);
 }
 
-window.BLCoin={make:make,requestMotion:requestMotion,TONES:TONES};
+window.BLCoin={make:make,requestMotion:requestMotion,TONES:TONES,sound:function(n,v){sfx(n,v==null?.6:v,1);}};
 })();
