@@ -209,7 +209,7 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 .pl .nt p{margin:0;font-size:1.05rem}
 .pl .btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;margin-right:6px}
 .pl input.wd{width:100%;min-height:46px;padding:8px 10px;font:inherit;font-size:16px;color:var(--ink);background:var(--surface);border:2px solid var(--line);border-radius:3px;box-sizing:border-box;margin:6px 0 0}
-.hdB{display:flex;justify-content:center;margin:18px 0 6px}
+.hdB{display:flex;justify-content:center;margin:18px 0 6px}.hdB .bl-name b{color:var(--ink)}.hdB .bl-name i{color:#c0303d}
 .pl .card{background:transparent;border:0;border-top:1px solid var(--line);border-radius:0;padding:22px 0 8px}
 .pl .card h2{font-size:2rem;line-height:1.1;font-weight:700}
 .pl .opt{border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;background:transparent!important;padding:12px 4px!important}
@@ -291,9 +291,9 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
   <h2>Placement test</h2>
   <p id="t-lang-sub">I want to learn...</p>
   <div class="btnrow" style="flex-direction:column">
-    <button type="button" class="btn primary" id="b-en" data-noi18n="1"><span class="fl" data-fl="en"></span><span class="bn" data-noi18n="1">English</span></button>
-    <button type="button" class="btn primary" id="b-es" data-noi18n="1"><span class="fl" data-fl="es"></span><span class="bn" data-noi18n="1">Español</span></button>
-    <button type="button" class="btn primary" id="b-pt" data-noi18n="1"><span class="fl" data-fl="pt"></span><span class="bn" data-noi18n="1">Português</span></button>
+    <button type="button" class="btn primary" id="b-en" data-noi18n="1"><span class="bn" data-noi18n="1">English</span></button>
+    <button type="button" class="btn primary" id="b-es" data-noi18n="1"><span class="bn" data-noi18n="1">Español</span></button>
+    <button type="button" class="btn primary" id="b-pt" data-noi18n="1"><span class="bn" data-noi18n="1">Português</span></button>
   </div>
 </section>
 <section class="card" id="s-start" hidden>
@@ -333,6 +333,7 @@ var EXTRA={"en": [[{"t": "mc", "q": "My sister ___ a student.", "o": ["is", "are
 var STG=[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[139,156],[157,174],[175,190],[191,206]];
 var ALLOWED={en:['pt'],es:['pt','en'],pt:['en']};
 var T=function(s){return window.I18N?window.I18N.t(s):s;};
+if(window.I18N&&window.I18N.lang!=='pt')window.I18N.set('pt');
 function el(tag,props){var e=document.createElement(tag),k,i,c;props=props||{};
   for(k in props){var v=props[k];if(v===null||v===undefined||v===false)continue;
     if(k==='class')e.className=v;else if(k.slice(0,2)==='on')e.addEventListener(k.slice(2),v);else e.setAttribute(k,v);}
@@ -340,8 +341,6 @@ function el(tag,props){var e=document.createElement(tag),k,i,c;props=props||{};
   return e;}
 function $(id){return document.getElementById(id);}
 function shuf(a){var r=a.slice();for(var i=r.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=r[i];r[i]=r[j];r[j]=t;}return r;}
-if(window.I18N)$('top').append(window.I18N.selector());
-if(window.I18N&&I18N.flag)document.querySelectorAll('.fl').forEach(function(e){e.innerHTML=I18N.flag(e.dataset.fl)});
 var S={test:'',lvl:0,idx:0,right:0,total:0,log:[],name:'',contact:'',cur:null,done:false};
 var BANK=[],SPARE=[];
 var WORDS={en:['house','chair','window','week','Saturday','kitchen','brother','morning','water','always'],es:['casa','silla','ventana','semana','sábado','cocina','hermano','mañana','agua','siempre']};
@@ -646,7 +645,7 @@ function chooseTest(t){
   S.test=t;SPARE=[];BANK=BANKS[t].map(function(lv,i){var li=lv.filter(function(x){return x.t==='li'}),rest=lv.filter(function(x){return x.t!=='li'}).concat(EXTRA[t][i]);rest.sort(function(){return Math.random()-.5});SPARE[i]=rest.slice(Math.max(0,3-li.length));return li.concat(rest).slice(0,3)});S.done=false;
   var al=ALLOWED[t];
   if(window.I18N&&al.indexOf(ui())<0)window.I18N.set(al[0]);
-  $('top').hidden=(al.length<2);
+  $('top').hidden=true;
   Array.prototype.forEach.call(document.querySelectorAll('#top .lang-btn'),function(o){o.hidden=(al.indexOf(o.getAttribute('data-l'))<0);});
   texts();show('s-start');
 }
