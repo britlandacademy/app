@@ -153,9 +153,10 @@ async function home(){
   const rel=(r.data||[]).map(x=>x.stage);
   if(!rel.length){screen([el('div',{class:'scr center'},logo(),el('h1',{},'No exam is open yet'),el('p',{},'Your teacher will open the Stage Exam for you when you have finished the Lesson Checks of your Stage.'),el('p',{},'In the meantime, you can practise with a mock test.'),el('p',{style:'display:flex;gap:10px;flex-wrap:wrap;justify-content:center'},mockLink(),leave()))]);return;}
   if(STAGE_PARAM&&rel.includes(STAGE_PARAM))return openStage(STAGE_PARAM);
-  if(rel.length===1)return openStage(rel[0]);
+  const sts={};for(const n of rel)sts[n]=(await sb.rpc('exam_state',{p_stage:n})).data||{};
+  const run=rel.find(n=>sts[n].state==='running');if(run)return openStage(run); // prova em andamento (recarregou a página): continua de onde parou
   const box=el('div',{});
-  for(const n of rel){const st=(await sb.rpc('exam_state',{p_stage:n})).data||{};
+  for(const n of rel){const st=sts[n];
     box.append(el('p',{style:'display:flex;justify-content:space-between;align-items:center;gap:10px'},el('b',{},'Stage '+n+' Exam'),el('span',{},st.state==='done'?'Submitted':(st.state==='running'?'In progress':'Ready')),el('a',{class:'btnl',href:'exam.html?stage='+n},st.state==='done'?'Open':'Start')));}
   screen([el('div',{class:'scr'},logo(),el('h1',{},'Your exams'),box,el('p',{style:'display:flex;gap:10px;flex-wrap:wrap'},mockLink(),leave()))]);
 }
