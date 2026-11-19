@@ -746,9 +746,10 @@ function plCard(p,onDel){
     const r=el('div',{class:'rec'+(bl?'':' ok')});
     r.insertAdjacentHTML('afterbegin',bl?PL_WARN:PL_OK);
     if(bl){r.append(el('span',{},'Colocação ajustada automaticamente. Teste: ',el('b',{},'Stage '+tested),' · Recomendado: ',el('b',{},'Stage '+sug)));
-      const w=sk&&sk.why||[],tx=[];if(w.indexOf('prev')>=0)tx.push('passou o nível anterior só com a confirmação mínima (5 de 6)');if(w.indexOf('vocab')>=0)tx.push('vocabulário fraco');if(w.indexOf('typed')>=0)tx.push('foi mal na verificação digitada');if(w.indexOf('fast')>=0)tx.push('respostas rápidas demais nas perguntas avançadas');if(w.indexOf('blur')>=0)tx.push('saiu da página várias vezes durante o teste');if(w.indexOf('paste')>=0)tx.push('colou texto nas respostas digitadas');
+      const w=sk&&sk.why||[],tx=[];if(w.indexOf('prev')>=0)tx.push('passou o nível anterior só com a confirmação mínima (5 de 6)');if(w.indexOf('vocab')>=0)tx.push('vocabulário fraco');if(w.indexOf('typed')>=0)tx.push('foi mal na verificação digitada');if(w.indexOf('fast')>=0)tx.push('respostas rápidas demais nas perguntas avançadas');if(w.indexOf('blur')>=0)tx.push('saiu da página várias vezes durante o teste');if(w.indexOf('paste')>=0)tx.push('colou texto nas respostas digitadas');if(w.indexOf('speech')>=0)tx.push('a fala avaliada pela IA ficou bem abaixo do nível do teste');
       if(tx.length)r.append(el('span',{class:'why'},tx.join('; ')+'.'));}
     else r.append(el('span',{},'Colocação segura: ',el('b',{},'Stage '+tested)));
+    if(sk&&sk.sp)r.append(el('span',{class:'why'},'Fala (IA): '+sk.sp.c+' · gramática '+sk.sp.g+'/5 · vocabulário '+sk.sp.v+'/5 · fluência '+sk.sp.f+'/5'+(sk.sp.n?' — '+sk.sp.n:'')));
     card.append(r);
   }
   {

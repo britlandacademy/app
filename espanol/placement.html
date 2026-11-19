@@ -421,7 +421,7 @@ function finish(level,passedAll,partial){
   S.pend={level:level,all:passedAll,part:partial};
   var lv=passedAll?12:level,lim=S.test==='es'?6:3;
   if((S.test==='en'||S.test==='es')&&canSpeak){if(lv<=lim)return vocStart('lo');if(lv>=6)return vocStart('hi');}
-  finalize();
+  afterVoc();
 }
 function finalize(){
   S.tm=timing();
@@ -436,6 +436,8 @@ function finalize(){
   if(tm.hn>=4&&tm.hf/tm.hn>=.6){red+=1;why.push('fast');}
   if((S.blur||0)>=3){red+=1;why.push('blur');}
   if((S.paste||0)>0){red+=1;why.push('paste');}
+  if(S.speech){var ti=Math.min(5,Math.floor(Math.min(16,Math.round((passedAll?12:(level-1)+(partial||0)*.5)*16/12))/3)),ei=['A1','A2','B1','B2','C1','C2'].indexOf(S.speech.c);
+    if(ei>=0&&ti-ei>=2){red+=1;why.push('speech');}}
   if(red)sug=Math.min(sug,tested-Math.min(3,red)*step);
   sug=Math.max(1,sug);
   var bl=sug<tested;
@@ -448,7 +450,7 @@ function finalize(){
   paint(true);save(tested);
 }
 function timing(){var a=S.qt||[],n=a.length,sum=0,mx=0,hn=0,hf=0;a.forEach(function(q){sum+=q[1];if(q[1]>mx)mx=q[1];if(q[0]>=6){hn++;if(q[1]<2.5)hf++;}});return {n:n,avg:n?Math.round(sum/n*10)/10:0,max:Math.round(mx*10)/10,hn:hn,hf:hf};}
-function skillsOut(){var k=S.sk,o={g:k.g,r:k.r,l:k.l};if(k.v){o.v=k.v;o.s=k.s;o.vw=k.vw;}if(k.h){o.h=k.h;o.hw=k.hw;}var tm=S.tm||timing();o.tm={n:tm.n,avg:tm.avg,max:tm.max,fast:tm.hf,blur:S.blur||0,paste:S.paste||0};if(S.why&&S.why.length)o.why=S.why;return o;}
+function skillsOut(){var k=S.sk,o={g:k.g,r:k.r,l:k.l};if(k.v){o.v=k.v;o.s=k.s;o.vw=k.vw;}if(k.h){o.h=k.h;o.hw=k.hw;}var tm=S.tm||timing();if(S.speech)o.sp=S.speech;o.tm={n:tm.n,avg:tm.avg,max:tm.max,fast:tm.hf,blur:S.blur||0,paste:S.paste||0};if(S.why&&S.why.length)o.why=S.why;return o;}
 function stripAcc(t){return String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();}
 function lev(a,b){var m=a.length,n=b.length,d=[],i,j;for(i=0;i<=m;i++){d[i]=[i];}for(j=1;j<=n;j++)d[0][j]=j;
   for(i=1;i<=m;i++)for(j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n];}
@@ -488,8 +490,81 @@ function vocNext(){
   else{if(rec){S.sk.v[0]++;if(t.toLowerCase()!==w.toLowerCase())S.sk.s++;}S.sk.vw.push([w,t]);}
   V.i++;
   if(V.i<V.w.length){vocRender();return;}
-  S.voc=null;finalize();
+  S.voc=null;afterVoc();
 }
+var SPQ={en:['Tell us about a trip or a day you enjoyed. What did you do and why did you like it?','Describe a challenge you faced at work or school and how you dealt with it.','Do you think technology makes our lives better? Give your opinion and explain why.'],
+es:['Cuéntanos sobre un viaje o un día que disfrutaste. ¿Qué hiciste y por qué te gustó?','Describe un desafío que enfrentaste en el trabajo o en los estudios y cómo lo resolviste.','¿Crees que la tecnología mejora nuestra vida? Da tu opinión y explica por qué.']};
+function prelimIdx(){var P=S.pend,x=P.all?12:(P.level-1)+(P.part||0)*.5;return Math.round(x*16/12);}
+function canRec(){return !!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&window.MediaRecorder&&(window.AudioContext||window.webkitAudioContext)&&(window.OfflineAudioContext||window.webkitOfflineAudioContext)&&window.fetch&&window.CALLAN_CFG);}
+function afterVoc(){
+  if((S.test==='en'||S.test==='es')&&prelimIdx()>=6&&canRec())return speechStart();
+  finalize();
+}
+function speechEnd(res){
+  if(S.sp&&S.sp.stream){try{S.sp.stream.getTracks().forEach(function(t){t.stop();});}catch(e){}}
+  clearInterval(S.spT);S.sp=null;$('next').hidden=false;
+  if(res&&res.cefr&&res.cefr!=='unclear')S.speech={c:res.cefr,g:res.g,v:res.v,f:res.f,n:res.note||''};
+  finalize();
+}
+function speechStart(){
+  var i=prelimIdx(),q=SPQ[S.test][i>=12?2:i>=9?1:0];
+  S.sp={rec:null,chunks:[],stream:null,busy:false};
+  show('s-q');$('next').hidden=true;$('e-q').textContent='';
+  var box=$('qbox');box.textContent='';
+  var msg=el('p',{class:'note',id:'sp-m','aria-live':'polite'},'');
+  var tm=el('p',{class:'note',id:'sp-t','data-noi18n':'1'},'0:00');
+  var go=el('button',{type:'button',class:'btn primary',id:'sp-go'},ico('M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3'),T('Record'));
+  var sk=el('button',{type:'button',class:'btn',id:'sp-sk'},T('Skip this step'));
+  box.append(el('div',{class:'nt'},el('div',{class:'tg'},ico('M13 2 4 14h7l-1 8 9-12h-7z'),T('Final challenge'))),
+    el('p',{class:'qtext','data-noi18n':'1'},q),el('p',{class:'note'},T('Speak for 20 to 40 seconds, as in a real conversation.')),
+    tm,msg,el('div',{class:'btnrow',style:'margin:10px 0 0'},go,sk));
+  $('pbar').style.width='96%';
+  var t0=0;
+  function fmt(s){return Math.floor(s/60)+':'+('0'+Math.floor(s%60)).slice(-2);}
+  function stop(){if(S.sp&&S.sp.rec&&S.sp.rec.state==='recording')S.sp.rec.stop();}
+  sk.onclick=function(){if(S.sp&&S.sp.busy)return;speechEnd(null);};
+  go.onclick=function(){
+    var sp=S.sp;if(!sp||sp.busy)return;
+    if(sp.rec&&sp.rec.state==='recording'){if((Date.now()-t0)/1000<6){msg.textContent=T('Try to speak a little longer.');return;}return stop();}
+    msg.textContent='';
+    navigator.mediaDevices.getUserMedia({audio:true}).then(function(st){
+      sp.stream=st;sp.chunks=[];var r=new MediaRecorder(st);sp.rec=r;
+      r.ondataavailable=function(e){if(e.data&&e.data.size)sp.chunks.push(e.data);};
+      r.onstop=function(){clearInterval(S.spT);try{st.getTracks().forEach(function(t){t.stop();});}catch(e){}sp.busy=true;go.disabled=true;sk.disabled=true;msg.textContent=T('Analyzing your answer…');speechSend(new Blob(sp.chunks,{type:r.mimeType||'audio/webm'}),q,function(res){if(!S.sp)return;speechEnd(res);});};
+      r.start();t0=Date.now();go.lastChild.textContent=T('Stop');tm.textContent='0:00';
+      S.spT=setInterval(function(){var s=(Date.now()-t0)/1000;tm.textContent=fmt(s);if(s>=40)stop();},250);
+    }).catch(function(){msg.textContent=T('The microphone could not be used. You can skip this step.');});
+  };
+}
+function toWav(blob,cb){
+  var A=window.AudioContext||window.webkitAudioContext,O=window.OfflineAudioContext||window.webkitOfflineAudioContext;
+  blob.arrayBuffer().then(function(ab){
+    var c=new A();
+    return new Promise(function(ok,no){c.decodeAudioData(ab,ok,no);}).then(function(buf){
+      try{c.close();}catch(e){}
+      var n=Math.max(1,Math.ceil(buf.duration*16000)),oc=new O(1,n,16000),s=oc.createBufferSource();s.buffer=buf;s.connect(oc.destination);s.start();
+      return oc.startRendering();
+    });
+  }).then(function(r){
+    var d=r.getChannelData(0),n=d.length,b=new ArrayBuffer(44+n*2),v=new DataView(b),i;
+    function w(o,t){for(var k=0;k<t.length;k++)v.setUint8(o+k,t.charCodeAt(k));}
+    w(0,'RIFF');v.setUint32(4,36+n*2,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,16000,true);v.setUint32(28,32000,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,n*2,true);
+    for(i=0;i<n;i++){var x=Math.max(-1,Math.min(1,d[i]));v.setInt16(44+i*2,x<0?x*32768:x*32767,true);}
+    var u=new Uint8Array(b),s='',k;for(k=0;k<u.length;k+=8192)s+=String.fromCharCode.apply(null,u.subarray(k,k+8192));
+    cb(btoa(s));
+  }).catch(function(){cb(null);});
+}
+function speechSend(blob,q,cb){
+  var done=false;function fin(r){if(done)return;done=true;cb(r);}
+  setTimeout(function(){fin(null);},28000);
+  toWav(blob,function(b64){
+    if(!b64)return fin(null);
+    var C=window.CALLAN_CFG,ac=new AbortController();setTimeout(function(){try{ac.abort();}catch(e){}},26000);
+    fetch(C.url+'/functions/v1/placement-speech',{method:'POST',signal:ac.signal,headers:{'content-type':'application/json',apikey:C.key,Authorization:'Bearer '+C.key},
+      body:JSON.stringify({lang:S.test,contact:S.contact,prompt:q,audio:b64})}).then(function(r){return r.json();}).then(function(j){fin(j&&!j.skip?j:null);}).catch(function(){fin(null);});
+  });
+}
+
 var RN=['Beginner','Elementary','Intermediate','Upper intermediate','Advanced','Proficient'];
 var RC=['You can already introduce yourself and understand everyday phrases.','You can already talk about your routine and handle simple situations.','You can already chat about travel, work and opinions.','You can already follow complex ideas and express yourself with confidence.','You can already express yourself fluently and with precision.','You can already use the language almost like a native speaker.'];
 var RL=['A1','A2','B1','B2','C1','C2'],RT=[];
@@ -592,11 +667,11 @@ $('f-start').addEventListener('submit',function(ev){
   ev.preventDefault();var n=$('f-name').value.trim().replace(/\s+/g,' '),c=$('f-contact').value.trim();
   if(!n){$('e-start').textContent=T('Type your name.');return;}
   if(!c||c.length<5){$('e-start').textContent=T('Type your WhatsApp or e-mail.');return;}
-  S.name=n;S.contact=c;S.lvl=0;S.idx=0;S.right=0;S.total=0;S.log=[];S.lvlRight=0;S.done=false;S.confirm=false;S.notice=false;S.weak=[];S.sk={g:[0,0],r:[0,0],l:[0,0]};S.sugLevel=0;S.borderline=false;S.why=[];S.voc=null;S.qt=[];S.blur=0;S.paste=0;S.tm=null;
+  S.name=n;S.contact=c;S.lvl=0;S.idx=0;S.right=0;S.total=0;S.log=[];S.lvlRight=0;S.done=false;S.confirm=false;S.notice=false;S.weak=[];S.sk={g:[0,0],r:[0,0],l:[0,0]};S.sugLevel=0;S.borderline=false;S.why=[];S.voc=null;S.sp=null;S.speech=null;S.qt=[];S.blur=0;S.paste=0;S.tm=null;
   $('next').textContent=T('Next');show('s-q');render();
 });
 $('next').addEventListener('click',function(){
-  if(S.done)return;
+  if(S.done||S.sp)return;
   if(S.voc)return vocNext();
   if(S.notice){S.notice=false;$('next').textContent=T('Next');render();return;}
   if(S.cur.sel===null){$('e-q').textContent=T('Choose an answer.');return;}
