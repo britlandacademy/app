@@ -174,8 +174,15 @@ function parsePlanTab(values, sheetName) {
     return q ? { from: parseInt(q[1], 10), fromWord: q[2] || '', to: parseInt(q[3], 10), toWord: q[4] || '' } : null;
   };
   /* Spanish: "REP 1 bolígrafo - 4 mesa / NP 5 silla - 9 largo"; whole-review class: "REPASO EXCLUSIVO 1 • Párrafos 1 a 50 (...)" */
+  /* formato novo das abas: "REV 1-5 / NW large - Mrs [6-10]" (paragrafos; palavras sem numero; NW traz [de-ate]) */
+  var rng2 = function (txt, tag) {
+    var m;
+    if (/^REV|REP/.test(tag)) { m = txt.match(/(?:REV|REP)\s+(\d+)\s*[-–]\s*(\d+)\s*(?:\/|$)/i); return m ? { from: parseInt(m[1], 10), fromWord: '', to: parseInt(m[2], 10), toWord: '' } : null; }
+    m = txt.match(/(?:NW|NP)\s+(.+?)\s+[-–]\s+(.+?)\s*\[\s*(\d+)\s*[-–]\s*(\d+)\s*\]/i);
+    return m ? { from: parseInt(m[3], 10), fromWord: m[1].trim(), to: parseInt(m[4], 10), toWord: m[2].trim() } : null;
+  };
   rows.forEach(function (x) {
-    x.rev = rng(x.contents, 'REV|REP'); x.nw = rng(x.contents, 'NW|NP');
+    x.rev = rng(x.contents, 'REV|REP') || rng2(x.contents, 'REV'); x.nw = rng(x.contents, 'NW|NP') || rng2(x.contents, 'NW');
     if (!x.rev && !x.nw) { var q = x.contents.match(/p[aá]rrafos\s+(\d+)\s+a\s+(\d+)/i); if (q) x.rev = { from: parseInt(q[1], 10), fromWord: '', to: parseInt(q[2], 10), toWord: '' }; }
   });
 

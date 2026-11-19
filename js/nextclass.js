@@ -95,6 +95,20 @@ function render(box,ev,deps,opts){opts=opts||{};
     if(!d.uids||!d.uids.length){var t=el('div','nc-top');add(t,el('div','nc-who',ev.title||'Aula'));wrap.appendChild(t);wrap.appendChild(el('div','nc-sub','Esta aula ainda não está ligada a nenhum aluno. Escolha o aluno na Agenda.'));return;}
     var group=d.uids.length>1||d.rows.some(function(r){return r.is_group;}),first=d.prog[d.uids[0]]||null,fd=first&&first.data||{},cp=fd.currentPosition||{},nx=fd.nextClass||null;
     if(group){for(var i=0;i<d.uids.length&&!nx;i++){var q=d.prog[d.uids[i]];if(q&&q.data){nx=q.data.nextClass||null;cp=q.data.currentPosition||cp;}}}
+    /* o que baliza a aula e a ultima palavra registrada na planilha: revisao = 11 paragrafos terminando nela; new work comeca no seguinte (o fim segue o plano) */
+    /* formato novo da planilha ("REV 1-5 / NW large - Mrs [6-10]"): le do Contents quando o servidor nao entendeu */
+    (function(){if(!nx||(nx.review&&nx.review.from!=null)||!nx.contents)return;var c=String(nx.contents),r=/(?:REV|REP)\s+(\d+)\s*[-\u2013]\s*(\d+)\s*(?:\/|$)/i.exec(c),n=/(?:NW|NP)\s+(.+?)\s+[-\u2013]\s+(.+?)\s*\[\s*(\d+)\s*[-\u2013]\s*(\d+)\s*\]/i.exec(c);
+      if(!r&&!n)return;nx=Object.assign({},nx);if(r)nx.review={from:+r[1],to:+r[2],fromWord:'',toWord:''};if(n)nx.newWords={from:+n[3],to:+n[4],fromWord:n[1].trim(),toWord:n[2].trim()};})();
+    (function(){var P=Number(cp.paragraph),rv=nx&&nx.review,nw=nx&&nx.newWords;
+      if(!(P>0)||!rv||rv.from==null||!nw||nw.from==null)return;
+      var r2={from:Math.max(1,P-10),to:P},n2={from:P+1,to:P+3};
+      if(Number(nw.from)===P+1)return;/* plano em dia: vale o que esta na planilha */
+      var wd=cp.lastWord||(first&&first.last_word)||'';
+      if(P>=Number(nw.to)){/* adiantado (ja passou do fim do New Work do plano): o dia vira revisao de 20 paragrafos (sem New Work) e entra uma linha nova */
+        nx=Object.assign({},nx,{adj:true,ahead:true,planOk:false,contents:'Só REV · 20 par. (adiantado)',review:{from:Math.max(1,P-19),to:P,fromWord:'',toWord:wd},newWords:null});return;}
+      nx=Object.assign({},nx,{adj:true,planOk:false,
+        review:{from:Math.max(1,P-10),to:P,fromWord:'',toWord:wd},
+        newWords:{from:P+1,to:P+3,fromWord:'',toWord:''}});})();
     var meet=(d.rows.filter(function(r){return r.meet_url;})[0]||{}).meet_url||ZOOM;
     var cfg=d.cfg||{},sid=cfg.plans_sheet&&cfg.plans_sheet.id,gids=cfg.plans_gids||{},ln=d.links[d.uids[0]],gid=ln&&gids[ln.sheet_name];
     var lg=lagOf({currentPosition:cp,nextClass:nx});
@@ -184,7 +198,7 @@ function render(box,ev,deps,opts){opts=opts||{};
     /* three boxes */
     var g3=el('div','nc-grid'),b1=el('div','nc-box'),b2=el('div','nc-box'),b3=el('div','nc-box today');
     add(b1,el('div','nc-k','Revisão de hoje'));
-    if(nx&&nx.review&&nx.review.from!=null){add(b1,el('div','nc-v',pf(nx.review)),el('div','nc-m',pw(nx.review)));}else add(b1,el('div','nc-m','Sem revisão indicada na planilha'));
+    if(nx&&nx.review&&nx.review.from!=null){add(b1,el('div','nc-v',pf(nx.review)),el('div','nc-m',pw(nx.review)));if(nx.adj)add(b1,el('div','nc-m',(nx.ahead?'Adiante do plano · ajustada':'Atrás do plano · ajustada')+' pela última palavra registrada (par. '+cp.paragraph+')'));if(!nx.adj&&!(Number(cp.paragraph)>0)&&nx.review&&!opts.past)add(b1,el('div','nc-m','Atenção: última palavra ainda não registrada: mostrando o Contents da planilha'));}else add(b1,el('div','nc-m','Sem revisão indicada na planilha'));
     d.uids.forEach(function(u){var pd=(d.prog[u]||{}).data||{},ms=(pd.me&&pd.me.missed)||[];ms.forEach(function(m){var t='Reposição'+(m.classNumber?' da aula '+m.classNumber:'')+(group?' · '+name(u):'')+(m.review&&m.review.from!=null?' · '+pf(m.review):'');b1.appendChild(el('span','nc-pill warn',t));});});
     add(b2,el('div','nc-k',group?'Onde a turma parou':'Onde parou'));
     var lw=cp.lastWord||(first&&first.last_word),pn=cp.paragraph||cp.lastNewWord;
@@ -217,7 +231,7 @@ function render(box,ev,deps,opts){opts=opts||{};
       var opt=el('div','nc-rw');
       function ck(txt,on){var l=el('label','nc-ck'),c=document.createElement('input');c.type='checkbox';c.checked=on;l.appendChild(c);l.appendChild(document.createTextNode(' '+txt));opt.appendChild(l);return c;}
       var cR=nx.hasReading&&nx.reading?ck('Leitura '+nx.reading+' dada',false):null,cD=nx.hasDictation&&nx.dictation?ck('Ditado '+nx.dictation+' dado',false):null;
-      var cI=isExam?null:ck('Não deu tempo de terminar (adicionar nova linha)',false),cF=isRev?ck('Terminei a revisão do Stage (liberar a prova)',false):null,cC=ck('Marcar como Completed',true),cV=isExam?null:ck('Aula de conversação (conta como dada)',false),th=el('input');th.type='text';th.placeholder='Tema da conversação';th.setAttribute('aria-label','Tema da conversação');th.style.cssText='display:none;flex:1;min-width:160px';opt.appendChild(th);
+      var cI=isExam?null:ck('Não deu tempo de terminar (adicionar nova linha)',!!(nx&&nx.adj&&!nx.planOk)),cF=isRev?ck('Terminei a revisão do Stage (liberar a prova)',false):null,cC=ck('Marcar como Completed',true),cV=isExam?null:ck('Aula de conversação (conta como dada)',false),th=el('input');th.type='text';th.placeholder='Tema da conversação';th.setAttribute('aria-label','Tema da conversação');th.style.cssText='display:none;flex:1;min-width:160px';opt.appendChild(th);
       if(cV)cV.addEventListener('change',function(){th.style.display=cV.checked?'':'none';ip.disabled=iw.disabled=cV.checked;});
       f.appendChild(opt);
       var go=el('button','nc-btn go','Salvar e enviar para a planilha'),msg=el('div','nc-m','Grava na linha da aula nº '+nx.classNumber+' da aba "'+sh+'"'+(isMock?' · a prova do Stage '+stg+' será liberada':''));go.type='button';
@@ -242,7 +256,7 @@ function render(box,ev,deps,opts){opts=opts||{};
       f.appendChild(go);f.appendChild(msg);b2.appendChild(f);})();
     add(b3,el('div','nc-k','Hoje será ensinado'));
     if(nx){var lm=/LESSON\s*(\d+)/i.exec(nx.contents||''),tl=[];if(lm)tl.push('Lição '+lm[1]);if(nx.newWords&&nx.newWords.from!=null)tl.push(pf(nx.newWords));
-      var nw=nx.newWords||{};add(b3,el('div','nc-v',tl.join(' · ')||(nx.contents||'—')));if(nw.from!=null){b3.appendChild(el('div','nc-m','Primeira palavra: '+(nw.fromWord||'—')+' (par. '+nw.from+')'));b3.appendChild(el('div','nc-m','Última palavra: '+(nw.toWord||'—')+' (par. '+nw.to+')'));}
+      var nw=nx.newWords||{};add(b3,el('div','nc-v',tl.join(' · ')||(nx.contents||'—')));if(nw.from!=null){if(nw.fromWord)b3.appendChild(el('div','nc-m','Primeira palavra: '+nw.fromWord+' (par. '+nw.from+')'));b3.appendChild(el('div','nc-m','Última palavra: '+(nw.toWord||'—')+' (par. '+nw.to+')'));}
       var ex=[];if(nx.hasReading)ex.push('Leitura');if(nx.hasDictation)ex.push('Ditado');if(nx.hasQuiz)ex.push('Quiz');if(nx.lessonCheck)ex.push('Lesson Check');if(nx.conversation)ex.push('Conversation');if(nx.activity)ex.push(nx.activity);
       if(ex.length)b3.appendChild(el('div','nc-m','+ '+ex.join(' · ')));}else add(b3,el('div','nc-m','Sem próxima aula indicada na planilha'));
     add(g3,b1,b2,b3);wrap.appendChild(g3);
