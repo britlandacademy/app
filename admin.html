@@ -1213,7 +1213,7 @@ function renderNext(force){const b=$('tpNext');if(!b)return;if(!NEXT&&!PEND.leng
     b.append(tb);}
   const body=el('div',{});b.append(body);
   NextClass.render(body,ev,{sb:sb,profiles:()=>PROFILES,att:()=>ATT},sel==='n'?{}:{pending:true});}
-document.addEventListener('bl-class-closed',()=>setTimeout(()=>{loadPend().then(()=>renderNext(true));},8000));
+document.addEventListener('bl-class-closed',()=>setTimeout(()=>{loadPend().then(()=>loadNext());},3000));
 function renderHome(){
   const h=homeStats(),ul=$('tpAttnList'),cards=$('tpCards');if(!ul)return;
   const TI=k=>TABS.findIndex(t=>t[0]===k);TABS[TI('students')][3]=()=>h.pend+h.rev;TABS[TI('home')]&&(TABS[TI('home')][3]=()=>PEND.length);TABS[TI('pay')][3]=()=>h.over||0;TABS[TI('agenda')][3]=()=>h.lreq+h.lcan;TABS[TI('social')][3]=()=>socSoon();renderToday();
@@ -1247,12 +1247,22 @@ function renderHome(){
   C.forEach(c=>{const ti=el('span',{class:'ti'});ti.append(ico(KEY[c[0]]));const kids=[ti,el('span',{},c[2]==='Placement tests'?'Placement':c[2])];if(c[1])kids.push(el('small',{},c[1]+(c[0]==='students'?' ativos':'')));const n=NB[c[0]]||0;if(n)kids.push(el('span',{class:'nb'},String(n)));
     cards.append(el('button',{type:'button',class:'tp-tile',onclick:()=>{if(/\.html$/.test(c[0]))location.href=c[0];else go(c[0]);}},...kids));});
 }
+function loadNext(){
+  return sb.from('lessons').select('id,title,start_at,end_at').gte('end_at',new Date().toISOString()).order('start_at').limit(6).then(r=>{
+    const rows=(!r.error&&r.data)||[];if(!rows.length){NEXT=null;renderNext(true);return;}
+    const ks=rows.map(l=>String(l.id).split(':')[0]);
+    return sb.from('class_log').select('event_key').in('event_key',ks).then(c=>{
+      const done=new Set((c.error?[]:(c.data||[])).map(x=>x.event_key));
+      NEXT=rows.find(l=>!done.has(String(l.id).split(':')[0]))||null;renderNext(true);
+    });
+  }).catch(()=>{});
+}
 function loadHomeExtras(){
   const today=new Date().toISOString().slice(0,10);
   sb.from('charges').select('id',{count:'exact',head:true}).is('paid_on',null).lt('due_date',today).then(r=>{OVERDUE=r.error?null:(r.count||0);renderHome();}).catch(()=>{});
   sb.from('lesson_requests').select('id',{count:'exact',head:true}).eq('status','pending').neq('kind','cancel').gte('created_at',new Date(Date.now()-864e5).toISOString()).then(r=>{LREQ=r.error?null:(r.count||0);renderHome();}).catch(()=>{});
   sb.from('lesson_requests').select('id',{count:'exact',head:true}).eq('kind','cancel').gte('created_at',new Date(Date.now()-864e5).toISOString()).then(r=>{LCAN=r.error?null:(r.count||0);renderHome();}).catch(()=>{});
-  sb.from('lessons').select('id,title,start_at').gte('end_at',new Date().toISOString()).order('start_at').limit(1).then(r=>{NEXT=(!r.error&&r.data&&r.data[0])||null;renderNext();}).catch(()=>{});
+  loadNext();
   loadPend().then(()=>{renderHome();});
   sb.from('placement').select('name,level,test_lang,answers,borderline,suggested_stage,created_at').eq('borderline',true).gte('created_at',new Date(Date.now()-14*864e5).toISOString()).order('created_at',{ascending:false}).limit(10).then(r=>{if(r.error)return;PLB=(r.data||[]).map(p=>({name:p.name,t:tl(p)==='es'?Math.min(6,Math.ceil(p.level/2)):p.level,s:p.suggested_stage})).filter(x=>x.s!=null&&x.s<x.t);renderHome();}).catch(()=>{});
   sb.from('placement_adjust').select('id,user_id,from_stage,to_stage,pct,n,created_at').eq('undone',false).eq('seen',false).gte('created_at',new Date(Date.now()-14*864e5).toISOString()).order('created_at',{ascending:false}).limit(10).then(r=>{if(r.error)return;PLA=r.data||[];renderHome();}).catch(()=>{});
