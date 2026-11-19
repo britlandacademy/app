@@ -794,7 +794,7 @@ function loadPlacement(){
 }
 /* ----- Stage Exams ----- */
 const XSTG=XST.en;
-let XREL=[],XRES=[],XDEF={},XKEY={},XOK=false;
+let XREL=[],XRES=[],XDEF={},XED={},XKEY={},XOK=false;
 function xnorm(t){return String(t||'').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9' ]/g,' ').replace(/\s+/g,' ').trim();}
 function xdiff(key,ans){
   const A=xnorm(key).split(' ').filter(Boolean),B=xnorm(ans).split(' ').filter(Boolean),n=A.length,m=B.length;
@@ -818,12 +818,12 @@ function xChecks(uid,st){
 }
 let XUN=[],XLT=[],CERTS=[],CERT_OK=false;
 async function loadExams(){
-  const a=await sb.from('exam_release').select('*'),b=await sb.from('exam_results').select('*'),c=await Promise.all([sb.course('en').from('exam_defs').select('stage,minutes'),sb.course('es').from('exam_defs').select('stage,minutes')]).then(rs=>({error:rs[0].error||rs[1].error,data:[].concat((rs[0].data||[]).map(x=>Object.assign({_c:'en'},x)),(rs[1].data||[]).map(x=>Object.assign({_c:'es'},x)))}));
+  const a=await sb.from('exam_release').select('*'),b=await sb.from('exam_results').select('*'),c=await Promise.all([sb.course('en').from('exam_defs').select('stage,minutes,edition'),sb.course('es').from('exam_defs').select('stage,minutes')]).then(rs=>({error:rs[0].error||rs[1].error,data:[].concat((rs[0].data||[]).map(x=>Object.assign({_c:'en'},x)),(rs[1].data||[]).map(x=>Object.assign({_c:'es'},x)))}));
   if(a.error||b.error||c.error){XOK=false;setMsg('xmsg','Tabelas da prova ainda não existem no Supabase. Rode o arquivo exam_setup.sql (e exam_data_stage1-2.sql) no SQL Editor.','bad');if($('xtab'))$('xtab').textContent='';renderStu();return;}
   {const d=await sb.from('stage_unlock').select('*');XUN=(d&&!d.error&&d.data)||[];}
   {const d=await sb.from('level_tests').select('*');XLT=(d&&!d.error&&d.data)||[];}
   {const d=await sb.from('certificates').select('*');CERT_OK=!!(d&&!d.error);CERTS=CERT_OK?(d.data||[]):[];}
-  XOK=true;XREL=a.data||[];XRES=b.data||[];XDEF={};(c.data||[]).forEach(x=>{XDEF[x._c+x.stage]=x;});
+  XOK=true;XREL=a.data||[];XRES=b.data||[];XDEF={};XED={};(c.data||[]).forEach(x=>{XDEF[x._c+x.stage]=x;(XED[x._c+x.stage]=XED[x._c+x.stage]||[]).push(x.edition||'3rd');});
   const sel=$('xst');if(!sel.options.length){for(let i=1;i<=XSTG.length;i++)sel.append(el('option',{value:String(i)},'Stage '+i));sel.addEventListener('change',()=>{$('xdet').textContent='';renderExam();});}
   if(!$('xall').dataset.on){$('xall').dataset.on='1';$('xall').addEventListener('click',async()=>{const st=parseInt($('xst').value,10)||1;
     if(!await BL_DLG.confirm('Liberar a nota do Stage '+st+' para todos os alunos que já enviaram?'))return;
@@ -925,9 +925,12 @@ function examCard(p,st){
       if(d.ok===false){setMsg('xmsg',d.why==='passed'?'Esse aluno já passou neste teste.':d.why==='wait'?'Nova tentativa só a partir de '+fmt(d.until)+'.':'Não foi possível.','bad');return;}
       setMsg('xmsg',okMsg||'','ok');loadExams();});
     const liberar=async()=>{if(c.miss.length&&!await BL_DLG.confirm(p.name+' ainda não fez os '+LCK(crsOf(p))+' das '+LSN(crsOf(p))+': '+c.miss.join(', ')+'.\n\nLiberar a prova mesmo assim?'))return false;
-      sb.from('exam_release').insert({user_id:p.id,stage:st}).then(reload);};
+      const eds=XED[crsOf(p)+st]||[];let ed='3rd';
+      if(eds.includes('2nd')&&eds.includes('3rd'))ed=(await BL_DLG.confirm('Qual edição do livro este aluno usa? (Stage '+st+')',{title:'Edição do livro',ok:'2ª edição',cancel:'3ª edição',danger:false}))?'2nd':'3rd';
+      else if(eds.length===1)ed=eds[0];
+      sb.from('exam_release').insert(ed==='2nd'?{user_id:p.id,stage:st,edition:'2nd'}:{user_id:p.id,stage:st}).then(reload);};
     const cancelRel=async()=>{if(!await BL_DLG.confirm('Cancelar a liberação para '+p.name+'?'))return false;sb.from('exam_release').delete().eq('user_id',p.id).eq('stage',st).then(reload);};
-    const provaRow=swRow('Prova · '+SW(crsOf(p))+' '+st,!!(rel||prog||sub),!def||prog||sub,zerar?el('span',{},pill,' ',zerar):pill,on=>on?liberar():(rel&&!res?cancelRel():false));
+    const provaRow=swRow('Prova · '+SW(crsOf(p))+' '+st+(rel&&rel.edition==='2nd'?' (2ª edição)':''),!!(rel||prog||sub),!def||prog||sub,zerar?el('span',{},pill,' ',zerar):pill,on=>on?liberar():(rel&&!res?cancelRel():false));
     const taken=!!(lt&&lt.taken_at&&!lt.reverted),ltSub=el('span',{});
     if(taken){
       const pc2=lt.total?Math.round(lt.score/lt.total*100):0;
@@ -955,10 +958,10 @@ function renderExam(){
 }
 async function showExam(p,st){
   const box=$('xdet');box.textContent='';
-  const kc=crsOf(p)+st;if(!XKEY[kc]){const k=await sb.course(crsOf(p)).from('exam_keys').select('keys').eq('stage',st).maybeSingle();if(k.error||!k.data){box.append(el('p',{class:'msg bad'},'Não foi possível ler o gabarito.'));return;}XKEY[kc]=k.data.keys;}
   const res=XRES.find(x=>x.user_id===p.id&&x.stage===st);if(!res)return;
+  const ed=res.edition||'3rd',kc=crsOf(p)+st+ed;if(!XKEY[kc]){let kq=sb.course(crsOf(p)).from('exam_keys').select('keys').eq('stage',st);if(crsOf(p)==='en')kq=kq.eq('edition',ed);const k=await kq.maybeSingle();if(k.error||!k.data){box.append(el('p',{class:'msg bad'},'Não foi possível ler o gabarito.'));return;}XKEY[kc]=k.data.keys;}
   const K={};XKEY[kc].parts.forEach(x=>{K[x.id]=x;});const A=res.answers||{};
-  const card=el('div',{class:'card'},el('h3',{},flg(p),p.name+' · '+SW(crsOf(p))+' '+st+' · '+fmt(res.submitted_at)));
+  const card=el('div',{class:'card'},el('h3',{},flg(p),p.name+' · '+SW(crsOf(p))+' '+st+(ed==='2nd'?' (2ª edição)':'')+' · '+fmt(res.submitted_at)));
   const sc=res.scores||{},mx=res.maxes||{};
   {const c=BL_EXAM.compose(sc,mx,res.oral,crsOf(p));
    card.append(el('p',{},el('b',{},EXN(crsOf(p))+' '+BL_EXAM.fmt(c.T)+'/'+c.M+' ('+c.pct+'%)'),'  ·  '+c.rows.map(r=>r.label+' '+BL_EXAM.fmt(r.s)+'/'+r.m).join(' · '),' · ',el('span',{class:'pl '+(c.ok?'ok':'bad')},c.ok?EXN(crsOf(p))+' OK (mín. '+BL_EXAM.fmt(c.min)+')':'Abaixo do mínimo de '+BL_EXAM.fmt(c.min)+' '+(crsOf(p)==='es'?'na prova':'no exam'))));

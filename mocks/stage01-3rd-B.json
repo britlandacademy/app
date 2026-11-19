@@ -1,0 +1,276 @@
+{
+ "stage": 1,
+ "edition": "3rd",
+ "test": "B",
+ "minutes": 40,
+ "items": {
+  "parts": [
+   {
+    "id": "dictation",
+    "title": "Part 1 · Dictation",
+    "instr": "Your teacher reads the dictation. Write what you hear in the box.",
+    "points": 15
+   },
+   {
+    "id": "yesno",
+    "title": "Part 2 · Yes / No quiz",
+    "instr": "Listen to your teacher’s questions. Answer every question: Yes, No or ?. Press ? if you do not know. You lose 1 mark for each wrong answer.",
+    "n": 15,
+    "points": 15
+   },
+   {
+    "id": "mc",
+    "title": "Part 3 · Multiple choice",
+    "instr": "Choose the correct answer.",
+    "points": 12,
+    "items": [
+     {
+      "n": 1,
+      "q": "Mr Brown: “____ is the book?” Mrs Brown: “Under the chair.”",
+      "opts": {
+       "a": "Where",
+       "b": "Who",
+       "c": "Which"
+      }
+     },
+     {
+      "n": 2,
+      "q": "Elli: “Where are Mr Brown and Mrs Brown?” Josef: “____ are standing in front of the house.”",
+      "opts": {
+       "a": "They",
+       "b": "Their",
+       "c": "Them"
+      }
+     },
+     {
+      "n": 3,
+      "q": "David isn’t going to the door; he’s ____ from the door.",
+      "opts": {
+       "a": "coming",
+       "b": "putting",
+       "c": "touching"
+      }
+     },
+     {
+      "n": 4,
+      "q": "Anna Brown isn’t tall; she’s ____ .",
+      "opts": {
+       "a": "short",
+       "b": "high",
+       "c": "low"
+      }
+     },
+     {
+      "n": 5,
+      "q": "Mrs Brown ____ two eyes.",
+      "opts": {
+       "a": "have",
+       "b": "got",
+       "c": "has"
+      }
+     },
+     {
+      "n": 6,
+      "q": "Robert and Alessia ____ speak German.",
+      "opts": {
+       "a": "doesn’t",
+       "b": "don’t",
+       "c": "aren’t"
+      }
+     },
+     {
+      "n": 7,
+      "q": "Walter ____ German with his family.",
+      "opts": {
+       "a": "speak",
+       "b": "speaking",
+       "c": "speaks"
+      }
+     },
+     {
+      "n": 8,
+      "q": "Jack ____ reading a book now.",
+      "opts": {
+       "a": "don’t",
+       "b": "isn’t",
+       "c": "doesn’t"
+      }
+     },
+     {
+      "n": 9,
+      "q": "1,000 =",
+      "opts": {
+       "a": "a hundred",
+       "b": "a thousand",
+       "c": "a million"
+      }
+     },
+     {
+      "n": 10,
+      "q": "seven, ____ , ____ , ten",
+      "opts": {
+       "a": "eight, nine",
+       "b": "six, nine",
+       "c": "five, eight"
+      }
+     },
+     {
+      "n": 11,
+      "q": "The Brown family are standing in front of a house. It isn’t your house; it’s ____ house.",
+      "opts": {
+       "a": "them",
+       "b": "their",
+       "c": "they"
+      }
+     },
+     {
+      "n": 12,
+      "q": "Jack writes with his left hand, but Anna writes with her ____ hand.",
+      "opts": {
+       "a": "right",
+       "b": "low",
+       "c": "high"
+      }
+     }
+    ]
+   },
+   {
+    "id": "err",
+    "title": "Part 4 · Error correction",
+    "instr": "Correct the mistake in each sentence. You can add one word, take out one word, or change one word.",
+    "points": 8,
+    "items": [
+     {
+      "n": 1,
+      "text": "Does he go to home after the lesson?"
+     },
+     {
+      "n": 2,
+      "text": "Robert and Alessia doesn’t speak German."
+     },
+     {
+      "n": 3,
+      "text": "There is three books on that table."
+     },
+     {
+      "n": 4,
+      "text": "Please translate these English words to French."
+     },
+     {
+      "n": 5,
+      "text": "The teacher is asking questions and the students are answer them."
+     },
+     {
+      "n": 6,
+      "text": "She dislike television."
+     },
+     {
+      "n": 7,
+      "text": "It isn’t your house; it’s they house."
+     },
+     {
+      "n": 8,
+      "text": "Am I touching the wall? Yes, you touching the wall."
+     }
+    ]
+   }
+  ]
+ },
+ "keys": {
+  "parts": [
+   {
+    "id": "dictation",
+    "points": 15,
+    "text": "The table is large. The box is small. The pen is under the book. The light is on the ceiling. You are sitting on the chair. He is a man. She is a woman. The door is open. The window is closed. There are two pictures on the wall. This pencil is green. That chair is brown. The students are standing behind the table. We are in the room. The wall is low. Anna Brown is short. I can read and write. I can’t speak Chinese. I don’t like television. He speaks French. She goes home after the lesson. Put your hand on your head, please. Close your book. Who is he?"
+   },
+   {
+    "id": "yesno",
+    "points": 15,
+    "keys": {
+     "1": "No",
+     "2": "No",
+     "3": "No",
+     "4": "Yes",
+     "5": "No",
+     "6": "Yes",
+     "7": "No",
+     "8": "Yes",
+     "9": "Yes",
+     "10": "Yes",
+     "11": "Yes",
+     "12": "No",
+     "13": "No",
+     "14": "Yes",
+     "15": "No"
+    },
+    "teacher": {
+     "1": "Is a village large?",
+     "2": "Is Windsor a city?",
+     "3": "Is Grantchester a town?",
+     "4": "Is the letter A a vowel?",
+     "5": "Is India in Europe?",
+     "6": "Is Greece in Europe?",
+     "7": "Is five an ordinal number?",
+     "8": "Is it right that 6 – 2 = 4?",
+     "9": "Are the people of Scandinavia tall?",
+     "10": "Is China a country?",
+     "11": "Can you read and write?",
+     "12": "Do we read with our ears?",
+     "13": "Do we speak with our eyes?",
+     "14": "Is the plural of “woman” “women”?",
+     "15": "Is Beijing a country?"
+    }
+   },
+   {
+    "id": "mc",
+    "points": 12,
+    "keys": {
+     "1": "a",
+     "2": "a",
+     "3": "a",
+     "4": "a",
+     "5": "c",
+     "6": "b",
+     "7": "c",
+     "8": "b",
+     "9": "b",
+     "10": "a",
+     "11": "b",
+     "12": "a"
+    }
+   },
+   {
+    "id": "err",
+    "points": 8,
+    "accept": {
+     "1": [
+      "Does he go home after the lesson?"
+     ],
+     "2": [
+      "Robert and Alessia don’t speak German.",
+      "Robert and Alessia do not speak German."
+     ],
+     "3": [
+      "There are three books on that table."
+     ],
+     "4": [
+      "Please translate these English words into French."
+     ],
+     "5": [
+      "The teacher is asking questions and the students are answering them."
+     ],
+     "6": [
+      "She dislikes television."
+     ],
+     "7": [
+      "It isn’t your house; it’s their house."
+     ],
+     "8": [
+      "Am I touching the wall? Yes, you’re touching the wall.",
+      "Am I touching the wall? Yes, you are touching the wall."
+     ]
+    }
+   }
+  ]
+ }
+}

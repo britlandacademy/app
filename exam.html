@@ -69,6 +69,7 @@ main{flex:1;width:100%;max-width:860px;margin:0 auto;padding:18px max(14px,env(s
 .opt[aria-checked=true] b{background:var(--navy);border-color:var(--navy);color:#fff}
 .opts.yn .opt{justify-content:center;font-weight:700;font-size:1.12rem}
 .q.yn{padding:10px 14px}.q.yn .top{align-items:center;gap:12px}.opts.yn{margin:0;flex:1;grid-template-columns:1fr 1fr 74px}.opts.yn .opt.unsure{color:var(--navy3);font-size:1.3rem}.opts.yn .opt.unsure[aria-checked=true]{background:#fbf4de;border-color:var(--gold)}.chip.uns{background:#fbf4de;border-color:var(--gold);color:var(--navy)}
+.q.yn .top{flex-wrap:wrap}.q.yn .top .stem{flex:1 1 220px;min-width:0}.q.yn .opts.yn{flex:1 1 220px}
 .opts.yn .opt b{display:none}
 .clr{margin:6px 0 0 46px;background:none;border:0;color:var(--muted);text-decoration:underline;min-height:32px;padding:0}
 .src{margin:10px 0 0 46px;padding:10px 12px;background:#f7f5ee;border-radius:8px;color:#2a3347;border:1px dashed var(--line2)}
@@ -133,7 +134,7 @@ Gate.start({kinds:[],bare:true},function(ctx){
 const sb=Gate.sb,el=Gate.el,app=document.getElementById('app');
 const NAME=(ctx.profile&&ctx.profile.name)||'';
 const STAGE_PARAM=parseInt(new URLSearchParams(location.search).get('stage'),10)||0;
-let stage=0,items=null,answers={},part=0,t0=0,endIn=0,tick=null,dirty=false,saving=false,sent=false,lastSave=0;
+let MOCK=null;const QS=new URLSearchParams(location.search);let stage=0,items=null,answers={},part=0,t0=0,endIn=0,tick=null,dirty=false,saving=false,sent=false,lastSave=0;
 const PART_NAME={dictation:'Dictation',yesno:'Yes / No quiz',oral:'Listening',gap:'Gap fill',mc:'Multiple choice',err:'Error correction'};
 function clear(){app.textContent='';}
 function mmss(s){s=Math.max(0,s);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
@@ -142,18 +143,20 @@ function left(){return Math.max(0,Math.round(endIn-(performance.now()-t0)/1000))
 /* ---------- plain screens ---------- */
 function screen(children){clear();app.append(el('main',{style:'padding-bottom:30px'},...children));window.scrollTo(0,0);}
 function logo(){return el('div',{class:'lock',role:'img','aria-label':'Britland Academy'},el('img',{src:'img/britland-shield.png',alt:''}),el('span',{class:'nm'},el('b',{},'BRITLAND'),el('i',{},'ACADEMY')));}
+function mockLink(){return el('a',{class:'btnl',href:'exam.html?mock=1',style:'background:#fff;color:var(--navy);border-color:var(--navy)'},'Mock tests');}
 function leave(){return el('a',{class:'btnl',href:'index.html'},'Back to the activities');}
 
 async function home(){
+  if(QS.get('mock')){const ms=parseInt(QS.get('stage'),10),mt=QS.get('test');return (ms&&(mt==='A'||mt==='B'))?mockIntro(ms,mt):mockHome();}
   const r=await sb.from('exam_release').select('stage').order('stage');
   const rel=(r.data||[]).map(x=>x.stage);
-  if(!rel.length){screen([el('div',{class:'scr center'},logo(),el('h1',{},'No exam is open yet'),el('p',{},'Your teacher will open the Stage Exam for you when you have finished the Lesson Checks of your Stage.'),el('p',{},leave()))]);return;}
+  if(!rel.length){screen([el('div',{class:'scr center'},logo(),el('h1',{},'No exam is open yet'),el('p',{},'Your teacher will open the Stage Exam for you when you have finished the Lesson Checks of your Stage.'),el('p',{},'In the meantime, you can practise with a mock test.'),el('p',{style:'display:flex;gap:10px;flex-wrap:wrap;justify-content:center'},mockLink(),leave()))]);return;}
   if(STAGE_PARAM&&rel.includes(STAGE_PARAM))return openStage(STAGE_PARAM);
   if(rel.length===1)return openStage(rel[0]);
   const box=el('div',{});
   for(const n of rel){const st=(await sb.rpc('exam_state',{p_stage:n})).data||{};
     box.append(el('p',{style:'display:flex;justify-content:space-between;align-items:center;gap:10px'},el('b',{},'Stage '+n+' Exam'),el('span',{},st.state==='done'?'Submitted':(st.state==='running'?'In progress':'Ready')),el('a',{class:'btnl',href:'exam.html?stage='+n},st.state==='done'?'Open':'Start')));}
-  screen([el('div',{class:'scr'},logo(),el('h1',{},'Your exams'),box,el('p',{},leave()))]);
+  screen([el('div',{class:'scr'},logo(),el('h1',{},'Your exams'),box,el('p',{style:'display:flex;gap:10px;flex-wrap:wrap'},mockLink(),leave()))]);
 }
 async function openStage(n){
   stage=n;
@@ -199,6 +202,7 @@ function onTick(){
 
 }
 async function save(p){
+  if(MOCK){dirty=false;return;}
   if(saving||sent)return;saving=true;dirty=false;
   const r=await sb.rpc('exam_save',{p_stage:stage,p_answers:answers,p_part:p==null?part:p});
   const sv=document.getElementById('sv');if(sv)sv.textContent=r.error?'Not saved: check your connection':'Saved';
@@ -211,7 +215,7 @@ function shell(){
   minus.addEventListener('click',()=>{Gate.setSize(Gate.sizeIdx()-1);upd();});plus.addEventListener('click',()=>{Gate.setSize(Gate.sizeIdx()+1);upd();});norm.addEventListener('click',()=>{Gate.setSize(1);upd();});upd();
   app.append(
     el('header',{class:'xh'},el('div',{class:'xh-in'},
-      el('div',{class:'brand'},el('img',{src:'img/britland-shield.png',alt:''}),el('span',{class:'hl'},el('b',{},'BRITLAND'),el('i',{},'ACADEMY')),el('div',{},el('b',{},'Stage '+stage+' Exam'),el('small',{id:'sub'},''))),
+      el('div',{class:'brand'},el('img',{src:'img/britland-shield.png',alt:''}),el('span',{class:'hl'},el('b',{},'BRITLAND'),el('i',{},'ACADEMY')),el('div',{},el('b',{},MOCK?'Stage '+stage+' Mock '+MOCK.test:'Stage '+stage+' Exam'),el('small',{id:'sub'},''))),
       el('span',{class:'who'},NAME),el('span',{class:'sv',id:'sv','aria-live':'polite'},'Saved'),
       el('div',{class:'fs',role:'group','aria-label':'Text size'},minus,norm,plus),
       el('div',{class:'timer',id:'tbox',role:'timer','aria-label':'Time left'},el('div',{},el('small',{id:'tlab'},'Time left'),el('b',{id:'tm'},'--:--'))))),
@@ -274,6 +278,7 @@ function question(p,n){
   function pick(v){setA(p,n,v);card.classList.add('ans');card.querySelectorAll('.opt').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.v===v)));}
   if(p.id==='yesno'){
     card.classList.add('yn');
+    const yi=(p.items||[]).find(i=>i.n===n);if(yi)top.append(el('span',{class:'stem'},yi.q));
     const o=el('div',{class:'opts row yn',role:'radiogroup','aria-label':'Question '+n});
     [['Yes','Yes'],['No','No'],['?','?']].forEach(([v,txt])=>{
       const b=el('button',{type:'button',class:'opt'+(v==='?'?' unsure':''),role:'radio','data-v':v,'aria-checked':String(cur===v),'aria-label':v==='?'?'I did not understand the question':null,title:v==='?'?'I did not understand the question':null},txt);
@@ -359,6 +364,7 @@ function confirmEnd(){
     el('div',{class:'btns'},stay,go)]);
 }
 async function send(){
+  if(MOCK)return mockSend();
   if(sent)return;sent=true;clearInterval(tick);closeModal();
   document.querySelectorAll('button,input,textarea').forEach(x=>x.disabled=true);
   const r=await sb.rpc('exam_submit',{p_stage:stage,p_answers:answers});
@@ -376,6 +382,94 @@ function finished(st){
     kids.push(el('p',{class:'center big'},BL_EXAM.fmt(c.T)+' / '+c.M+' ('+c.pct+'%)'),kp,c.oral.done?el('p',{class:'center'},'Conversation with your teacher: '+c.oral.s+' / 15'):null,el('p',{class:'center'},'Your teacher will talk to you about the result.'));
   }else kids.push(el('p',{class:'center'},'Thank you! Your answers were sent. Your teacher will check the exam and give you the result.'));
   kids.push(el('p',{class:'center'},leave()));
+  screen([el('div',{class:'scr'},...kids)]);
+}
+
+/* ---------- mock tests (simulados) ---------- */
+const MOCK_ED='3rd';
+function mockFile(n,t){return 'mocks/stage'+String(n).padStart(2,'0')+'-'+MOCK_ED+'-'+t+'.json';}
+function mnorm(t){return String(t==null?'':t).replace(/[’‘]/g,"'").toLowerCase().replace(/[^a-z0-9' ]/g,' ').replace(/\s+/g,' ').trim();}
+function wdist(a,b){const n=a.length,m=b.length;if(!n)return m;if(!m)return n;let pv=[];for(let j=0;j<=m;j++)pv.push(j);
+  for(let i=1;i<=n;i++){const cu=[i];for(let j=1;j<=m;j++){cu[j]=Math.min(pv[j]+1,cu[j-1]+1,pv[j-1]+(a[i-1]===b[j-1]?0:1));}pv=cu;}return pv[m];}
+function okItem(kp,n,ans){
+  const a=(ans[kp.id]||{})[n];
+  if(kp.id==='yesno'){const v=String(a||'').toLowerCase();return v===''||v==='?'?0:(v===String(kp.keys[n]).toLowerCase()?1:-1);}
+  if(kp.id==='oral'||kp.id==='mc')return String(a||'').toLowerCase()===String(kp.keys[n]).toLowerCase()?1:0;
+  const x=mnorm(a);return x!==''&&(kp.accept[n]||[]).some(y=>mnorm(y)===x)?1:0;
+}
+function mgrade(keys,ans){
+  const sc={},mx={};
+  keys.parts.forEach(kp=>{let s=0;
+    if(kp.id==='dictation'){const t=mnorm(ans.dictation);if(t){s=Math.max(0,kp.points-wdist(mnorm(kp.text).split(' '),t.split(' ')));}}
+    else{const ns=Object.keys(kp.keys||kp.accept||{});ns.forEach(n=>{s+=okItem(kp,n,ans);});s=Math.max(0,s);}
+    sc[kp.id]=s;mx[kp.id]=kp.points;});
+  return {scores:sc,maxes:mx};
+}
+async function mockHome(){
+  const r=await sb.from('mock_attempts').select('stage,test,scores').eq('edition',MOCK_ED);
+  const by={};(r.data||[]).forEach(x=>{const k=x.stage+x.test;const t=Object.values(x.scores||{}).reduce((a,b)=>a+Number(b||0),0);const o=by[k]||(by[k]={n:0,best:0});o.n++;o.best=Math.max(o.best,t);});
+  const box=el('div',{});
+  for(let n=1;n<=12;n++){
+    const row=el('div',{style:'display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);flex-wrap:wrap'},el('b',{},'Stage '+n));
+    const btns=el('span',{style:'display:flex;gap:8px;flex-wrap:wrap'});
+    ['A','B'].forEach(t=>{const o=by[n+t];btns.append(el('a',{class:'btnl',href:'exam.html?mock=1&stage='+n+'&test='+t},'Mock '+t+(o?' · best '+BL_EXAM.fmt(o.best)+'/50 · '+o.n+'×':'')));});
+    row.append(btns);box.append(row);
+  }
+  screen([el('div',{class:'scr'},logo(),el('h1',{class:'center'},'Mock tests'),el('p',{},'Practice tests with the same format as the Stage Exam. Do them with your teacher. You can repeat them as many times as you like. They do not count as the official exam.'),box,el('p',{},el('a',{class:'btnl',href:'exam.html'},'Back to the exams')))]);
+}
+function mockIntro(n,t){
+  stage=n;MOCK={test:t,stage:n};
+  const go=el('button',{type:'button',class:'xnext'},'Start the mock test');
+  go.addEventListener('click',()=>{go.disabled=true;mockBegin(n,t);});
+  screen([el('div',{class:'scr'},logo(),el('h1',{class:'center'},'Stage '+n+' Mock '+t),
+    el('ul',{},
+      el('li',{},'Same parts and timer as the Stage Exam. The timer starts when you press the button.'),
+      el('li',{},'You go from one part to the next and ',el('b',{},'you cannot go back'),' to a finished part.'),
+      el('li',{},'Your teacher reads the dictation and the listening questions aloud.'),
+      el('li',{},'At the end you see your score for each part and the correct answers. You can try again later.')),
+    el('p',{class:'center'},go))]);
+}
+async function mockBegin(n,t){
+  let d;
+  try{const r=await fetch(mockFile(n,t),{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);d=await r.json();}
+  catch(e){screen([el('div',{class:'scr'},el('h1',{},'Could not load the mock test'),el('p',{class:'msg-bad'},String(e.message||e)),el('p',{},el('a',{class:'btnl',href:'exam.html?mock=1'},'Back')))]);return;}
+  MOCK={test:t,stage:n,keys:d.keys,minutes:d.minutes};
+  items=d.items;answers={};part=0;t0=performance.now();endIn=d.minutes*60;
+  window.addEventListener('beforeunload',e=>{if(!sent){e.preventDefault();e.returnValue='';}});
+  shell();draw();tick=setInterval(onTick,500);onTick();
+  const sv=document.getElementById('sv');if(sv)sv.textContent='Mock test';
+}
+async function mockSend(){
+  if(sent)return;sent=true;clearInterval(tick);closeModal();
+  const g=mgrade(MOCK.keys,answers),used=Math.round(MOCK.minutes*60-left());
+  sb.from('mock_attempts').insert({stage:stage,edition:MOCK_ED,test:MOCK.test,answers:answers,scores:g.scores,maxes:g.maxes,seconds_used:used}).then(()=>{},()=>{});
+  mockFinished(g);
+}
+function mockFinished(g){
+  const kids=[logo(),el('h1',{class:'center'},'Stage '+stage+' Mock '+MOCK.test)];
+  let T=0,M=0;const kp=el('div',{class:'kp'});
+  MOCK.keys.parts.forEach(p=>{T+=g.scores[p.id];M+=g.maxes[p.id];kp.append(el('div',{},el('small',{},PART_NAME[p.id]||p.id),el('b',{},BL_EXAM.fmt(g.scores[p.id])+' / '+p.points)));});
+  kids.push(el('p',{class:'center big'},BL_EXAM.fmt(T)+' / '+M+' ('+Math.round(100*T/M)+'%)'),kp,el('p',{class:'center'},'Pass mark in the official exam: 30 / 50.'));
+  MOCK.keys.parts.forEach(kpart=>{
+    const ip=items.parts.find(x=>x.id===kpart.id)||{};
+    kids.push(el('h2',{style:'margin:18px 0 6px;color:var(--navy)'},ip.title||kpart.id));
+    if(kpart.id==='dictation'){kids.push(el('p',{},el('b',{},'Correct text: '),kpart.text),el('p',{},el('b',{},'Your text: '),answers.dictation||'(blank)'));return;}
+    const show=(k,v)=>{const o=((ip.items||[]).find(i=>i.n===Number(k))||{}).opts;return o&&o[v]?v.toUpperCase()+') '+o[v]:(v||'—');};
+    Object.keys(kpart.keys||kpart.accept).sort((a,b)=>a-b).forEach(n=>{
+      const ok=okItem(kpart,n,answers)>0,a=(answers[kpart.id]||{})[n];
+      let mine,right;
+      if(kpart.id==='oral'||kpart.id==='mc'){mine=a?show(n,a):'—';right=show(n,kpart.keys[n]);}
+      else if(kpart.id==='yesno'){mine=a||'—';right=kpart.keys[n];}
+      else{mine=a||'—';right=kpart.accept[n][0];}
+      const it=(ip.items||[]).find(i=>i.n===Number(n));
+      kids.push(el('div',{style:'border-top:1px solid var(--line);padding:6px 0'},
+        el('div',{},el('b',{},n+'. '),it&&(it.q||it.text)?String(it.q||it.text):''),
+        el('div',{class:ok?'good':'msg-bad'},(ok?'Correct: ':'Your answer: ')+mine),
+        ok?null:el('div',{},'Correct answer: ',el('b',{},right))));
+    });
+  });
+  const again=el('a',{class:'btnl',href:'exam.html?mock=1&stage='+stage+'&test='+MOCK.test},'Try again'),list=el('a',{class:'btnl',href:'exam.html?mock=1',style:'background:#fff;color:var(--navy);border-color:var(--navy)'},'All mock tests');
+  kids.push(el('p',{style:'display:flex;gap:10px;flex-wrap:wrap;margin-top:18px'},again,list,leave()));
   screen([el('div',{class:'scr'},...kids)]);
 }
 home();
