@@ -140,7 +140,7 @@ function mount(box,ctx){
     if(f){var ms=new Date(f.start_at)-now,min=Math.ceil(ms/60000),live=ms<=0&&new Date(f.end_at)>now;
       if(live||(min>0&&min<=60)){
         var b=el('div','ag-ban');b.appendChild(el('b','',live?T('now'):T('soon',min)));b.appendChild(el('span','',fmtT(f.start_at)+' – '+fmtT(f.end_at)+' · '+(f.title||'')));
-        if(f.meet_url){var a=el('a','ag-btn',T('join'));a.href=f.meet_url;a.target='_blank';a.rel='noopener';b.appendChild(a);}
+        if(f.meet_url){var a=el('a','ag-btn',T('join'));a.href=f.meet_url;a.target='_blank';a.rel='noopener';a.addEventListener('click',function(){try{Promise.resolve(sb.rpc('mark_join',{p_lesson_id:f.id})).then(function(){},function(){});}catch(e){}});b.appendChild(a);}
         w.appendChild(b);}}
     /* answers to requests: approved ones stay 24 hours, declined ones 3 days; the student can dismiss either */
     var dis={};try{dis=JSON.parse(localStorage.getItem('bl-ag-dis')||'{}')||{};}catch(e){}

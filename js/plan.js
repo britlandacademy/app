@@ -48,6 +48,7 @@ function countdown(card,L10,es,uid){
       go=el('a',{class:'bl-pill bl-gold',href:ZOOM,target:'_blank',rel:'noopener'}),
       rs=el('button',{type:'button',class:'bl-pill bl-red',text:L10.rsBtn});
     go.innerHTML=VID;go.append(el('span',{text:L10.cdGo}));go.hidden=true;rs.hidden=true;
+    go.addEventListener('click',function(){try{Promise.resolve(Gate.sb.rpc('mark_join',{p_lesson_id:row.id})).then(function(){},function(){});}catch(e){}});
     f.append(sp,rs,go);card.append(f);
     var canRs=!row.is_group;
     if(canRs&&t0-Date.now()>3600000){
