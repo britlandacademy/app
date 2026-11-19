@@ -475,6 +475,7 @@ var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they 
 ['Next step','Próximo passo','Próximo paso'],
 ['Build your study plan, the right way for your level.','Montar o seu plano de estudos, do jeito certo para o seu nível.','Montar tu plan de estudios, a la medida de tu nivel.'],
 ['Talk to the school','Falar com a escola','Hablar con la escuela'],
+['You already took this test in the last 7 days. To take it again, talk to the school.','Você já fez este teste nos últimos 7 dias. Para refazer, fale com a escola.','Ya hiciste esta prueba en los últimos 7 días. Para repetirla, habla con la escuela.'],
 ['Final challenge','Desafio final','Desafío final'],
 ['Speak for 20 to 40 seconds, as in a real conversation.','Fale por 20 a 40 segundos, como em uma conversa de verdade.','Habla de 20 a 40 segundos, como en una conversación real.'],
 ['Record','Gravar','Grabar'],
