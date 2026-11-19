@@ -1,7 +1,8 @@
 <!doctype html>
-<html lang="pt-BR">
+<html translate="no" lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<meta name="google" content="notranslate">
 <title>Painel do professor · Britland Academy</title>
 <meta property="og:type" content="website"><meta property="og:site_name" content="Britland Academy"><meta property="og:locale" content="pt_BR"><meta property="og:title" content="Britland Academy · Painel do professor"><meta property="og:description" content="Área do professor da Britland Academy."><meta property="og:url" content="https://www.britlandacademy.co.uk/app/admin.html"><meta property="og:image" content="https://www.britlandacademy.co.uk/app/img/og/og-admin.jpg"><meta property="og:image:secure_url" content="https://www.britlandacademy.co.uk/app/img/og/og-admin.jpg"><meta property="og:image:type" content="image/jpeg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Britland Academy: Painel do professor"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Britland Academy · Painel do professor"><meta name="twitter:description" content="Área do professor da Britland Academy."><meta name="twitter:image" content="https://www.britlandacademy.co.uk/app/img/og/og-admin.jpg"><meta name="description" content="Área do professor da Britland Academy."><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b1733"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Britland"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="js/pwa.js" defer></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -52,6 +53,20 @@ td.g{background:var(--ok-bg)}td.m{background:var(--warn-bg)}td.r{background:var(
 .tp-n{background:var(--bad);color:#fff;border-radius:99px;font-size:.72rem;padding:1px 7px;margin-left:6px;font-weight:700}
 .sc{display:none}.sc.on{display:block}
 .bl-flag{border-radius:50%;object-fit:cover;vertical-align:-3px;margin-right:6px;flex:none}.tp-alert{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;box-sizing:border-box;margin:0 0 14px;padding:12px 14px;border:0;border-radius:14px;background:#ff8a3d;color:#111;font:700 1rem var(--font-body);text-align:left;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}.tp-alert[hidden]{display:none}.tp-alert b{font-weight:700;display:inline-flex;align-items:center;gap:8px}.tp-alert b svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}.tp-alert i{font-style:normal;background:#111;color:#fff;border-radius:99px;padding:4px 12px;font-size:.85rem;flex:none}
+.pc{border:1px solid var(--line);border-left:6px solid var(--line);border-radius:12px;padding:14px 16px;margin:0 0 12px;background:var(--surface)}
+.pc.warn{border-left-color:var(--warn)}.pc.ok{border-left-color:var(--ok)}
+.pc .pch{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.pc h3{margin:0;font-size:1.05rem}.pc .meta{color:var(--muted);font-size:.85rem;margin:2px 0 10px}
+.pc .rec{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 10px;border-radius:10px;background:var(--warn-bg);color:var(--warn);font-size:.92rem;margin:0 0 10px}
+.pc .rec.ok{background:var(--ok-bg);color:var(--ok)}
+.pc .rec svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.pc .bars{display:grid;gap:6px}
+.pc .brow{display:grid;grid-template-columns:104px 1fr 64px;gap:10px;align-items:center;font-size:.86rem}
+.pc .brow .t{height:9px;border-radius:99px;background:var(--chip);overflow:hidden}
+.pc .brow .t>div{height:100%;border-radius:99px}
+.pc .brow .v{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.pc .gf{background:var(--ok)}.pc .yf{background:var(--warn)}.pc .rf{background:var(--bad)}
+.pc .why{font-size:.82rem;opacity:.9;flex-basis:100%}
 .tp-attn{border:2px solid var(--accent);border-left-width:6px;border-radius:12px;padding:14px 16px;margin:0 0 18px;background:var(--card)}
 .tp-attn h2{margin:0 0 8px}
 .tp-attn ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
@@ -275,7 +290,7 @@ details.h{background:var(--surface);border:1px solid var(--line);border-radius:1
 <div class="sc" id="s-fx"><section class="card" aria-labelledby="h-fx"><h2 id="h-fx">Efeitos de carregamento</h2><div id="fxBox" data-noi18n="1"></div></section></div>
 <div class="sc" id="s-place"><section class="card" aria-labelledby="h-pl"><h2 id="h-pl">Resultados do Placement test</h2>
   <p class="hint">Link público para enviar a interessados (não precisa de login): <b id="pllink"></b></p>
-  <div class="tw"><table id="pltab"></table></div>
+  <div id="pltab"></div>
   <p class="msg" id="plmsg" aria-live="polite"></p>
 </section></div>
 </main>
@@ -716,6 +731,35 @@ $('tbgo').addEventListener('click',async()=>{
 
 /* ----- placement test results ----- */
 function tl(p){return p.test_lang||(p.answers&&p.answers.lang)||'en';}
+const PL_WARN='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l10 18H2z"/><path d="M12 10v5"/><path d="M12 18h.01"/></svg>',PL_OK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>';
+function plStage(p,lv){return tl(p)==='en'?lv:tl(p)==='es'?Math.min(6,Math.ceil(lv/2)):null;}
+function plSkills(p){return p.skills||(p.answers&&p.answers.skills)||null;}
+function plCard(p,onDel){
+  const sk=plSkills(p),L=tl(p),tested=plStage(p,p.level);
+  const sug=p.suggested_stage!=null?p.suggested_stage:(p.answers&&p.answers.suggested!=null?p.answers.suggested:null);
+  const bl=p.borderline===true||(p.answers&&p.answers.borderline===true)||(sug!=null&&tested!=null&&sug<tested);
+  const del=el('button',{type:'button',class:'ghost',onclick:()=>{if(!del.dataset.sure){del.dataset.sure='1';del.textContent='Confirmar?';return;}onDel();}},'Excluir');
+  const card=el('article',{class:'pc '+((tested==null||!(sk||sug!=null))?'':bl?'warn':'ok')});
+  card.append(el('div',{class:'pch'},el('div',{},el('h3',{},p.name),el('div',{class:'meta'},({en:'Inglês',es:'Espanhol',pt:'Português'})[L]+' · '+(p.cefr||'–')+' · nota '+p.score+' / '+p.total+' · '+fmt(p.created_at)+' · '+p.contact+(sk&&sk.tm&&sk.tm.n?' · tempo médio '+sk.tm.avg+' s por pergunta':''))),del));
+  if(tested!=null&&(sk||sug!=null)){
+    const r=el('div',{class:'rec'+(bl?'':' ok')});
+    r.insertAdjacentHTML('afterbegin',bl?PL_WARN:PL_OK);
+    if(bl){r.append(el('span',{},'Colocação ajustada automaticamente. Teste: ',el('b',{},'Stage '+tested),' · Recomendado: ',el('b',{},'Stage '+sug)));
+      const w=sk&&sk.why||[],tx=[];if(w.indexOf('prev')>=0)tx.push('passou o nível anterior só com a confirmação mínima (5 de 6)');if(w.indexOf('vocab')>=0)tx.push('vocabulário fraco');if(w.indexOf('typed')>=0)tx.push('foi mal na verificação digitada');if(w.indexOf('fast')>=0)tx.push('respostas rápidas demais nas perguntas avançadas');if(w.indexOf('blur')>=0)tx.push('saiu da página várias vezes durante o teste');if(w.indexOf('paste')>=0)tx.push('colou texto nas respostas digitadas');
+      if(tx.length)r.append(el('span',{class:'why'},tx.join('; ')+'.'));}
+    else r.append(el('span',{},'Colocação segura: ',el('b',{},'Stage '+tested)));
+    card.append(r);
+  }
+  if(sk){
+    const col=q=>q>=.75?'gf':q>=.5?'yf':'rf',b=el('div',{class:'bars'});
+    const row=(n,pr,txt)=>b.append(el('div',{class:'brow'},el('span',{},n),el('span',{class:'t'},el('div',{class:col(pr),style:'width:'+Math.round(pr*100)+'%'})),el('span',{class:'v'},txt)));
+    [['Gramática','g'],['Leitura','r'],['Escuta','l'],['Vocabulário','v']].forEach(x=>{const v=sk[x[1]];if(v&&v[1]>0)row(x[0],v[0]/v[1],v[0]+'/'+v[1]);});
+    if(sk.h&&sk.h[1]>0)row('Verificação',sk.h[0]/sk.h[1],sk.h[0]+'/'+sk.h[1]);
+    if(sk.v)row('Ortografia',Math.max(0,1-(sk.s||0)/3),(sk.s||0)===1?'1 erro':(sk.s||0)+' erros');
+    card.append(b);
+  }
+  return card;
+}
 function loadPlacement(){
   $('pllink').textContent=location.href.replace(/admin\.html.*$/,'placement.html');
   return sb.from('placement').select('*').order('created_at',{ascending:false}).limit(300).then(r=>{
@@ -724,16 +768,7 @@ function loadPlacement(){
     const rows=r.data||[];
     if(!rows.length){setMsg('plmsg','Ainda sem resultados.');return;}
     setMsg('plmsg','');
-    const tb=el('tbody',{});
-    rows.forEach(p=>{
-      const del=el('button',{type:'button',class:'ghost',onclick:()=>{
-        if(!del.dataset.sure){del.dataset.sure='1';del.textContent='Confirmar?';return;}
-        sb.from('placement').delete().eq('id',p.id).then(x=>{if(x.error)setMsg('plmsg','Erro: '+x.error.message,'bad');else loadPlacement();});
-      }},'Excluir');
-      tb.append(el('tr',{},el('td',{},fmt(p.created_at)),el('td',{},p.name),el('td',{},p.contact),el('td',{},({en:'Inglês',es:'Espanhol',pt:'Português'})[tl(p)]),el('td',{},p.cefr||'–'),el('td',{},tl(p)==='en'?'Stage '+p.level:tl(p)==='es'?'Stage '+Math.min(6,Math.ceil(p.level/2)):'–'),el('td',{},p.score+' / '+p.total),el('td',{},del)));
-    });
-    const HL=['Data','Nome','Contato','Idioma','Nível','Stage','Nota','Ação'];[...tb.children].forEach(r=>[...r.children].forEach((c,i)=>{c.dataset.l=HL[i];}));
-    t.append(th(HL),tb);
+    rows.forEach(p=>t.append(plCard(p,()=>sb.from('placement').delete().eq('id',p.id).then(x=>{if(x.error)setMsg('plmsg','Erro: '+x.error.message,'bad');else loadPlacement();}))));
   });
 }
 /* ----- Stage Exams ----- */
@@ -991,7 +1026,7 @@ const IC={fx:'M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.8
 function ico(k){const d=document.createElement('div');d.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+IC[k]+'"/></svg>';return d.firstChild;}
 const TABS=[['home','Início'],['agenda','Agenda'],['today','Hoje'],['students','Alunos'],['grades','Notas'],['pay','Pagamentos','payments.html'],['content','Conteúdo'],['place','Placement'],['stats','Estatísticas'],['social','Redes sociais'],['tips','Dicas semanais'],['reviews','Avaliações'],['fx','Efeitos']];
 const BAR=['home','agenda','students','grades','more'],MORE=['more','today','content','place','stats','social','tips','reviews','fx'];
-let OVERDUE=null,PLN=null,LREQ=null,LCAN=null,CUR='home';
+let PLB=[],OVERDUE=null,PLN=null,LREQ=null,LCAN=null,CUR='home';
 function markTabs(){
   document.querySelectorAll('#tpTabs .tp-tab').forEach(x=>x.classList.toggle('on',x.dataset.k===CUR||(x.dataset.k==='more'&&MORE.includes(CUR))));
   document.querySelectorAll('#tpSide .tp-tab').forEach(x=>x.classList.toggle('on',x.dataset.k===CUR));
@@ -1122,6 +1157,10 @@ function renderMore(h){
 let NEXT=null;
 function lastAct(uid){let m=0;ATT.forEach(a=>{if(a.user_id===uid){const t=new Date(a.created_at).getTime();if(t>m)m=t;}});return m;}
 function idleDays(p){const m=lastAct(p.id);return m?Math.floor((Date.now()-m)/864e5):999;}
+function lowList(){const by={},now=Date.now(),res=[];
+  ATT.forEach(a=>{if(!a.total)return;const u=by[a.user_id]||(by[a.user_id]={seen:{},arr:[],first:0});const k=a.kind+'|'+a.lesson+'|'+a.ex;if(u.seen[k])return;u.seen[k]=1;const t=new Date(a.created_at).getTime();if(!u.first||t<u.first)u.first=t;u.arr.push(a.score/a.total);});
+  PROFILES.forEach(p=>{if(p.is_admin||p.status!=='approved')return;const u=by[p.id];if(!u||u.arr.length<15||now-u.first>60*864e5)return;const l=u.arr.slice(-30),avg=l.reduce((x,y)=>x+y,0)/l.length;if(avg<.65)res.push({p:p,pct:Math.round(avg*100),n:l.length});});
+  return res.sort((a,b)=>a.pct-b.pct);}
 function idleList(){return PROFILES.filter(p=>!p.is_admin&&p.status==='approved').map(p=>({p:p,d:idleDays(p)})).filter(x=>x.d>7).sort((a,b)=>b.d-a.d);}
 let PEND=[],NSEL='n',PEND_AT=0;
 function pendMin(l){return Math.max(0,Math.round((Date.now()-new Date(l.end_at).getTime())/6e4));}
@@ -1162,10 +1201,12 @@ function renderHome(){
   if(h.rev)rows.push([h.rev+' prova(s) com respostas para você revisar','exams']);
   if(h.over)rows.push([h.over+' parcela(s) vencida(s)','payments.html']);
   socList().forEach(x=>rows.push(['Data para divulgar: '+x.n+' ('+(x.d===0?'hoje':x.d===1?'amanhã':'em '+x.d+' dias')+')','social']));
+  PLB.forEach(x=>rows.push(['Teste de nível ajustado automaticamente: '+x.name+' (teste Stage '+x.t+', recomendado Stage '+x.s+')','place']));
   ul.textContent='';
-  const idl=idleList();
-  if(!rows.length&&!idl.length)ul.append(el('li',{},el('span',{},'Nada pendente. Tudo em dia!')));
+  const idl=idleList(),low=lowList();
+  if(!rows.length&&!idl.length&&!low.length)ul.append(el('li',{},el('span',{},'Nada pendente. Tudo em dia!')));
   rows.forEach(r=>ul.append(el('li',{},el('span',{},r[0]),el('button',{type:'button',onclick:()=>{if(r[1]==='__agenda'){const b=$('agendaBox');if(b)b.scrollIntoView({behavior:'smooth',block:'start'});}else if(/\.html$/.test(r[1]))location.href=r[1];else go(r[1]);}},'Ver'))));
+  low.slice(0,5).forEach(x=>ul.append(el('li',{},el('span',{},el('b',{},x.p.name||x.p.email),el('small',{},'Entrou há pouco e está com '+x.pct+'% de acerto na primeira tentativa dos exercícios (últimas '+x.n+')')),el('button',{type:'button',class:'ghost',onclick:()=>go('students')},'Ver alunos'))));
   idl.slice(0,5).forEach(x=>ul.append(el('li',{},el('span',{},el('b',{},x.p.name||x.p.email),el('small',{},x.d>=999?'ainda não estudou':x.d+' dias sem estudar')),el('button',{type:'button',class:'ghost',onclick:e=>nudgeP(x.p,e.currentTarget)},'Enviar lembrete'))));
   if(idl.length>5)ul.append(el('li',{},el('span',{},'+ '+(idl.length-5)+' aluno(s) sem estudar há mais de 7 dias'),el('button',{type:'button',class:'ghost',onclick:()=>go('today')},'Ver todos')));
   const C=[['students',String(h.stu),'Alunos','Aprovar, liberar lessons, ver progresso',h.pend?h.pend+' pedido(s)':''],
@@ -1186,6 +1227,7 @@ function loadHomeExtras(){
   sb.from('lesson_requests').select('id',{count:'exact',head:true}).eq('kind','cancel').gte('created_at',new Date(Date.now()-864e5).toISOString()).then(r=>{LCAN=r.error?null:(r.count||0);renderHome();}).catch(()=>{});
   sb.from('lessons').select('id,title,start_at').gte('end_at',new Date().toISOString()).order('start_at').limit(1).then(r=>{NEXT=(!r.error&&r.data&&r.data[0])||null;renderNext();}).catch(()=>{});
   loadPend().then(()=>{renderHome();});
+  sb.from('placement').select('name,level,test_lang,answers,borderline,suggested_stage,created_at').eq('borderline',true).gte('created_at',new Date(Date.now()-14*864e5).toISOString()).order('created_at',{ascending:false}).limit(10).then(r=>{if(r.error)return;PLB=(r.data||[]).map(p=>({name:p.name,t:tl(p)==='es'?Math.min(6,Math.ceil(p.level/2)):p.level,s:p.suggested_stage})).filter(x=>x.s!=null&&x.s<x.t);renderHome();}).catch(()=>{});
   sb.from('placement').select('id',{count:'exact',head:true}).then(r=>{PLN=r.error?null:(r.count||0);renderHome();}).catch(()=>{});
 }
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&typeof loadHomeExtras==='function')loadHomeExtras();});

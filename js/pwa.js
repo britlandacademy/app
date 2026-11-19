@@ -5,7 +5,8 @@
    (nao usa sessionStorage: alguns navegadores/PWAs zeram a cada pagina e o jogo "voltava" para Lesson Checks) */
 try{var __n=Date.now(),__s=+localStorage.getItem('bl-seen')||0;if(!__s||__n-__s>30*60e3)localStorage.setItem('bl-game','0');localStorage.setItem('bl-seen',String(__n));
   var __t=function(){try{localStorage.setItem('bl-seen',String(Date.now()));}catch(e){}};setInterval(__t,60000);addEventListener('pagehide',__t);document.addEventListener('visibilitychange',__t);}catch(e){}
-window.BL_VERSION='2.0.89';
+window.BL_VERSION='2.0.90';
+try{document.documentElement.setAttribute('translate','no');document.documentElement.classList.add('notranslate');}catch(e){} /* the app has its own language menu: the browser must not translate the page (it turned the school name into Gra-Bretanha Academia and would translate the test questions) */
 /* leaving Game Mode: the empty platform stays over the page (and the loading screen) until the normal home is ready */
 try{var __o=localStorage.getItem('bl-tfx')||'';if(/^out:\d+$/.test(__o)){localStorage.removeItem('bl-tfx');if(Date.now()-(+__o.slice(4))<20000){
   var __v=document.createElement('div'),__h=Math.max(640,390*innerHeight/innerWidth),__f=((470+(__h-640)/2)/__h*100).toFixed(2);__v.style.cssText='position:fixed;inset:0;z-index:2147483000;pointer-events:none;background:#f1ead6 linear-gradient(180deg,transparent 0 '+__f+'%,#e4dcc3 '+__f+'%);';
@@ -59,6 +60,7 @@ try{var cs=document.currentScript||{},st=document.createElement('script');st.src
 if(!('serviceWorker' in navigator))return;
 var had=!!navigator.serviceWorker.controller,shown=false;
 function banner(){
+  return; /* o app atualiza em silêncio: sem faixa de "nova versão" (o professor pediu). Recarrega sozinho quando é seguro ou quando o app sai da tela. */
   if(shown||!had)return;shown=true;
   var b=document.createElement('div');b.setAttribute('role','status');
   b.style.cssText='position:fixed;left:8px;right:8px;bottom:8px;z-index:10001;background:#0b1733;color:#fff;border:1px solid #c9a13b;border-radius:12px;padding:10px 14px;display:flex;gap:12px;align-items:center;justify-content:space-between;font:16px/1.4 system-ui,sans-serif;max-width:520px;margin:0 auto;box-shadow:0 8px 30px rgba(0,0,0,.4)';

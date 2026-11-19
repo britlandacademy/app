@@ -445,6 +445,37 @@ var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they 
 ['\u25B6 Slowly','\u25B6 Devagar','\u25B6 Despacio'],
 ["I don't know",'Não sei','No lo sé'],
 ['Next','Próxima','Siguiente'],
+['Slowly','Devagar','Despacio'],
+['Challenge','Desafio','Desafío'],
+['questions to go further','perguntas para ir mais longe','preguntas para llegar más lejos'],
+['You are doing well. Ready for one more challenge?','Você está indo bem. Vamos a mais um desafio?','¡Vas muy bien! ¿Vamos con un desafío más?'],
+["Let's go",'Vamos lá','Vamos'],
+['Listen and write the word.','Ouça e escreva a palavra.','Escucha y escribe la palabra.'],
+['Word {0} of {1}','Palavra {0} de {1}','Palabra {0} de {1}'],
+['You can listen as many times as you like.','Pode ouvir quantas vezes quiser.','Puedes escuchar las veces que quieras.'],
+['If you have not seen it yet, leave it blank.','Se ainda não viu, deixe em branco.','Si aún no la viste, déjala en blanco.'],
+['Discover how far your {0} already goes','Descubra até onde o seu {0} já chega','Descubre hasta dónde llega ya tu {0}'],
+['In about 10 minutes you will see what you already know and where to start.','Em cerca de 10 minutos você vê o que já sabe e por onde começar.','En unos 10 minutos ves lo que ya sabes y por dónde empezar.'],
+['10 minutes for your level map','10 minutos para o seu mapa de nível','10 minutos para tu mapa de nivel'],
+['Questions that follow your pace','Perguntas que acompanham o seu ritmo','Preguntas que siguen tu ritmo'],
+['With audio: use headphones for the best experience','Com áudio: use fones para a melhor experiência','Con audio: usa auriculares para la mejor experiencia'],
+['If you have not seen something yet, choose "Not seen yet". That makes your plan more accurate.','Se ainda não viu algum assunto, escolha "Ainda não vi". Assim o seu plano fica mais preciso.','Si aún no viste algo, elige "Aún no lo vi". Así tu plan queda más preciso.'],
+['Your contact is only used so that teacher Paulo can show you the best path.','Seu contato serve só para o professor Paulo te mostrar o melhor caminho.','Tu contacto solo sirve para que el profesor Paulo te muestre el mejor camino.'],
+['I want to find out','Quero descobrir','Quiero descubrirlo'],
+['Not seen yet','Ainda não vi','Aún no lo vi'],
+['Start at:','Comece em:','Empieza en:'],
+['Beginner','Iniciante','Principiante'],['Elementary','Básico','Básico'],['Intermediate','Intermediário','Intermedio'],['Upper intermediate','Intermediário avançado','Intermedio alto'],['Advanced','Avançado','Avanzado'],['Proficient','Proficiente','Competente'],
+['You can already introduce yourself and understand everyday phrases.','Você já se apresenta e entende frases do dia a dia.','Ya te presentas y entiendes frases de cada día.'],
+['You can already talk about your routine and handle simple situations.','Você já fala da sua rotina e resolve situações simples.','Ya hablas de tu rutina y resuelves situaciones sencillas.'],
+['You can already chat about travel, work and opinions.','Você já conversa sobre viagens, trabalho e opiniões.','Ya conversas sobre viajes, trabajo y opiniones.'],
+['You can already follow complex ideas and express yourself with confidence.','Você já acompanha ideias complexas e se expressa com confiança.','Ya sigues ideas complejas y te expresas con confianza.'],
+['You can already express yourself fluently and with precision.','Você já se expressa com fluência e precisão.','Ya te expresas con fluidez y precisión.'],
+['You can already use the language almost like a native speaker.','Você já usa o idioma quase como um nativo.','Ya usas el idioma casi como un nativo.'],
+['You are here','Você está aqui','Estás aquí'],
+['Next step','Próximo passo','Próximo paso'],
+['Build your study plan, the right way for your level.','Montar o seu plano de estudos, do jeito certo para o seu nível.','Montar tu plan de estudios, a la medida de tu nivel.'],
+['Talk to the school','Falar com a escola','Hablar con la escuela'],
+['Hello! My name is {0}. I took the placement test and my level is {1}. I would like to build my study plan.','Olá! Meu nome é {0}. Fiz o teste de nível e o meu nível é {1}. Quero montar o meu plano de estudos.','¡Hola! Me llamo {0}. Hice la prueba de nivel y mi nivel es {1}. Quiero montar mi plan de estudios.'],
 ['Your result','Seu resultado','Tu resultado'],
 ['Your English level (approximate):','Seu nível de inglês (aproximado):','Tu nivel de inglés (aproximado):'],
 ['Suggested Stage:','Etapa sugerida:','Etapa sugerida:'],
@@ -731,7 +762,8 @@ function add(entry){
   for(i=0;i<entry.length;i++){
     var s=entry[i];
     if(s.indexOf('{0}')>=0){
-      var re=new RegExp('^'+esc(s).replace(/\\\{(\d)\\\}/g,'(.+?)')+'$');
+      var gen=!/[^\W\d_]{3,}/.test(s.replace(/\{\d\}/g,'').replace(/\b(of|de)\b/g,'')),ph=gen?'(\\d+)':'(.+?)'; /* bare "{0} of {1}": numbers only, otherwise any text containing " de " was rewritten */
+      var re=new RegExp('^'+esc(s).replace(/\\\{(\d)\\\}/g,ph)+'$');
       TPL.push({re:re,entry:entry});
     }else if(!MAP.hasOwnProperty(s))MAP[s]=entry;
   }
