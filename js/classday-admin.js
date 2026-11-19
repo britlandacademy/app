@@ -25,8 +25,15 @@ function panel(box,o){
  css();
  Promise.resolve(o.sb.from('class_suggestions').select('id,kind,title,status,source,by_name,par_from,par_to,created_at').lte('par_from',o.to).gte('par_to',o.from).neq('status','rejected').order('created_at',{ascending:false})).then(function(r){
   var list=(r&&r.data)||[];box.textContent='';
-  var k=document.createElement('div');k.className='nc-k';k.textContent='SUGESTÕES PARA PAR. '+o.from+(o.to!==o.from?'–'+o.to:'')+' · '+list.length;box.appendChild(k);
-  if(!list.length){var m=document.createElement('div');m.className='nc-m';m.textContent='Nenhuma sugestão para estes parágrafos.';box.appendChild(m);return;}
+  var k=document.createElement('div');k.className='nc-k';k.textContent='SUGESTÕES PARA PAR. '+o.from+(o.to!==o.from?'–'+o.to:'')+' · '+list.length;
+  if(!list.length){box.appendChild(k);var m=document.createElement('div');m.className='nc-m';m.textContent='Nenhuma sugestão para estes parágrafos.';box.appendChild(m);return;}
+  /* recolhido por padrão: toque no título para abrir a lista */
+  var wrap=document.createElement('div');wrap.hidden=box.dataset.open!=='1';
+  k.style.cursor='pointer';k.setAttribute('role','button');k.tabIndex=0;k.setAttribute('aria-expanded',String(!wrap.hidden));
+  var chv=document.createElementNS('http://www.w3.org/2000/svg','svg');chv.setAttribute('viewBox','0 0 24 24');chv.setAttribute('width','16');chv.setAttribute('height','16');chv.setAttribute('fill','none');chv.setAttribute('stroke','currentColor');chv.setAttribute('stroke-width','2');chv.setAttribute('stroke-linecap','round');chv.setAttribute('stroke-linejoin','round');chv.style.cssText='vertical-align:middle;margin-left:6px;transition:transform .2s';chv.innerHTML='<path d="M6 9l6 6 6-6"/>';chv.style.transform=wrap.hidden?'':'rotate(180deg)';k.appendChild(chv);
+  function tog(){wrap.hidden=!wrap.hidden;box.dataset.open=wrap.hidden?'0':'1';k.setAttribute('aria-expanded',String(!wrap.hidden));chv.style.transform=wrap.hidden?'':'rotate(180deg)';}
+  k.onclick=tog;k.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();tog();}};
+  box.appendChild(k);box.appendChild(wrap);
   list.forEach(function(x){
    var d=document.createElement('div');d.className='cda-it';var u=url(x);
    d.innerHTML=ic(x.kind)+'<b>'+esc(x.title)+'</b><span class="nc-m">· '+KN[x.kind]+(x.source==='student'&&x.by_name?' · '+esc(x.by_name):'')+'</span><span style="margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="cda-st '+(x.status==='approved'?'ok':'')+'">'+(x.status==='approved'?(x.source==='student'?'aprovada':'no ar'):'pendente')+'</span></span>';
@@ -36,7 +43,7 @@ function panel(box,o){
     ap.onclick=function(){ap.disabled=true;Promise.resolve(o.sb.from('class_suggestions').update({status:'approved'}).eq('id',x.id)).then(function(q){if(q&&q.error){ap.disabled=false;return;}panel(box,o);});};a.appendChild(ap);
     var rj=document.createElement('button');rj.type='button';rj.className='cda-b';rj.textContent='Recusar';
     rj.onclick=function(){rj.disabled=true;Promise.resolve(o.sb.from('class_suggestions').update({status:'rejected'}).eq('id',x.id)).then(function(){panel(box,o);});};a.appendChild(rj);}
-   box.appendChild(d);});
+   wrap.appendChild(d);});
  },function(){});
 }
 function rates(rows,o){

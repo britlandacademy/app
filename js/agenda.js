@@ -388,7 +388,7 @@ function admin(box,lg){
         if(NC&&NC.render){NC.render(det,{id:x.k,title:x.title,start_at:x.start_at},{sb:Gate.sb,profiles:function(){return stu;},att:function(){return (S&&S.attempts)||[];}},{compact:true});}
         var ch=el('button','ag-btn alt','Mudar aluno');ch.type='button';ch.style.marginTop='10px';ch.onclick=function(){if(gr)assignUI(gr,x);};
         var bx=el('div','ag2-acts');bx.appendChild(ch);
-        if(!isPast){var rb=el('button','ag-btn alt','Remarcar'),cb=el('button','ag-btn alt ag2-danger','Cancelar aula');rb.type=cb.type='button';var nms=v.map(function(i){return sname(gr,i);}).join(', ');rb.onclick=function(){changeUI(x,'ask',nms,v);};cb.onclick=function(){changeUI(x,'cancel',nms,v);};bx.appendChild(rb);bx.appendChild(cb);}
+        if(!isPast){var rb=el('button','ag-btn alt','Remarcar'),cb=el('button','ag-btn alt ag2-danger','Cancelar aula');rb.type=cb.type='button';var nms=v.map(function(i){return sname(gr,i);}).join(', ');rb.onclick=function(){changeUI(x,v.length>1?'move':'ask',nms,v);};cb.onclick=function(){changeUI(x,'cancel',nms,v);};bx.appendChild(rb);bx.appendChild(cb);}
         det.appendChild(bx);};
       return it;}
     function add2(p){for(var i=1;i<arguments.length;i++)p.appendChild(arguments[i]);return p;}
@@ -414,6 +414,7 @@ function admin(box,lg){
     if(gr){requestsUI(gr);availUI(gr);groupsUI(gr);}
   }
   var edit=null;
+  window.Agenda.change=function(x,mode,names,ids,after){return changeUI(x,mode,names,ids,after);}; // usado pela tela Fechar a aula
   function load(t,sel,ord){var q=Gate.sb.from(t).select(sel);if(ord)q=q.order(ord);return q.then(function(r){return (r&&r.data)||[];},function(){return [];});}
   function refresh(){
     Promise.all([Gate.sb.rpc('gcal_status').then(function(r){return r&&r.data;},function(){return null;}),
@@ -441,31 +442,32 @@ function admin(box,lg){
     top.appendChild(bk);top.appendChild(el('h1','',title));aov.appendChild(top);aov.appendChild(body);document.body.appendChild(aov);document.body.style.overflow='hidden';
   }
 
-  function changeUI(x,mode,names,ids){
+  function changeUI(x,mode,names,ids,after){
     var body=el('div','ag-ovb');
     body.appendChild(info(fmt(x.start_at),(x.title||'')+(names?' · '+names:'')));
     var nt=el('label','ag-ck'),nc=document.createElement('input');nc.type='checkbox';nc.checked=true;nt.appendChild(nc);nt.appendChild(document.createTextNode(' Avisar os alunos por mensagem'));
     var inp=null,force=false,credit=null;
-    if(mode==='ask'){body.appendChild(el('p','ag-s','O aluno recebe um aviso e escolhe o novo horário entre os seus horários livres. A aula atual sai da agenda agora e ele ganha uma aula a repor, que continua valendo se ele demorar a escolher.'));nc.checked=true;}
+    if(mode==='move'){body.appendChild(el('p','ag-s','A aula muda para o novo horário para a turma toda e todos os alunos são avisados por mensagem.'));body.appendChild(el('h2','','Novo horário'));inp=document.createElement('input');inp.type='datetime-local';inp.className='ag-in';inp.setAttribute('aria-label','Novo horário');body.appendChild(inp);}
+    else if(mode==='ask'){body.appendChild(el('p','ag-s','O aluno recebe um aviso e escolhe o novo horário entre os seus horários livres. A aula atual sai da agenda agora e ele ganha uma aula a repor, que continua valendo se ele demorar a escolher.'));nc.checked=true;}
     else{body.appendChild(el('p','ag-s','A aula será apagada do Google Agenda e do app. Isso não pode ser desfeito.'));
       body.appendChild(el('h2','','O aluno ganha aula a repor?'));var cw=el('div','ag2-acts');var yb=el('button','ag-btn alt','Sim, dar crédito'),nb=el('button','ag-btn alt','Não dar crédito');yb.type=nb.type='button';
       function pk(v){credit=v;yb.className='ag-btn'+(v===true?'':' alt');nb.className='ag-btn'+(v===false?'':' alt');m.textContent='';}
       yb.onclick=function(){pk(true);};nb.onclick=function(){pk(false);};cw.appendChild(yb);cw.appendChild(nb);body.appendChild(cw);}
-    if(mode==='cancel')body.appendChild(nt);
+    if(mode!=='ask')body.appendChild(nt);
     var m=el('p','ag-s ag-m','');m.setAttribute('role','status');body.appendChild(m);body.appendChild(el('div','ag-sp'));
-    var go=el('button','ag-btn ag-go',mode==='ask'?'Pedir novo horário ao aluno':'Sim, cancelar a aula');go.type='button';
+    var go=el('button','ag-btn ag-go',mode==='ask'?'Pedir novo horário ao aluno':mode==='move'?'Remarcar a turma':'Sim, cancelar a aula');go.type='button';
     var back=el('button','ag-btn alt','Voltar');back.type='button';back.onclick=close;
     go.onclick=function(){var pl={action:mode,event:x.k,notify:mode==='ask'?true:nc.checked};if(mode==='cancel')pl.credit=false;if(mode==='cancel'){if(credit===null){m.textContent='Escolha se o aluno ganha aula a repor.';return;}pl.credit=credit;}
       if(mode==='move'){if(!inp.value){m.textContent='Escolha o novo horário.';return;}pl.start=new Date(inp.value).toISOString();pl.force=force;}
       go.disabled=back.disabled=true;m.textContent=T('busy');
       Gate.sb.functions.invoke('gcal-admin',{body:pl}).then(function(r){var q=r&&r.data;
-        if(q&&q.ok){m.textContent=mode==='ask'?'Aviso enviado ao aluno ✅':'Aula cancelada ✅';setTimeout(function(){Gate.sb.functions.invoke('gcal-sync',{body:{force:true}}).then(close,close);},700);return;}
+        if(q&&q.ok){m.textContent=mode==='ask'?'Aviso enviado ao aluno ✅':mode==='move'?'Aula remarcada ✅':'Aula cancelada ✅';try{if(after)after();}catch(e){}setTimeout(function(){Gate.sb.functions.invoke('gcal-sync',{body:{force:true}}).then(close,close);},700);return;}
         go.disabled=back.disabled=false;var e=q&&q.error;
         if(e==='conflict'){force=true;go.textContent='Remarcar mesmo assim';m.textContent='Já existe aula perto desse horário ('+fmt(q.at)+'). Toque de novo para confirmar mesmo assim.';}
         else if(e==='bad_time')m.textContent='Escolha um horário no futuro.';
         else m.textContent=T('fail')+(e?' ('+e+')':'');
       },function(){go.disabled=back.disabled=false;m.textContent=T('fail');});};
-    body.appendChild(go);body.appendChild(back);sheet(mode==='ask'?'Remarcar aula':'Cancelar aula',body);
+    body.appendChild(go);body.appendChild(back);sheet(mode==='cancel'?'Cancelar aula':'Remarcar aula',body);
   }
   function assignUI(gr,x){
     var body=el('div','ag-ovb'),chosen={};x.ids.forEach(function(i){chosen[i]=true;});
@@ -488,8 +490,9 @@ function admin(box,lg){
   function requestsUI(gr){
     var pend=gr.reqs.filter(function(q){return q.status==='pending'&&Date.now()-new Date(q.created_at)<86400000&&q.kind!=='cancel';});
     var canc=gr.reqs.filter(function(q){return q.kind==='cancel';}).slice(0,5);
-    var sec=el('div','ag-g');sec.appendChild(el('h2','','Pedidos de aula'+(pend.length?' ('+pend.length+')':'')));
-    if(!pend.length&&!canc.length)sec.appendChild(el('p','ag-s','Nenhum pedido aguardando resposta.'));
+    var rh=document.getElementById('reqBox');if(rh){rh.textContent='';rh.hidden=!(pend.length||canc.length);}
+    if(!pend.length&&!canc.length)return;
+    var sec=el('div','ag-g');if(rh)sec.style.marginTop='0';sec.appendChild(el('h2','','Pedidos de aula'+(pend.length?' ('+pend.length+')':'')));
     pend.forEach(function(q){
       var c=el('div','ag-row');c.style.flexDirection='column';c.style.alignItems='stretch';
       var nm=el('b','',sname(gr,q.user_id));nm.style.fontSize='1.1rem';var qf=flagOf(gr,q.user_id);if(qf)nm.insertBefore(qf,nm.firstChild);c.appendChild(nm);
@@ -503,7 +506,7 @@ function admin(box,lg){
       ok.onclick=function(){dec(true);};no.onclick=function(){dec(false);};
       acts.appendChild(ok);acts.appendChild(no);c.appendChild(acts);c.appendChild(m);sec.appendChild(c);});
     canc.forEach(function(q){sec.appendChild(el('p','ag-s',sname(gr,q.user_id)+' cancelou a aula de '+brF(q.old_start)+'.'));});
-    w.appendChild(sec);
+    (rh||w).appendChild(sec);
   }
   var WD=[[1,'Segunda'],[2,'Terça'],[3,'Quarta'],[4,'Quinta'],[5,'Sexta'],[6,'Sábado'],[0,'Domingo']];
   function availUI(gr){
@@ -543,6 +546,7 @@ function admin(box,lg){
     w.appendChild(sec);
   }
   function groupsUI(gr){
+    var host=document.getElementById('groupsBox');if(host)host.textContent=''; // no painel, as turmas ficam na aba Alunos
     var sec=el('div','ag-g');sec.appendChild(el('h2','',T('gT')));sec.appendChild(el('p','ag-s',T('gH')));
     var sn={};gr.students.forEach(function(p){sn[p.id]=p.name||p.email||'?';});
     function done(){Gate.sb.functions.invoke('gcal-sync',{body:{force:true}}).then(refresh,refresh);}
@@ -578,7 +582,7 @@ function admin(box,lg){
       var nb=el('button','ag-btn',T('gNew'));nb.type='button';nb.onclick=function(){edit={id:null,name:'',members:new Set()};refresh();};
       var a2=el('div','ag-acts');a2.appendChild(nb);sec.appendChild(a2);
     }
-    w.appendChild(sec);
+    (host||w).appendChild(sec);
   }
   refresh();
 }

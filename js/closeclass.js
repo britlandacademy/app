@@ -28,7 +28,7 @@ function render(host,x){ES=x.course?x.course==='es':ES0;SN=ES?6:12;SL=ES?'Etapa 
     var u0=uids[0],pr=(x.prog[u0]||{}),sm=a[1][0]&&/(?:stage|stg)\s*(\d+)/i.exec(a[1][0].sheet_name||'');
     var stage=+((mine[u0]&&mine[u0].stage)||pr.stage||(sm?sm[1]:0))||0,num=(mine[u0]&&mine[u0].class_number)||Math.max(maxN,+pr.class_number||0)+1;
     var sheet=(a[1][0]&&a[1][0].sheet_name)||'',ed=ES?'es':((mine[u0]&&mine[u0].edition)||(/2nd/i.test(sheet)?'e2':'e3'));
-    var absent={},status='given',saved=!!mine[u0];uids.forEach(function(u){if(mine[u]&&mine[u].status!=='given')absent[u]=1;});
+    var absent={},status='given',saved=!!mine[u0];function isAbs(u){var at=x.att&&x.att[u];return !!absent[u]||!!(at&&at.status==='ns');}uids.forEach(function(u){if(mine[u]&&mine[u].status!=='given')absent[u]=1;});
     if(!group&&mine[u0])status=mine[u0].status;
     box.appendChild(el('div','cc-k','Fechar a aula'+(saved?' · salva ✓':'')));
     var fal=uids.filter(function(u){var r=logs.filter(function(l){return l.user_id===u&&l.event_key!==key&&(l.status==='given'||l.status==='missed');}).sort(function(a,b){return (b.class_number||0)-(a.class_number||0);}).slice(0,2);return r.length===2&&r[0].status==='missed'&&r[1].status==='missed';});
@@ -40,12 +40,11 @@ function render(host,x){ES=x.course?x.course==='es':ES0;SN=ES?6:12;SL=ES?'Etapa 
     function setHint(){var t=plan(stSel.value,+nIn.value);hint.textContent=t?'Plano da '+(ES?'etapa ':'Stage ')+stSel.value+' · aula '+nIn.value+': '+t:'';}var fillTasks=function(){};stSel.onchange=nIn.onchange=function(){setHint();fillTasks();};setHint();
     var ctl=el('div','cc-seg'),btns={};
     function paint(){
-      if(group){ctl.textContent='';uids.forEach(function(u){var b=el('button','cc-pill '+(absent[u]?'no':'ok'),(absent[u]?'':'✓ ')+x.name(u));b.type='button';b.onclick=function(){absent[u]=!absent[u];paint();};ctl.appendChild(b);});
-        var ab=uids.filter(function(u){return absent[u];});msg.textContent=ab.length?ab.map(x.name).join(', ')+' vai ficar com a aula '+nIn.value+' em perdidas para revisar':'Toque no nome de quem faltou.';return;}
+      if(group){var ab=uids.filter(isAbs);msg.textContent=ab.length?ab.map(x.name).join(', ')+' vai ficar com a aula '+nIn.value+' em perdidas para revisar (presença marcada no card)':'';return;}
       Object.keys(btns).forEach(function(k){btns[k].classList.toggle('on',status===k);});}
     var msg=el('div','cc-m');
     if(!group){[['given','Dada',''],['missed','Faltou','bad'],['rescheduled','Remarcada','warn']].forEach(function(k){var b=el('button',k[2],k[1]);b.type='button';b.onclick=function(){status=k[0];paint();};btns[k[0]]=b;ctl.appendChild(b);});}
-    box.appendChild(ctl);box.appendChild(msg);
+    if(!group)box.appendChild(ctl);box.appendChild(msg);
     var g=el('div','cc-g'),L=mine[u0]||{};
     function fld(lab,val,ph){var l=el('label',null,lab),i=D.createElement('input');i.type='text';i.value=val||'';if(ph)i.placeholder=ph;l.appendChild(i);g.appendChild(l);return i;}
     var iL=fld('Lesson',L.lesson,''),iP=fld('Parágrafo',L.paragraph,''),iW=fld('Última palavra',L.last_word,'');box.appendChild(g);
@@ -81,13 +80,13 @@ function render(host,x){ES=x.course?x.course==='es':ES0;SN=ES?6:12;SL=ES?'Etapa 
     if(sheet){ckx('ins','Não deu tempo de terminar (adicionar nova linha)',false);ckx('conv','Aula de conversação (conta como dada)',false);lRev=ckx('rev','Terminei a revisão do Stage (liberar a prova)',false);ex.appendChild(thm);
       xc.conv.onchange=function(){thm.style.display=xc.conv.checked?'':'none';};
       var tgl=function(){lRev.hidden=!/FULL\s*REVISION|REVIS/i.test(ctOf())||/OFFICIAL.*EXAM|MOCK\s*EXAM/i.test(ctOf());};tgl();var f0=fillTasks;fillTasks=function(){f0();tgl();};
-      box.appendChild(ex);box.appendChild(el('div','cc-m','Ao salvar, os dados também vão para a aba "'+sheet+'" (parágrafo, última palavra, leitura, ditado, presença e data; o Completed e a % de presença a planilha calcula pela data). O Lesson Check fica só no app.'));}
+      top.appendChild(ex);box.appendChild(el('div','cc-m','Ao salvar, os dados também vão para a aba "'+sheet+'" (parágrafo, última palavra, leitura, ditado, presença e data; o Completed e a % de presença a planilha calcula pela data). O Lesson Check fica só no app.'));}
     var act=el('div','cc-act'),later=el('button','cc-b','Depois'),go=el('button','cc-b go','Salvar aula'),st=el('span','cc-m');later.type=go.type='button';
     later.onclick=function(){box.style.display='none';};
     var saveApp=function(cb){
       var n=+nIn.value,stg=+stSel.value,now=new Date().toISOString();if(!n){note('Informe o número da aula.','Falta o número');return;}
       var rows=[],att=[],prog=[];
-      uids.forEach(function(u){var s=group?(absent[u]?'missed':'given'):status;
+      uids.forEach(function(u){var s=group?(isAbs(u)?'missed':'given'):status;
         rows.push({event_key:key,user_id:u,class_start:x.ev.start_at,stage:stg,class_number:n,status:s,lesson:iL.value.trim()||null,paragraph:iP.value.trim()||null,last_word:iW.value.trim()||null,reading:iR.value.trim()||null,dictation:iD.value.trim()||null,lesson_check:iC.value.trim()||null,edition:edSel.value,note:ta.value.trim()||null,updated_at:now});
         if(s==='given'&&!(x.att[u]&&x.att[u].status))att.push({event_key:key,user_id:u,status:'came',late_min:null,class_start:x.ev.start_at,updated_at:now});
         if(s==='missed'&&!(x.att[u]&&x.att[u].status==='ns'))att.push({event_key:key,user_id:u,status:'ns',late_min:null,class_start:x.ev.start_at,updated_at:now});});
@@ -103,7 +102,7 @@ function render(host,x){ES=x.course?x.course==='es':ES0;SN=ES?6:12;SL=ES?'Etapa 
     function ymd(){return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo'}).format(new Date(x.ev.start_at));}
     function pushSheet(keep){
       var n=+nIn.value,fn=function(u){return String(x.name(u)).trim().split(/\s+/)[0];},a={},late={},nsAll=true,ct=ctOf(),isMock=/MOCK\s*EXAM/i.test(ct),isRev=!isMock&&!/OFFICIAL.*EXAM/i.test(ct)&&/FULL\s*REVISION|REVIS/i.test(ct);
-      uids.forEach(function(u){var came=group?!absent[u]:status==='given',at=x.att[u];if(came)nsAll=false;a[fn(u)]=came&&!(at&&at.status==='ns');if(at&&at.status==='late')late[fn(u)]=at.late_min||10;});
+      uids.forEach(function(u){var came=group?!isAbs(u):status==='given',at=x.att[u];if(came)nsAll=false;a[fn(u)]=came&&!(at&&at.status==='ns');if(at&&at.status==='late')late[fn(u)]=at.late_min||10;});
       var pl={sheetName:sheet,lesson:n,date:ymd(),attendance:a};if(Object.keys(late).length)pl.late=late;
       if(nsAll){pl.paragraph='NS';pl.lastWord='NO SHOW';pl.insert=true;}
       else if(xc.conv&&xc.conv.checked){pl.conversation=true;pl.theme=thm.value.trim();pl.insert=true;pl.paragraph='E';pl.lastWord='CONVERSATION';}
@@ -114,7 +113,7 @@ function render(host,x){ES=x.course?x.course==='es':ES0;SN=ES?6:12;SL=ES?'Etapa 
           var sum=function(){var L=['Aula '+n+' salva no app e na planilha ✓'],pc=[];if(pl.paragraph)pc.push('par. '+pl.paragraph);if(pl.lastWord)pc.push('última palavra: '+pl.lastWord);if(pc.length)L.push(pc.join(' · '));
             var ab=Object.keys(a).filter(function(k){return !a[k];}),pr=Object.keys(a).filter(function(k){return a[k];});if(pr.length)L.push('Presente: '+pr.join(', '));if(ab.length)L.push('Faltou: '+ab.join(', '));
             if(pl.lessonCheck&&pl.lessonCheck!=='—')L.push('Lesson Check: '+pl.lessonCheck);if(q.inserted)L.push('Nova linha adicionada na planilha');return L.concat(ex).join('\n');};
-          var gv=uids.filter(function(u){return group?!absent[u]:status==='given';});
+          var gv=uids.filter(function(u){return group?!isAbs(u):status==='given';});
           if(+stSel.value&&gv.length&&(isMock||(isRev&&xc.rev&&xc.rev.checked))){return sb.from('exam_release').upsert(gv.map(function(u){return {user_id:u,stage:+stSel.value};}),{onConflict:'user_id,stage',ignoreDuplicates:true}).then(function(z){ex.push(z&&z.error?'Não consegui liberar a prova':'Prova do Stage '+stSel.value+' liberada');note(sum(),'Aula salva',3500);});}
           note(sum(),'Aula salva',3500);return;}
         var e=q&&q.error,m={aba_nao_encontrada:'a aba não foi encontrada na planilha',licao_nao_encontrada:'a aula não foi achada na coluna Lesson',forbidden:'senha do script não confere',not_configured:'planilha não configurada'};
@@ -128,6 +127,13 @@ function render(host,x){ES=x.course?x.course==='es':ES0;SN=ES?6:12;SL=ES?'Etapa 
       if(!diff){go2(false);return;}
       var dlg=window.BL_DLG?BL_DLG.confirm('A planilha já tem esta aula com outro valor.\n\nPlanilha: par. '+(sp||'—')+' · '+(sw||'—')+'\nApp: par. '+(ap||'—')+' · '+(aw||'—')+'\n\nOK usa o do app e atualiza a planilha. Cancelar mantém o da planilha.',{title:'Dados diferentes',ok:'Usar o do app',cancel:'Manter o da planilha',danger:false}):Promise.resolve(true);
       dlg.then(function(useApp){go2(!useApp);});};
+    var ox=D.createElement('details'),oxs=el('summary','cc-m','Outras ações da aula'),oxa=el('div','cc-act'),oxr=el('button','cc-b','Remarcar'),oxc=el('button','cc-b','Cancelar aula');
+    oxs.style.cursor='pointer';oxa.style.marginTop='8px';oxc.style.borderColor='var(--bad)';oxc.style.color='var(--bad)';oxr.type=oxc.type='button';
+    var oxNames=uids.map(function(u){try{return String(x.name(u)).trim().split(/\s+/)[0];}catch(e){return '';}}).filter(Boolean).join(', ');
+    function oxGo(mode){if(!W.Agenda||!W.Agenda.change){note('A Agenda ainda não carregou. Abra a aba Agenda e tente de novo.','Aguarde');return;}
+      W.Agenda.change({k:key,start_at:x.ev&&x.ev.start_at,title:x.ev&&x.ev.title},mode,oxNames,uids,function(){box.style.display='none';});}
+    oxr.onclick=function(){oxGo(uids.length>1?'move':'ask');};oxc.onclick=function(){oxGo('cancel');};
+    oxa.appendChild(oxr);oxa.appendChild(oxc);ox.appendChild(oxs);ox.appendChild(oxa);box.appendChild(ox);
     act.appendChild(later);act.appendChild(el('span','sp'));act.appendChild(st);act.appendChild(go);box.appendChild(act);paint();
   });
 }

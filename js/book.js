@@ -98,6 +98,11 @@ function mount(o){
       if(m===n)p.classList.add('sel');
       if(m<real&&skipped(m)){p.classList.add('bksk');p.append(el('span','bkskt',T('skipped')));}
       var a=p.querySelector('.cv-a');if(a)a.addEventListener('click',function(e){e.preventDefault();pick(m);});});
+    (function(){var pa=sb.querySelector('.cv-path');if(!pa)return;
+      Array.prototype.forEach.call(pa.querySelectorAll('.cv-p.lock'),function(p){p.remove();});
+      var ps=pa.querySelectorAll('.cv-p'),c=ps.length,z=c<=2?170:c<=4?130:c<=6?100:c<=9?76:60;
+      pa.style.cssText='display:flex;justify-content:center;gap:12px;flex-wrap:nowrap';
+      Array.prototype.forEach.call(ps,function(p){p.style.cssText='flex:0 1 '+z+'px;min-width:0';});})();
     box.append(sb);
     rings.forEach(function(r,i){fillRing(r[0],r[1],r[2],i*120,still);});
     if(window.I18N&&I18N.after)try{I18N.after();}catch(e){}
