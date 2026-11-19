@@ -1,0 +1,41 @@
+# Power Automate Desktop - fluxo "Enviar convites WhatsApp" (cole no editor: Ctrl+V na area de acoes)
+# Antes de colar, ajuste so a primeira linha (Pasta) se o seu Google Drive nao for G:\My Drive
+# O fluxo fica em repeticao infinita: confere a pasta a cada 30 segundos.
+SET Pasta TO $'''G:\\My Drive\\Avisos_WhatsApp'''
+LOOP WHILE (True)
+    Folder.GetFiles Folder: $'''%Pasta%\\pendentes''' FileFilter: $'''*.json''' IncludeSubfolders: False FailOnAccessDenied: True SortBy1: Folder.SortBy.NoSort SortDescending1: False SortBy2: Folder.SortBy.NoSort SortDescending2: False SortBy3: Folder.SortBy.NoSort SortDescending3: False Files=> Arquivos
+    DateTime.GetCurrentDateTime.Local DateTimeFormat: DateTime.DateTimeFormat.DateAndTime CurrentDateTime=> Agora
+    Text.ConvertDateTimeToText.FromCustomFormat DateTime: Agora CustomFormat: $'''yyyyMMddHHmm''' Result=> AgoraTexto
+    Text.ToNumber Text: AgoraTexto Number=> AgoraNum
+    LOOP FOREACH Arquivo IN Arquivos
+        File.ReadTextFromFile.ReadText File: Arquivo Encoding: File.TextFileEncoding.UTF8 Content=> Conteudo
+        Variables.ConvertJsonToCustomObject Json: Conteudo CustomObject=> Convite
+        IF AgoraNum >= Convite['send_at_br'] THEN
+            IF AgoraNum > Convite['start_at_br'] THEN
+                # a aula ja comecou: nao envia mais
+                File.Move Files: Arquivo Destination: $'''%Pasta%\\erros''' IfFileExists: File.IfExists.Overwrite MovedFiles=> Movidos
+            ELSE
+                File.Move Files: Arquivo Destination: $'''%Pasta%\\enviando''' IfFileExists: File.IfExists.Overwrite MovedFiles=> Movidos
+                # 1) abre ou traz o WhatsApp Desktop para frente
+                System.RunApplication.RunApplication ApplicationPath: $'''explorer.exe''' CommandLineArguments: $'''shell:AppsFolder\\5319275A.WhatsAppDesktop_cv1g1gvanyjgm!App''' WindowStyle: System.ProcessWindowStyle.Normal ProcessId=> ProcessoId
+                WAIT 4
+                # 2) procura o grupo (o nome vai pela area de transferencia para aceitar acentos e emojis)
+                Clipboard.Write Text: Convite['group']
+                MouseAndKeyboard.SendKeys.FocusAndSendKeys TextToSend: $'''{Control}(f)''' DelayBetweenKeystrokes: 50 SendTextAsHardwareKeys: False
+                WAIT 1
+                MouseAndKeyboard.SendKeys.FocusAndSendKeys TextToSend: $'''{Control}(v)''' DelayBetweenKeystrokes: 50 SendTextAsHardwareKeys: False
+                WAIT 2.5
+                MouseAndKeyboard.SendKeys.FocusAndSendKeys TextToSend: $'''{Return}''' DelayBetweenKeystrokes: 50 SendTextAsHardwareKeys: False
+                WAIT 2
+                # 3) cola o convite (emojis e quebras de linha) e envia
+                Clipboard.Write Text: Convite['text']
+                MouseAndKeyboard.SendKeys.FocusAndSendKeys TextToSend: $'''{Control}(v)''' DelayBetweenKeystrokes: 50 SendTextAsHardwareKeys: False
+                WAIT 1.5
+                MouseAndKeyboard.SendKeys.FocusAndSendKeys TextToSend: $'''{Return}''' DelayBetweenKeystrokes: 50 SendTextAsHardwareKeys: False
+                WAIT 2
+                File.Move Files: Movidos Destination: $'''%Pasta%\\enviados''' IfFileExists: File.IfExists.Overwrite MovedFiles=> Movidos2
+            END
+        END
+    END
+    WAIT 30
+END

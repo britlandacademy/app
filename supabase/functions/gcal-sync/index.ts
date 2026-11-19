@@ -13,13 +13,15 @@ const norm = (s: string) => (s || "").normalize("NFD").replace(/[\u0300-\u036f]/
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   const jwt = (req.headers.get("Authorization") || "").replace("Bearer ", "");
-  const { data: usr } = await db.auth.getUser(jwt);
+  const ik = Deno.env.get("INVITE_KEY");
+  const byKey = !!ik && req.headers.get("x-invite-key") === ik; // chamada da automacao de convites (invite-text)
+  const { data: usr } = byKey ? { data: { user: { id: "invite-key" } } } : await db.auth.getUser(jwt);
   if (!usr?.user) return json({ error: "login" }, 401);
   const body = await req.json().catch(() => ({}));
   const { data: link } = await db.from("gcal_link").select("*").eq("id", 1).maybeSingle();
   if (!link?.refresh_token) return json({ ok: false, reason: "not_connected" });
   let force = false;
-  if (body.force) { const { data: p } = await db.from("profiles").select("is_admin").eq("id", usr.user.id).maybeSingle(); force = !!p?.is_admin; }
+  if (byKey) force = true; else if (body.force) { const { data: p } = await db.from("profiles").select("is_admin").eq("id", usr.user.id).maybeSingle(); force = !!p?.is_admin; }
   if (!force && link.last_sync && Date.now() - new Date(link.last_sync).getTime() < 5 * 60 * 1000) return json({ ok: true, skipped: true });
   await db.from("gcal_link").update({ last_sync: new Date().toISOString() }).eq("id", 1); // reserva a janela
 

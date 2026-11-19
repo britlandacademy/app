@@ -17,6 +17,7 @@ function css(){if(D.getElementById('nc-css'))return;var s=el('style');s.id='nc-c
 '.nc .nc-chip{display:inline-block;border:2px solid var(--line);border-radius:12px;padding:6px 12px;margin:3px 6px 3px 0;background:var(--surface);color:var(--ink);font-weight:700;font-size:.86rem;min-height:0}.nc .nc-chip.on{border-color:var(--accent);background:var(--card)}'+
 '.nc .nc-foot{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-top:1px solid var(--line);padding-top:10px}.nc .nc-foot .sp{flex:1}.nc .nc-msg{color:var(--muted);font-size:.84rem}'+
 '.nc-toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:99999;display:flex;align-items:center;gap:10px;max-width:min(92vw,420px);padding:12px 18px;border-radius:99px;background:var(--card,#10224a);color:var(--ink,#f2f5fa);border:1px solid var(--line,#27407a);border-top:3px solid var(--accent,#c9a13b);box-shadow:0 12px 36px rgba(0,0,0,.5);font-weight:700;cursor:pointer;transition:opacity .3s}.nc-toast.out{opacity:0}.nc-toast-ic{display:inline-flex;width:30px;height:30px;border-radius:50%;background:var(--accent,#c9a13b);color:var(--accent-ink,#1a1405);align-items:center;justify-content:center;flex:none}'+
+'.nc a.nc-btn.go{border-radius:999px;gap:8px;padding:0 20px;transition:transform .12s,background .15s}.nc a.nc-btn.ic{border-radius:999px;width:40px;padding:0}html:not(.fx-off) .nc a.nc-btn:active{transform:scale(.98)}'+
 '.nc a.nc-btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 16px;border-radius:12px;font-weight:700;text-decoration:none;border:2px solid var(--accent);color:var(--accent)}.nc a.nc-btn.go{background:var(--accent);color:var(--accent-ink)}';
 s.textContent+='.nc-atr{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn);border-radius:12px;padding:8px 12px;margin:0 0 10px;font-size:.88rem}.nc-atr b{font-weight:800}.nc-atr span{opacity:.9}.nc-reg{margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);display:grid;gap:8px}.nc-rw{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.nc-reg input[type=text],.nc-reg input[type=number]{min-height:38px;padding:4px 10px;border:1px solid var(--line);border-radius:10px;background:transparent;color:inherit;font:inherit;min-width:0}.nc-ck{display:flex;align-items:center;gap:4px;font-size:.88rem}';
 s.textContent+='.ag2 .ag2-it.ag2-hol{border:2px solid var(--warn);border-left-width:4px}.ag2 .ag2-holband{background:var(--warn-bg);color:var(--warn);font-weight:800;font-size:.82rem;padding:6px 12px;border-bottom:1px solid var(--warn)}';
@@ -43,6 +44,8 @@ function diffKey(e){var cl=function(t){return String(t||'').trim().toLowerCase()
   return x.length<28?x:null;}
 function recent(){return new Date(Date.now()-21*864e5).toISOString();}
 
+var STK=null,STKAT=0;
+function loadStk(sb){if(STK&&Date.now()-STKAT<3e5)return;try{Promise.resolve(sb.rpc('admin_streaks')).then(function(r){var m={};((r&&r.data)||[]).forEach(function(x){if(x.email)m[String(x.email).toLowerCase()]=x.cur||0;});STK=m;STKAT=Date.now();},function(){});}catch(e){}}
 function loadData(sb,ev,deps){
   var key=String(ev.id).split(':')[0],out={key:key,rows:[],prog:{},links:{},errs:[],att:{},prev:{},cfg:null};
   return sb.from('lessons').select('id,user_id,title,start_at,end_at,meet_url,is_group').eq('start_at',ev.start_at).then(function(r){
@@ -55,11 +58,13 @@ function loadData(sb,ev,deps){
       sb.from('attempt_errors').select('user_id,kind,lesson,ex,item,given,expected,created_at').in('user_id',u).gte('created_at',recent()).limit(600),
       sb.from('class_attendance').select('user_id,status,late_min').eq('event_key',key),
       sb.from('lessons').select('user_id,start_at').in('user_id',u).lt('end_at',new Date().toISOString()).order('end_at',{ascending:false}).limit(80),
-      sb.from('teacher_cfg').select('key,value').in('key',['plans_sheet','plans_gids'])
+      sb.from('teacher_cfg').select('key,value').in('key',['plans_sheet','plans_gids']),
+      sb.from('invite_state').select('vkey,idx').like('vkey',u[0]+':%'),
+      sb.from('invite_sent').select('status,via,kind').eq('event_key',key+'|'+new Date(ev.start_at).toISOString())
     ].map(function(q){return Promise.resolve(q).then(function(x){return x&&!x.error?x.data||[]:[];},function(){return [];});})).then(function(a){
       a[0].forEach(function(x){out.prog[x.user_id]=x;});a[1].forEach(function(x){out.links[x.user_id]=x;});out.errs=a[2];
       a[3].forEach(function(x){out.att[x.user_id]=x;});a[4].forEach(function(x){if(!out.prev[x.user_id])out.prev[x.user_id]=x.start_at;});
-      var c={};a[5].forEach(function(x){c[x.key]=x.value;});out.cfg=c;return out;});
+      var c={};a[5].forEach(function(x){c[x.key]=x.value;});out.cfg=c;out.inv={};a[6].forEach(function(x){out.inv[x.vkey]=x.idx;});out.sentRev=(a[7].filter(function(x){return x.kind==='rev';})[0])||null;return out;});
   });
 }
 
@@ -91,24 +96,14 @@ function render(box,ev,deps,opts){opts=opts||{};
   css();box.textContent='';var wrap=el('div','nc');box.appendChild(wrap);
   var name=function(id){var p=deps.profiles().filter(function(x){return x.id===id;})[0];return p?(p.display_name||p.name||p.email):'Aluno';};
   var start=new Date(ev.start_at);
+  loadStk(deps.sb);
   loadData(deps.sb,ev,deps).then(function(d){
     if(!d.uids||!d.uids.length){var t=el('div','nc-top');add(t,el('div','nc-who',ev.title||'Aula'));wrap.appendChild(t);wrap.appendChild(el('div','nc-sub','Esta aula ainda não está ligada a nenhum aluno. Escolha o aluno na Agenda.'));return;}
     var group=d.uids.length>1||d.rows.some(function(r){return r.is_group;}),first=d.prog[d.uids[0]]||null,fd=first&&first.data||{},cp=fd.currentPosition||{},nx=fd.nextClass||null;
     if(group){for(var i=0;i<d.uids.length&&!nx;i++){var q=d.prog[d.uids[i]];if(q&&q.data){nx=q.data.nextClass||null;cp=q.data.currentPosition||cp;}}}
     /* o que baliza a aula e a ultima palavra registrada na planilha: revisao = 11 paragrafos terminando nela; new work comeca no seguinte (o fim segue o plano) */
-    /* formato novo da planilha ("REV 1-5 / NW large - Mrs [6-10]"): le do Contents quando o servidor nao entendeu */
-    (function(){if(!nx||(nx.review&&nx.review.from!=null)||!nx.contents)return;var c=String(nx.contents),r=/(?:REV|REP)\s+(\d+)\s*[-\u2013]\s*(\d+)\s*(?:\/|$)/i.exec(c),n=/(?:NW|NP)\s+(.+?)\s+[-\u2013]\s+(.+?)\s*\[\s*(\d+)\s*[-\u2013]\s*(\d+)\s*\]/i.exec(c);
-      if(!r&&!n)return;nx=Object.assign({},nx);if(r)nx.review={from:+r[1],to:+r[2],fromWord:'',toWord:''};if(n)nx.newWords={from:+n[3],to:+n[4],fromWord:n[1].trim(),toWord:n[2].trim()};})();
-    (function(){var P=Number(cp.paragraph),rv=nx&&nx.review,nw=nx&&nx.newWords;
-      if(!(P>0)||!rv||rv.from==null||!nw||nw.from==null)return;
-      var r2={from:Math.max(1,P-10),to:P},n2={from:P+1,to:P+3};
-      if(Number(nw.from)===P+1)return;/* plano em dia: vale o que esta na planilha */
-      var wd=cp.lastWord||(first&&first.last_word)||'';
-      if(P>=Number(nw.to)){/* adiantado (ja passou do fim do New Work do plano): o dia vira revisao de 20 paragrafos (sem New Work) e entra uma linha nova */
-        nx=Object.assign({},nx,{adj:true,ahead:true,planOk:false,contents:'Só REV · 20 par. (adiantado)',review:{from:Math.max(1,P-19),to:P,fromWord:'',toWord:wd},newWords:null});return;}
-      nx=Object.assign({},nx,{adj:true,planOk:false,
-        review:{from:Math.max(1,P-10),to:P,fromWord:'',toWord:wd},
-        newWords:{from:P+1,to:P+3,fromWord:'',toWord:''}});})();
+    /* o que baliza a aula e a ultima palavra registrada na planilha (regra em js/invite.js, a mesma da automacao) */
+    nx=BL_INVITE.adjust(nx,cp,first);
     var meet=(d.rows.filter(function(r){return r.meet_url;})[0]||{}).meet_url||ZOOM;
     var cfg=d.cfg||{},sid=cfg.plans_sheet&&cfg.plans_sheet.id,gids=cfg.plans_gids||{},ln=d.links[d.uids[0]],gid=ln&&gids[ln.sheet_name];
     var lg=lagOf({currentPosition:cp,nextClass:nx});
@@ -122,33 +117,38 @@ function render(box,ev,deps,opts){opts=opts||{};
     if(sub.length){var sd=el('div','nc-sub',sub.join(' · '));if(tzs.length&&d.uids.length===1){sd.textContent='';sd.appendChild(document.createTextNode(sub.slice(0,-1).join(' · ')+(sub.length>1?' · ':'')));var tb=el('b',null,sub[sub.length-1]);tb.style.color='var(--warn)';sd.appendChild(tb);}hd.appendChild(sd);}
     top.appendChild(hd);top.appendChild(el('span','sp'));
     if(sid){var sa=el('a','nc-btn','Abrir planilha');sa.href='https://docs.google.com/spreadsheets/d/'+sid+'/edit'+(gid?'#gid='+gid:'');sa.target='_blank';sa.rel='noopener';top.appendChild(sa);}
-    /* botao de 2 etapas: copia o convite da Revision -> entra -> (30 min) copia o convite do New Work -> entra */
-    var isMeet=/meet\.google\.com/.test(String(meet||'')),zRev=zoomApp(ZOOM_REV),zNw=zoomApp(ZOOM_NW),za=el('a','nc-btn go','Copiar 1º link (REV)'),skey='blnc:'+d.key+':'+ev.start_at,stt={s:0,t:0};
+    /* botao de 2 etapas: envia o convite da Revision (WhatsApp) -> entra -> (30 min) envia o do New Work -> entra */
+    var isMeet=/meet\.google\.com/.test(String(meet||'')),zRev=zoomApp(ZOOM_REV),zNw=zoomApp(ZOOM_NW),za=el('a','nc-btn go',''),cb=el('a','nc-btn ic'),skey='blnc:'+d.key+':'+ev.start_at,stt={s:0,t:0};
     try{stt=JSON.parse(localStorage.getItem(skey)||'')||stt;}catch(e){stt={s:0,t:0};}
+    if(stt.s===0&&d.sentRev&&d.sentRev.status==='sent'){stt.s=1;try{localStorage.setItem(skey,JSON.stringify(stt));}catch(e){}}
     function saveSt(){try{localStorage.setItem(skey,JSON.stringify(stt));}catch(e){}}
-    /* estados: 0 copiar REV, 1 entrar REV, 2 dentro da REV (espera 30 min), 3 copiar NW (w=1) ou 4 entrar NW */
-    function lab2(){if(stt.s===2&&Date.now()-stt.t>=30*6e4){stt.s=3;saveSt();}
-      if(isMeet){za.textContent=stt.s===0?'Copiar link da aula':'Entrar na aula';return;}
-      za.textContent=[ 'Copiar 1º link (REV)','Entrar Revision','Entrar Revision','Copiar 2º link (NW)','Entrar New Work'][stt.s]||'Copiar 1º link (REV)';}
+    var IW='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21l1.65-4.9A8.5 8.5 0 1 1 8 19.4L3 21z"/><path d="M9.2 9.2c.3 2 2.6 4.4 5.2 5.3l1.3-1.3-1.8-1-.9.7c-.8-.4-1.5-1.1-1.9-1.9l.7-.9-1-1.8-1.6 1.2z"/></svg>',
+        IC='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>';
+    function setLab(t,wa){za.innerHTML=(wa?IW+' ':'')+'<span></span>';za.lastChild.textContent=t;}
+    function lab2(){if(!isMeet&&stt.s===2&&Date.now()-stt.t>=30*6e4){stt.s=3;saveSt();}
+      var sd=stt.s===0||stt.s===3;
+      if(isMeet)setLab(stt.s===0?'Enviar link da aula':'Entrar na aula',stt.s===0);
+      else setLab(['Enviar 1º link (REV)','Entrar Revision','Entrar Revision','Enviar 2º link (NW)','Entrar New Work'][stt.s]||'Enviar 1º link (REV)',sd);
+      cb.style.display=(isMeet?stt.s===0:sd)?'':'none';}
+    cb.innerHTML=IC;cb.href='#';cb.setAttribute('role','button');cb.setAttribute('aria-label','Copiar texto do convite');cb.title='Copiar texto do convite';
     za.href='#';za.setAttribute('role','button');lab2();
     var tk=setInterval(function(){if(!za.isConnected){clearInterval(tk);return;}lab2();},20000);
-    function crs0(){var pc=deps.profiles().filter(function(x){return x.id===d.uids[0];})[0];return (pc&&pc.course)==='es'?'es':'en';}
-    function firstNames(){var ns=d.uids.map(function(u){return String(name(u)).trim().split(/\s+/)[0];}),es=crs0()==='es';
-      return ns.length<2?ns[0]||'':ns.slice(0,-1).join(', ')+(es?' y ':' and ')+ns[ns.length-1];}
-    function invite(kind){var es=crs0()==='es',pc=deps.profiles().filter(function(x){return x.id===d.uids[0];})[0],tz=(pc&&pc.tz)||TZ,h;
-      try{h=+new Intl.DateTimeFormat('en-GB',{hour:'2-digit',hourCycle:'h23',timeZone:tz}).format(new Date());}catch(e){h=new Date().getHours();}
-      var gr=es?(h<12?'Buenos días':h<19?'Buenas tardes':'Hola'):(h<12?'Good morning':h<18?'Good afternoon':'Hello');
-      var rg=function(x){return x&&x.from!=null?(x.from===x.to||x.to==null?String(x.from):x.from+'–'+x.to):'';};
-      var dt=new Date().toLocaleDateString(es?'es':'en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:TZ});
-      if(isMeet){var r0=rg(nx&&nx.review),n0=rg(nx&&nx.newWords);
-        return es?gr+', '+firstNames()+'. Aquí tienes el enlace de nuestra clase'+(r0?': Repaso (párrafos '+r0+')':'')+(n0?(r0?' + ':': ')+'Parte nueva (párrafos '+n0+')':'')+' ('+dt+') '+meet
-                 :gr+', '+firstNames()+'. Here\'s the link to our lesson'+(r0?': Revision (paragraphs '+r0+')':'')+(n0?(r0?' + ':': ')+'New Work (paragraphs '+n0+')':'')+' ('+dt+') '+meet;}
-      if(kind==='rev'){var r=rg(nx&&nx.review);
-        return es?gr+', '+firstNames()+'. Aquí tienes el enlace de nuestra clase: Repaso'+(r?' (párrafos '+r+')':'')+' ('+dt+') '+ZOOM_REV
-                 :gr+', '+firstNames()+'. Here\'s the link to our lesson: Revision'+(r?' (paragraphs '+r+')':'')+' ('+dt+') '+ZOOM_REV;}
-      var n=rg(nx&&nx.newWords);
-      return es?'Aquí tienes el enlace para la PARTE NUEVA'+(n?' (párrafos '+n+')':'')+': '+ZOOM_NW
-               :'Here\'s the link for the NEW WORK'+(n?' (paragraphs '+n+')':'')+' link: '+ZOOM_NW;}
+    var pc0=deps.profiles().filter(function(x){return x.id===d.uids[0];})[0],ES=(pc0&&pc0.course)==='es',
+        STG=+(first&&first.stage)||((/(?:stage|stg|etapa)\s*(\d+)/i.exec((d.links[d.uids[0]]||{}).sheet_name||'')||[])[1]|0),
+        EVK=d.key+'|'+new Date(ev.start_at).toISOString();
+    function firstNames(u){return String(name(u)).trim().split(/\s+/)[0];}
+    function bdToday(u){var p=deps.profiles().filter(function(x){return x.id===u;})[0],b=String((p&&p.birthdate)||'');if(!/^\d{4}-\d\d-\d\d$/.test(b))return false;
+      var t;try{t=new Intl.DateTimeFormat('en-CA',{timeZone:(p&&p.tz)||TZ}).format(new Date());}catch(e){t=new Date().toISOString().slice(0,10);}return t.slice(5,10)===b.slice(5,10);}
+    function invite(kind){
+      var ms=((d.prog[d.uids[0]]||{}).data||{}).me;ms=ms&&ms.missed;
+      return BL_INVITE.build({es:ES,tz:(pc0&&pc0.tz)||TZ,now:new Date(),names:d.uids.map(firstNames),bdays:d.uids.filter(bdToday).map(firstNames),
+        streak:group||!STK?0:(STK[String((pc0&&pc0.email)||'').toLowerCase()]||0),classNumber:nx&&nx.classNumber,kind:kind,contents:nx&&nx.contents,
+        conversation:nx&&nx.conversation,review:nx&&nx.review,newWords:nx&&nx.newWords,stage:STG,missedN:!group&&ms&&ms.length?(ms[0].classNumber||''):'',
+        isMeet:isMeet,link:meet,last:d.inv||{},uid0:d.uids[0]});}
+    /* guarda no banco as versoes sorteadas (a automacao nao repete) e que este convite ja saiu */
+    function commit(kind,r){var rows=Object.keys(r.picks).map(function(k){d.inv=d.inv||{};d.inv[k]=r.picks[k];return {vkey:k,idx:r.picks[k],updated_at:new Date().toISOString()};});
+      try{if(rows.length)Promise.resolve(deps.sb.from('invite_state').upsert(rows)).then(function(){},function(){});
+        Promise.resolve(deps.sb.from('invite_sent').upsert({event_key:EVK,kind:kind,via:'app',status:'sent',text_sent:r.text,sent_at:new Date().toISOString()})).then(function(){},function(){});}catch(e){}}
     function copyTxt(t){
       if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(t);
       return new Promise(function(ok,no){try{var ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();var r=document.execCommand('copy');ta.remove();r?ok():no();}catch(e){no(e);}});}
@@ -157,10 +157,14 @@ function render(box,ev,deps,opts){opts=opts||{};
       t.setAttribute('role','status');t.appendChild(ic);t.appendChild(el('span',null,'Convite copiado para a área de transferência'));document.body.appendChild(t);
       t.addEventListener('click',function(){t.remove();});setTimeout(function(){t.classList.add('out');setTimeout(function(){t.remove();},300);},4000);}
     function launch(u){var h=document.createElement('a');h.href=u;h.style.display='none';document.body.appendChild(h);h.click();setTimeout(function(){h.remove();},500);}
+    function advance(){stt.s=isMeet?1:stt.s===0?1:4;saveSt();lab2();}
+    cb.addEventListener('click',function(e){e.preventDefault();var k=stt.s===0?'rev':'nw';
+      var r=invite(k);copyTxt(r.text).then(function(){commit(k,r);advance();toast();},function(){if(window.BL_DLG)BL_DLG.alert('Não consegui copiar o convite. Tente de novo.',{title:'Não copiou'});});});
     za.addEventListener('click',function(e){e.preventDefault();
       if(isMeet&&stt.s===1){screens().then(function(sc){if(sc){try{openRevision(sc);}catch(x){}}window.open(meet,'_blank','noopener');});return;}
-      if(stt.s===0||stt.s===3){var k=stt.s===0?'rev':'nw';
-        copyTxt(invite(k)).then(function(){stt.s=isMeet?1:stt.s===0?1:4;saveSt();lab2();toast();},function(){if(window.BL_DLG)BL_DLG.alert('Não consegui copiar o convite. Tente de novo.',{title:'Não copiou'});});return;}
+      if(stt.s===0||stt.s===3){var kk=stt.s===0?'rev':'nw',r=invite(kk),go=function(){window.open('https://wa.me/?text='+encodeURIComponent(r.text),'_blank','noopener');commit(kk,r);advance();};
+        if(kk==='rev'&&d.sentRev&&d.sentRev.status==='queued'&&window.BL_DLG&&BL_DLG.confirm){BL_DLG.confirm('O envio automático deste convite está programado. Se você enviar agora, o automático será cancelado. Enviar mesmo assim?',{title:'Envio automático programado',ok:'Enviar agora',cancel:'Deixar o automático'}).then(function(y){if(y)go();});return;}
+        go();return;}
       if(stt.s===4){launch(zNw);return;}
       /* entrar na Revision: abre o livro de revisão no monitor principal e o Zoom pelo app */
       if(stt.s===1){stt.s=2;stt.t=Date.now();saveSt();lab2();}
@@ -194,7 +198,7 @@ function render(box,ev,deps,opts){opts=opts||{};
         if(r&&r.data&&r.data.signedUrl){win.location.href=r.data.signedUrl+'#page='+page;}
         else say('O livro da '+(crs==='es'?'Etapa ':'Stage ')+stg+' ainda não foi enviado. Painel → Conteúdo → Livros do professor'+(crs==='es'?'.':' (2ª edição).'));
       },function(){say('Não consegui abrir o livro do professor agora.');});
-    }top.appendChild(za);wrap.appendChild(top);
+    }top.appendChild(cb);top.appendChild(za);wrap.appendChild(top);
     /* three boxes */
     var g3=el('div','nc-grid'),b1=el('div','nc-box'),b2=el('div','nc-box'),b3=el('div','nc-box today');
     add(b1,el('div','nc-k','Revisão de hoje'));
