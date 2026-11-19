@@ -1,39 +1,53 @@
-# Power Automate Desktop - fluxo "Enviar convites WhatsApp" (cole no editor: Ctrl+V na area de acoes)
-# Antes de colar, ajuste so a primeira linha (Pasta) se o seu Google Drive nao for G:\My Drive
+# Power Automate Desktop - fluxo "Enviar convites WhatsApp" (versao 100% em segundo plano)
+# REFERENCIA do fluxo montado no PC (a colagem direta pode exigir ajustes; as acoes "Executar a funcao JavaScript" sao do grupo Automacao de navegador).
+# Sem janela em primeiro plano, sem teclas e sem area de transferencia: usa a extensao do PAD no Edge com web.whatsapp.com aberto e logado (pode ficar minimizado).
+# Seguranca: confere o nome do chat aberto antes de enviar e confere que o campo de texto ficou vazio depois; qualquer falha vai para "erros", nunca para "enviados".
+# Teste: use Pasta = G:\\My Drive\\Avisos_TESTE e o grupo "Teste Britland". Real: G:\\My Drive\\Avisos_WhatsApp.
 # O fluxo fica em repeticao infinita: confere a pasta a cada 30 segundos.
 SET Pasta TO $'''G:\\My Drive\\Avisos_WhatsApp'''
 LOOP WHILE (True)
-    Folder.GetFiles Folder: $'''%Pasta%\\pendentes''' FileFilter: $'''*.json''' IncludeSubfolders: False FailOnAccessDenied: True SortBy1: Folder.SortBy.NoSort SortDescending1: False SortBy2: Folder.SortBy.NoSort SortDescending2: False SortBy3: Folder.SortBy.NoSort SortDescending3: False Files=> Arquivos
+    Folder.GetFiles Folder: $'''%Pasta%\\pendentes''' FileFilter: $'''*.json''' IncludeSubfolders: False Files=> Arquivos
     DateTime.GetCurrentDateTime.Local DateTimeFormat: DateTime.DateTimeFormat.DateAndTime CurrentDateTime=> Agora
     Text.ConvertDateTimeToText.FromCustomFormat DateTime: Agora CustomFormat: $'''yyyyMMddHHmm''' Result=> AgoraTexto
     Text.ToNumber Text: AgoraTexto Number=> AgoraNum
     LOOP FOREACH Arquivo IN Arquivos
         File.ReadTextFromFile.ReadText File: Arquivo Encoding: File.TextFileEncoding.UTF8 Content=> Conteudo
         Variables.ConvertJsonToCustomObject Json: Conteudo CustomObject=> Convite
-        IF AgoraNum >= Convite['send_at_br'] THEN
-            IF AgoraNum > Convite['start_at_br'] THEN
-                # a aula ja comecou: nao envia mais
-                File.Move Files: Arquivo Destination: $'''%Pasta%\\erros''' IfFileExists: File.IfExists.Overwrite MovedFiles=> Movidos
-            ELSE
-                File.Move Files: Arquivo Destination: $'''%Pasta%\\enviando''' IfFileExists: File.IfExists.Overwrite MovedFiles=> Movidos
-                # 1) abre ou traz o WhatsApp Desktop para frente
-                System.RunApplication.RunApplication ApplicationPath: $'''explorer.exe''' CommandLineArguments: $'''shell:AppsFolder\\5319275A.WhatsAppDesktop_cv1g1gvanyjgm!App''' WindowStyle: System.ProcessWindowStyle.Normal ProcessId=> ProcessoId
-                WAIT 4
-                # 2) procura o grupo (o nome vai pela area de transferencia para aceitar acentos e emojis)
-                Clipboard.Write Text: Convite['group']
-                MouseAndKeyboard.SendKeys.FocusAndSendKeys TextToSend: $'''{Control}(f)''' DelayBetweenKeystrokes: 50 SendTextAsHardwareKeys: False
-                WAIT 1
-                MouseAndKeyboard.SendKeys.FocusAndSendKeys TextToSend: $'''{Control}(v)''' DelayBetweenKeystrokes: 50 SendTextAsHardwareKeys: False
-                WAIT 2.5
-                MouseAndKeyboard.SendKeys.FocusAndSendKeys TextToSend: $'''{Return}''' DelayBetweenKeystrokes: 50 SendTextAsHardwareKeys: False
-                WAIT 2
-                # 3) cola o convite (emojis e quebras de linha) e envia
-                Clipboard.Write Text: Convite['text']
-                MouseAndKeyboard.SendKeys.FocusAndSendKeys TextToSend: $'''{Control}(v)''' DelayBetweenKeystrokes: 50 SendTextAsHardwareKeys: False
-                WAIT 1.5
-                MouseAndKeyboard.SendKeys.FocusAndSendKeys TextToSend: $'''{Return}''' DelayBetweenKeystrokes: 50 SendTextAsHardwareKeys: False
-                WAIT 2
+        # Dois IFs separados (o ELSE colado pelo painel caia fora do IF no editor)
+        IF AgoraNum >= Convite['send_at_br'] AND AgoraNum > Convite['start_at_br'] THEN
+            # a aula ja comecou: nao envia mais
+            File.Move Files: Arquivo Destination: $'''%Pasta%\\erros''' IfFileExists: File.IfExists.Overwrite MovedFiles=> Movidos
+        END
+        IF AgoraNum >= Convite['send_at_br'] AND AgoraNum <= Convite['start_at_br'] THEN
+            File.Move Files: Arquivo Destination: $'''%Pasta%\\enviando''' IfFileExists: File.IfExists.Overwrite MovedFiles=> Movidos
+            # 1) anexa ao Edge ja aberto no WhatsApp Web (titulo "WhatsApp")
+            WebAutomation.LaunchEdge Url: $'''''' LaunchMode: AttachToRunningInstance TabTitle: $'''WhatsApp''' BrowserInstance=> Browser
+            WAIT 1.5
+            # 2) busca o grupo: preenche o campo de busca (#side input[data-tab="3"]) com o setter nativo + evento "input"
+            #    JS: var s=document.querySelector('#side input[data-tab="3"]')||document.querySelector('#side input'); if(!s) return 'ERRO_BUSCA';
+            #        var set=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set; set.call(s,''); s.dispatchEvent(new Event('input',{bubbles:true}));
+            #        set.call(s,'%Convite['group']%'); s.dispatchEvent(new Event('input',{bubbles:true})); return 'OK';
+            WebAutomation.ExecuteJavascript Browser: Browser Script: <JS busca> Result=> BuscaRes
+            WAIT 1.5
+            # 3) abre o chat: acha #pane-side span[title] igual ao grupo (ou que comece com ele), dispara pointer/mouse events + click na linha, e Enter no campo de busca
+            #    retorna 'SEM_GRUPO:...' ou 'TENTOU:<titulo>'
+            WebAutomation.ExecuteJavascript Browser: Browser Script: <JS abrir chat> Result=> SelRes
+            WAIT 1.5
+            # 4) confere o cabecalho (#main header, primeira linha do innerText = nome do grupo) e insere o texto no compositor
+            #    (#main footer div[contenteditable="true"]) com selectAll+delete e insertText/insertLineBreak; var d = %Conteudo%; var g = d.group;
+            #    retorna 'OK' ou 'ERRO:CHAT:...'
+            WebAutomation.ExecuteJavascript Browser: Browser Script: <JS inserir texto> Result=> Result
+            WAIT 1.5
+            # 5) confere cabecalho + compositor nao vazio e clica em #main footer button[aria-label="Enviar"] -> 'CLICADO' ou 'NAO_ENVIADO:...'
+            WebAutomation.ExecuteJavascript Browser: Browser Script: <JS enviar> Result=> SendResult
+            WAIT 2
+            # 6) verificacao final: SendResult = 'CLICADO', cabecalho ainda e o grupo, compositor vazio -> 'ENVIADO' ou 'ERRO:...'
+            WebAutomation.ExecuteJavascript Browser: Browser Script: <JS verificar> Result=> VerifResult
+            IF VerifResult = $'''ENVIADO''' THEN
                 File.Move Files: Movidos Destination: $'''%Pasta%\\enviados''' IfFileExists: File.IfExists.Overwrite MovedFiles=> Movidos2
+            END
+            IF VerifResult <> $'''ENVIADO''' THEN
+                File.Move Files: Movidos Destination: $'''%Pasta%\\erros''' IfFileExists: File.IfExists.Overwrite MovedFiles=> Movidos2
             END
         END
     END
