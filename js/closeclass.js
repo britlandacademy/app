@@ -99,7 +99,7 @@ function render(host,x){ES=x.course?x.course==='es':ES0;SN=ES?6:12;SL=ES?'Etapa 
           else if(r.status==='missed')d.me.missed.push({classNumber:n,lesson:r.lesson||''});
           var row={user_id:r.user_id,stage:stg,lesson:r.status==='given'&&r.lesson?r.lesson:old.lesson||null,class_number:r.status==='given'?n:old.class_number||null,last_word:r.status==='given'&&r.last_word?r.last_word:old.last_word||null,data:d,updated_at:now};
           x.prog[r.user_id]=row;return P(sb.from('plan_progress').upsert(row,{onConflict:'user_id'}));}));
-      }).then(function(){go.disabled=false;st.textContent='';box.firstChild.textContent='Fechar a aula · salva ✓';if(cb)cb();else note('Aula '+n+' salva no app ✓','Aula salva',3000);},function(e){go.disabled=false;st.textContent='';note('Não foi possível salvar ('+((e&&e.message)||'erro')+').\n\nToque em Salvar aula para tentar de novo.','Não salvou');});};
+      }).then(function(){go.disabled=false;st.textContent='';box.firstChild.textContent='Fechar a aula · salva ✓';try{document.dispatchEvent(new CustomEvent('bl-class-closed'));}catch(e){}if(cb)cb();else note('Aula '+n+' salva no app ✓','Aula salva',3000);},function(e){go.disabled=false;st.textContent='';note('Não foi possível salvar ('+((e&&e.message)||'erro')+').\n\nToque em Salvar aula para tentar de novo.','Não salvou');});};
     function ymd(){return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo'}).format(new Date(x.ev.start_at));}
     function pushSheet(keep){
       var n=+nIn.value,fn=function(u){return String(x.name(u)).trim().split(/\s+/)[0];},a={},late={},nsAll=true,ct=ctOf(),isMock=/MOCK\s*EXAM/i.test(ct),isRev=!isMock&&!/OFFICIAL.*EXAM/i.test(ct)&&/FULL\s*REVISION|REVIS/i.test(ct);

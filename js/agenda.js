@@ -11,6 +11,7 @@ var S={
  soon:{en:'Your lesson starts in {0} min',pt:'Sua aula começa em {0} min',es:'Tu clase empieza en {0} min'},
  now:{en:'Your lesson is happening now',pt:'Sua aula está acontecendo agora',es:'Tu clase está en curso'},
  join:{en:'Join lesson',pt:'Entrar na aula',es:'Entrar a la clase'},
+ upc:{en:'{0} upcoming',pt:'{0} próxima(s)',es:'{0} próximas'},
  next:{en:'Upcoming lessons',pt:'Próximas aulas',es:'Próximas clases'},
  none:{en:'No lessons scheduled yet.',pt:'Nenhuma aula agendada ainda.',es:'Aún no hay clases programadas.'},
  aTitle:{en:'Lesson agenda (Google Calendar)',pt:'Agenda de aulas (Google Agenda)',es:'Agenda de clases (Google Calendar)'},
@@ -85,7 +86,7 @@ function loc(){return {en:'en-GB',pt:'pt-BR',es:'es'}[lang()]||'en-GB';}
 function fmt(iso){try{return new Intl.DateTimeFormat(loc(),{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}).format(new Date(iso));}catch(e){return iso;}}
 function fmtT(iso){try{return new Intl.DateTimeFormat(loc(),{hour:'2-digit',minute:'2-digit'}).format(new Date(iso));}catch(e){return '';}}
 function el(t,c,x){var n=document.createElement(t);if(c)n.className=c;if(x!==undefined)n.textContent=x;return n;}
-var CSS='.ag{margin:14px 0;font:inherit}.ag h2{font-size:1.05rem;margin:0 0 4px}.ag .ag-s{font-size:.82rem;opacity:.75;margin:0 0 10px}'+
+var CSS='.ag{margin:14px 0;font:inherit}.ag h2{font-size:1.05rem;margin:0 0 4px}.ag-hd{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:3px solid #c9a23a;padding-bottom:8px;margin:0 0 8px}.ag .ag-hd h2{margin:0;font:700 1.35rem Georgia,serif}.ag-up{background:#0b1733;color:#f0c36a;border-radius:99px;padding:3px 12px;font:800 .75rem system-ui;white-space:nowrap}.ag-empty{background:#fbf3dc;border:1px solid #e3cf94;border-radius:16px;padding:20px;text-align:center;color:#0b1733;margin:0 0 12px;display:flex;flex-direction:column;align-items:center;gap:6px}.ag-empty svg{color:#c9a23a}.ag .ag-s{font-size:.82rem;opacity:.75;margin:0 0 10px}'+
 '.ag-ban{background:#10224a;color:#fff;border-radius:14px;padding:14px;margin:0 0 10px;border-bottom:4px solid #c9a23a;display:flex;flex-direction:column;gap:8px}'+
 '.ag-ban b{font-size:1.05rem}.ag-ban span{font-size:.9rem;opacity:.9}'+
 '.ag a.ag-btn,.ag .ag-btn{color:#1b1400!important}.ag .ag-btn.alt{color:inherit!important}.ag-btn{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;min-height:44px;line-height:1.1;padding:0 18px;border:0;border-radius:12px;background:#c9a23a;color:#1b1400;font:inherit;font-weight:700;letter-spacing:.5px;text-decoration:none;text-align:center;cursor:pointer;border-bottom:3px solid #8a6a14}'+
@@ -133,7 +134,7 @@ function mount(box,ctx){
   function draw(rows,reqs){
     clearTimeout(tm);box.textContent='';reqs=reqs||[];
     var pend=reqs.filter(isPend);
-    box.hidden=false;var w=el('div','ag');w.appendChild(el('h2','',T('title')));
+    box.hidden=false;var w=el('div','ag');var hh=el('div','ag-hd');hh.appendChild(el('h2','',T('title')));hh.appendChild(el('span','ag-up',T('upc',rows.length)));w.appendChild(hh);
     var z=tzName();w.appendChild(el('p','ag-s',T('tz')+(z?' ('+z+')':'')));
     var now=Date.now(),f=rows[0];
     if(f){var ms=new Date(f.start_at)-now,min=Math.ceil(ms/60000),live=ms<=0&&new Date(f.end_at)>now;
@@ -147,8 +148,8 @@ function mount(box,ctx){
       var m=el('p','ag-s ag-soon',T(q.status==='approved'?'okMsg':'noMsg',fmtFull(q.new_start)));m.setAttribute('role','status');m.style.cssText+=';display:flex;gap:10px;align-items:flex-start';
       var x=el('button','','\u00D7');x.type='button';x.setAttribute('aria-label',T('dis'));x.style.cssText='margin-left:auto;flex:none;min-width:32px;min-height:32px;border:0;background:transparent;color:inherit;font-size:1.3rem;line-height:1;cursor:pointer';
       x.onclick=function(){dis[q.id]=1;try{localStorage.setItem('bl-ag-dis',JSON.stringify(dis));}catch(e){}m.remove();};m.appendChild(x);w.appendChild(m);});
-    w.appendChild(el('h2','',T('next')));
-    if(!rows.length)w.appendChild(el('p','ag-s ag-none',T('none')));
+    if(rows.length)w.appendChild(el('h2','',T('next')));
+    else{var em=el('div','ag-empty');em.innerHTML='<svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>';em.appendChild(el('b','',T('none')));w.appendChild(em);}
     rows.forEach(function(x){
       var r=el('div','ag-row'+(x===rows[0]?' ag-next':'')),dt=new Date(x.start_at),db=el('div','ag-date'),d=el('div');
       if(x===rows[0]){if(window.Home2)r.insertAdjacentHTML('afterbegin',Home2.art('cal'));r.appendChild(el('span','ag-k',T('nk')));}
