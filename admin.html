@@ -409,12 +409,12 @@ function exPill(p,st){
   return el('span',{class:'pl gr'},'Não liberada');
 }
 function loadPlan(){
-  return Promise.all([sb.from('plan_links').select('user_id,sheet_name,student_col'),sb.from('plan_progress').select('user_id,stage,lesson,class_number,last_word,updated_at,data'),sb.from('plan_tabs').select('sheet_name,students').order('sheet_name'),sb.from('lessons').select('user_id,start_at').gte('start_at',new Date(Date.now()-28*864e5).toISOString()).lt('start_at',new Date(Date.now()+35*864e5).toISOString()).limit(2000)]).then(function(rs){
+  return Promise.all([sb.from('plan_links').select('user_id,sheet_name,student_col'),sb.from('plan_progress').select('user_id,stage,lesson,class_number,last_word,updated_at,data'),sb.from('plan_tabs').select('sheet_name,students').order('sheet_name'),sb.from('lessons').select('user_id,start_at').gte('start_at',new Date(Date.now()-28*864e5).toISOString()).lt('start_at',new Date(Date.now()+35*864e5).toISOString()).limit(2000),sb.from('class_credits').select('user_id').is('made_up_at',null)]).then(function(rs){
     const P={links:{},cols:{},prog:{},tabs:{}};
     ((rs[0]&&rs[0].data)||[]).forEach(x=>{P.links[x.user_id]=x.sheet_name;P.cols[x.user_id]=x.student_col||'';});
     ((rs[1]&&rs[1].data)||[]).forEach(x=>{P.prog[x.user_id]=x;});
     ((rs[2]&&rs[2].data)||[]).forEach(x=>{P.tabs[x.sheet_name]=x.students||[];});
-    P.fut={};P.pst={};const nw=Date.now();((rs[3]&&rs[3].data)||[]).forEach(x=>{const o=new Date(x.start_at).getTime()>nw?P.fut:P.pst;o[x.user_id]=(o[x.user_id]||0)+1;});
+    P.cr={};((rs[4]&&rs[4].data)||[]).forEach(x=>{P.cr[x.user_id]=(P.cr[x.user_id]||0)+1;});P.fut={};P.pst={};const nw=Date.now();((rs[3]&&rs[3].data)||[]).forEach(x=>{const o=new Date(x.start_at).getTime()>nw?P.fut:P.pst;o[x.user_id]=(o[x.user_id]||0)+1;});
     PLAN=P;renderStu();
   }).catch(()=>{});
 }
@@ -434,7 +434,7 @@ function planBlock(p){
   const nsBox=el('div',{});
   if(!cur&&window.BL_NS&&BL_NS.form)BL_NS.form(sb,p.id,()=>{loadPlan();}).then(c=>{if(c)nsBox.append(c);}).catch(()=>{});
   let fc='';try{const dd=g&&g.data;if(dd&&dd.classesTotal&&window.BL_FORECAST){const ms=(dd.me&&dd.me.missed)||[],dn=+dd.classesDone||0,fut=(PLAN.fut||{})[p.id]||0,pst=(PLAN.pst||{})[p.id]||0,r=BL_FORECAST.calc({done:dn,total:+dd.classesTotal,freq:BL_FORECAST.freq(fut,pst),missRate:ms.length/Math.max(1,dn+ms.length)});fc=BL_FORECAST.fmt(r,'pt','Stage '+(g.stage||'?'));}}catch(e){}
-  return el('div',{},el('div',{class:'pr'},ab,cl,m),el('div',{class:'sm lr'},'Última leitura: '+last),fc?el('div',{class:'sm lr'},fc):'',nsBox);
+  return el('div',{},el('div',{class:'pr'},ab,cl,m),el('div',{class:'sm lr'},'Última leitura: '+last),fc?el('div',{class:'sm lr'},fc):'',(PLAN.cr||{})[p.id]?el('div',{class:'sm lr'},el('span',{class:'bd warn'},PLAN.cr[p.id]+(PLAN.cr[p.id]===1?' aula a repor':' aulas a repor'))):'',nsBox);
 }
 function stuMeta(p,sst){const E=ends(crsOf(p)),d=idleDays(p),a=sst>1?E[sst-2]+1:1,b=E[sst-1]||MAXC[crsOf(p)],up=p.lessons_upto||0,pct=Math.max(0,Math.min(100,Math.round((up-a+1)/(b-a+1)*100)));
   const cls=d<=3?'ok':d<=7?'warn':'bad',txt=d<=3?'Em dia':d>=999?'Ainda não estudou':'Sem estudar há '+d+' dias';

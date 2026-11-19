@@ -7,6 +7,7 @@ var ES=/\/espanol\//.test(location.pathname),L=ES?1:0;
 var RM=false;try{RM=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;}catch(e){}
 var TX={
  next:['YOUR NEXT CLASS','TU PRÓXIMA CLASE'],stopped:['WHERE YOU STOPPED','DONDE TE QUEDASTE'],stopT:['Last paragraph and last word of the previous class','Último párrafo y última palabra de la clase anterior'],study:['WHAT WE WILL STUDY','LO QUE ESTUDIAREMOS'],rev:['Revision','Repaso'],revT:['The 10 paragraphs before your last word','Los 10 párrafos antes de tu última palabra'],newl:['New','Nuevo'],lesson:['Lesson','Lección'],prep:['PREPARE BEFORE CLASS','PREPÁRATE ANTES DE LA CLASE'],readL:['Read Lesson','Lee la lección'],audio:['Listen to the audio','Escucha el audio'],lchk:['Lesson Check','Lesson Check'],join:['Join the class','Entrar a la clase'],today:['Today','Hoy'],tmrw:['Tomorrow','Mañana'],
+ mkc:['to make up','por reponer'],
  tag:['YOUR CLASS TODAY','TU CLASE DE HOY'],studied:['WHAT WE STUDIED','LO QUE ESTUDIAMOS'],listen:['LISTEN AT HOME','ESCUCHA EN CASA'],
  btn:['I have a suggestion','Tengo una sugerencia'],forx:['For','Para'],par:['Par.','Párr.'],cls:['Class','Clase'],stage:['Stage','Etapa'],
  link:['LINK OR NAME','ENLACE O NOMBRE'],ph:['Paste a link or write the name','Pega un enlace o escribe el nombre'],cancel:['Cancel','Cancelar'],send:['Send','Enviar'],
@@ -188,9 +189,9 @@ function reconcile(c,pr){
 function mount(box,o){
  if(!box||!o||!o.sb)return;css();var sb=o.sb;
  var P=function(q){return Promise.resolve(q).then(function(r){return r&&!r.error?r.data:null;},function(){return null;});};
- Promise.all([P(sb.rpc('my_last_class')),o.uid?P(sb.from('plan_progress').select('stage,lesson,data').eq('user_id',o.uid).maybeSingle()):null,o.uid?P(sb.from('lessons').select('start_at,end_at,meet_url').eq('user_id',o.uid).gte('end_at',new Date().toISOString()).order('start_at').limit(1)):null,o.uid?P(sb.from('lessons').select('start_at').eq('user_id',o.uid).gte('start_at',new Date(Date.now()-28*864e5).toISOString()).lt('start_at',new Date(Date.now()+35*864e5).toISOString()).limit(60)):null]).then(function(a){
+ Promise.all([P(sb.rpc('my_last_class')),o.uid?P(sb.from('plan_progress').select('stage,lesson,data').eq('user_id',o.uid).maybeSingle()):null,o.uid?P(sb.from('lessons').select('start_at,end_at,meet_url').eq('user_id',o.uid).gte('end_at',new Date().toISOString()).order('start_at').limit(1)):null,o.uid?P(sb.from('class_credits').select('id').eq('user_id',o.uid).is('made_up_at',null)):null,o.uid?P(sb.from('lessons').select('start_at').eq('user_id',o.uid).gte('start_at',new Date(Date.now()-28*864e5).toISOString()).lt('start_at',new Date(Date.now()+35*864e5).toISOString()).limit(60)):null]).then(function(a){
   var c=reconcile(a[0]&&a[0][0],a[1]),fresh=!!c&&isFresh(c.given_at),pre=preOf(a[1],a[2]&&a[2][0],o);
-  if(pre)pre.fc=fcOf(a[1],a[3]);
+  if(pre){pre.fc=fcOf(a[1],a[4]);pre.cr=(a[3]||[]).length;}
   if(!pre&&!fresh)return;
   if(!fresh)c=null;
   var from=c?(c.par_from||c.par_to):0,to=c?(c.par_to||from):0;
@@ -224,7 +225,7 @@ function fcOf(row,ls){try{var d=row&&row.data;if(!d||!d.classesTotal||!window.BL
  return BL_FORECAST.fmt(r,ES?'es':'en',t('stage')+' '+(row.stage||''));}catch(e){return '';}}
 function when(iso){if(!iso)return '';var d=new Date(iso),n=new Date(),tm=d.toLocaleTimeString(ES?'es':'en',{hour:'numeric',minute:'2-digit'}),dd=Math.round((new Date(d.getFullYear(),d.getMonth(),d.getDate())-new Date(n.getFullYear(),n.getMonth(),n.getDate()))/864e5);return (dd<=0?t('today'):dd===1?t('tmrw'):d.toLocaleDateString(ES?'es':'en',{weekday:'short',day:'numeric',month:'short'}))+' · '+tm;}
 function preTop(p){
- var h='<canvas class="fcv" aria-hidden="true"></canvas><span class="tag">'+t('next')+'</span><h3>'+t('cls')+' '+p.num+' · '+t('stage')+' '+p.stage+'</h3><p style="margin:0;color:#a9b4cf">'+esc(when(p.start))+'</p>'+(p.fc?'<p style="margin:4px 0 0;color:#a9b4cf;font-size:.85em">'+esc(p.fc)+'</p>':'')+'<div class="xwn"></div>';
+ var h='<canvas class="fcv" aria-hidden="true"></canvas><span class="tag">'+t('next')+'</span><h3>'+t('cls')+' '+p.num+' · '+t('stage')+' '+p.stage+'</h3>'+(p.cr>0?'<span style="display:inline-flex;align-items:center;gap:6px;margin:0 0 6px;background:rgba(217,174,58,.18);border:1px solid #d9ae3a;color:#f0c36a;border-radius:99px;padding:3px 11px;font-size:.78rem;font-weight:800"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"/></svg>'+p.cr+' '+t('mkc')+'</span>':'')+'<p style="margin:0;color:#a9b4cf">'+esc(when(p.start))+'</p>'+(p.fc?'<p style="margin:4px 0 0;color:#a9b4cf;font-size:.85em">'+esc(p.fc)+'</p>':'')+'<div class="xwn"></div>';
  if(p.stopPar||p.stopWord)h+='<div class="sec"><div class="k">'+t('stopped')+'</div><div class="pin"><span class="ic2">'+IC.bm+'</span><span><b>'+(p.stopPar?t('par')+' '+esc(p.stopPar):'')+(p.stopPar&&p.stopWord?' · ':'')+(p.stopWord?'“'+esc(p.stopWord)+'”':'')+'</b><small>'+t('stopT')+'</small></span></div></div>';
  if(p.rev||p.nw){h+='<div class="sec"><div class="k">'+t('study')+'</div>';
   if(p.rev)h+='<div class="pin"><span class="ic2">'+IC.rf+'</span><span><b>'+t('rev')+' · '+t('par')+' '+p.rev.from+'–'+p.rev.to+'</b><small>'+t('revT')+'</small></span></div>';

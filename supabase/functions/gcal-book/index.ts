@@ -14,7 +14,7 @@ const DUR = 50;            // minutos de aula
 const GAP = 10;            // folga entre aulas
 const STEP = 60;           // horarios oferecidos de hora em hora a partir do inicio da janela
 const NOTICE_MIN = 60;     // horarios novos so com mais de 1 h de antecedencia
-const CHANGE_MIN = 1440;   // aluno so remarca/cancela aula com mais de 24 h de antecedencia
+const CHANGE_MIN = 120;    // aluno remarca / cancela com credito so com mais de 2 h de antecedencia; depois disso o cancelamento conta como aula dada
 const HORIZON_DAYS = 30;   // quantos dias a frente oferecer
 const HOLD_HOURS = 24;     // pedido pendente reserva o horario por 24 h
 const MAX_PENDING_NEW = 3; // pedidos de aula nova pendentes por aluno
@@ -107,7 +107,7 @@ Deno.serve(async (req) => {
     if (action === "request") {
       const kind = String(body.kind || "");
       const start = Date.parse(String(body.start || ""));
-      if (!["reschedule", "new"].includes(kind) || !start) return json({ ok: false, error: "bad_request" }, 400);
+      if (!["reschedule", "new", "makeup"].includes(kind) || !start) return json({ ok: false, error: "bad_request" }, 400);
       const slots = await freeSlots();
       if (!slots.some((s) => Date.parse(s) === start)) return json({ ok: false, error: "slot_taken" });
       let old_start: string | null = null, lesson_id: string | null = null;
@@ -120,12 +120,17 @@ Deno.serve(async (req) => {
         if (count) return json({ ok: false, error: "already_pending" });
         old_start = l.start_at; lesson_id = l.id;
       } else {
-        const { count } = await db.from("lesson_requests").select("id", { count: "exact", head: true }).eq("status", "pending").eq("kind", "new").eq("user_id", uid);
+        const { count } = await db.from("lesson_requests").select("id", { count: "exact", head: true }).eq("status", "pending").neq("kind", "reschedule").eq("user_id", uid);
         if ((count || 0) >= MAX_PENDING_NEW) return json({ ok: false, error: "too_many" });
+        if (kind === "makeup") { // reposicao: precisa de credito livre (aulas a repor) que ainda nao esteja reservado por outro pedido pendente
+          const { count: cr } = await db.from("class_credits").select("id", { count: "exact", head: true }).eq("user_id", uid).is("made_up_at", null);
+          const { count: pn } = await db.from("lesson_requests").select("id", { count: "exact", head: true }).eq("status", "pending").eq("kind", "makeup").eq("user_id", uid);
+          if ((cr || 0) <= (pn || 0)) return json({ ok: false, error: "no_credit" });
+        }
       }
       const { data: ins, error } = await db.from("lesson_requests").insert({ user_id: uid, kind, lesson_id, old_start, new_start: new Date(start).toISOString(), new_end: new Date(start + DUR * MIN).toISOString() }).select("id").single();
       if (error) throw new Error("banco: " + error.message);
-      await tNote(uid, kind === "reschedule" ? " pediu para remarcar a aula de " + fmtP(old_start!) + " para " + fmtP(start) : " pediu uma aula nova: " + fmtP(start));
+      await tNote(uid, kind === "reschedule" ? " pediu para remarcar a aula de " + fmtP(old_start!) + " para " + fmtP(start) : kind === "makeup" ? " pediu uma reposição: " + fmtP(start) : " pediu uma aula nova: " + fmtP(start));
       return json({ ok: true, id: ins.id });
     }
 
@@ -135,18 +140,24 @@ Deno.serve(async (req) => {
     }
 
     if (action === "cancel") {
-      const { data: l } = await db.from("lessons").select("id,user_id,start_at,end_at,is_group").eq("id", String(body.lesson_id || "")).maybeSingle();
+      const { data: l } = await db.from("lessons").select("id,user_id,title,start_at,end_at,is_group").eq("id", String(body.lesson_id || "")).maybeSingle();
       if (!l || l.user_id !== uid) return json({ ok: false, error: "not_yours" });
       if (l.is_group) return json({ ok: false, error: "group" });
-      if (Date.parse(l.start_at) - Date.now() <= CHANGE_MIN * MIN) return json({ ok: false, error: "too_late" });
-      const tok = await accessToken(link);
-      const dr = await fetch(calUrl(link, "/" + encodeURIComponent(eventOf(l.id))) + "?sendUpdates=none", { method: "DELETE", headers: { Authorization: "Bearer " + tok } });
-      if (!dr.ok && dr.status !== 404 && dr.status !== 410) throw new Error("agenda: " + dr.status);
-      await db.from("lessons").delete().eq("id", l.id);
+      if (Date.parse(l.start_at) <= Date.now()) return json({ ok: false, error: "too_late" });
+      const late = Date.parse(l.start_at) - Date.now() <= CHANGE_MIN * MIN; // fora do prazo: a aula fica na agenda e conta como dada, sem credito
+      const { count: dup } = await db.from("lesson_requests").select("id", { count: "exact", head: true }).eq("kind", "cancel").eq("lesson_id", l.id).eq("user_id", uid);
+      if (dup) return json({ ok: true, credit: false, late });
+      if (!late) {
+        const tok = await accessToken(link);
+        const dr = await fetch(calUrl(link, "/" + encodeURIComponent(eventOf(l.id))) + "?sendUpdates=none", { method: "DELETE", headers: { Authorization: "Bearer " + tok } });
+        if (!dr.ok && dr.status !== 404 && dr.status !== 410) throw new Error("agenda: " + dr.status);
+        await db.from("lessons").delete().eq("id", l.id);
+        await db.from("class_credits").insert({ user_id: uid, event_id: eventOf(l.id), title: l.title, class_at: l.start_at, note: "aluno" });
+      }
       await db.from("lesson_requests").update({ status: "rejected", decided_at: new Date().toISOString() }).eq("status", "pending").eq("lesson_id", l.id);
       await db.from("lesson_requests").insert({ user_id: uid, kind: "cancel", lesson_id: l.id, old_start: l.start_at, new_start: l.start_at, new_end: l.end_at, status: "approved", decided_at: new Date().toISOString() });
-      await tNote(uid, " cancelou a aula de " + fmtP(l.start_at));
-      return json({ ok: true });
+      await tNote(uid, " cancelou a aula de " + fmtP(l.start_at) + (late ? " (fora do prazo de 2 h: conta como dada)" : " (ganhou uma aula a repor)"));
+      return json({ ok: true, credit: !late, late });
     }
 
     if (action === "decide") {
@@ -177,6 +188,10 @@ Deno.serve(async (req) => {
         const c = await cr.json();
         const meet = ZOOM;
         await db.from("lessons").upsert({ id: c.id + ":" + r.user_id, user_id: r.user_id, title: ev.summary, start_at: r.new_start, end_at: r.new_end, meet_url: meet, is_group: false, updated_at: now });
+        if (r.kind === "makeup") { // a reposicao aprovada consome o credito mais antigo
+          const { data: cc } = await db.from("class_credits").select("id").eq("user_id", r.user_id).is("made_up_at", null).order("cancelled_at").limit(1);
+          if (cc && cc[0]) await db.from("class_credits").update({ made_up_at: now }).eq("id", cc[0].id);
+        }
       }
       await db.from("lesson_requests").update({ status: "approved", decided_at: now }).eq("id", r.id);
       await sNote(r.user_id, r.kind === "reschedule" ? "Seu pedido foi aprovado ✅ Novo horário: " + fmtP(r.new_start) : "Sua aula foi marcada ✅ " + fmtP(r.new_start));

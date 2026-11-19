@@ -32,7 +32,7 @@ var S={
  bSelNote:{en:'Only the next 5 days have times.',pt:'Só os próximos 5 dias têm horários.',es:'Solo los próximos 5 días tienen horarios.'},
  bDur:{en:'Lesson length:',pt:'Duração da aula:',es:'Duración de la clase:'},
  bPickN:{en:'Choose a time',pt:'Escolha o horário',es:'Elige el horario'},
- bNote:{en:'Only free times are shown, in your time zone. You can reschedule or cancel up to 1 hour before the lesson.',pt:'Só aparecem horários livres, no seu fuso. Dá para remarcar ou cancelar até 1 hora antes da aula.',es:'Solo se muestran horarios libres, en tu zona horaria. Puedes reprogramar o cancelar hasta 1 hora antes de la clase.'},
+ bNote:{en:'Only free times are shown, in your time zone. You can reschedule up to 2 hours before the lesson.',pt:'Só aparecem horários livres, no seu fuso. Dá para remarcar até 2 horas antes da aula.',es:'Solo se muestran horarios libres, en tu zona horaria. Puedes reprogramar hasta 2 horas antes de la clase.'},
  bNew2:{en:'New time',pt:'Novo horário',es:'Nuevo horario'},
  bAsk:{en:'REQUEST NEW TIME',pt:'PEDIR REMARCAÇÃO',es:'PEDIR CAMBIO'},
  bAskN:{en:'REQUEST LESSON',pt:'PEDIR AULA',es:'PEDIR CLASE'},
@@ -48,14 +48,23 @@ var S={
  sWith:{en:'Withdraw request',pt:'Cancelar pedido',es:'Retirar pedido'},
  cx:{en:'Cancel lesson',pt:'Cancelar aula',es:'Cancelar clase'},
  cxQ:{en:'Cancel the lesson on {0}?',pt:'Cancelar a aula de {0}?',es:'¿Cancelar la clase del {0}?'},
- cxN:{en:'The time becomes free again. You cannot cancel less than 1 hour before the lesson.',pt:'O horário volta a ficar livre. Não dá para cancelar a menos de 1 hora da aula.',es:'El horario vuelve a quedar libre. No se puede cancelar a menos de 1 hora de la clase.'},
+ cxN:{en:'The time becomes free again and you get 1 make-up class.',pt:'O horário volta a ficar livre e você ganha 1 aula a repor.',es:'El horario vuelve a quedar libre y ganas 1 clase por reponer.'},
  cxYes:{en:'YES, CANCEL LESSON',pt:'SIM, CANCELAR AULA',es:'SÍ, CANCELAR CLASE'},
+ cxLT:{en:'Que pena que você não pode participar da aula',pt:'Que pena que você não pode participar da aula',es:'Qué pena que no puedas participar en la clase'},
+ cxLB:{en:'Tudo bem, imprevistos acontecem. Que tal aproveitar o horário para rever a última lição e ouvir o Listening? Assim você chega bem na próxima aula.',pt:'Tudo bem, imprevistos acontecem. Que tal aproveitar o horário para rever a última lição e ouvir o Listening? Assim você chega bem na próxima aula.',es:'No pasa nada, los imprevistos ocurren. ¿Y si aprovechas el rato para repasar la última lección y escuchar el Listening? Así llegas bien a la próxima clase.'},
+ cxLN:{en:'Cancelando agora, esta aula conta como dada e não gera reposição.',pt:'Cancelando agora, esta aula conta como dada e não gera reposição.',es:'Si cancelas ahora, esta clase cuenta como dada y no genera reposición.'},
+ cxKeep:{en:'Manter a aula',pt:'Manter a aula',es:'Mantener la clase'},
+ cxAny:{en:'Cancelar mesmo assim',pt:'Cancelar mesmo assim',es:'Cancelar de todos modos'},
+ mkBook:{en:'Book a make-up class',pt:'Marcar reposição',es:'Reservar una reposición'},
+ mkCnt:{en:'{0} to make up',pt:'{0} aula(s) a repor',es:'{0} por reponer'},
+ mkReq:{en:'Make-up class',pt:'Reposição',es:'Reposición'},
+ eCred:{en:'You have no make-up classes left.',pt:'Você não tem aulas a repor.',es:'No tienes clases por reponer.'},
  newReq:{en:'New lesson',pt:'Aula nova',es:'Clase nueva'},
  dis:{en:'Dismiss',pt:'Dispensar',es:'Descartar'},
  okMsg:{en:'Your request for {0} was approved.',pt:'Seu pedido para {0} foi aprovado.',es:'Tu pedido para {0} fue aprobado.'},
  noMsg:{en:'Your request for {0} was declined. Pick another time or message your teacher.',pt:'Seu pedido para {0} foi recusado. Escolha outro horário ou fale com o professor.',es:'Tu pedido para {0} fue rechazado. Elige otro horario o habla con tu profesor.'},
  eTaken:{en:'That time was just taken. Pick another one.',pt:'Esse horário acabou de ser ocupado. Escolha outro.',es:'Ese horario acaba de ocuparse. Elige otro.'},
- eLate:{en:'Less than 1 hour is left, so this lesson can no longer be changed.',pt:'Falta menos de 1 hora, então esta aula não pode mais ser alterada.',es:'Falta menos de 1 hora, así que esta clase ya no se puede cambiar.'},
+ eLate:{en:'Less than 2 hours are left, so this lesson can no longer be rescheduled.',pt:'Faltam menos de 2 horas, então esta aula não pode mais ser remarcada.',es:'Faltan menos de 2 horas, así que esta clase ya no se puede reprogramar.'},
  ePend:{en:'This lesson already has a pending request.',pt:'Esta aula já tem um pedido aguardando resposta.',es:'Esta clase ya tiene un pedido pendiente.'},
  eMany:{en:'You already have 3 pending requests. Wait for an answer first.',pt:'Você já tem 3 pedidos aguardando resposta. Espere uma resposta antes.',es:'Ya tienes 3 pedidos pendientes. Espera una respuesta antes.'},
  eGroup:{en:'Group lessons are changed by your teacher only.',pt:'Aulas em turma só o professor altera.',es:'Las clases en grupo solo las cambia el profesor.'},
@@ -106,7 +115,7 @@ function fmtDay(iso){try{var t=new Intl.DateTimeFormat(loc(),{weekday:'long',day
 function fmtS(iso){try{var w=new Intl.DateTimeFormat(loc(),{weekday:'short'}).format(new Date(iso)).replace('.','');w=w.charAt(0).toUpperCase()+w.slice(1);return w+', '+new Intl.DateTimeFormat(loc(),{day:'2-digit',month:'2-digit'}).format(new Date(iso))+' · '+fmtT(iso);}catch(e){return iso;}}
 function fmtFull(iso){return fmtDay(iso)+' · '+fmtT(iso);}
 function tzName(){var z='';try{z=Intl.DateTimeFormat().resolvedOptions().timeZone||'';}catch(e){}return z.replace(/_/g,' ');}
-function errText(c){return {slot_taken:T('eTaken'),too_late:T('eLate'),already_pending:T('ePend'),too_many:T('eMany'),group:T('eGroup')}[c]||T('fail');}
+function errText(c){return {slot_taken:T('eTaken'),too_late:T('eLate'),already_pending:T('ePend'),too_many:T('eMany'),group:T('eGroup'),no_credit:T('eCred')}[c]||T('fail');}
 function icsT(iso){return new Date(iso).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');}
 function icsE(t){return String(t||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n');}
 function icsOf(x){var L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Britland Academy//Aulas//PT','CALSCALE:GREGORIAN','METHOD:PUBLISH','BEGIN:VEVENT','UID:'+String(x.id).replace(/[^A-Za-z0-9:_-]/g,'')+'@britlandacademy','DTSTAMP:'+icsT(new Date().toISOString()),'DTSTART:'+icsT(x.start_at),'DTEND:'+icsT(x.end_at),'SUMMARY:'+icsE(x.title||'Britland Academy'),'DESCRIPTION:'+icsE('Britland Academy'+(x.meet_url?'\n'+x.meet_url:'')),'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+icsE(x.title||'Aula'),'TRIGGER:-PT15M','END:VALARM'];
@@ -114,11 +123,12 @@ function icsOf(x){var L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Britland Aca
 function gcalLink(x){return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(x.title||'Britland Academy')+'&dates='+icsT(x.start_at)+'/'+icsT(x.end_at)+'&details='+encodeURIComponent('Britland Academy'+(x.meet_url?'\n'+x.meet_url:''))+(x.meet_url?'&location='+encodeURIComponent(x.meet_url):'');}
 function mount(box,ctx){
   if(!box||!window.Gate||!Gate.sb||!ctx||!ctx.user)return;
-  css();var tm=null,sb=Gate.sb,uid=ctx.user.id,HOUR=3600000,ov=null;
+  css();var tm=null,sb=Gate.sb,uid=ctx.user.id,HOUR=3600000,H2=7200000,ov=null,CRN=0;
   window.Agenda.reschedule=function(x){book('reschedule',x);};
   function lessons(){return sb.from('lessons').select('id,title,start_at,end_at,meet_url,is_group').eq('user_id',uid).gte('end_at',new Date().toISOString()).order('start_at').limit(6).then(function(r){return ((r&&r.data)||[]).map(function(x){x.meet_url=x.meet_url||'https://us06web.zoom.us/j/2447679341';return x;});},function(){return [];});}
   function requests(){var since=new Date(Date.now()-3*86400000).toISOString();return sb.from('lesson_requests').select('id,kind,lesson_id,new_start,status,created_at').eq('user_id',uid).neq('kind','cancel').gte('created_at',since).order('created_at',{ascending:false}).limit(10).then(function(r){return (r&&r.data)||[];},function(){return [];});}
-  function reload(){return Promise.all([lessons(),requests()]).then(function(v){draw(v[0],v[1]);});}
+  function credits(){try{return Promise.resolve(sb.from('class_credits').select('id').eq('user_id',uid).is('made_up_at',null)).then(function(r){CRN=((r&&r.data)||[]).length;},function(){});}catch(e){return Promise.resolve();}}
+  function reload(){return Promise.all([lessons(),requests(),credits()]).then(function(v){draw(v[0],v[1]);});}
   function isPend(q){return q.status==='pending'&&Date.now()-new Date(q.created_at)<24*HOUR;}
   function draw(rows,reqs){
     clearTimeout(tm);box.textContent='';reqs=reqs||[];
@@ -149,15 +159,16 @@ function mount(box,ctx){
       var acts=el('div','ag-racts');
       var kb=el('button','ag-btn alt',T('cal'));kb.type='button';kb.onclick=function(){calAsk(x);};acts.appendChild(kb);
       if(q){acts.appendChild(el('span','ag-pill',T('pend')));}
-      else if(!x.is_group&&new Date(x.start_at)-now>HOUR){
-        var rb=el('button','ag-btn alt',T('rs'));rb.type='button';rb.onclick=function(){book('reschedule',x);};
+      else if(!x.is_group&&new Date(x.start_at)-now>0){
         var cb=el('button','ag-btn alt ag-dim',T('cx'));cb.type='button';cb.onclick=function(){cancelAsk(x);};
-        acts.appendChild(rb);acts.appendChild(cb);}
+        if(new Date(x.start_at)-now>H2){var rb=el('button','ag-btn alt',T('rs'));rb.type='button';rb.onclick=function(){book('reschedule',x);};acts.appendChild(rb);}
+        acts.appendChild(cb);}
       r.appendChild(acts);w.appendChild(r);});
-    pend.filter(function(q){return q.kind==='new';}).forEach(function(q){
-      var r=el('div','ag-row'),d=el('div');d.style.flex='1';d.appendChild(el('b','',fmtFull(q.new_start)));d.appendChild(el('small','',T('newReq')));r.appendChild(d);
+    pend.filter(function(q){return q.kind==='new'||q.kind==='makeup';}).forEach(function(q){
+      var r=el('div','ag-row'),d=el('div');d.style.flex='1';d.appendChild(el('b','',fmtFull(q.new_start)));d.appendChild(el('small','',T(q.kind==='makeup'?'mkReq':'newReq')));r.appendChild(d);
       r.appendChild(el('span','ag-pill',T('pend')));w.appendChild(r);});
-    var nb=el('button','ag-btn',T('bNew'));nb.type='button';nb.onclick=function(){book('new',null);};
+    if(CRN>0){var cs=el('div','ag-row');var cd=el('div');cd.style.flex='1';cd.appendChild(el('b','',T('mkCnt',CRN)));cs.appendChild(cd);w.appendChild(cs);}
+    var nb=el('button','ag-btn',T(CRN>0?'mkBook':'bNew'));nb.type='button';nb.onclick=function(){book(CRN>0?'makeup':'new',null);};
     var a2=el('div','ag-acts');a2.appendChild(nb);w.appendChild(a2);
     box.appendChild(w);
     tm=setTimeout(function(){draw(rows,reqs);},30000);
@@ -197,18 +208,18 @@ function mount(box,ctx){
     pv.onclick=function(){if(cur>minM){cur--;mk();}};nx.onclick=function(){if(cur<maxM){cur++;mk();}};mk();
     back.onclick=function(e){if(e.target===back)back.remove();};ov.appendChild(back);}
   function book(kind,lesson){
-    var body=el('div','ag-ovb');body.appendChild(el('p','ag-s',T('busy')));sheet(kind==='new'?T('bNew'):T('rsT'),body);
+    var body=el('div','ag-ovb');body.appendChild(el('p','ag-s',T('busy')));sheet(kind!=='reschedule'?T(kind==='makeup'?'mkBook':'bNew'):T('rsT'),body);
     sb.functions.invoke('gcal-book',{body:{action:'slots'}}).then(function(r){
       var slots=(r&&r.data&&r.data.slots)||[];body.textContent='';
       if(kind==='reschedule')body.appendChild(info(T('bCur'),fmtFull(lesson.start_at)+' – '+fmtT(lesson.end_at)));
-      body.appendChild(el('h2','',kind==='new'?T('bPickN'):T('bPick')));
+      body.appendChild(el('h2','',kind!=='reschedule'?T('bPickN'):T('bPick')));
       if(!slots.length){body.appendChild(el('p','ag-s',T('bNoSlots')));return;}
       slots=hourly(slots);
       if(!slots.length){body.appendChild(el('p','ag-s',T('bNoSlots')));return;}
       var days={},order=[];slots.forEach(function(iso){var k=dayKey(iso);if(!days[k]){days[k]=[];order.push(k);}days[k].push(iso);});
       var sel=null,chips=[],page=0,per=3,dur=(r.data.dur||50);
       var chosen=info(T('bNew2'),'—');chosen.className+=' ag-chosen';
-      var go=el('button','ag-btn ag-go',kind==='new'?T('bAskN'):T('bAsk'));go.type='button';go.disabled=true;
+      var go=el('button','ag-btn ag-go',kind!=='reschedule'?T('bAskN'):T('bAsk'));go.type='button';go.disabled=true;
       var msg=el('p','ag-s ag-m','');msg.setAttribute('role','status');
       var hd=el('div','ag-dh');hd.appendChild(el('span','ag-dl',T('bSelDate')));
       var bc=el('button','ag-sq');bc.type='button';bc.setAttribute('aria-label',T('bSelDate'));bc.innerHTML=CALSVG;
@@ -245,7 +256,7 @@ function mount(box,ctx){
   }
   function sent(kind,lesson,iso,id){
     var body=el('div','ag-ovb ag-center');var ck=el('div','ag-check','✓');body.appendChild(ck);
-    body.appendChild(el('h1','',T('sTitle')));body.appendChild(el('p','ag-lead',T(kind==='new'?'sBodyN':'sBodyR',fmtFull(iso).toLowerCase())));
+    body.appendChild(el('h1','',T('sTitle')));body.appendChild(el('p','ag-lead',T(kind!=='reschedule'?'sBodyN':'sBodyR',fmtFull(iso).toLowerCase())));
     var c=el('div','ag-info ag-sum');
     if(lesson){var r1=el('div','ag-sr');r1.appendChild(el('span','',T('bCur')));r1.appendChild(el('b','',fmtS(lesson.start_at)));c.appendChild(r1);}
     var r2=el('div','ag-sr');r2.appendChild(el('span','',T('bNew2')));r2.appendChild(el('b','',fmtS(iso)));c.appendChild(r2);
@@ -253,7 +264,7 @@ function mount(box,ctx){
     body.appendChild(el('p','ag-s',T('sHold')));
     var ok=el('button','ag-btn ag-go',T('sBackL'));ok.type='button';ok.onclick=close;body.appendChild(ok);
     var sp2=el('div','ag-sp');body.insertBefore(sp2,ok);var wd=el('button','ag-btn ag-alt2',T('sWith'));wd.type='button';wd.onclick=function(){wd.disabled=true;sb.functions.invoke('gcal-book',{body:{action:'withdraw',id:id}}).then(close,close);};body.appendChild(wd);
-    sheet(kind==='new'?T('bNew'):T('rsT'),body,true);
+    sheet(kind!=='reschedule'?T(kind==='makeup'?'mkBook':'bNew'):T('rsT'),body,true);
   }
   function calAsk(x){
     var body=el('div','ag-ovb');body.appendChild(info(fmtFull(x.start_at)+' – '+fmtT(x.end_at),x.title||'Britland Academy'));body.appendChild(el('p','ag-s',T('calH')));
@@ -264,12 +275,14 @@ function mount(box,ctx){
     body.appendChild(b1);body.appendChild(b2);body.appendChild(m);sheet(T('cal'),body);
   }
   function cancelAsk(x){
-    var body=el('div','ag-ovb ag-center');body.appendChild(el('h1','',T('cxQ',fmtFull(x.start_at))));body.appendChild(el('p','ag-lead',T('cxN')));
+    var late=new Date(x.start_at)-Date.now()<=H2,body=el('div','ag-ovb ag-center');
+    body.appendChild(el('h1','',late?T('cxLT'):T('cxQ',fmtFull(x.start_at))));body.appendChild(el('p','ag-lead',late?T('cxLB'):T('cxN')));
+    if(late)body.appendChild(el('p','ag-s',T('cxLN')));
     var msg=el('p','ag-s ag-m','');msg.setAttribute('role','status');
-    var yes=el('button','ag-btn ag-go',T('cxYes'));yes.type='button';
+    var yes=el('button',late?'ag-btn alt ag2-danger':'ag-btn ag-go',late?T('cxAny'):T('cxYes'));yes.type='button';
     yes.onclick=function(){yes.disabled=true;msg.textContent=T('busy');sb.functions.invoke('gcal-book',{body:{action:'cancel',lesson_id:x.id}}).then(function(q){var d=q&&q.data;if(d&&d.ok)close();else{msg.textContent=errText(d&&d.error);yes.disabled=false;}},function(){msg.textContent=T('fail');yes.disabled=false;});};
-    var no=el('button','ag-btn alt',T('bBack'));no.type='button';no.onclick=close;
-    body.appendChild(msg);body.appendChild(yes);body.appendChild(no);sheet(T('cx'),body);
+    var no=el('button',late?'ag-btn ag-go':'ag-btn alt',late?T('cxKeep'):T('bBack'));no.type='button';no.onclick=close;
+    body.appendChild(msg);if(late){body.appendChild(no);body.appendChild(yes);}else{body.appendChild(yes);body.appendChild(no);}sheet(T('cx'),body);
   }
   reload();
   try{sb.functions.invoke('gcal-sync',{body:{}}).then(function(r){if(r&&r.data&&r.data.ok&&!r.data.skipped)reload();},function(){});}catch(e){}
