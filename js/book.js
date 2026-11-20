@@ -59,7 +59,7 @@ function mount(o){
   function st(kind,n){return o.stat?o.stat(kind,n):Covers.stats(att,kind,n,upto);}
   function active(n){return KINDS.some(function(a){return st(a.kind,n).done>0;});}
   function skipped(n){return n<real&&!active(n)&&(!startSt||n<startSt);}
-  function nextL(kind,n){if(o.nextL)return o.nextL(kind,n);var lo=ST[n-1][0],hi=Math.min(ST[n-1][1],upto),done={},i;
+  function nextL(kind,n){if(o.nextL)return o.nextL(kind,n);if(!ST[n-1])return 0;var lo=ST[n-1][0],hi=Math.min(ST[n-1][1],upto),done={},i;
     att.forEach(function(a){var k=a.k==='check'?'check':(/^wb/.test(a.e)?'wb':'ex');if(k===kind)done[a.l]=1;});
     for(i=lo;i<=hi;i++)if(!done[i])return i;return lo;}
   function href(a,n){var l=nextL(a.kind,n);return a.href+(a.href.indexOf('?')<0?'?':'&')+'lesson='+l;}
@@ -81,7 +81,7 @@ function mount(o){
         .then(function(){return Certificate.download({cert:row,lang:es?'es':'en',base:es?'../':''});}).catch(function(){}).then(function(){b.disabled=false;});});
     return b;}
   function render(still){
-    var n=chosen,sk=skipped(n);box.textContent='';box.classList.add('bk');
+    if(!ST[chosen-1])chosen=real;var n=chosen,sk=skipped(n);box.textContent='';box.classList.add('bk');
     var top=el('div','bkn'),stk=el('div','bks'),rings=[],cv=new Image();cv.src=Covers.src(n,es);cv.alt=es?'Libro del Estudiante \u00b7 Etapa '+n:"Student's Book \u00b7 Stage "+n;cv.width=90;cv.height=128;cv.className='cvr bkcv';cv.decoding='async';var cw=cv,cr=certOf(n);if(cr){cw=el('div','bkcw');cw.append(cv,ribbon(cr));}top.append(cw);
     KINDS.forEach(function(a){var s=st(a.kind,n),d=el('a','bkg'),r=el('div','bkr'+(sk?' dash':'')),b=el('b','',sk?'—':'0%');r.append(b);d.append(r);
       d.href=href(a,n);d.setAttribute('aria-label',a.label);d.style.cssText='text-decoration:none;color:inherit;display:block';d.append(el('strong','',a.label));

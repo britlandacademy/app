@@ -17,6 +17,7 @@ function tickEl(){var t=document.createElement('span');t.className='cv-tick';t.i
 function cover(n,w,es){var i=new Image();i.src=src(n,es);i.alt=(es||C.coverEs)?'Libro del Estudiante · Etapa '+n:(BUS?"Callan for Business":"Student's Book · Stage "+n);i.width=w||90;i.height=Math.round((w||90)*1.42);i.className='cv-img';i.decoding='async';return i;}
 /* progress of a Stage from the attempts list, independent of loaded content */
 function stats(att,kind,n,upto){
+  if(!STG[n-1])return {done:0,doneAv:0,total:0,avail:0,avg:0,complete:false};
   var lo=STG[n-1][0],hi=STG[n-1][1],best={},cnt={},k,a,e,p,l;
   for(k=0;k<att.length;k++){a=att[k];l=a.l;if(l<lo||l>hi)continue;e=String(a.e);
     if(kind==='wb'){if(!/^wb/.test(e))continue;}
