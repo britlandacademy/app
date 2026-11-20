@@ -48,7 +48,7 @@ function ExecuteScript() {
   return 'TENTOU:' + (alvo.getAttribute('title') || '');
 }
 
-/* 3) Confere o chat aberto e insere o texto (saida: Result -> 'OK' ou 'ERRO:...') */
+/* 3) Confere o chat aberto e cola o texto (saida: Result -> 'OK' ou 'ERRO:...') */
 function ExecuteScript() {
   var d = %Conteudo%;
   var g = d.group;
@@ -59,15 +59,19 @@ function ExecuteScript() {
   if (!(nm === g || nm.indexOf(g) === 0)) return 'ERRO:CHAT:' + nm;
   var box = document.querySelector('#main footer div[contenteditable="true"]');
   if (!box) return 'ERRO:SEM_CAIXA';
+  /* Seleciona todo o conteudo da caixa e cola o texto inteiro por cima (colagem simulada).
+     Testado no WhatsApp Business Web: substitui qualquer rascunho e mantem as quebras de linha.
+     (execCommand selectAll/delete/insertLineBreak nao funcionam nessa caixa.) A caixa atualiza com um pequeno atraso,
+     entao a conferencia de caixa vazia fica por conta do script 4, que roda 1,5 s depois. */
   box.focus();
-  document.execCommand('selectAll', false, null);
-  document.execCommand('delete', false, null);
-  var linhas = String(d.text).split('\n');
-  for (var i = 0; i < linhas.length; i++) {
-    if (i > 0) document.execCommand('insertLineBreak', false, null);
-    if (linhas[i]) document.execCommand('insertText', false, linhas[i]);
-  }
-  return (box.innerText || '').trim() ? 'OK' : 'ERRO:CAIXA_VAZIA';
+  var sel = window.getSelection(), rg = document.createRange();
+  rg.selectNodeContents(box);
+  sel.removeAllRanges();
+  sel.addRange(rg);
+  var dt = new DataTransfer();
+  dt.setData('text/plain', String(d.text));
+  box.dispatchEvent(new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true }));
+  return 'OK';
 }
 
 /* 4) Clica em Enviar (saida: SendResult -> 'CLICADO' ou 'NAO_ENVIADO:...') */
