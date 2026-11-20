@@ -16,8 +16,9 @@ html:not(.fx-off).fx-out main{animation:fxOutL .22s ease-in forwards;pointer-eve
 html:not(.fx-off) .grid>.card,html:not(.fx-off) .stats>.st,html:not(.fx-off) .today,html:not(.fx-off) .cont{animation:fxIn var(--fx-d) var(--fx-e) backwards}
 html:not(.fx-off) .grid>.card:nth-child(1){animation-delay:.05s}html:not(.fx-off) .grid>.card:nth-child(2){animation-delay:.16s}html:not(.fx-off) .grid>.card:nth-child(3){animation-delay:.27s}html:not(.fx-off) .grid>.card:nth-child(4){animation-delay:.38s}html:not(.fx-off) .grid>.card:nth-child(5){animation-delay:.49s}html:not(.fx-off) .grid>.card:nth-child(6){animation-delay:.6s}
 html:not(.fx-off) .card,html:not(.fx-off) .btn,html:not(.fx-off) .g-mi{transition:transform .35s var(--fx-e),box-shadow .35s,background-color .2s,border-color .2s}
-@media (hover:hover){html:not(.fx-off) .card:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.28)}}
-html:not(.fx-off) .card:active,html:not(.fx-off) .btn:active{transform:scale(.98)}
+@media (hover:hover){html:not(.fx-off) a.card:hover,html:not(.fx-off) button.card:hover,html:not(.fx-off) .card[role=button]:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.28)}
+form.card:hover{border-color:#c9a23a;box-shadow:0 0 0 3px rgba(201,162,58,.35)}}
+html:not(.fx-off) a.card:active,html:not(.fx-off) button.card:active,html:not(.fx-off) .card[role=button]:active,html:not(.fx-off) .btn:active{transform:scale(.98)}
 html:not(.fx-off) .item.ok{animation:fxGood .7s var(--fx-e)}
 html:not(.fx-off) .item.bad{animation:fxBad .5s}
 .fx-spark{position:fixed;width:7px;height:7px;border-radius:50%;pointer-events:none;z-index:99998;animation:fxSpark var(--t) cubic-bezier(.2,.7,.3,1) forwards}
