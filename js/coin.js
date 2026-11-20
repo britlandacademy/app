@@ -1,3 +1,4 @@
+window.BLLow=window.BLLow||function(){try{if(localStorage.getItem('bl-low')==='1')return true;if(localStorage.getItem('bl-low')==='0')return false;}catch(e){}var n=navigator,c=n.connection||{};return !!(c.saveData||(n.deviceMemory&&n.deviceMemory<=3)||(n.hardwareConcurrency&&n.hardwareConcurrency<=4));};
 /* BLCoin: moeda 3D de metal escovado com relevo, brilho que corre ao inclinar e giro livre.
  *
  * Uso:

@@ -298,7 +298,7 @@ function loadCoin(){ /* the 3D coin (js/coin.js) is loaded on demand; if it fail
   return coinP;}
 function coinInto(b,m){
   loadCoin().then(function(okc){
-    if(!okc||!b.isConnected)return;var sc=b.querySelector('.sc');if(!sc)return;
+    if(!okc||!b.isConnected||(window.BLLow&&BLLow()))return;var sc=b.querySelector('.sc');if(!sc)return;
     var host=document.createElement('div');host.className='mcoin';sc.textContent='';sc.classList.add('cn');sc.appendChild(host);
     try{var tone={g:'gold',s:'silver',b:'bronze'}[m.tier]||'gold';
       var ctl=BLCoin.make(host,{size:50,tone:tone,intensity:'med',front:{src:BASE()+'img/britland-shield.png',gold:true},back:{src:BASE()+'img/lion-gold.png',gold:true}});
