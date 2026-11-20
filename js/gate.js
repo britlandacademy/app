@@ -284,16 +284,33 @@ function thanksPay(){
     rows.forEach(function(x){if(c||x.paid_on<cut)return;try{if(!localStorage.getItem('bl-thanks-'+x.id))c=x;}catch(e){}});
     if(!c)return;
     try{localStorage.setItem('bl-thanks-'+c.id,'1');}catch(e){}
-    var M=['January','February','March','April','May','June','July','August','September','October','November','December'],mo=M[+String(c.due_date).slice(5,7)-1]||'';
-    var n=firstName(),nn=n?', '+n:'',P=[
-      'Thank you'+nn+'! Your payment has been received. We\u2019re glad to have you at Britland Academy.',
-      'Payment received'+nn+'. Thank you for your trust. See you in class!',
-      'Thank you'+nn+'! Your '+mo+' payment is confirmed. Keep up the great work.',
-      'Obrigado'+nn+'! Recebemos o seu pagamento. Bons estudos!'];
-    var msg=P[Math.floor(Math.random()*P.length)];
-    var ov=el('div',{class:'g-hov'}),close=function(){document.removeEventListener('keydown',kd);ov.remove();},kd=function(e){if(e.key==='Escape')close();};
-    var d=el('div',{class:'g-hdlg',role:'dialog','aria-modal':'true','aria-label':'Thank you'},el('h2',{style:'margin:0 0 10px'},'Thank you! \uD83D\uDC9B'),el('p',{},msg),el('div',{class:'g-row',style:'justify-content:flex-end'},el('button',{type:'button',class:'g-btn',onclick:close},'Close')));
+    var L=(function(){var l=window.I18N&&window.I18N.lang;return l==='pt'?1:l==='es'?2:l==='en'?0:gLang();})(),mi=+String(c.due_date).slice(5,7)-1,
+      MN=[['January','February','March','April','May','June','July','August','September','October','November','December'],
+          ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'],
+          ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']][L],
+      AB=[['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'],['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'],['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC']][L],
+      T3=[['Thank you for your payment!','Your {m} payment is confirmed. We’re glad to have you at Britland Academy.','Continue'],
+          ['Obrigado pelo seu pagamento!','O pagamento de {m} está confirmado. Que bom ter você na Britland Academy.','Continuar'],
+          ['¡Gracias por tu pago!','Tu pago de {m} está confirmado. Nos alegra tenerte en Britland Academy.','Continuar']][L],
+      late=Math.round((Date.parse(c.paid_on)-Date.parse(c.due_date))/864e5),tone=late<=0?'gold':late<=7?'silver':'bronze',
+      ES=COURSE.id==='es',B=window.BL_BASE||'';
+    var ov=el('div',{class:'g-hov'}),close=function(){document.removeEventListener('keydown',kd);try{if(ctl)ctl.destroy();}catch(e){}ov.remove();},kd=function(e){if(e.key==='Escape')close();},ctl=null;
+    if(!document.getElementById('g-coin-css')){var st=document.createElement('style');st.id='g-coin-css';st.textContent='.g-pay{position:relative;background:var(--card,#10224a);color:var(--ink,#f2f5fa);border:1px solid var(--line,#27407a);border-top:4px solid var(--accent,#c9a13b);border-radius:16px;max-width:420px;width:100%;margin-top:70px;padding:78px 22px 22px;text-align:center;box-sizing:border-box}.g-pay .g-ch{position:absolute;left:0;right:0;top:-72px;height:140px;display:grid;place-items:center}.g-pay h2{margin:0 0 8px;font-family:Georgia,serif;font-size:1.3rem}.g-pay p{margin:0 0 16px;color:var(--muted,#b4bfd6);line-height:1.45}.g-pay .g-btn{border-radius:999px;min-width:150px}';document.head.append(st);}
+    var host=el('div',{class:'g-ch'}),d=el('div',{class:'g-pay',role:'dialog','aria-modal':'true','aria-label':T3[0]},host,el('h2',{},T3[0]),el('p',{},T3[1].replace('{m}',MN[mi]||'')),el('button',{type:'button',class:'g-btn',onclick:close},T3[2]));
     ov.append(d);ov.addEventListener('click',function(e){if(e.target===ov)close();});document.addEventListener('keydown',kd);document.body.append(ov);
+    var RM=false;try{RM=matchMedia('(prefers-reduced-motion:reduce)').matches||document.documentElement.classList.contains('fx-off');}catch(e){}
+    function coin(){
+      if(!window.BLCoin||!host.isConnected)return;
+      try{ctl=BLCoin.make(host,{size:112,tone:tone,intensity:'med',front:{text:AB[mi]||''},back:{src:B+'img/britland-shield'+(ES?'-es':'')+'.png',gold:true}});}catch(e){return;}
+      if(RM){return;}
+      try{host.animate([{transform:'translateY(150px) scale(.45)',opacity:0},{transform:'translateY(0) scale(1)',opacity:1}],{duration:750,easing:'cubic-bezier(.2,.9,.25,1)'});
+        var sp=ctl.coin.animate([{transform:'rotateY(-900deg)'},{transform:'rotateY(0deg)'}],{duration:1400,easing:'cubic-bezier(.15,.7,.2,1)'});
+        sp.onfinish=function(){try{navigator.vibrate&&navigator.vibrate(30);}catch(e){}try{BLCoin.sound('spin',.7);}catch(e){}if(ctl)ctl.live(true);};
+      }catch(e){if(ctl)ctl.live(true);}
+    }
+    if(window.BLCoin)coin();else{
+      var lk=document.createElement('link');lk.rel='stylesheet';lk.href=B+'js/coin.css?v='+(window.BL_VERSION||'1');document.head.append(lk);
+      var sc=document.createElement('script');sc.src=B+'js/coin.js?v='+(window.BL_VERSION||'1');sc.onload=coin;document.head.append(sc);}
   }).catch(function(){});
 }
 function pushInfo(text){

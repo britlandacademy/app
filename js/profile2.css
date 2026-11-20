@@ -57,3 +57,32 @@ html:not([data-theme="light"]) .p2k{color:var(--p2G)}
 .p2cal .p2c.e{visibility:hidden}.p2cal .p2c.fut{background:none;opacity:.55}
 .p2cal .p2c.on{background:#c9a23a!important;color:#1a1405;font-weight:800}
 .p2cal .p2c.td{box-shadow:0 0 0 2px var(--card,#10224a),0 0 0 4px #e4c06a}
+
+/* calendario em bolhas: o tamanho e a cor da bolinha mostram quantos exercicios no dia */
+.p2cal .p2c.p2bub{--cs:44px;position:relative;aspect-ratio:auto;height:var(--cs);border-radius:0!important;background:none!important;display:grid;place-items:center;color:inherit;font-style:normal}
+.p2bub u{text-decoration:none;font:600 11px system-ui,Arial,sans-serif;color:var(--muted,#8a93a8)}.p2bub .p2dn{position:absolute;top:0;left:2px}.p2bub .p2dz{opacity:.8}.p2c.fut .p2dz{opacity:.5}
+.p2bub .p2dot{display:grid;place-items:center;width:calc(var(--cs)*var(--f));height:calc(var(--cs)*var(--f));border-radius:50%;font:700 12px system-ui,Arial,sans-serif;color:#1a1405;background:color-mix(in srgb,#b08014 calc(var(--t)*100%),#e8cd78)}
+.p2bub.td .p2dot,.p2bub.td .p2dz{box-shadow:0 0 0 2px var(--card,#10224a),0 0 0 4px #e4c06a;border-radius:50%}
+.p2cal .p2c.p2bub.td{box-shadow:none!important}
+.p2lg{display:flex;gap:10px;align-items:center;font-size:.75rem;color:var(--muted,#a9b8de);margin:4px 0 0}.p2lgd{display:inline-block;border-radius:50%;background:#c9a23a}
+@media(min-width:900px){.p2o{display:grid;grid-template-columns:400px 1fr;gap:32px;align-items:start}.p2o .p2m{margin:0}}
+@media(max-width:560px){.p2cal .p2c.p2bub{--cs:40px}}
+
+/* Journey: capitulos com a capa do livro, fita de nota e palavras */
+.p2jh{background:#0f1f3d;color:#fff;border:1px solid #c9a23a;border-radius:18px;padding:16px 18px;margin:10px 0 14px;display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.p2jh .k{font:700 11px system-ui,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#c9a23a}
+.p2jh .big{font:700 34px/1.1 var(--serif,Georgia,serif);color:#e4c06a;display:block}.p2jh small{display:block;color:#b9c4e0}
+.p2jh .tx{flex:1;min-width:220px}.p2jh .ph{font-size:1.05rem;line-height:1.35;margin:0 0 6px}.p2jh .bar{height:8px;background:#ffffff26;border-radius:6px;overflow:hidden;margin-top:8px}.p2jh .bar i{display:block;height:100%;background:#d9b44f}
+.p2jl{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.p2ch{display:flex;gap:16px;align-items:center;padding:14px 14px 14px 18px;border-radius:16px;background:var(--surface);border:1px solid var(--line)}
+.p2ch .bk{position:relative;width:76px;height:104px;flex:none;border-radius:4px 6px 6px 4px;background:var(--line) center/cover;box-shadow:0 6px 12px #0004;margin-top:6px}
+.p2ch .rb{position:absolute;top:-6px;right:8px;width:30px;height:46px;display:flex;flex-direction:row;justify-content:center;align-items:flex-start;padding-top:7px;white-space:nowrap;font:700 10px system-ui,Arial,sans-serif;color:#2b1f00;clip-path:polygon(0 0,100% 0,100% 100%,50% 82%,0 100%)}
+.p2ch .rb i{font-style:normal}.p2ch .rb.g{background:linear-gradient(90deg,#b08014,#f3dc8a 50%,#b08014)}.p2ch .rb.s{background:linear-gradient(90deg,#8d96a3,#eef1f5 50%,#8d96a3);color:#222}
+.p2ch .tg{font:700 11px system-ui,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#c9a23a}
+.p2ch h3{font:700 19px var(--serif,Georgia,serif);margin:2px 0 6px}.p2ch small{color:var(--muted);display:block}
+.p2ch .p2b{flex:1;min-width:0}.p2ch .bar{height:8px;margin:6px 0}
+.p2ch.done{background:#0f1f3d;color:#fff;border-color:#c9a23a}.p2ch.done small{color:#b9c4e0}.p2ch.done .tg{color:#e4c06a}
+.p2ch.cur{border:2px solid #c9a23a;box-shadow:0 0 0 4px #c9a23a33}.p2ch.lock{opacity:.55}.p2ch.lock .bk{filter:grayscale(1)}
+.p2ch .p2dl{margin-left:auto}.p2ch.done .p2dl{background:#c9a23a;color:#111;border-color:#c9a23a}
+.p2ch .go{display:inline-block;margin-top:6px;background:#c9a23a;color:#111;border-radius:99px;padding:3px 12px;font-weight:700;font-size:.8rem}
+.p2jlg{display:flex;gap:14px;flex-wrap:wrap;font-size:.75rem;color:var(--muted);margin:8px 2px 0}.p2jlg span{display:flex;gap:6px;align-items:center}.p2jlg u{width:12px;height:12px;border-radius:50%}

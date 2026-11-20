@@ -63,14 +63,17 @@ function loadData(sb,ev,deps){
       sb.from('class_attendance').select('user_id,status,late_min').eq('event_key',key),
       sb.from('lessons').select('user_id,start_at').in('user_id',u).lt('end_at',new Date().toISOString()).order('end_at',{ascending:false}).limit(80),
       sb.from('teacher_cfg').select('key,value').in('key',['plans_sheet','plans_gids']),
-      sb.from('invite_state').select('vkey,idx').like('vkey',u[0]+':%'),
+      sb.from('invite_state').select('vkey,idx,updated_at').like('vkey',u[0]+':%'),
       sb.from('invite_sent').select('status,via,kind').eq('event_key',key+'|'+new Date(ev.start_at).toISOString()),
       sb.from('lessons').select('start_at').eq('user_id',u[0]).gte('start_at',new Date().toISOString()).lt('start_at',new Date(Date.now()+35*864e5).toISOString()).limit(60),
-      sb.from('class_credits').select('user_id').in('user_id',u).is('made_up_at',null)
+      sb.from('class_credits').select('user_id').in('user_id',u).is('made_up_at',null),
+      sb.from('exam_release').select('user_id,released_at').in('user_id',u).gte('released_at',new Date(Date.now()-14*864e5).toISOString()),
+      sb.from('certificates').select('user_id,completed_on').in('user_id',u).gte('completed_on',new Date(Date.now()-7*864e5).toISOString().slice(0,10)),
+      sb.from('availability_blocks').select('day').gte('day',new Date().toISOString().slice(0,10)).lte('day',new Date(Date.now()+10*864e5).toISOString().slice(0,10)).order('day')
     ].map(function(q){return Promise.resolve(q).then(function(x){return x&&!x.error?x.data||[]:[];},function(){return [];});})).then(function(a){
       a[0].forEach(function(x){out.prog[x.user_id]=x;});a[1].forEach(function(x){out.links[x.user_id]=x;});out.errs=a[2];
       a[3].forEach(function(x){out.att[x.user_id]=x;});a[4].forEach(function(x){if(!out.prev[x.user_id])out.prev[x.user_id]=x.start_at;});
-      var c={};a[5].forEach(function(x){c[x.key]=x.value;});out.cfg=c;out.inv={};a[6].forEach(function(x){out.inv[x.vkey]=x.idx;});out.sentRev=(a[7].filter(function(x){return x.kind==='rev';})[0])||null;out.futN=a[8].length;var cm={};a[9].forEach(function(x){cm[x.user_id]=(cm[x.user_id]||0)+1;});out.crN=Math.max.apply(null,[0].concat(Object.keys(cm).map(function(k){return cm[k];})));var c28=Date.now()-28*864e5;out.pastN=a[4].filter(function(x){return x.user_id===u[0]&&new Date(x.start_at).getTime()>c28;}).length;return out;});
+      var c={};a[5].forEach(function(x){c[x.key]=x.value;});out.cfg=c;out.inv={};out.nseen={};a[6].forEach(function(x){if(/:n:/.test(x.vkey))out.nseen[x.vkey.split(':n:')[1]]=new Date(x.updated_at).getTime();else out.inv[x.vkey]=x.idx;});out.cmap={};a[9].forEach(function(x){out.cmap[x.user_id]=(out.cmap[x.user_id]||0)+1;});out.exN=a[10].length;out.certN=a[11].length;out.hol=a[12].map(function(x){return String(x.day).slice(8,10)+'/'+String(x.day).slice(5,7);});out.sentRev=(a[7].filter(function(x){return x.kind==='rev';})[0])||null;out.futN=a[8].length;var cm={};a[9].forEach(function(x){cm[x.user_id]=(cm[x.user_id]||0)+1;});out.crN=Math.max.apply(null,[0].concat(Object.keys(cm).map(function(k){return cm[k];})));var c28=Date.now()-28*864e5;out.pastN=a[4].filter(function(x){return x.user_id===u[0]&&new Date(x.start_at).getTime()>c28;}).length;return out;});
   });
 }
 
@@ -165,9 +168,10 @@ function render(box,ev,deps,opts){opts=opts||{};
       return BL_INVITE.build({es:ES,tz:(pc0&&pc0.tz)||TZ,now:new Date(),names:d.uids.map(firstNames),bdays:d.uids.filter(bdToday).map(firstNames),
         streak:group||!STK?0:(STK[String((pc0&&pc0.email)||'').toLowerCase()]||0),classNumber:nx&&nx.classNumber,kind:kind,contents:nx&&nx.contents,
         conversation:nx&&nx.conversation,review:nx&&nx.review,newWords:nx&&nx.newWords,stage:STG,missedN:!group&&ms&&ms.length?(ms[0].classNumber||''):'',
-        isMeet:isMeet,link:meet,last:d.inv||{},uid0:d.uids[0]});}
+        isMeet:isMeet,link:meet,last:d.inv||{},uid0:d.uids[0],
+        notice:{makeup:group?0:(d.cmap&&d.cmap[d.uids[0]])||0,exam:!group&&d.exN>0,cert:!group&&d.certN>0,hol:d.hol||[],seen:d.nseen||{}}});}
     /* guarda no banco as versoes sorteadas (a automacao nao repete) e que este convite ja saiu */
-    function commit(kind,r){var rows=Object.keys(r.picks).map(function(k){d.inv=d.inv||{};d.inv[k]=r.picks[k];return {vkey:k,idx:r.picks[k],updated_at:new Date().toISOString()};});
+    function commit(kind,r){var rows=Object.keys(r.picks).map(function(k){if(/:n:/.test(k)){d.nseen=d.nseen||{};d.nseen[k.split(':n:')[1]]=Date.now();}else{d.inv=d.inv||{};d.inv[k]=r.picks[k];}return {vkey:k,idx:r.picks[k],updated_at:new Date().toISOString()};});
       try{if(rows.length)Promise.resolve(deps.sb.from('invite_state').upsert(rows)).then(function(){},function(){});
         Promise.resolve(deps.sb.from('invite_sent').upsert({event_key:EVK,kind:kind,via:'app',status:'sent',text_sent:r.text,sent_at:new Date().toISOString()})).then(function(){},function(){});}catch(e){}}
     function copyTxt(t){

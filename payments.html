@@ -59,6 +59,7 @@ td.g{background:var(--ok-bg)}td.m{background:var(--warn-bg)}td.r{background:var(
 #tb tr.pd td.nm,#tb tr.pd td.n,#tb tr.pd td.c,#tb tr.pd td{text-decoration:none!important}
 #tb tr.pd td.nm b,#tb tr.pd td.nm>*:first-child{color:var(--muted)}
 #tb tr.pd td.n{color:var(--ok);font-weight:700}
+.pcoin{display:inline-block;width:30px;height:30px;border-radius:50%;vertical-align:middle;margin-right:8px;position:relative;box-shadow:0 1px 3px rgba(0,0,0,.55),inset 0 0 0 1.5px rgba(80,55,8,.55)}.pcoin svg{position:absolute;inset:0;margin:auto;width:58%;height:58%;fill:none;stroke:rgba(70,45,0,.85);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
 #tb td.nm small{display:block;color:var(--muted);font-size:.8rem}#tb tr.pd td.nm small{color:var(--ok)}
 #tb td.ck input{width:20px;height:20px}
 /* tabela de assinaturas compacta */
@@ -357,6 +358,12 @@ function renderSum(){
     el('b',{},RATE?'1 € = '+money(RATE,'BRL'):'indisponível agora'),
     el('span',{class:'sm'},RATE?'de '+(/^\d{4}-/.test(RATE_AT)?br(RATE_AT.slice(0,10))+RATE_AT.slice(10):RATE_AT)+' · Banco Central Europeu':'os valores em euro aparecem sem conversão'),b));
 }
+const COINS={g:'conic-gradient(from 20deg,#8d6c1c,#f3d37e,#b48a2a,#fff0b0,#9a7621,#efcf76,#a98023,#fbe6a0,#8d6c1c)',s:'conic-gradient(from 20deg,#7d838c,#e9edf3,#a3a9b3,#fff,#8a9099,#dfe4ec,#9aa0aa,#f4f6fa,#7d838c)',b:'conic-gradient(from 20deg,#6e3f1c,#d59a63,#9b6232,#f0c08e,#7e4a22,#d9a06b,#8f5a2c,#f2c697,#6e3f1c)'};
+function lateDays(c){return Math.round((Date.parse(c.paid_on)-Date.parse(c.due_date))/864e5);}
+function payTxt(c){const d=lateDays(c);return 'Pago em '+br(c.paid_on)+' · '+(d<0?'adiantado':d===0?'no dia':d+(d===1?' dia':' dias')+' de atraso');}
+function coinEl(c){const d=lateDays(c),k=d<=0?'g':d<=7?'s':'b',n={g:'ouro',s:'prata',b:'bronze'}[k];
+  const e=el('span',{class:'pcoin',role:'img','aria-label':'Moeda de '+n+': '+payTxt(c).replace('Pago em ','pago em '),title:'Moeda de '+n}),sv=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  sv.setAttribute('viewBox','0 0 24 24');sv.setAttribute('aria-hidden','true');sv.innerHTML='<path d="M5 12.5l4.5 4.5L19 7.5"/>';e.style.background=COINS[k];e.append(sv);return e;}
 function rowFor(c){
   const inp=el('input',{type:'number',min:'0',step:'0.01',value:String(c.amount),'aria-label':'Valor'});
   inp.addEventListener('change',()=>upd(c.id,{amount:parseFloat(inp.value)||0}));
@@ -367,11 +374,11 @@ function rowFor(c){
   const s=subOf(c.sub_id),late=!c.paid_on&&c.due_date<today();
   return el('tr',{class:c.paid_on?'pd':(late?'late':'')},
     el('td',{class:'ck c'},ck),
-    el('td',{class:'nm'},flgS(subOf(c.sub_id)),nm(c),el('small',{class:(!c.paid_on&&late)?'lt':''},c.paid_on?'Pago em '+br(c.paid_on):(late?'venceu '+br(c.due_date).slice(0,5)+' · '+Math.floor((new Date(today())-new Date(c.due_date))/864e5)+' dia(s) de atraso · '+(s.plan||c.note||'Avulsa'):(s.plan||c.note||'Avulsa')),/^Baixa autom/.test(c.note||'')?el('span',{class:'tag'},'automático'):null)),
+    el('td',{class:'nm'},flgS(subOf(c.sub_id)),nm(c),el('small',{class:(!c.paid_on&&late)?'lt':''},c.paid_on?payTxt(c):(late?'venceu '+br(c.due_date).slice(0,5)+' · '+Math.floor((new Date(today())-new Date(c.due_date))/864e5)+' dia(s) de atraso · '+(s.plan||c.note||'Avulsa'):(s.plan||c.note||'Avulsa')),/^Baixa autom/.test(c.note||'')?el('span',{class:'tag'},'automático'):null)),
     el('td',{class:'vl'},el('div',{class:'mny'},el('span',{},SYM[c.currency]),inp)),
     el('td',{class:'dd c'},String(+c.due_date.slice(8))),
     el('td',{class:'n'},fmBRL(toBRL(c))),
-    el('td',{class:'ac'},del));
+    el('td',{class:'ac'},c.paid_on?coinEl(c):null,del));
 }
 function renderTable(){
   const t=$('tb');t.textContent='';t.append(th(['Pago','Aluno / descrição','Valor','Vence dia','Em reais','']));

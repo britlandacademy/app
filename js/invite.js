@@ -83,14 +83,30 @@
     };
     var hasNW=!!n&&(k==='normal'||k==='makeup'),link=ctx.isMeet?ctx.link:(kind==='nw'?ZOOM_NW:ZOOM_REV),
         join=(es?'🎥 Entra aquí:\n':'🎥 Join here:\n')+link;
-    if(kind==='nw'&&!ctx.isMeet)return {type:k,picks:picks,text:pick(hasNW?E.nw:E.gen,vk)+'\n\n'+join};
+    /* recado automatico (no maximo 1 por convite): urgentes primeiro; os leves so em ~1 de cada 2 convites; nunca repete antes do intervalo.
+       ctx.notice={makeup:n,exam:bool,cert:bool,hol:['25/12'],seen:{chave:ms da ultima vez}}; individuais so para aluno unico */
+    function noticeLine(){var nt=ctx.notice;if(!nt)return '';var seen=nt.seen||{},nowMs=(ctx.now||new Date()).getTime(),DAY=864e5,single=!grp;
+      function ok(key,days){var t=+seen[key];return !t||nowMs-t>=days*DAY;}
+      var hol=nt.hol||[],C=[];
+      if(hol.length&&ok('hol',4))C.push(['hol',es?(hol.length>1?'Aviso: no tendremos clase los días '+hol.join(', ')+'.':'Aviso: no tendremos clase el día '+hol[0]+'.'):(hol.length>1?'Aviso: não teremos aula nos dias '+hol.join(', ')+'.':'Aviso: não teremos aula no dia '+hol[0]+'.')]);
+      if(single&&nt.exam&&ok('exam',7))C.push(['exam',es?'Tu simulacro ya está disponible en la app 📝':'Seu simulado já está liberado no app. Faça com calma, sem pressa 📝']);
+      if(single&&nt.cert&&ok('cert',30))C.push(['cert',es?'¡Felicidades! Tu certificado ya está disponible en la app 🎓':'Parabéns! Seu certificado já está disponível no app 🎓']);
+      if(single&&nt.makeup>0&&ok('makeup',7))C.push(['makeup',es?(nt.makeup>1?'Tienes '+nt.makeup+' clases para recuperar. Elige el mejor horario en la app 📅':'Tienes 1 clase para recuperar. Elige el mejor horario en la app 📅'):(nt.makeup>1?'Você tem '+nt.makeup+' aulas a repor. Escolha o melhor horário no app 📅':'Você tem 1 aula a repor. Escolha o melhor horário no app 📅')]);
+      if(C.length){picks[ctx.uid0+':n:'+C[0][0]]=0;return C[0][1];}
+      if(rand()>=0.5)return '';
+      var L=[['review',es?'Si estás disfrutando de las clases, ¿qué tal dejar una reseña del curso en la app? Toma 1 minuto 💛':'Se você está gostando das aulas, que tal deixar uma avaliação do curso no app? Leva 1 minuto 💛'],
+        ['goal',es?'Meta de la semana: haz tus Lesson Checks y mantén la racha 🔥':'Meta da semana: faça seus exercícios do dia no app e mantenha a ofensiva 🔥'],
+        ['refer',es?'¿Conoces a alguien que quiera aprender? ¡Recomienda Britland Academy! 🤝':'Conhece alguém que queira aprender? Indique a Britland Academy! 🤝']]
+        .filter(function(x){return ok(x[0],21);}).sort(function(a,b){return (+seen[a[0]]||0)-(+seen[b[0]]||0);});
+      if(!L.length)return '';picks[ctx.uid0+':n:'+L[0][0]]=0;return L[0][1];}
+    if(kind==='nw'&&!ctx.isMeet){var nl=noticeLine();return {type:k,picks:picks,text:pick(hasNW?E.nw:E.gen,vk)+(nl?'\n\n'+nl:'')+'\n\n'+join};}
     var bn=ctx.bdays||[],ex=[];
     if(bn.length){var bl=bn.length>1?bn.slice(0,-1).join(', ')+(es?' y ':' and ')+bn[bn.length-1]:bn[0];
       ex.push(grp?(es?'¡Y feliz cumpleaños a '+bl+'! 🎂':'And happy birthday to '+bl+'! 🎂'):(es?'¡Feliz cumpleaños, '+bl+'! 🎂':'Happy birthday, '+bl+'! 🎂'));}
     if(!grp&&st>=3&&(+ctx.classNumber||0)%3===0)ex.push(pick(E.st,vk+'s'));
-    var mid=pick(E[k],vk);
+    var mid=pick(E[k],vk),nl2=noticeLine();
     if(ctx.isMeet&&hasNW)mid+=(es?'\nDespués, las '+B('palabras nuevas')+NW+' ✏️':'\nThen the '+B('NEW WORK')+NW+' ✏️');
-    return {type:k,picks:picks,text:gr+', '+who+'! 👋'+(ex.length?'\n'+ex.join('\n'):'')+'\n\n'+mid+'\n\n'+join};
+    return {type:k,picks:picks,text:gr+', '+who+'! 👋'+(ex.length?'\n'+ex.join('\n'):'')+'\n\n'+mid+(nl2?'\n\n'+nl2:'')+'\n\n'+join};
   }
   G.BL_INVITE={adjust:adjust,build:build,kindOf:kindOf,ZOOM_REV:ZOOM_REV,ZOOM_NW:ZOOM_NW};
 })(typeof window!=='undefined'?window:globalThis);

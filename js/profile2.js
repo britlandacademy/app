@@ -135,9 +135,14 @@ function overview(st){
   var cal=el('div','p2cal'),wd0=new Date(2024,0,1);
   for(var w=0;w<7;w++){var wdd=new Date(wd0);wdd.setDate(1+w);cal.appendChild(el('span','p2wd',wdd.toLocaleDateString(loc(),{weekday:'narrow'})));}
   for(var e0=0;e0<(ym.getDay()+6)%7;e0++)cal.appendChild(el('i','p2c e'));
+  var mx=0;for(var q2=1;q2<=nd;q2++){var v2=st.days[iso(new Date(now.getFullYear(),now.getMonth(),q2))]||0;if(v2>mx)mx=v2;}mx=Math.max(mx,6);
   for(var dn=1;dn<=nd;dn++){var dd=new Date(now.getFullYear(),now.getMonth(),dn),cc=st.days[iso(dd)]||0,fut=dd>now&&iso(dd)!==iso(now);
-    var cell=el('i','p2c'+(cc?' on':'')+(iso(dd)===iso(now)?' td':'')+(fut?' fut':''),String(dn));cell.title=dd.toLocaleDateString(loc(),{day:'numeric',month:'short'})+(cc?' · '+cc:'');cal.appendChild(cell);}
-  mc.appendChild(cal);box.appendChild(mc);
+    var cell=el('i','p2c p2bub'+(cc?' on':'')+(iso(dd)===iso(now)?' td':'')+(fut?' fut':''));
+    if(cc){var f=.38+.62*Math.sqrt(cc/mx),dot=el('b','p2dot',f>=.62?String(cc):'');dot.style.setProperty('--f',f.toFixed(3));dot.style.setProperty('--t',Math.min(1,cc/mx).toFixed(3));cell.appendChild(el('u','p2dn',String(dn)));cell.appendChild(dot);}
+    else cell.appendChild(el('u','p2dz',String(dn)));
+    cell.title=dd.toLocaleDateString(loc(),{day:'numeric',month:'short'})+(cc?' · '+cc:'');cal.appendChild(cell);}
+  mc.appendChild(cal);
+  var lg=el('div','p2lg');lg.appendChild(el('span','','less'));[10,16,24].forEach(function(z){var d3=el('i','p2lgd');d3.style.width=d3.style.height=z+'px';lg.appendChild(d3);});lg.appendChild(el('span','','more exercises (bigger and darker)'));mc.appendChild(lg);box.appendChild(mc);
   /* weekly goal */
   var tx=el('div','p2gt');tx.appendChild(el('h3','sec','Weekly goal'));
   var msg=done>=goal?'Goal reached this week!':'Study '+goal+' days a week \u00b7 '+done+'/'+goal;tx.appendChild(el('p','hint',msg));
@@ -160,27 +165,58 @@ function tidy(){
     md.parentNode.insertBefore(d,md.nextSibling);
   }
 }
+/* ---------- journey: frases das palavras (uma diferente a cada visita) ---------- */
+var MARKS=[500,1000,1500,2000,2500,3000,3500,4000,4500,5000,6000,8000,10000];
+function fm(t){var a=[].slice.call(arguments,1);return t.replace(/\{(\d)\}/g,function(m,i){return a[+i];});}
+function nextMark(n){for(var i=0;i<MARKS.length;i++)if(MARKS[i]>n)return MARKS[i];return 0;}
+function wordPhrase(n){
+  var f=n.toLocaleString('en-GB'),A=[
+    'You already speak {n} words of English.','{n} words of English, and every one of them is yours to keep.','Say it out loud: {n} words in English, and counting.',
+    'When you started, none of these {n} words were in your head.','{n} words. Each lesson put a few more in your pocket.'],B=[];
+  if(n<1000)B=['Basic English runs on about 850 words. You are at {n} and moving fast.','{n} words already: enough to start real conversations.'];
+  else if(n<3500)B=['About 3,500 words make up around 90% of everyday English. You already have {n}.','With {n} words you can say far more than most people think.','Shakespeare used about 31,000 different word forms across all his works. You are at {n} and climbing.','{n} words: a real vocabulary, built one lesson at a time.'];
+  else B=['{n} words: you have passed the roughly 3,500 that make up 90% of everyday English.','Shakespeare used about 31,000 different word forms in all his works. You already have {n}.','You speak {n} words of English. An adult native speaker knows between 20,000 and 35,000: keep going.','{n} words. This is what dedication looks like.'];
+  var L=A.concat(B),k=-1,last=-1;try{last=+localStorage.getItem('bl-jphr');}catch(e){}
+  do{k=Math.floor(Math.random()*L.length);}while(k===last&&L.length>1);
+  try{localStorage.setItem('bl-jphr',String(k));}catch(e){}
+  return fm(L[k].replace(/\{n\}/g,'{0}'),f);}
 /* ---------- journey ---------- */
 async function journey(){
   var box=$('j');if(box.getAttribute('data-done'))return;box.setAttribute('data-done','1');
   var all=await loadAll(),st=stats(all),up=(S.ctx&&S.ctx.upto)||0;
   box.textContent='';box.appendChild(el('h2','','My Journey'));box.appendChild(el('p','hint','Your Stages, one by one.'));
   var certs={};try{var r=await S.sb.from('certificates').select('id,student_name,stage,hours,exam_pct,distinction,completed_on').order('stage');((r&&r.data)||[]).forEach(function(x){certs[x.stage]=x;});}catch(e){}
-  var ol=el('ol','p2tl');
+  var NEWW=[304,282,347,320,384,339,274,376,386,466,560,581],TN=['The First Steps','Finding Your Voice','The Open Road','Crossing the Bridge','The Wide Plains','The Long Climb','Through the Storm','The High Ridge','Above the Clouds','The Silver Gate','The Last Mile','The Summit'],RM=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+  var words=0;if(!ES)STG.forEach(function(r,i){var p=st.per[i];if(p&&NEWW[i])words+=Math.floor(NEWW[i]*Math.min(1,p.n/p.tot));});
+  var nfull=0;st.per.forEach(function(p){if(p.n>=p.tot)nfull++;});
+  var hd=el('div','p2jh'),l1=el('div'),tx=el('div','tx');
+  l1.appendChild(el('span','k',ES?'Your path':'Your path'));l1.appendChild(el('b','big',nfull+' / '+STG.length));l1.appendChild(el('small','','Stages conquered'));hd.appendChild(l1);
+  if(!ES&&words>0){tx.appendChild(el('span','k','Your words'));tx.appendChild(el('p','ph',wordPhrase(words)));var nx=nextMark(words);
+    if(nx){tx.appendChild(el('small','',fm('{0} more words to reach {1}',(nx-words).toLocaleString('en-GB'),nx.toLocaleString('en-GB'))));var bb=el('div','bar'),ii=el('i');ii.style.width=Math.round(words/nx*100)+'%';bb.appendChild(ii);tx.appendChild(bb);}
+    hd.appendChild(tx);}
+  box.appendChild(hd);
+  var ol=el('ol','p2jl'),gold=0,silver=0;
   STG.forEach(function(r,i){
     var p=st.per[i],full=p.n>=p.tot,locked=r[0]>up&&!p.n,cur=!full&&!locked&&(i===st.si||(!p.n&&r[0]<=up&&(i===0||st.per[i-1].n>=st.per[i-1].tot)));
-    var li=el('li',full?'done':(cur?'cur':(locked?'lock':'')));
-    li.appendChild(el('span','p2n',full?'✓':String(i+1)));
-    var b=el('div','p2b');b.appendChild(el('b','','Stage '+(i+1)));
-    var bar=el('div','bar');bar.appendChild(el('i'));bar.firstChild.style.width=Math.round(p.n/p.tot*100)+'%';b.appendChild(bar);
-    b.appendChild(el('small','',p.n+' / '+p.tot));li.appendChild(b);
-    if(full||certs[i+1]){var c=certs[i+1],bt=el('button','p2dl');bt.type='button';bt.innerHTML=IC.dl;
+    var li=el('li','p2ch '+(full?'done':(cur?'cur':(locked?'lock':''))));
+    var c=certs[i+1],bk=el('div','bk');bk.style.backgroundImage="url('"+(ES?'../img/covers/es-':'img/covers/cover-')+(i+1)+".png')";
+    if(full&&c&&c.exam_pct!=null){var g=c.distinction||c.exam_pct>=90;if(g)gold++;else silver++;
+      var rb=el('div','rb '+(g?'g':'s'),String(Math.round(c.exam_pct)));rb.appendChild(el('i','','%'));rb.title=g?'Gold ribbon':'Silver ribbon';bk.appendChild(rb);}
+    li.appendChild(bk);
+    var b=el('div','p2b');b.appendChild(el('span','tg',fm('Chapter {0}',RM[i])));b.appendChild(el('h3','',TN[i]||('Stage '+(i+1))));
+    if(full){b.appendChild(el('small','',(!ES&&NEWW[i]?(c&&c.exam_pct!=null?fm('{0} words · Exam {1}%',NEWW[i],Math.round(c.exam_pct)):fm('{0} words · Stage conquered',NEWW[i])):(c&&c.exam_pct!=null?fm('Exam {0}%',Math.round(c.exam_pct)):'Stage conquered'))));}
+    else{var bar=el('div','bar');bar.appendChild(el('i'));bar.firstChild.style.width=Math.round(p.n/p.tot*100)+'%';b.appendChild(bar);b.appendChild(el('small','',(!ES&&NEWW[i]?fm('{0} / {1} · {2} words',p.n,p.tot,NEWW[i]):p.n+' / '+p.tot)));}
+    if(cur)b.appendChild(el('span','go','Continue the journey'));
+    li.appendChild(b);
+    if(full||certs[i+1]){var bt=el('button','p2dl');bt.type='button';bt.innerHTML=IC.dl;
       bt.setAttribute('aria-label',c?'Download certificate':'Certificate not available yet');
       if(!c||!window.Certificate){bt.disabled=true;bt.title='Available after your teacher approves it';}
       else bt.onclick=async function(){bt.disabled=true;try{await Certificate.download({cert:c,lang:ES?'es':'en',base:''});}catch(e){}bt.disabled=false;};
       li.appendChild(bt);}
     ol.appendChild(li);});
   box.appendChild(ol);
+  if(gold+silver){var lg=el('div','p2jlg'),a1=el('span'),a2=el('span'),u1=el('u'),u2=el('u');u1.style.background='#d9b44f';u2.style.background='#c3cad4';
+    a1.appendChild(u1);a1.appendChild(document.createTextNode('Gold: exam 90% or more'));a2.appendChild(u2);a2.appendChild(document.createTextNode('Silver: exam below 90%'));lg.appendChild(a1);lg.appendChild(a2);box.appendChild(lg);}
   /* tips history */
   try{var tr2=await S.sb.from('weekly_tips').select('id,week_start,body,rating').order('week_start',{ascending:false}).limit(8);
     var rows=(tr2&&tr2.data)||[];
