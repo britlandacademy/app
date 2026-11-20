@@ -237,11 +237,15 @@ async function check(){
     var all=await loadAll(),x=C.extra||await loadExtra(),mine=await loadMine(),S=stats(all,x),res=evalAll(S);
     var TR={g:0,s:1,b:2};
     var earned=res.filter(function(r){return r.have;}).sort(function(p,q){return (TR[p.m.tier]||0)-(TR[q.m.tier]||0);});
-    var hist=!mine._sync,seen=seenGet(),ch=false,CAP=99;
-    /* every medal already earned but never shown on this device is announced (all of them, best first); new ones are announced and the teacher is told */
+    var hist=!mine._sync,seen=seenGet(),ch=false,CAP=3,pend=[];
+    /* every medal already earned but never shown on this device is announced; new ones also notify the teacher.
+       At most CAP banners play (best tier first, then most recent); the rest are marked as seen and summed up in one "+N" banner. */
     for(var i=0;i<earned.length;i++){var m=earned[i].m,fresh=false;
       if(!mine[m.id]){var ok=await award(m,hist);if(ok||hist){mine[m.id]={medal_id:m.id,earned_at:new Date().toISOString()};fresh=true;}}
-      if((fresh||!seen[m.id])&&queue.length<CAP&&!queue.some(function(q){return q.id===m.id;})){enq(m);seen[m.id]=1;ch=true;}}
+      if((fresh||!seen[m.id])&&!queue.some(function(q){return q.id===m.id;})&&!pend.some(function(q){return q.m.id===m.id;})){pend.push({m:m,t:(mine[m.id]&&mine[m.id].earned_at)||'',r:TR[m.tier]||0});}}
+    pend.sort(function(p1,p2){return p1.r-p2.r||(p2.t>p1.t?1:p2.t<p1.t?-1:0);});
+    pend.forEach(function(x,k){seen[x.m.id]=1;ch=true;if(k<CAP)enq(x.m);});
+    if(pend.length>CAP){var nn=pend.length-CAP;queue.push({id:'_more',tier:'g',n:['+'+nn+(nn===1?' nova medalha':' novas medalhas'),'+'+nn+(nn===1?' nuevo logro':' nuevos logros')],h:['Veja todas no seu perfil.','Míralas todas en tu perfil.']});}
     if(hist){await award({id:'_sync',tier:'b',n:['sync']},true);mine._sync=1;}
     if(ch)seenSet(seen);
     if(queue.length)run();
@@ -264,6 +268,7 @@ var CSS='.mdb{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 14
 +'.mdb.ts .gd{background:linear-gradient(#f6f8fb,#c4ccd9 55%,#929fb2);border-color:#fff;box-shadow:0 10px 30px #0009,0 0 24px #c4ccd999}'
 +'.mdb.tb .gd{background:linear-gradient(#efc395,#c9803f 55%,#8f5622);border-color:#ffe0bf;box-shadow:0 10px 30px #0009,0 0 24px #c9803f88}'
 +'.mdb .sc{position:absolute;top:50%;left:50%;width:60px;height:60px;border-radius:50%;background:radial-gradient(#1c3472,#0b1530);border:2px solid #e6c56a;padding:9px 12px;box-shadow:0 4px 14px #0009,0 0 18px #e6c56a77;opacity:0;transform:translate(-50%,-50%) scale(.6)}'
++'.mdb .sc.cn{padding:3px;overflow:visible}.mdb .sc.cn .mcoin{width:50px;height:50px;position:relative}.mdb .sc.cn .bc{width:50px;height:50px}'
 +'.mdb .sc svg{display:block;width:100%;height:100%;overflow:visible}.mdb .ol{fill:none;stroke:#e6c56a;stroke-width:5;stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 6px #e6c56a)}.mdb .fl{opacity:0;clip-path:inset(0 0 100% 0)}'
 +'.mdb .t2{position:absolute;left:78px;right:14px;top:50%;transform:translateY(-50%);opacity:0;color:#1a1405;font-family:system-ui,sans-serif;line-height:1.2}'
 +'.mdb .t2 small{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#5a4510}.mdb .t2 b{display:block;font:700 16px Georgia,serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mdb .t2 span{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;font-size:11.5px;line-height:1.15;color:#3d3110;overflow:hidden}'
@@ -273,6 +278,8 @@ var CSS='.mdb{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 14
 +'@keyframes mds{0%,4%{opacity:0;left:50%;transform:translate(-50%,-50%) scale(.6)}8%,29%{opacity:1;left:50%;transform:translate(-50%,-50%) scale(1.15)}38%,84%{opacity:1;left:36px;transform:translate(-50%,-50%) scale(1)}93%{opacity:1;left:50%;transform:translate(-50%,-50%) scale(1.15)}98%,100%{opacity:0;left:50%;transform:translate(-50%,-50%) scale(.6)}}'
 +'@keyframes mdt{0%,39%{opacity:0}45%,83%{opacity:1}88%,100%{opacity:0}}@keyframes mdd{to{stroke-dashoffset:0}}@keyframes mdo{to{opacity:0}}@keyframes mdf{from{opacity:1;clip-path:inset(0 0 100% 0)}to{opacity:1;clip-path:inset(0 0 0 0)}}'
 +'html.fx-off .mdb .gd{width:100%;opacity:1;animation:none!important}html.fx-off .mdb .sc{left:36px;opacity:1;transform:translate(-50%,-50%);animation:none!important}html.fx-off .mdb .t2{opacity:1;animation:none!important}html.fx-off .mdb .ol{display:none}html.fx-off .mdb .fl{opacity:1;clip-path:none;animation:none!important}'
++'.mlh{display:flex;justify-content:center;margin:4px 0 6px}.mls{width:100%;max-width:360px;height:190px;display:grid;place-items:center;perspective:700px;touch-action:pan-y;cursor:grab;background:radial-gradient(#1c3472,#0b1530);border:1px solid #27407a;border-radius:18px}'
++'.mlf{width:128px;height:149px;position:relative;transform-style:preserve-3d}.mlf img{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;-webkit-user-drag:none}'
 +'.mgw{position:relative}.mg{display:grid;grid-template-columns:repeat(4,1fr);gap:12px 6px;margin:6px 0 4px}.mgw .md2{display:block!important;width:100%!important;min-width:0!important;min-height:0!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important;padding:0!important;color:inherit!important;font:inherit;font-size:11px!important;line-height:1.2;text-align:center;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:0!important}.md2 span{display:block;margin-top:2px}'
 +'.md2 svg{display:block;width:62px;height:67px;margin:0 auto 2px;overflow:visible;filter:drop-shadow(0 3px 5px #0005)}.md2.off svg{filter:grayscale(1) brightness(.85);opacity:.4}.md2.sec.off svg{opacity:.34}'
 +'.mgt{font:700 12px system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;opacity:.75;margin:14px 0 4px;display:flex;justify-content:space-between}'
@@ -281,17 +288,49 @@ var CSS='.mdb{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 14
 +'.msnd{margin-top:10px}';
 function css(){if(document.getElementById('mdcss'))return;var s=document.createElement('style');s.id='mdcss';s.textContent=CSS;document.head.appendChild(s);}
 function shield(){var b=(window.BL_BASE||'');return '<svg viewBox="0 0 240 281"><path class="ol" pathLength="1" d="M120 8C84 24 44 28 10 26V128c0 70 50 118 110 145 60-27 110-75 110-145V26C196 28 156 24 120 8z"/><image class="fl" href="'+b+'img/britland-shield.png" width="240" height="281"/></svg>';}
+var BASE=function(){return window.BL_BASE||(ES?'../':'');};
+var coinP=null;
+function loadCoin(){ /* the 3D coin (js/coin.js) is loaded on demand; if it fails the banner keeps the flat shield */
+  if(window.BLCoin)return Promise.resolve(true);if(coinP)return coinP;
+  coinP=new Promise(function(ok){
+    if(!document.getElementById('bc-css')){var l=document.createElement('link');l.id='bc-css';l.rel='stylesheet';l.href=BASE()+'js/coin.css';document.head.appendChild(l);}
+    var sc=document.createElement('script');sc.src=BASE()+'js/coin.js';sc.onload=function(){ok(!!window.BLCoin);};sc.onerror=function(){ok(false);};document.head.appendChild(sc);});
+  return coinP;}
+function coinInto(b,m){
+  loadCoin().then(function(okc){
+    if(!okc||!b.isConnected)return;var sc=b.querySelector('.sc');if(!sc)return;
+    var host=document.createElement('div');host.className='mcoin';sc.textContent='';sc.classList.add('cn');sc.appendChild(host);
+    try{var tone={g:'gold',s:'silver',b:'bronze'}[m.tier]||'gold';
+      var ctl=BLCoin.make(host,{size:50,tone:tone,intensity:'med',front:{src:BASE()+'img/britland-shield.png',gold:true},back:{src:BASE()+'img/lion-gold.png',gold:true}});
+      var c=ctl.coin;c.style.transform='rotateY(1260deg)';void c.offsetWidth;
+      if(document.documentElement.classList.contains('fx-off')){c.style.transform='rotateY(0deg)';}
+      else{c.style.transition='transform 2s cubic-bezier(.15,.7,.2,1)';c.style.transform='rotateY(0deg)';}
+    }catch(e){}});}
 function run(){
   if(showing||!queue.length)return;showing=true;css();
   var m=queue.shift(),b=el('div','mdb t'+m.tier);b.setAttribute('role','status');b.setAttribute('aria-live','polite');
   b.innerHTML='<div class="gd"></div><div class="sc">'+shield()+'</div><div class="t2"><small></small><b></b><span></span></div>';
   b.querySelector('small').textContent=s('unlocked');b.querySelector('b').textContent=m.n[L];b.querySelector('span').textContent=m.h[L];
-  document.body.appendChild(b);void b.offsetWidth;b.classList.add('go');harp();
+  document.body.appendChild(b);void b.offsetWidth;b.classList.add('go');harp();if(m.id!=='_more')coinInto(b,m);
   var done=false;function end(){if(done)return;done=true;b.remove();showing=false;setTimeout(run,1100);}
   b.addEventListener('click',end);setTimeout(end,document.documentElement.classList.contains('fx-off')?5000:8300);
 }
 /* ---------- grid (profile page) ---------- */
 function fmt(d){try{return new Date(d).toLocaleDateString(ES?'es':'pt-BR',{day:'numeric',month:'short',year:'numeric'});}catch(e){return '';}}
+function lionHero(){
+  var w=el('div','mlh'),st=el('div','mls'),fig=el('div','mlf'),N=16,STEP=1.5,src=BASE()+'img/lion-gold.png';
+  for(var i=0;i<N;i++){var im=document.createElement('img');im.src=src;im.alt='';im.setAttribute('aria-hidden','true');
+    im.style.transform='translateZ('+(-i*STEP+N*STEP/2)+'px)';
+    im.style.filter=i===0?'none':'brightness('+(.38+.22*(1-i/(N-1)))+') sepia(.5) saturate(1.4)';fig.appendChild(im);}
+  st.appendChild(fig);w.appendChild(st);
+  var ry=0,vel=document.documentElement.classList.contains('fx-off')?0:18,drag=false,lx=0;
+  function tick(){if(!w.isConnected)return;if(!drag){ry+=vel;vel*=.965;if(Math.abs(vel)<.05){vel=0;var t=Math.round(ry/360)*360;ry+=(t-ry)*.08;}}fig.style.transform='rotateY('+ry+'deg)';requestAnimationFrame(tick);}
+  requestAnimationFrame(tick);
+  st.addEventListener('pointerdown',function(e){drag=true;lx=e.clientX;vel=0;try{st.setPointerCapture(e.pointerId);}catch(x){}});
+  st.addEventListener('pointermove',function(e){if(!drag)return;var dx=e.clientX-lx;lx=e.clientX;ry+=dx*.8;vel=dx*.8;});
+  st.addEventListener('pointerup',function(){drag=false;});st.addEventListener('pointercancel',function(){drag=false;});
+  st.addEventListener('click',function(){if(!vel)vel=18;});
+  return w;}
 async function render(box,all){
   css();defsSvg();var x=C.extra||await loadExtra();var mine={};try{mine=await loadMine();}catch(e){}
   var S=stats(all||await loadAll(),x),res=evalAll(S);
@@ -315,6 +354,7 @@ async function render(box,all){
       grid.appendChild(b);});
     wrap.appendChild(grid);});
   document.addEventListener('click',function(){tip.classList.remove('on');});
+  box.appendChild(lionHero());
   box.appendChild(wrap);
   /* next medal */
   var nx=res.filter(function(r){return !r.have&&!mine[r.m.id]&&!r.m.secret&&!/^reviewer/.test(r.m.id);}).sort(function(a,b){return b.p-a.p;})[0];
