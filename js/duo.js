@@ -686,6 +686,7 @@
     if(game)root.addEventListener('pointerdown',function(e){var t=e.target.closest&&e.target.closest('button,.opt,.chip,label');if(t&&!t.disabled)tick();});
 
     function close(){
+      if(idx>=total&&total>0&&right===total){try{W.dispatchEvent(new W.CustomEvent('bl:moment',{detail:{why:'perfect'}}));}catch(e){}}
       D.removeEventListener('keydown',onKey,true);
       if(root.parentNode)root.parentNode.removeChild(root);
       D.body.style.overflow=prevOverflow;

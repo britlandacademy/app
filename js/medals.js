@@ -312,7 +312,7 @@ function run(){
   b.innerHTML='<div class="gd"></div><div class="sc">'+shield()+'</div><div class="t2"><small></small><b></b><span></span></div>';
   b.querySelector('small').textContent=s('unlocked');b.querySelector('b').textContent=m.n[L];b.querySelector('span').textContent=m.h[L];
   document.body.appendChild(b);void b.offsetWidth;b.classList.add('go');harp();if(m.id!=='_more')coinInto(b,m);
-  var done=false;function end(){if(done)return;done=true;b.remove();showing=false;setTimeout(run,1100);}
+  var done=false;function end(){if(done)return;done=true;b.remove();showing=false;if(!queue.length){try{window.dispatchEvent(new CustomEvent('bl:moment',{detail:{why:'medal'}}));}catch(e){}}setTimeout(run,1100);}
   b.addEventListener('click',end);setTimeout(end,document.documentElement.classList.contains('fx-off')?5000:8300);
 }
 /* ---------- grid (profile page) ---------- */

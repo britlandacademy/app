@@ -143,7 +143,7 @@ async function mount(box,ctx){
   try{
     if(!box||!ctx||!ctx.sb||!ctx.uid)return;
     var r=await ctx.sb.rpc('review_pending');var p=r&&r.data&&r.data[0];if(!p)return;
-    var post=p.kind==='post',key=post?'post':p.stage;
+    var post=p.kind==='post',key=post?'post':p.stage;if(post)return; /* post-sale invite is a pop-up (see moment), never a home card */
     if(lsGet('bl-rv-done-'+key)==='1'||lsGet('bl-rv-done-'+p.stage)==='1')return;
     var later=+lsGet('bl-rv-later-'+key)||0;if(later&&(post||Date.now()-later<3*86400000))return;
     ensureCss();ctx.es=ctx.es||ES_;var T=TX[ctx.es?'es':'en'];
@@ -155,5 +155,32 @@ async function mount(box,ctx){
       openForm(ctx,p,jr,function(sent){if(sent){box.hidden=true;box.innerHTML='';}});};
   }catch(e){}
 }
-window.Reviews={mount:mount,_facts:facts};
+
+/* Post-sale invite: a pop-up shown from the 3rd week on, right after a medal banner or a perfect exercise. */
+var momBusy=false;
+async function moment(){
+  if(momBusy)return;momBusy=true;
+  try{
+    var G=window.Gate,sb=G&&G.sb;if(!sb)return;
+    var ss=null;try{ss=await sb.auth.getSession();}catch(e){}
+    var uid=ss&&ss.data&&ss.data.session&&ss.data.session.user&&ss.data.session.user.id;if(!uid)return;
+    if(lsGet('bl-rv-done-post')==='1'||lsGet('bl-rv-later-post'))return;
+    var last=+lsGet('bl-rv-mom')||0;if(Date.now()-last<20*3600000)return;
+    var r=await sb.rpc('review_pending');var p=r&&r.data&&r.data[0];if(!p||p.kind!=='post')return;
+    if(D.querySelector('.rv-ov,.mdb.go,.dz-pop'))return;
+    lsSet('bl-rv-mom',String(Date.now()));
+    ensureCss();var ctx={sb:sb,uid:uid,es:ES_},T=TX[ES_?'es':'en'];
+    var ov=el('div','rv-ov'),d=el('div','rv-d');d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-label',T.postTitle);
+    d.appendChild(seal());d.appendChild(el('h3','',esc(T.postTitle)));d.appendChild(el('p','rv-q',esc(PT.postT)));
+    var f=el('div','rv-f'),go=el('button','rv-b',esc(T.tell)),lt=el('button','rv-b g',esc(T.later));go.type='button';lt.type='button';f.appendChild(go);f.appendChild(lt);d.appendChild(f);
+    ov.appendChild(d);D.body.appendChild(ov);
+    function kd(e){if(e.key==='Escape')lt.click();}D.addEventListener('keydown',kd);
+    function close(){D.removeEventListener('keydown',kd);ov.remove();}
+    lt.onclick=function(){lsSet('bl-rv-later-post',String(Date.now()));close();};
+    go.onclick=async function(){go.disabled=true;var jr=null;try{jr=(await sb.rpc('review_journey')).data;}catch(e){}close();openForm(ctx,p,jr,function(){});};
+    try{go.focus();}catch(e){}
+  }catch(e){}finally{momBusy=false;}
+}
+window.addEventListener('bl:moment',function(){setTimeout(moment,1200);});
+window.Reviews={mount:mount,moment:moment,_facts:facts};
 })();
