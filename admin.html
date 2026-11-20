@@ -978,7 +978,14 @@ async function showExam(p,st){
       else if(x[0]==='sub'){p1.append(el('span',{style:'background:var(--bad-bg);color:var(--bad);font-weight:700;padding:0 3px'},x[1]),el('span',{style:'color:var(--ok);font-weight:700'},'['+x[2]+'] '));}
       else if(x[0]==='ins')p1.append(el('span',{style:'background:var(--bad-bg);color:var(--bad);text-decoration:line-through;padding:0 3px'},x[1]),' ');
       else p1.append(el('span',{style:'color:var(--ok);font-weight:700'},'['+x[1]+'] '));});
-    card.append(el('h4',{},'Ditado: '+d.mistakes+' erro(s) → '+(sc.dictation||0)+'/'+mx.dictation),el('p',{class:'hint'},'Vermelho: palavra do aluno errada ou a mais; verde entre colchetes: o que faltava ou o certo. Se a mesma palavra foi escrita errada duas vezes, conte só 1 erro e ajuste a nota se quiser.'),p1,
+    const dIn=el('input',{type:'number',min:'0',max:String(mx.dictation),step:'0.5',value:String(sc.dictation||0),'aria-label':'Nota do ditado',style:'width:5.5em'}),dBt=el('button',{type:'button'},'Salvar nota do ditado');
+    dBt.addEventListener('click',async()=>{const v=parseFloat(String(dIn.value).replace(',','.'));
+      if(isNaN(v)||v<0||v>mx.dictation){setMsg('xmsg','A nota do ditado vai de 0 a '+mx.dictation+'.','bad');return;}
+      dBt.disabled=true;const ns=Object.assign({},res.scores,{dictation:v});
+      const r=await sb.from('exam_results').update({scores:ns}).eq('user_id',p.id).eq('stage',st);
+      if(r.error){dBt.disabled=false;setMsg('xmsg','Erro: '+r.error.message,'bad');return;}
+      setMsg('xmsg','Nota do ditado salva: '+v+'/'+mx.dictation+'.','ok');await loadExams();const pp=PROFILES.find(x=>x.id===p.id);if(pp)showExam(pp,st);});
+    card.append(el('h4',{},'Ditado: '+d.mistakes+' erro(s) → '+(sc.dictation||0)+'/'+mx.dictation),el('div',{style:'display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 8px'},el('label',{},'Nota do professor (0 a '+mx.dictation+') '),dIn,dBt),el('p',{class:'hint'},'Vermelho: palavra do aluno errada ou a mais; verde entre colchetes: o que faltava ou o certo. Se a mesma palavra foi escrita errada duas vezes, conte só 1 erro e ajuste a nota se quiser.'),p1,
       el('details',{},el('summary',{},'Texto do ditado e texto do aluno'),el('p',{},K.dictation.text),el('p',{},A.dictation||'(em branco)')));}
   ['yesno','oral','mc'].forEach(id=>{if(!K[id])return;const rows=[];
     Object.keys(K[id].keys).sort((a,b)=>a-b).forEach(n=>{const got=(A[id]||{})[n],ok=got&&got.toLowerCase()===K[id].keys[n].toLowerCase();if(ok)return;

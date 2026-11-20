@@ -2,6 +2,7 @@
    Newest first. Written for students (no technical terms). Each entry: v, d [pt, es], t [pt, es] short title, p [pt, es] one sentence,
    show:1 = also shown once in the "O que há de novo" notice after the update (use ONLY when the teacher marks a version as important; none is marked by default), c:'en'|'es' = only that course (omit = both). */
 window.BL_RELEASES=[
+{v:'2.0.132',d:['20 de novembro','20 de noviembre'],t:['Correção de bugs','Corrección de errores'],p:['',''],c:'en'},
 {v:'2.0.131',d:['20 de novembro','20 de noviembre'],t:['Correção de bugs','Corrección de errores'],p:['',''],c:'en'},
 {v:'2.0.129',d:['20 de novembro','20 de noviembre'],t:['Simulados com voz','Simulacros con voz'],p:['Agora você pode fazer o simulado sozinho: o app lê as perguntas em inglês e o ditado, trecho a trecho.','Ahora puedes hacer el simulacro solo: la app lee las preguntas en inglés y el dictado, trozo a trozo.'],c:'en'},
 {v:'2.0.128',d:['20 de novembro','20 de noviembre'],t:['Novo: Mock tests (simulados) da 2ª edição, com as perguntas sobre cidades adaptadas ao lugar onde você mora. Ficam na tela de exames, com as respostas certas no final.','Nuevo: Mock tests (simulacros) de la 2ª edición.'],p:['',''],c:'en'},
