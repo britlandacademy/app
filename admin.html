@@ -1062,6 +1062,7 @@ function markTabs(){
   document.querySelectorAll('#tpSide .tp-tab').forEach(x=>x.classList.toggle('on',x.dataset.k===CUR));
 }
 function go(k){
+  let qn='';{const i=k.indexOf('?');if(i>0){qn=decodeURIComponent((k.slice(i+1).match(/(?:^|&)q=([^&]*)/)||[])[1]||'');k=k.slice(0,i);}}
   if(k==='exams')k='students';
   if(k!=='more'&&!TABS.some(t=>t[0]===k&&!t[2]))k='home';
   CUR=k;const sec=k==='agenda'?'home':k;
@@ -1074,6 +1075,7 @@ function go(k){
   if(k==='fx'&&window.FxTab)FxTab.mount($('fxBox'),{sb:sb,el:el});
   if(k==='stats'&&window.StatsTab)StatsTab.mount($('statsBox'),{sb:sb,el:el,profiles:()=>PROFILES,att:()=>ATT});
   try{history.replaceState(null,'','#'+k);}catch(e){}
+  if(k==='students'&&qn){const q=$('stq');if(q){q.value=qn;applyF();setTimeout(applyF,700);}}
   if(k==='agenda'){const b=$('agendaBox');if(b)b.scrollIntoView();}else scrollTo(0,0);
 }
 function mkTab(t,label,badge,bar){

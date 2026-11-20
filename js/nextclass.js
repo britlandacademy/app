@@ -1,7 +1,7 @@
 /* Teacher panel · "Próxima aula" card: review, where they stopped, what is taught today, difficulties, reinforcement, attendance. */
 (function(W){
 'use strict';
-var D=document,ZOOM='https://us06web.zoom.us/j/2447679341',ZOOM_REV='https://us06web.zoom.us/j/2447679341?pwd=U0xuSmU0ek15MGlEd0phWHdoMllUUT09',ZOOM_NW='https://us05web.zoom.us/j/5570483003?pwd=ChsyesNjuUJ598ysbcNtwynWBLzxEv.1',TZ='America/Sao_Paulo',CACHE={};
+var D=document,ZOOM='https://us06web.zoom.us/j/2447679341?pwd=U0xuSmU0ek15MGlEd0phWHdoMllUUT09',ZOOM_REV='https://us06web.zoom.us/j/2447679341?pwd=U0xuSmU0ek15MGlEd0phWHdoMllUUT09',ZOOM_NW='https://us05web.zoom.us/j/5570483003?pwd=ChsyesNjuUJ598ysbcNtwynWBLzxEv.1',TZ='America/Sao_Paulo',CACHE={};
 function el(t,c,x){var e=D.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
 function add(p){for(var i=1;i<arguments.length;i++){var c=arguments[i];if(c==null)continue;p.appendChild(typeof c==='string'?D.createTextNode(c):c);}return p;}
 function css(){if(D.getElementById('nc-css'))return;var s=el('style');s.id='nc-css';s.textContent=
@@ -113,7 +113,7 @@ function render(box,ev,deps,opts){opts=opts||{};
     /* o que baliza a aula e a ultima palavra registrada na planilha: revisao = 11 paragrafos terminando nela; new work comeca no seguinte (o fim segue o plano) */
     /* o que baliza a aula e a ultima palavra registrada na planilha (regra em js/invite.js, a mesma da automacao) */
     nx=BL_INVITE.adjust(nx,cp,first);
-    var meet=(d.rows.filter(function(r){return r.meet_url;})[0]||{}).meet_url||ZOOM;
+    var meet=(d.rows.filter(function(r){return r.meet_url;})[0]||{}).meet_url||ZOOM;if(/zoom\.us\/j\/2447679341(?!\?pwd)/.test(meet))meet=ZOOM; /* link antigo sem senha -> link atual */
     var cfg=d.cfg||{},sid=cfg.plans_sheet&&cfg.plans_sheet.id,gids=cfg.plans_gids||{},ln=d.links[d.uids[0]],gid=ln&&gids[ln.sheet_name];
     var lg=lagOf({currentPosition:cp,nextClass:nx});
     if(lg&&!opts.past){var ab=el('div','nc-atr');ab.appendChild(el('b',null,'\u26A0 '+(lg.edit?'Registro e plano em edições diferentes?':lg.lag+' parágrafos atrás do plano')));

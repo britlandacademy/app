@@ -19,7 +19,53 @@ const HORIZON_DAYS = 30;   // quantos dias a frente oferecer
 const HOLD_HOURS = 24;     // pedido pendente reserva o horario por 24 h
 const MAX_PENDING_NEW = 3; // pedidos de aula nova pendentes por aluno
 const TZ_OFFSET = "-03:00"; // horario do professor (Brasilia, sem horario de verao)
-const ZOOM = "https://us06web.zoom.us/j/2447679341"; // sala fixa do professor: toda aula marcada usa o Zoom
+const ZOOM = "https://us06web.zoom.us/j/2447679341?pwd=U0xuSmU0ek15MGlEd0phWHdoMllUUT09"; // sala fixa do professor: toda aula marcada usa o Zoom
+
+// ---- titulo, descricao e lembrete dos eventos (bandeira + nome + Stg) ----
+const PANEL = "https://www.britlandacademy.co.uk/app/admin.html";
+const TZC: Record<string, string> = {"Africa/Johannesburg":"ZA","America/Argentina/Buenos_Aires":"AR","America/Asuncion":"PY","America/Bogota":"CO","America/Chicago":"US","America/Denver":"US","America/Lima":"PE","America/Los_Angeles":"US","America/Mexico_City":"MX","America/Montevideo":"UY","America/New_York":"US","America/Santiago":"CL","America/Sao_Paulo":"BR","America/Toronto":"CA","America/Vancouver":"CA","Asia/Dubai":"AE","Asia/Tokyo":"JP","Atlantic/Azores":"PT","Atlantic/Canary":"ES","Atlantic/Madeira":"PT","Australia/Melbourne":"AU","Australia/Perth":"AU","Australia/Sydney":"AU","Europe/Andorra":"AD","Europe/Astrakhan":"RU","Europe/Athens":"GR","Europe/Belgrade":"RS","Europe/Berlin":"DE","Europe/Brussels":"BE","Europe/Bucharest":"RO","Europe/Budapest":"HU","Europe/Chisinau":"MD","Europe/Dublin":"IE","Europe/Gibraltar":"GI","Europe/Helsinki":"FI","Europe/Istanbul":"TR","Europe/Kaliningrad":"RU","Europe/Kirov":"RU","Europe/Kyiv":"UA","Europe/Lisbon":"PT","Europe/London":"GB","Europe/Madrid":"ES","Europe/Malta":"MT","Europe/Minsk":"BY","Europe/Moscow":"RU","Europe/Paris":"FR","Europe/Prague":"CZ","Europe/Riga":"LV","Europe/Rome":"IT","Europe/Samara":"RU","Europe/Saratov":"RU","Europe/Simferopol":"RU","Europe/Sofia":"BG","Europe/Tallinn":"EE","Europe/Tirane":"AL","Europe/Ulyanovsk":"RU","Europe/Vienna":"AT","Europe/Vilnius":"LT","Europe/Volgograd":"RU","Europe/Warsaw":"PL","Europe/Zurich":"CH","Pacific/Auckland":"NZ","Europe/Kiev":"UA"};
+const STG_EN = [12, 27, 44, 63, 82, 101, 120, 138, 156, 174, 190, 206];
+const STG_ES = [16, 32, 52, 72, 92, 112];
+const PT_COUNTRY: Record<string, string> = { GB: "Reino Unido", IE: "Irlanda", PT: "Portugal", ES: "Espanha", US: "EUA", CA: "Canadá", FR: "França", DE: "Alemanha", IT: "Itália", CH: "Suíça", NL: "Holanda", BE: "Bélgica", LU: "Luxemburgo", AU: "Austrália", NZ: "Nova Zelândia", JP: "Japão", AE: "Emirados", AR: "Argentina", CL: "Chile", MX: "México", PY: "Paraguai", UY: "Uruguai", BR: "Brasil" };
+function flagCode(p: any): string {
+  let c = String(p?.country || "").toUpperCase();
+  if (!c && p?.tz) c = TZC[p.tz] || "";
+  if (p?.course === "es") return "ES"; // todo aluno de espanhol: bandeira da Espanha
+  return !c || c === "BR" ? "GB" : c;
+}
+const flagEmoji = (c: string) => c.length === 2 ? String.fromCodePoint(...[...c].map((x) => 127397 + x.charCodeAt(0))) : "";
+function stageOf(p: any): number {
+  const u = Number(p?.lessons_upto) || 0;
+  const cap = (p?.auto_release !== false && p?.lessons_auto != null) ? Math.min(u, Number(p.lessons_auto)) : u;
+  const T = p?.course === "es" ? STG_ES : STG_EN;
+  if (cap <= 0) return 0;
+  const i = T.findIndex((e) => cap <= e);
+  return i < 0 ? T.length : i + 1;
+}
+function evName(p: any): string {
+  const w = String(p?.name || "").trim().split(/\s+/).filter(Boolean);
+  if (!w.length) return "Aluno";
+  return w.length > 1 ? w[0] + " " + w[w.length - 1] : w[0];
+}
+function evTitle(p: any, kind: string): string {
+  const n = stageOf(p);
+  const stg = n ? " - " + (p?.course === "es" ? "Etapa " : "Stg ") + n : "";
+  return flagEmoji(flagCode(p)) + " " + evName(p) + " VIP" + stg + (kind === "makeup" ? " (reposição)" : "");
+}
+function evDesc(p: any, kind: string, startIso: string): string {
+  const L = ["Aula online pelo Zoom: " + ZOOM];
+  if (p?.tz && p.tz !== "America/Sao_Paulo") {
+    try {
+      const t = new Intl.DateTimeFormat("pt-BR", { timeZone: p.tz, hour: "numeric", minute: "2-digit", hourCycle: "h23" }).format(new Date(startIso));
+      const c = String(p.country || TZC[p.tz] || "").toUpperCase();
+      L.push("Aluno: " + t.replace(":00", "h").replace(/^(\d+):(\d+)$/, "$1h$2") + (PT_COUNTRY[c] ? " (" + PT_COUNTRY[c] + ")" : " (" + p.tz + ")"));
+    } catch (_) { /* fuso invalido */ }
+  }
+  if (kind === "makeup") L.push("Tipo: reposição");
+  if (p?.name) L.push("Painel: " + PANEL + "#students?q=" + encodeURIComponent(p.name));
+  return L.join("\n");
+}
+const REMINDER = { useDefault: false, overrides: [{ method: "popup", minutes: 10 }] };
 
 // ---- avisos push (gravam em teacher_events / student_msgs; a super-processor envia) ----
 const fmtP = (v: string | number) => { const p = new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", weekday: "short", hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit", hourCycle: "h23" }).formatToParts(new Date(v)); const g = (t: string) => p.find((x) => x.type === t)?.value || ""; return g("weekday").replace(".", "") + " " + g("day") + "/" + g("month") + " " + g("hour") + ":" + g("minute"); };
@@ -117,8 +163,8 @@ async function applyRequest(r: any, link: any, reqId?: string): Promise<{ ok: bo
     for (const l of ls || []) await db.from("lessons").update({ start_at: r.new_start, end_at: r.new_end, updated_at: now }).eq("id", l.id);
     return { ok: true };
   }
-  const { data: st } = await db.from("profiles").select("name,email").eq("id", r.user_id).maybeSingle();
-  const ev: any = { summary: st?.name || "Aula", start: { dateTime: r.new_start }, end: { dateTime: r.new_end }, location: ZOOM, description: "Aula online pelo Zoom: " + ZOOM };
+  const { data: st } = await db.from("profiles").select("name,email,country,tz,course,lessons_upto,lessons_auto,auto_release").eq("id", r.user_id).maybeSingle();
+  const ev: any = { summary: st ? evTitle(st, r.kind) : "Aula", start: { dateTime: r.new_start }, end: { dateTime: r.new_end }, location: ZOOM, description: evDesc(st, r.kind, r.new_start), reminders: REMINDER };
   if (st?.email) ev.attendees = [{ email: st.email }];
   if (r.kind === "weekly") { ev.start.timeZone = "America/Sao_Paulo"; ev.end.timeZone = "America/Sao_Paulo"; ev.recurrence = ["RRULE:FREQ=WEEKLY"]; }
   const cr = await fetch(calUrl(link) + "?sendUpdates=none", { method: "POST", headers: H, body: JSON.stringify(ev) });

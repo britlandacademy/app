@@ -81,7 +81,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
       conv:[th?'Today is a conversation class: '+B(th)+' 💬\nNo new words, just practice!':'Today is a conversation class 💬\nNo new words, just practice!',th?'Time to talk! 💬 Today\'s topic: '+B(th)+'.':'Time to talk! 💬','Conversation day! 💬\n'+(th?'We\'ll talk about '+B(th)+'. ':'')+'Relax and enjoy it.'],
       exam:['Today is your '+B(STGL+' exam')+'. You\'re ready, good luck! 🍀','Exam day! 📝\nTake a deep breath, you\'ve prepared well.','Today we have your '+B(STGL+' exam')+'. Good luck! 🍀'],
       fullrev:['Today we have a '+B('full revision')+' of '+B(FR)+(pre?' and exam preparation':'')+'. 🔄\nLet\'s review everything you\'ve learned!','Time to review! 🔄\nToday is the '+B('full revision')+' of '+B(FR)+(pre?', with exam preparation':'')+'.','Full revision day! 🔄\nWe\'ll go over '+B(FR)+(pre?' and prepare for the exam':'')+' together.'],
-      makeup:['Today is the make-up lesson for class '+mn+'. 🔁\nWe\'ll start with a '+B('Revision')+RV+'.','Let\'s catch up! 🔁\nMake-up lesson for class '+mn+': '+B('Revision')+RV+'.','Make-up lesson for class '+mn+' today. 🔁\nFirst, a '+B('Revision')+RV+'.'],
+      makeup:['Hoje é a aula de reposição da aula '+mn+'. 🔁\nWe\'ll start with a '+B('Revision')+RV+'.','Let\'s catch up! 🔁\nAula de reposição da aula '+mn+': '+B('Revision')+RV+'.','Aula de reposição da aula '+mn+' hoje. 🔁\nFirst, a '+B('Revision')+RV+'.'],
       nw:['Great job on the revision! 👏\n\nNow for the '+B('NEW WORK')+NW+' ✏️','Revision done! ✅\n\nNext up: the '+B('NEW WORK')+NW+' ✏️','Well done! 💪\n\nLet\'s move on to the '+B('NEW WORK')+NW+' ✏️'],
       gen:['Time for the second part of the lesson! ✏️','Second part of the lesson is up! 💪','Let\'s continue with the second part of the lesson! ✨'],
       st:['You\'ve studied '+st+' days in a row, well done! 🔥',st+' days of study in a row! Keep it up! 🔥','Great streak: '+st+' days! 🔥']
@@ -183,7 +183,7 @@ async function due(b: any) {
     let cp = fd.currentPosition || {}, nx = fd.nextClass || null;
     if (e.uids.length > 1) for (const u of e.uids) { if (nx) break; const q = prog.get(u); if (q && q.data) { nx = q.data.nextClass || null; cp = q.data.currentPosition || cp; } }
     nx = BI.adjust(nx, cp, pg);
-    const meet = (e.rows.filter((r: any) => r.meet_url)[0] || {}).meet_url || "https://us06web.zoom.us/j/2447679341";
+    const meet = (e.rows.filter((r: any) => r.meet_url)[0] || {}).meet_url || "https://us06web.zoom.us/j/2447679341?pwd=U0xuSmU0ek15MGlEd0phWHdoMllUUT09";
     const ms = (((pg && pg.data) || {}).me || {}).missed;
     const single = e.uids.length === 1 && !e.rows.some((r: any) => r.is_group);
     let streak = 0;

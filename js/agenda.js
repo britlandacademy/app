@@ -37,7 +37,7 @@ var S={
  bNew2:{en:'New time',pt:'Novo horário',es:'Nuevo horario'},
  bAsk:{en:'CONFIRM NEW TIME',pt:'CONFIRMAR NOVO HORÁRIO',es:'CONFIRMAR NUEVO HORARIO'},
  bAskN:{en:'BOOK LESSON',pt:'MARCAR AULA',es:'RESERVAR CLASE'},
- bAskM:{en:'BOOK MAKE-UP CLASS',pt:'MARCAR REPOSIÇÃO',es:'RESERVAR REPOSICIÓN'},
+ bAskM:{en:'MARCAR REPOSIÇÃO',pt:'MARCAR REPOSIÇÃO',es:'RESERVAR REPOSICIÓN'},
  bAskW:{en:'REQUEST WEEKLY LESSON',pt:'PEDIR AULA SEMANAL',es:'PEDIR CLASE SEMANAL'},
  bHint:{en:'Days with free times are in gold.',pt:'Os dias com horário livre ficam em dourado.',es:'Los días con horario libre aparecen en dorado.'},
  bPickD:{en:'Choose a day to see the times.',pt:'Escolha um dia para ver os horários.',es:'Elige un día para ver los horarios.'},
@@ -56,7 +56,7 @@ var S={
  wkReq:{en:'Weekly lesson',pt:'Aula semanal',es:'Clase semanal'},
  wkStop:{en:'Stop repeating',pt:'Parar de repetir',es:'Dejar de repetir'},
  wkQ:{en:'Stop repeating this weekly lesson?',pt:'Parar de repetir esta aula semanal?',es:'¿Dejar de repetir esta clase semanal?'},
- wkN:{en:'A lesson starting in less than 2 hours stays. The later ones are removed, with no make-up classes for them. To cancel just one lesson, use Cancel lesson.',pt:'Uma aula que começa em menos de 2 horas continua. As seguintes são removidas, sem aulas a repor. Para cancelar só uma aula, use Cancelar aula.',es:'Una clase que empieza en menos de 2 horas continúa. Las siguientes se eliminan, sin clases por reponer. Para cancelar solo una clase, usa Cancelar clase.'},
+ wkN:{en:'Uma aula que começa em menos de 2 horas continua. As seguintes são removidas, sem aulas a repor. Para cancelar só uma aula, use Cancelar aula.',pt:'Uma aula que começa em menos de 2 horas continua. As seguintes são removidas, sem aulas a repor. Para cancelar só uma aula, use Cancelar aula.',es:'Una clase que empieza en menos de 2 horas continúa. Las siguientes se eliminan, sin clases por reponer. Para cancelar solo una clase, usa Cancelar clase.'},
  wkYes:{en:'YES, STOP REPEATING',pt:'SIM, PARAR DE REPETIR',es:'SÍ, DEJAR DE REPETIR'},
  bNoSlots:{en:'No free times right now. Please message your teacher.',pt:'Nenhum horário livre agora. Fale com o professor.',es:'No hay horarios libres ahora. Habla con tu profesor.'},
  bBack:{en:'Back',pt:'Voltar',es:'Volver'},
@@ -70,17 +70,17 @@ var S={
  sWith:{en:'Withdraw request',pt:'Cancelar pedido',es:'Retirar pedido'},
  cx:{en:'Cancel lesson',pt:'Cancelar aula',es:'Cancelar clase'},
  cxQ:{en:'Cancel the lesson on {0}?',pt:'Cancelar a aula de {0}?',es:'¿Cancelar la clase del {0}?'},
- cxN:{en:'The time becomes free again and you get 1 make-up class.',pt:'O horário volta a ficar livre e você ganha 1 aula a repor.',es:'El horario vuelve a quedar libre y ganas 1 clase por reponer.'},
+ cxN:{en:'O horário volta a ficar livre e você ganha 1 aula a repor.',pt:'O horário volta a ficar livre e você ganha 1 aula a repor.',es:'El horario vuelve a quedar libre y ganas 1 clase por reponer.'},
  cxYes:{en:'YES, CANCEL LESSON',pt:'SIM, CANCELAR AULA',es:'SÍ, CANCELAR CLASE'},
  cxLT:{en:'Que pena que você não pode participar da aula',pt:'Que pena que você não pode participar da aula',es:'Qué pena que no puedas participar en la clase'},
  cxLB:{en:'Tudo bem, imprevistos acontecem. Que tal aproveitar o horário para rever a última lição e ouvir o Listening? Assim você chega bem na próxima aula.',pt:'Tudo bem, imprevistos acontecem. Que tal aproveitar o horário para rever a última lição e ouvir o Listening? Assim você chega bem na próxima aula.',es:'No pasa nada, los imprevistos ocurren. ¿Y si aprovechas el rato para repasar la última lección y escuchar el Listening? Así llegas bien a la próxima clase.'},
  cxLN:{en:'Cancelando agora, esta aula conta como dada e não gera reposição.',pt:'Cancelando agora, esta aula conta como dada e não gera reposição.',es:'Si cancelas ahora, esta clase cuenta como dada y no genera reposición.'},
  cxKeep:{en:'Manter a aula',pt:'Manter a aula',es:'Mantener la clase'},
  cxAny:{en:'Cancelar mesmo assim',pt:'Cancelar mesmo assim',es:'Cancelar de todos modos'},
- mkBook:{en:'Book a make-up class',pt:'Marcar reposição',es:'Reservar una reposición'},
+ mkBook:{en:'Marcar reposição',pt:'Marcar reposição',es:'Reservar una reposición'},
  mkCnt:{en:'{0} to make up',pt:'{0} aula(s) a repor',es:'{0} por reponer'},
- mkReq:{en:'Make-up class',pt:'Reposição',es:'Reposición'},
- eCred:{en:'You have no make-up classes left.',pt:'Você não tem aulas a repor.',es:'No tienes clases por reponer.'},
+ mkReq:{en:'Reposição',pt:'Reposição',es:'Reposición'},
+ eCred:{en:'Você não tem aulas a repor.',pt:'Você não tem aulas a repor.',es:'No tienes clases por reponer.'},
  newReq:{en:'New lesson',pt:'Aula nova',es:'Clase nueva'},
  dis:{en:'Dismiss',pt:'Dispensar',es:'Descartar'},
  okMsg:{en:'Your request for {0} was approved.',pt:'Seu pedido para {0} foi aprovado.',es:'Tu pedido para {0} fue aprobado.'},
@@ -148,7 +148,7 @@ function mount(box,ctx){
   if(!box||!window.Gate||!Gate.sb||!ctx||!ctx.user)return;
   css();var tm=null,sb=Gate.sb,uid=ctx.user.id,HOUR=3600000,H2=7200000,ov=null,CRN=0,SER=[];
   window.Agenda.reschedule=function(x){book('reschedule',x);};
-  function lessons(){return sb.from('lessons').select('id,title,start_at,end_at,meet_url,is_group').eq('user_id',uid).gte('end_at',new Date().toISOString()).order('start_at').limit(6).then(function(r){return ((r&&r.data)||[]).map(function(x){x.meet_url=x.meet_url||'https://us06web.zoom.us/j/2447679341';return x;});},function(){return [];});}
+  function lessons(){return sb.from('lessons').select('id,title,start_at,end_at,meet_url,is_group').eq('user_id',uid).gte('end_at',new Date().toISOString()).order('start_at').limit(6).then(function(r){return ((r&&r.data)||[]).map(function(x){x.meet_url=x.meet_url||'https://us06web.zoom.us/j/2447679341?pwd=U0xuSmU0ek15MGlEd0phWHdoMllUUT09';if(/zoom\.us\/j\/2447679341(?!\?pwd)/.test(x.meet_url))x.meet_url='https://us06web.zoom.us/j/2447679341?pwd=U0xuSmU0ek15MGlEd0phWHdoMllUUT09';return x;});},function(){return [];});}
   function requests(){var since=new Date(Date.now()-3*86400000).toISOString();return sb.from('lesson_requests').select('id,kind,lesson_id,new_start,status,created_at').eq('user_id',uid).neq('kind','cancel').gte('created_at',since).order('created_at',{ascending:false}).limit(10).then(function(r){return (r&&r.data)||[];},function(){return [];});}
   function credits(){try{return Promise.resolve(sb.from('class_credits').select('id').eq('user_id',uid).is('made_up_at',null)).then(function(r){CRN=((r&&r.data)||[]).length;},function(){});}catch(e){return Promise.resolve();}}
   function series(){try{return Promise.resolve(sb.from('lesson_series').select('id,gcal_event_id,weekday').eq('user_id',uid).eq('status','active')).then(function(r){SER=(r&&r.data)||[];},function(){});}catch(e){return Promise.resolve();}}

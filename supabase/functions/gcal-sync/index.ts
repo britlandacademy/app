@@ -64,7 +64,8 @@ Deno.serve(async (req) => {
         }
       }
       const zin = String(e.location || "").match(/https?:\/\/[^\s]*zoom\.us\/[^\s]+/i) || String(e.description || "").match(/https?:\/\/[^\s]*zoom\.us\/[^\s]+/i);
-      const meet = zin ? zin[0] : (e.hangoutLink || e.conferenceData?.entryPoints?.find((x: any) => x.entryPointType === "video")?.uri || "https://us06web.zoom.us/j/2447679341"); // sem link de video: usa o Zoom fixo do professor
+      const ZFIX = (u: string) => /zoom\.us\/j\/2447679341(?!\?pwd)/.test(u) ? "https://us06web.zoom.us/j/2447679341?pwd=U0xuSmU0ek15MGlEd0phWHdoMllUUT09" : u; // link antigo sem senha -> link atual
+      const meet = ZFIX(zin ? zin[0] : (e.hangoutLink || e.conferenceData?.entryPoints?.find((x: any) => x.entryPointType === "video")?.uri || "https://us06web.zoom.us/j/2447679341?pwd=U0xuSmU0ek15MGlEd0phWHdoMllUUT09")); // sem link de video: usa o Zoom fixo do professor
       const targets = ids.size ? [...ids] : [null];
       for (const uid of targets) rows.push({ id: e.id + ":" + (uid || "none"), user_id: uid, title: e.summary || "Aula", start_at: e.start.dateTime, end_at: e.end.dateTime, meet_url: meet, is_group: viaGroup || ids.size > 1, updated_at: new Date().toISOString() });
     }

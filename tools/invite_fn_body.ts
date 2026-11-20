@@ -63,7 +63,7 @@ async function due(b: any) {
     let cp = fd.currentPosition || {}, nx = fd.nextClass || null;
     if (e.uids.length > 1) for (const u of e.uids) { if (nx) break; const q = prog.get(u); if (q && q.data) { nx = q.data.nextClass || null; cp = q.data.currentPosition || cp; } }
     nx = BI.adjust(nx, cp, pg);
-    const meet = (e.rows.filter((r: any) => r.meet_url)[0] || {}).meet_url || "https://us06web.zoom.us/j/2447679341";
+    const meet = (e.rows.filter((r: any) => r.meet_url)[0] || {}).meet_url || "https://us06web.zoom.us/j/2447679341?pwd=U0xuSmU0ek15MGlEd0phWHdoMllUUT09";
     const ms = (((pg && pg.data) || {}).me || {}).missed;
     const single = e.uids.length === 1 && !e.rows.some((r: any) => r.is_group);
     let streak = 0;
