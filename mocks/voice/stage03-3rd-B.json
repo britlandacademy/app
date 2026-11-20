@@ -1,0 +1,252 @@
+{
+"name": "stage03-3rd-B",
+"base": "https://isrvmwebubjcvzxkorpf.supabase.co/storage/v1/object/public/simulado-voice/3rd/stage03-3rd-B/",
+"ext": "wav",
+"items": [
+{
+"id": "d01",
+"kind": "dc",
+"n": 1,
+"text": "We play football with a ball.",
+"voice": "Puck"
+},
+{
+"id": "d02",
+"kind": "dc",
+"n": 2,
+"text": "We taste with our tongues.",
+"voice": "Puck"
+},
+{
+"id": "d03",
+"kind": "dc",
+"n": 3,
+"text": "We brush our teeth",
+"voice": "Puck"
+},
+{
+"id": "d04",
+"kind": "dc",
+"n": 4,
+"text": "with a toothbrush.",
+"voice": "Puck"
+},
+{
+"id": "d05",
+"kind": "dc",
+"n": 5,
+"text": "I can’t see anything",
+"voice": "Puck"
+},
+{
+"id": "d06",
+"kind": "dc",
+"n": 6,
+"text": "in this room",
+"voice": "Puck"
+},
+{
+"id": "d07",
+"kind": "dc",
+"n": 7,
+"text": "because it’s very dark.",
+"voice": "Puck"
+},
+{
+"id": "d08",
+"kind": "dc",
+"n": 8,
+"text": "A millionaire is a person",
+"voice": "Puck"
+},
+{
+"id": "d09",
+"kind": "dc",
+"n": 9,
+"text": "who has a million pounds",
+"voice": "Puck"
+},
+{
+"id": "d10",
+"kind": "dc",
+"n": 10,
+"text": "or more.",
+"voice": "Puck"
+},
+{
+"id": "d11",
+"kind": "dc",
+"n": 11,
+"text": "Our hair covers our heads.",
+"voice": "Puck"
+},
+{
+"id": "d12",
+"kind": "dc",
+"n": 12,
+"text": "The ceiling is over our heads.",
+"voice": "Puck"
+},
+{
+"id": "d13",
+"kind": "dc",
+"n": 13,
+"text": "Last season lasted about three months.",
+"voice": "Puck"
+},
+{
+"id": "d14",
+"kind": "dc",
+"n": 14,
+"text": "The plural of “sheep” is “sheep”.",
+"voice": "Puck"
+},
+{
+"id": "d15",
+"kind": "dc",
+"n": 15,
+"text": "Coal is black.",
+"voice": "Puck"
+},
+{
+"id": "d16",
+"kind": "dc",
+"n": 16,
+"text": "We spoke English during the last",
+"voice": "Puck"
+},
+{
+"id": "d17",
+"kind": "dc",
+"n": 17,
+"text": "lesson.",
+"voice": "Puck"
+},
+{
+"id": "d18",
+"kind": "dc",
+"n": 18,
+"text": "Sheep are heavier animals than chickens.",
+"voice": "Puck"
+},
+{
+"id": "d19",
+"kind": "dc",
+"n": 19,
+"text": "I want to pay for these",
+"voice": "Puck"
+},
+{
+"id": "d20",
+"kind": "dc",
+"n": 20,
+"text": "drinks.",
+"voice": "Puck"
+},
+{
+"id": "d21",
+"kind": "dc",
+"n": 21,
+"text": "Please remember to shake hands",
+"voice": "Puck"
+},
+{
+"id": "d22",
+"kind": "dc",
+"n": 22,
+"text": "with Mr Jones",
+"voice": "Puck"
+},
+{
+"id": "d23",
+"kind": "dc",
+"n": 23,
+"text": "when he arrives.",
+"voice": "Puck"
+},
+{
+"id": "d24",
+"kind": "dc",
+"n": 24,
+"text": "We go to the mosque twice",
+"voice": "Puck"
+},
+{
+"id": "d25",
+"kind": "dc",
+"n": 25,
+"text": "a week.",
+"voice": "Puck"
+},
+{
+"id": "o01",
+"kind": "or",
+"n": 1,
+"text": "What nationality is somebody from the USA?",
+"voice": "Kore"
+},
+{
+"id": "o02",
+"kind": "or",
+"n": 2,
+"text": "What can we see in the sky during the day?",
+"voice": "Kore"
+},
+{
+"id": "o03",
+"kind": "or",
+"n": 3,
+"text": "What’s the plural of “tooth”?",
+"voice": "Kore"
+},
+{
+"id": "o04",
+"kind": "or",
+"n": 4,
+"text": "Which is one of the coldest countries in the world?",
+"voice": "Kore"
+},
+{
+"id": "o05",
+"kind": "or",
+"n": 5,
+"text": "What covers our heads?",
+"voice": "Kore"
+},
+{
+"id": "o06",
+"kind": "or",
+"n": 6,
+"text": "What did you use to answer the last question?",
+"voice": "Kore"
+},
+{
+"id": "o07",
+"kind": "or",
+"n": 7,
+"text": "What’s the opposite of the word “quick”?",
+"voice": "Kore"
+},
+{
+"id": "o08",
+"kind": "or",
+"n": 8,
+"text": "What’s the past tense of the verb “do”?",
+"voice": "Kore"
+},
+{
+"id": "o09",
+"kind": "or",
+"n": 9,
+"text": "How many ears have you got?",
+"voice": "Kore"
+},
+{
+"id": "o10",
+"kind": "or",
+"n": 10,
+"text": "What colour’s coal?",
+"voice": "Kore"
+}
+]
+}

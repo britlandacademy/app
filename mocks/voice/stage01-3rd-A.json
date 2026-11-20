@@ -1,0 +1,308 @@
+{
+"name": "stage01-3rd-A",
+"base": "https://isrvmwebubjcvzxkorpf.supabase.co/storage/v1/object/public/simulado-voice/3rd/stage01-3rd-A/",
+"ext": "wav",
+"items": [
+{
+"id": "d01",
+"kind": "dc",
+"n": 1,
+"text": "The pen is long.",
+"voice": "Kore"
+},
+{
+"id": "d02",
+"kind": "dc",
+"n": 2,
+"text": "The pencil is short.",
+"voice": "Kore"
+},
+{
+"id": "d03",
+"kind": "dc",
+"n": 3,
+"text": "The book is on the table.",
+"voice": "Kore"
+},
+{
+"id": "d04",
+"kind": "dc",
+"n": 4,
+"text": "The clock is",
+"voice": "Kore"
+},
+{
+"id": "d05",
+"kind": "dc",
+"n": 5,
+"text": "in front of you.",
+"voice": "Kore"
+},
+{
+"id": "d06",
+"kind": "dc",
+"n": 6,
+"text": "I am standing on the floor.",
+"voice": "Kore"
+},
+{
+"id": "d07",
+"kind": "dc",
+"n": 7,
+"text": "Anna is a girl.",
+"voice": "Kore"
+},
+{
+"id": "d08",
+"kind": "dc",
+"n": 8,
+"text": "Jack is a boy.",
+"voice": "Kore"
+},
+{
+"id": "d09",
+"kind": "dc",
+"n": 9,
+"text": "The window is open.",
+"voice": "Kore"
+},
+{
+"id": "d10",
+"kind": "dc",
+"n": 10,
+"text": "The door is closed.",
+"voice": "Kore"
+},
+{
+"id": "d11",
+"kind": "dc",
+"n": 11,
+"text": "There are three books",
+"voice": "Kore"
+},
+{
+"id": "d12",
+"kind": "dc",
+"n": 12,
+"text": "on the table.",
+"voice": "Kore"
+},
+{
+"id": "d13",
+"kind": "dc",
+"n": 13,
+"text": "This pencil is red.",
+"voice": "Kore"
+},
+{
+"id": "d14",
+"kind": "dc",
+"n": 14,
+"text": "That chair is black.",
+"voice": "Kore"
+},
+{
+"id": "d15",
+"kind": "dc",
+"n": 15,
+"text": "They are sitting in the room.",
+"voice": "Kore"
+},
+{
+"id": "d16",
+"kind": "dc",
+"n": 16,
+"text": "We are standing",
+"voice": "Kore"
+},
+{
+"id": "d17",
+"kind": "dc",
+"n": 17,
+"text": "in front of the house.",
+"voice": "Kore"
+},
+{
+"id": "d18",
+"kind": "dc",
+"n": 18,
+"text": "The wall is high.",
+"voice": "Kore"
+},
+{
+"id": "d19",
+"kind": "dc",
+"n": 19,
+"text": "Mr Brown is tall.",
+"voice": "Kore"
+},
+{
+"id": "d20",
+"kind": "dc",
+"n": 20,
+"text": "I can touch my nose.",
+"voice": "Kore"
+},
+{
+"id": "d21",
+"kind": "dc",
+"n": 21,
+"text": "I can’t touch the ceiling.",
+"voice": "Kore"
+},
+{
+"id": "d22",
+"kind": "dc",
+"n": 22,
+"text": "I like my city.",
+"voice": "Kore"
+},
+{
+"id": "d23",
+"kind": "dc",
+"n": 23,
+"text": "She speaks English.",
+"voice": "Kore"
+},
+{
+"id": "d24",
+"kind": "dc",
+"n": 24,
+"text": "He goes home after the lesson.",
+"voice": "Kore"
+},
+{
+"id": "d25",
+"kind": "dc",
+"n": 25,
+"text": "Touch your head,",
+"voice": "Kore"
+},
+{
+"id": "d26",
+"kind": "dc",
+"n": 26,
+"text": "please.",
+"voice": "Kore"
+},
+{
+"id": "d27",
+"kind": "dc",
+"n": 27,
+"text": "Open your book.",
+"voice": "Kore"
+},
+{
+"id": "d28",
+"kind": "dc",
+"n": 28,
+"text": "Where’s the teacher?",
+"voice": "Kore"
+},
+{
+"id": "y01",
+"kind": "yn",
+"n": 1,
+"text": "Is a city small?",
+"voice": "Orus"
+},
+{
+"id": "y02",
+"kind": "yn",
+"n": 2,
+"text": "Is London a village?",
+"voice": "Orus"
+},
+{
+"id": "y03",
+"kind": "yn",
+"n": 3,
+"text": "Is Windsor a town?",
+"voice": "Orus"
+},
+{
+"id": "y04",
+"kind": "yn",
+"n": 4,
+"text": "Is the letter B a vowel?",
+"voice": "Orus"
+},
+{
+"id": "y05",
+"kind": "yn",
+"n": 5,
+"text": "Is England the capital of London?",
+"voice": "Orus"
+},
+{
+"id": "y06",
+"kind": "yn",
+"n": 6,
+"text": "Is the plural of “person” “people”?",
+"voice": "Orus"
+},
+{
+"id": "y07",
+"kind": "yn",
+"n": 7,
+"text": "Is it right that 8 + 2 = 10?",
+"voice": "Orus"
+},
+{
+"id": "y08",
+"kind": "yn",
+"n": 8,
+"text": "Is Greece in Asia?",
+"voice": "Orus"
+},
+{
+"id": "y09",
+"kind": "yn",
+"n": 9,
+"text": "Are France and Italy in Asia?",
+"voice": "Orus"
+},
+{
+"id": "y10",
+"kind": "yn",
+"n": 10,
+"text": "Do we speak with our mouths?",
+"voice": "Orus"
+},
+{
+"id": "y11",
+"kind": "yn",
+"n": 11,
+"text": "Do we read with our eyes?",
+"voice": "Orus"
+},
+{
+"id": "y12",
+"kind": "yn",
+"n": 12,
+"text": "Is it right that 6 – 2 = 5?",
+"voice": "Orus"
+},
+{
+"id": "y13",
+"kind": "yn",
+"n": 13,
+"text": "Is A the last letter of the alphabet?",
+"voice": "Orus"
+},
+{
+"id": "y14",
+"kind": "yn",
+"n": 14,
+"text": "Can we speak with our mouths?",
+"voice": "Orus"
+},
+{
+"id": "y15",
+"kind": "yn",
+"n": 15,
+"text": "Is Grantchester a village?",
+"voice": "Orus"
+}
+]
+}

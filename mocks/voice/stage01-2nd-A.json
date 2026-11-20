@@ -1,0 +1,294 @@
+{
+"name": "stage01-2nd-A",
+"base": "https://isrvmwebubjcvzxkorpf.supabase.co/storage/v1/object/public/simulado-voice/2nd/stage01-2nd-A/",
+"ext": "wav",
+"items": [
+{
+"id": "y01",
+"kind": "yn",
+"n": 1,
+"text": "Is the chair high?",
+"voice": "Kore"
+},
+{
+"id": "y02",
+"kind": "yn",
+"n": 2,
+"text": "Is the ceiling white?",
+"voice": "Kore"
+},
+{
+"id": "y03",
+"kind": "yn",
+"n": 3,
+"text": "Is the table behind us?",
+"voice": "Kore"
+},
+{
+"id": "y04",
+"kind": "yn",
+"n": 4,
+"text": "Is London the capital of England?",
+"voice": "Kore"
+},
+{
+"id": "y05",
+"kind": "yn",
+"n": 5,
+"text": "Am I going to the door?",
+"voice": "Kore"
+},
+{
+"id": "y06",
+"kind": "yn",
+"n": 6,
+"text": "Is it right you´re Mr. Brown?",
+"voice": "Kore"
+},
+{
+"id": "y07",
+"kind": "yn",
+"n": 7,
+"text": "Are you the teacher?",
+"voice": "Kore"
+},
+{
+"id": "y08",
+"kind": "yn",
+"n": 8,
+"text": "Is India in Europe?",
+"voice": "Kore"
+},
+{
+"id": "y09",
+"kind": "yn",
+"n": 9,
+"text": "Are there two teachers in this room?",
+"voice": "Kore"
+},
+{
+"id": "y10",
+"kind": "yn",
+"n": 10,
+"text": "Is Jack Brown tall?",
+"voice": "Kore"
+},
+{
+"id": "y11",
+"kind": "yn",
+"n": 11,
+"text": "Is this sentence right “There is a umbrella on the table”?",
+"voice": "Kore"
+},
+{
+"id": "y12",
+"kind": "yn",
+"n": 12,
+"text": "Are there a hundred pictures in this room?",
+"voice": "Kore"
+},
+{
+"id": "y13",
+"kind": "yn",
+"n": 13,
+"text": "20 + 13 is 33. Is that right?",
+"voice": "Kore"
+},
+{
+"id": "y14",
+"kind": "yn",
+"n": 14,
+"text": "Is “feet” the plural of foot?",
+"voice": "Kore"
+},
+{
+"id": "y15",
+"kind": "yn",
+"n": 15,
+"text": "Is the letter “E” between D and F?",
+"voice": "Kore"
+},
+{
+"id": "y16",
+"kind": "yn",
+"n": 16,
+"text": "Is the letter “C” a vowel?",
+"voice": "Kore"
+},
+{
+"id": "y17",
+"kind": "yn",
+"n": 17,
+"text": "Is the number “3” before the number “1”?",
+"voice": "Kore"
+},
+{
+"id": "y18",
+"kind": "yn",
+"n": 18,
+"text": "Are there any chairs on the table?",
+"voice": "Kore"
+},
+{
+"id": "y19",
+"kind": "yn",
+"n": 19,
+"text": "Have you got five ears?",
+"voice": "Kore"
+},
+{
+"id": "y20",
+"kind": "yn",
+"n": 20,
+"text": "Am I asking you a question?",
+"voice": "Kore"
+},
+{
+"id": "d01",
+"kind": "dc",
+"n": 1,
+"text": "What´s this?",
+"voice": "Charon"
+},
+{
+"id": "d02",
+"kind": "dc",
+"n": 2,
+"text": "It´s a light.",
+"voice": "Charon"
+},
+{
+"id": "d03",
+"kind": "dc",
+"n": 3,
+"text": "The table is not short;",
+"voice": "Charon"
+},
+{
+"id": "d04",
+"kind": "dc",
+"n": 4,
+"text": "it is long.",
+"voice": "Charon"
+},
+{
+"id": "d05",
+"kind": "dc",
+"n": 5,
+"text": "A village is small,",
+"voice": "Charon"
+},
+{
+"id": "d06",
+"kind": "dc",
+"n": 6,
+"text": "but a city is large.",
+"voice": "Charon"
+},
+{
+"id": "d07",
+"kind": "dc",
+"n": 7,
+"text": "Where is the light?",
+"voice": "Charon"
+},
+{
+"id": "d08",
+"kind": "dc",
+"n": 8,
+"text": "It´s on the ceiling.",
+"voice": "Charon"
+},
+{
+"id": "d09",
+"kind": "dc",
+"n": 9,
+"text": "Mr. White is standing",
+"voice": "Charon"
+},
+{
+"id": "d10",
+"kind": "dc",
+"n": 10,
+"text": "in front of the house,",
+"voice": "Charon"
+},
+{
+"id": "d11",
+"kind": "dc",
+"n": 11,
+"text": "but Mrs. Green",
+"voice": "Charon"
+},
+{
+"id": "d12",
+"kind": "dc",
+"n": 12,
+"text": "is sitting behind it.",
+"voice": "Charon"
+},
+{
+"id": "d13",
+"kind": "dc",
+"n": 13,
+"text": "He is not Mr. Low;",
+"voice": "Charon"
+},
+{
+"id": "d14",
+"kind": "dc",
+"n": 14,
+"text": "he´s Mr. Black.",
+"voice": "Charon"
+},
+{
+"id": "d15",
+"kind": "dc",
+"n": 15,
+"text": "What am I doing?",
+"voice": "Charon"
+},
+{
+"id": "d16",
+"kind": "dc",
+"n": 16,
+"text": "You are taking the book",
+"voice": "Charon"
+},
+{
+"id": "d17",
+"kind": "dc",
+"n": 17,
+"text": "from the table,",
+"voice": "Charon"
+},
+{
+"id": "d18",
+"kind": "dc",
+"n": 18,
+"text": "opening it,",
+"voice": "Charon"
+},
+{
+"id": "d19",
+"kind": "dc",
+"n": 19,
+"text": "and putting it",
+"voice": "Charon"
+},
+{
+"id": "d20",
+"kind": "dc",
+"n": 20,
+"text": "on the floor.",
+"voice": "Charon"
+},
+{
+"id": "d21",
+"kind": "dc",
+"n": 21,
+"text": "Who is she?",
+"voice": "Charon"
+}
+]
+}

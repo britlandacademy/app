@@ -1,0 +1,266 @@
+{
+"name": "stage02-2nd-A",
+"base": "https://isrvmwebubjcvzxkorpf.supabase.co/storage/v1/object/public/simulado-voice/2nd/stage02-2nd-A/",
+"ext": "wav",
+"items": [
+{
+"id": "y01",
+"kind": "yn",
+"n": 1,
+"text": "Is the letter “B” before the letter I?",
+"voice": "Orus"
+},
+{
+"id": "y02",
+"kind": "yn",
+"n": 2,
+"text": "Are you tall enough to touch the ceiling?",
+"voice": "Orus"
+},
+{
+"id": "y03",
+"kind": "yn",
+"n": 3,
+"text": "Do eleven months make a year?",
+"voice": "Orus"
+},
+{
+"id": "y04",
+"kind": "yn",
+"n": 4,
+"text": "Do we smell with our mouths?",
+"voice": "Orus"
+},
+{
+"id": "y05",
+"kind": "yn",
+"n": 5,
+"text": "Do you teach English here?",
+"voice": "Orus"
+},
+{
+"id": "y06",
+"kind": "yn",
+"n": 6,
+"text": "Do you move your eyes during the lesson?",
+"voice": "Orus"
+},
+{
+"id": "y07",
+"kind": "yn",
+"n": 7,
+"text": "Do seventy days make a week?",
+"voice": "Orus"
+},
+{
+"id": "y08",
+"kind": "yn",
+"n": 8,
+"text": "Is ten half of twelve?",
+"voice": "Orus"
+},
+{
+"id": "y09",
+"kind": "yn",
+"n": 9,
+"text": "Are all the students sitting completely still now?",
+"voice": "Orus"
+},
+{
+"id": "y10",
+"kind": "yn",
+"n": 10,
+"text": "Am I asking you a question?",
+"voice": "Orus"
+},
+{
+"id": "y11",
+"kind": "yn",
+"n": 11,
+"text": "Is this sentence right: “I am using glasses”?",
+"voice": "Orus"
+},
+{
+"id": "y12",
+"kind": "yn",
+"n": 12,
+"text": "Am I carrying a shirt on my body?",
+"voice": "Orus"
+},
+{
+"id": "y13",
+"kind": "yn",
+"n": 13,
+"text": "Have you got ten fingers?",
+"voice": "Orus"
+},
+{
+"id": "y14",
+"kind": "yn",
+"n": 14,
+"text": "Do men generally wear the same clothes as women?",
+"voice": "Orus"
+},
+{
+"id": "y15",
+"kind": "yn",
+"n": 15,
+"text": "Is “E” the fifth letter of the alphabet?",
+"voice": "Orus"
+},
+{
+"id": "y16",
+"kind": "yn",
+"n": 16,
+"text": "Do we call the thing that we use to write a pen?",
+"voice": "Orus"
+},
+{
+"id": "y17",
+"kind": "yn",
+"n": 17,
+"text": "Are these sentences both right, “This nose is mine.” and “This is my nose”?",
+"voice": "Orus"
+},
+{
+"id": "y18",
+"kind": "yn",
+"n": 18,
+"text": "Do most people rest on Monday?",
+"voice": "Orus"
+},
+{
+"id": "y19",
+"kind": "yn",
+"n": 19,
+"text": "Is there a picture hanging from the ceiling?",
+"voice": "Orus"
+},
+{
+"id": "y20",
+"kind": "yn",
+"n": 20,
+"text": "Do we drink meat?",
+"voice": "Orus"
+},
+{
+"id": "d01",
+"kind": "dc",
+"n": 1,
+"text": "We're reading,",
+"voice": "Puck"
+},
+{
+"id": "d02",
+"kind": "dc",
+"n": 2,
+"text": "not writing.",
+"voice": "Puck"
+},
+{
+"id": "d03",
+"kind": "dc",
+"n": 3,
+"text": "That's his pullover",
+"voice": "Puck"
+},
+{
+"id": "d04",
+"kind": "dc",
+"n": 4,
+"text": "and these are her tights.",
+"voice": "Puck"
+},
+{
+"id": "d05",
+"kind": "dc",
+"n": 5,
+"text": "These are our skirts.",
+"voice": "Puck"
+},
+{
+"id": "d06",
+"kind": "dc",
+"n": 6,
+"text": "Those are their trousers.",
+"voice": "Puck"
+},
+{
+"id": "d07",
+"kind": "dc",
+"n": 7,
+"text": "Your handkerchief",
+"voice": "Puck"
+},
+{
+"id": "d08",
+"kind": "dc",
+"n": 8,
+"text": "is in",
+"voice": "Puck"
+},
+{
+"id": "d09",
+"kind": "dc",
+"n": 9,
+"text": "your pocket.",
+"voice": "Puck"
+},
+{
+"id": "d10",
+"kind": "dc",
+"n": 10,
+"text": "Her blouse is grey.",
+"voice": "Puck"
+},
+{
+"id": "d11",
+"kind": "dc",
+"n": 11,
+"text": "Miss Smith",
+"voice": "Puck"
+},
+{
+"id": "d12",
+"kind": "dc",
+"n": 12,
+"text": "is not French",
+"voice": "Puck"
+},
+{
+"id": "d13",
+"kind": "dc",
+"n": 13,
+"text": "or German;",
+"voice": "Puck"
+},
+{
+"id": "d14",
+"kind": "dc",
+"n": 14,
+"text": "she's English.",
+"voice": "Puck"
+},
+{
+"id": "d15",
+"kind": "dc",
+"n": 15,
+"text": "We say, one person, but two people.",
+"voice": "Puck"
+},
+{
+"id": "d16",
+"kind": "dc",
+"n": 16,
+"text": "He's coming from London",
+"voice": "Puck"
+},
+{
+"id": "d17",
+"kind": "dc",
+"n": 17,
+"text": "and going to Beijing.",
+"voice": "Puck"
+}
+]
+}

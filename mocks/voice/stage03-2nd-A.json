@@ -1,0 +1,327 @@
+{
+"name": "stage03-2nd-A",
+"base": "https://isrvmwebubjcvzxkorpf.supabase.co/storage/v1/object/public/simulado-voice/2nd/stage03-2nd-A/",
+"ext": "wav",
+"items": [
+{
+"id": "y01",
+"kind": "yn",
+"n": 1,
+"text": "Is São José dos Campos as large as Rio de Janeiro?",
+"voice": "Charon"
+},
+{
+"id": "y01-nh",
+"kind": "yn",
+"n": 1,
+"place": "nh",
+"text": "Is Novo Hamburgo as large as Rio de Janeiro?",
+"voice": "Charon"
+},
+{
+"id": "y01-jundiai",
+"kind": "yn",
+"n": 1,
+"place": "jundiai",
+"text": "Is Jundiaí as large as Rio de Janeiro?",
+"voice": "Charon"
+},
+{
+"id": "y01-franca",
+"kind": "yn",
+"n": 1,
+"place": "franca",
+"text": "Is Franca as large as Rio de Janeiro?",
+"voice": "Charon"
+},
+{
+"id": "y01-uberlandia",
+"kind": "yn",
+"n": 1,
+"place": "uberlandia",
+"text": "Is Uberlândia as large as Rio de Janeiro?",
+"voice": "Charon"
+},
+{
+"id": "y01-algarve",
+"kind": "yn",
+"n": 1,
+"place": "algarve",
+"text": "Is Faro as large as Lisbon?",
+"voice": "Charon"
+},
+{
+"id": "y01-waterford",
+"kind": "yn",
+"n": 1,
+"place": "waterford",
+"text": "Is Waterford as large as Dublin?",
+"voice": "Charon"
+},
+{
+"id": "y02",
+"kind": "yn",
+"n": 2,
+"text": "Do the English generally drink a lot of coffee?",
+"voice": "Charon"
+},
+{
+"id": "y03",
+"kind": "yn",
+"n": 3,
+"text": "Do we use our mouths for both eating and speaking?",
+"voice": "Charon"
+},
+{
+"id": "y04",
+"kind": "yn",
+"n": 4,
+"text": "Do most children live with their parents?",
+"voice": "Charon"
+},
+{
+"id": "y05",
+"kind": "yn",
+"n": 5,
+"text": "Do most people think work is a pleasant thing?",
+"voice": "Charon"
+},
+{
+"id": "y06",
+"kind": "yn",
+"n": 6,
+"text": "Do we drink coffee from a glass?",
+"voice": "Charon"
+},
+{
+"id": "y07",
+"kind": "yn",
+"n": 7,
+"text": "Does January come at the beginning of the year?",
+"voice": "Charon"
+},
+{
+"id": "y08",
+"kind": "yn",
+"n": 8,
+"text": "Must you have some money to eat in a restaurant?",
+"voice": "Charon"
+},
+{
+"id": "y09",
+"kind": "yn",
+"n": 9,
+"text": "Can we play tennis without a ball?",
+"voice": "Charon"
+},
+{
+"id": "y10",
+"kind": "yn",
+"n": 10,
+"text": "Has each chair only got three legs?",
+"voice": "Charon"
+},
+{
+"id": "y11",
+"kind": "yn",
+"n": 11,
+"text": "Must you study a lot if you want to learn a language well?",
+"voice": "Charon"
+},
+{
+"id": "y12",
+"kind": "yn",
+"n": 12,
+"text": "Do you leave your shoes in the classroom after the lesson?",
+"voice": "Charon"
+},
+{
+"id": "y13",
+"kind": "yn",
+"n": 13,
+"text": "Can you lift the table with your little finger?",
+"voice": "Charon"
+},
+{
+"id": "y14",
+"kind": "yn",
+"n": 14,
+"text": "Does Thursday precede Wednesday?",
+"voice": "Charon"
+},
+{
+"id": "y15",
+"kind": "yn",
+"n": 15,
+"text": "Is your stomach empty after a large meal?",
+"voice": "Charon"
+},
+{
+"id": "y16",
+"kind": "yn",
+"n": 16,
+"text": "Is it warm in autumn?",
+"voice": "Charon"
+},
+{
+"id": "y17",
+"kind": "yn",
+"n": 17,
+"text": "Do people generally drink less milk than water?",
+"voice": "Charon"
+},
+{
+"id": "y18",
+"kind": "yn",
+"n": 18,
+"text": "Is São Paulo farther from São José dos Campos than Fortaleza?",
+"voice": "Charon"
+},
+{
+"id": "y18-nh",
+"kind": "yn",
+"n": 18,
+"place": "nh",
+"text": "Is São Paulo farther from Novo Hamburgo than Fortaleza?",
+"voice": "Charon"
+},
+{
+"id": "y18-jundiai",
+"kind": "yn",
+"n": 18,
+"place": "jundiai",
+"text": "Is São Paulo farther from Jundiaí than Fortaleza?",
+"voice": "Charon"
+},
+{
+"id": "y18-franca",
+"kind": "yn",
+"n": 18,
+"place": "franca",
+"text": "Is São Paulo farther from Franca than Fortaleza?",
+"voice": "Charon"
+},
+{
+"id": "y18-uberlandia",
+"kind": "yn",
+"n": 18,
+"place": "uberlandia",
+"text": "Is São Paulo farther from Uberlândia than Fortaleza?",
+"voice": "Charon"
+},
+{
+"id": "y18-algarve",
+"kind": "yn",
+"n": 18,
+"place": "algarve",
+"text": "Is Lisbon farther from Faro than Porto?",
+"voice": "Charon"
+},
+{
+"id": "y18-waterford",
+"kind": "yn",
+"n": 18,
+"place": "waterford",
+"text": "Is Dublin farther from Waterford than Galway?",
+"voice": "Charon"
+},
+{
+"id": "y19",
+"kind": "yn",
+"n": 19,
+"text": "Do we add the letters “ed” to form the past tense of regular verbs?",
+"voice": "Charon"
+},
+{
+"id": "y20",
+"kind": "yn",
+"n": 20,
+"text": "Is it a bad idea to go to England if you want to learn English well?",
+"voice": "Charon"
+},
+{
+"id": "d01",
+"kind": "dc",
+"n": 1,
+"text": "The names of",
+"voice": "Kore"
+},
+{
+"id": "d02",
+"kind": "dc",
+"n": 2,
+"text": "the four seasons of the year are",
+"voice": "Kore"
+},
+{
+"id": "d03",
+"kind": "dc",
+"n": 3,
+"text": "spring, summer,",
+"voice": "Kore"
+},
+{
+"id": "d04",
+"kind": "dc",
+"n": 4,
+"text": "autumn and winter.",
+"voice": "Kore"
+},
+{
+"id": "d05",
+"kind": "dc",
+"n": 5,
+"text": "Sometimes the students",
+"voice": "Kore"
+},
+{
+"id": "d06",
+"kind": "dc",
+"n": 6,
+"text": "precede the teacher into the classroom,",
+"voice": "Kore"
+},
+{
+"id": "d07",
+"kind": "dc",
+"n": 7,
+"text": "but not always.",
+"voice": "Kore"
+},
+{
+"id": "d08",
+"kind": "dc",
+"n": 8,
+"text": "My mother doesn't like",
+"voice": "Kore"
+},
+{
+"id": "d09",
+"kind": "dc",
+"n": 9,
+"text": "the taste of coffee without sugar.",
+"voice": "Kore"
+},
+{
+"id": "d10",
+"kind": "dc",
+"n": 10,
+"text": "My brother is the one",
+"voice": "Kore"
+},
+{
+"id": "d11",
+"kind": "dc",
+"n": 11,
+"text": "who gets up",
+"voice": "Kore"
+},
+{
+"id": "d12",
+"kind": "dc",
+"n": 12,
+"text": "the earliest in my family.",
+"voice": "Kore"
+}
+]
+}

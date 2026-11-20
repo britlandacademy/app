@@ -1,0 +1,245 @@
+{
+"name": "stage06-3rd-B",
+"base": "https://isrvmwebubjcvzxkorpf.supabase.co/storage/v1/object/public/simulado-voice/3rd/stage06-3rd-B/",
+"ext": "wav",
+"items": [
+{
+"id": "d01",
+"kind": "dc",
+"n": 1,
+"text": "If someone hit a policeman,",
+"voice": "Charon"
+},
+{
+"id": "d02",
+"kind": "dc",
+"n": 2,
+"text": "they’d be arrested.",
+"voice": "Charon"
+},
+{
+"id": "d03",
+"kind": "dc",
+"n": 3,
+"text": "Another word for midday is noon.",
+"voice": "Charon"
+},
+{
+"id": "d04",
+"kind": "dc",
+"n": 4,
+"text": "Two other words for “ill” are",
+"voice": "Charon"
+},
+{
+"id": "d05",
+"kind": "dc",
+"n": 5,
+"text": "“sick” and “unwell”.",
+"voice": "Charon"
+},
+{
+"id": "d06",
+"kind": "dc",
+"n": 6,
+"text": "We can use rope for climbing",
+"voice": "Charon"
+},
+{
+"id": "d07",
+"kind": "dc",
+"n": 7,
+"text": "mountains.",
+"voice": "Charon"
+},
+{
+"id": "d08",
+"kind": "dc",
+"n": 8,
+"text": "The opposites of “overcook”",
+"voice": "Charon"
+},
+{
+"id": "d09",
+"kind": "dc",
+"n": 9,
+"text": "and “overpay” are “undercook”",
+"voice": "Charon"
+},
+{
+"id": "d10",
+"kind": "dc",
+"n": 10,
+"text": "and “underpay”.",
+"voice": "Charon"
+},
+{
+"id": "d11",
+"kind": "dc",
+"n": 11,
+"text": "Mud is a mixture",
+"voice": "Charon"
+},
+{
+"id": "d12",
+"kind": "dc",
+"n": 12,
+"text": "of earth and water.",
+"voice": "Charon"
+},
+{
+"id": "d13",
+"kind": "dc",
+"n": 13,
+"text": "Another name for a chemist’s is",
+"voice": "Charon"
+},
+{
+"id": "d14",
+"kind": "dc",
+"n": 14,
+"text": "a pharmacy.",
+"voice": "Charon"
+},
+{
+"id": "d15",
+"kind": "dc",
+"n": 15,
+"text": "A thousand grams make a kilogram.",
+"voice": "Charon"
+},
+{
+"id": "d16",
+"kind": "dc",
+"n": 16,
+"text": "An island is a piece",
+"voice": "Charon"
+},
+{
+"id": "d17",
+"kind": "dc",
+"n": 17,
+"text": "of land completely surrounded",
+"voice": "Charon"
+},
+{
+"id": "d18",
+"kind": "dc",
+"n": 18,
+"text": "by water.",
+"voice": "Charon"
+},
+{
+"id": "d19",
+"kind": "dc",
+"n": 19,
+"text": "A fortnight consists of fourteen days.",
+"voice": "Charon"
+},
+{
+"id": "d20",
+"kind": "dc",
+"n": 20,
+"text": "We call the fatty part",
+"voice": "Charon"
+},
+{
+"id": "d21",
+"kind": "dc",
+"n": 21,
+"text": "of fresh milk the cream.",
+"voice": "Charon"
+},
+{
+"id": "d22",
+"kind": "dc",
+"n": 22,
+"text": "Brian stood up,",
+"voice": "Charon"
+},
+{
+"id": "d23",
+"kind": "dc",
+"n": 23,
+"text": "tried to walk to the door,",
+"voice": "Charon"
+},
+{
+"id": "d24",
+"kind": "dc",
+"n": 24,
+"text": "and immediately fell over!",
+"voice": "Charon"
+},
+{
+"id": "o01",
+"kind": "or",
+"n": 1,
+"text": "What are the three forms of “choose”?",
+"voice": "Puck"
+},
+{
+"id": "o02",
+"kind": "or",
+"n": 2,
+"text": "What’s the past of “ride”?",
+"voice": "Puck"
+},
+{
+"id": "o03",
+"kind": "or",
+"n": 3,
+"text": "What’s the past of “fall”?",
+"voice": "Puck"
+},
+{
+"id": "o04",
+"kind": "or",
+"n": 4,
+"text": "What are the three forms of “blow”?",
+"voice": "Puck"
+},
+{
+"id": "o05",
+"kind": "or",
+"n": 5,
+"text": "What kind of matter are books made of?",
+"voice": "Puck"
+},
+{
+"id": "o06",
+"kind": "or",
+"n": 6,
+"text": "Which modal is the only exception to this rule?",
+"voice": "Puck"
+},
+{
+"id": "o07",
+"kind": "or",
+"n": 7,
+"text": "What do we call the words “who”, “which” and “that”?",
+"voice": "Puck"
+},
+{
+"id": "o08",
+"kind": "or",
+"n": 8,
+"text": "What are the three forms of “fly”?",
+"voice": "Puck"
+},
+{
+"id": "o09",
+"kind": "or",
+"n": 9,
+"text": "What are the three forms of “fight”?",
+"voice": "Puck"
+},
+{
+"id": "o10",
+"kind": "or",
+"n": 10,
+"text": "What does the expression “every now and again” mean?",
+"voice": "Puck"
+}
+]
+}

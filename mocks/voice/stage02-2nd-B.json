@@ -1,0 +1,266 @@
+{
+"name": "stage02-2nd-B",
+"base": "https://isrvmwebubjcvzxkorpf.supabase.co/storage/v1/object/public/simulado-voice/2nd/stage02-2nd-B/",
+"ext": "wav",
+"items": [
+{
+"id": "y01",
+"kind": "yn",
+"n": 1,
+"text": "Can you read and write?",
+"voice": "Charon"
+},
+{
+"id": "y02",
+"kind": "yn",
+"n": 2,
+"text": "Do you generally sit completely still in the lesson?",
+"voice": "Charon"
+},
+{
+"id": "y03",
+"kind": "yn",
+"n": 3,
+"text": "Do we read with our mouths?",
+"voice": "Charon"
+},
+{
+"id": "y04",
+"kind": "yn",
+"n": 4,
+"text": "Is six half of twenty?",
+"voice": "Charon"
+},
+{
+"id": "y05",
+"kind": "yn",
+"n": 5,
+"text": "Do I study English here?",
+"voice": "Charon"
+},
+{
+"id": "y06",
+"kind": "yn",
+"n": 6,
+"text": "Do seven days make a week?",
+"voice": "Charon"
+},
+{
+"id": "y07",
+"kind": "yn",
+"n": 7,
+"text": "Do the English generally prefer coffee?",
+"voice": "Charon"
+},
+{
+"id": "y08",
+"kind": "yn",
+"n": 8,
+"text": "Does the word hello mean \"tchau\" in Portuguese?",
+"voice": "Charon"
+},
+{
+"id": "y09",
+"kind": "yn",
+"n": 9,
+"text": "Is Chinese a European language?",
+"voice": "Charon"
+},
+{
+"id": "y10",
+"kind": "yn",
+"n": 10,
+"text": "Is this sentence right? \"I am wearing glasses\".",
+"voice": "Charon"
+},
+{
+"id": "y11",
+"kind": "yn",
+"n": 11,
+"text": "Are you asking me a question?",
+"voice": "Charon"
+},
+{
+"id": "y12",
+"kind": "yn",
+"n": 12,
+"text": "Is it right to say \"people is\"?",
+"voice": "Charon"
+},
+{
+"id": "y13",
+"kind": "yn",
+"n": 13,
+"text": "Is there anybody sitting on the floor?",
+"voice": "Charon"
+},
+{
+"id": "y14",
+"kind": "yn",
+"n": 14,
+"text": "Can you put the table into your pocket?",
+"voice": "Charon"
+},
+{
+"id": "y15",
+"kind": "yn",
+"n": 15,
+"text": "Do I teach you English?",
+"voice": "Charon"
+},
+{
+"id": "y16",
+"kind": "yn",
+"n": 16,
+"text": "Is Mr. Brown married?",
+"voice": "Charon"
+},
+{
+"id": "y17",
+"kind": "yn",
+"n": 17,
+"text": "Is there a picture hanging on the wall?",
+"voice": "Charon"
+},
+{
+"id": "y18",
+"kind": "yn",
+"n": 18,
+"text": "Is Belém in the South of Brazil?",
+"voice": "Charon"
+},
+{
+"id": "y19",
+"kind": "yn",
+"n": 19,
+"text": "Do most people rest on Monday?",
+"voice": "Charon"
+},
+{
+"id": "y20",
+"kind": "yn",
+"n": 20,
+"text": "Is tall the opposite of high?",
+"voice": "Charon"
+},
+{
+"id": "d01",
+"kind": "dc",
+"n": 1,
+"text": "What is the meaning",
+"voice": "Kore"
+},
+{
+"id": "d02",
+"kind": "dc",
+"n": 2,
+"text": "of the word “wrist”?",
+"voice": "Kore"
+},
+{
+"id": "d03",
+"kind": "dc",
+"n": 3,
+"text": "How many things",
+"voice": "Kore"
+},
+{
+"id": "d04",
+"kind": "dc",
+"n": 4,
+"text": "are there here?",
+"voice": "Kore"
+},
+{
+"id": "d05",
+"kind": "dc",
+"n": 5,
+"text": "Her hair",
+"voice": "Kore"
+},
+{
+"id": "d06",
+"kind": "dc",
+"n": 6,
+"text": "is on her head.",
+"voice": "Kore"
+},
+{
+"id": "d07",
+"kind": "dc",
+"n": 7,
+"text": "His chin,",
+"voice": "Kore"
+},
+{
+"id": "d08",
+"kind": "dc",
+"n": 8,
+"text": "mouth and nose",
+"voice": "Kore"
+},
+{
+"id": "d09",
+"kind": "dc",
+"n": 9,
+"text": "are on his face.",
+"voice": "Kore"
+},
+{
+"id": "d10",
+"kind": "dc",
+"n": 10,
+"text": "My eyes are blue.",
+"voice": "Kore"
+},
+{
+"id": "d11",
+"kind": "dc",
+"n": 11,
+"text": "The people of Scandinavia",
+"voice": "Kore"
+},
+{
+"id": "d12",
+"kind": "dc",
+"n": 12,
+"text": "are tall.",
+"voice": "Kore"
+},
+{
+"id": "d13",
+"kind": "dc",
+"n": 13,
+"text": "He's asking us a question.",
+"voice": "Kore"
+},
+{
+"id": "d14",
+"kind": "dc",
+"n": 14,
+"text": "The name of her country",
+"voice": "Kore"
+},
+{
+"id": "d15",
+"kind": "dc",
+"n": 15,
+"text": "is Germany.",
+"voice": "Kore"
+},
+{
+"id": "d16",
+"kind": "dc",
+"n": 16,
+"text": "Have you got any ears?",
+"voice": "Kore"
+},
+{
+"id": "d17",
+"kind": "dc",
+"n": 17,
+"text": "Yes, two.",
+"voice": "Kore"
+}
+]
+}

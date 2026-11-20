@@ -122,19 +122,37 @@ main{flex:1;width:100%;max-width:860px;margin:0 auto;padding:18px max(14px,env(s
 a.btnl{display:inline-flex;align-items:center;min-height:46px;padding:8px 20px;border-radius:10px;background:var(--gold);color:var(--navy);font-weight:700;text-decoration:none;border:2px solid var(--gold)}
 .msg-bad{color:var(--bad);font-weight:700}
 @media (max-width:640px){.who,.sv{display:none}.timer{min-width:96px;padding:2px 10px}.timer b{font-size:1.4rem}.opts,.inwrap,.clr,.src{margin-left:0}.brand img{height:34px}.xnext{padding:10px 14px}.chips .lab{display:none}}
+/* voice mode */
+.vq{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:20px 18px;text-align:center}
+.vq-n{color:var(--muted);font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:.85rem}
+.vq-spk{width:132px;height:132px;margin:14px auto 8px;border-radius:50%;border:3px solid var(--gold);background:#fbf4de;color:var(--navy);display:flex;align-items:center;justify-content:center}
+.vq-spk svg{width:68px;height:68px}.vq-spk .w{opacity:.25}
+.vq-spk.on .w1{animation:vqw 1.1s ease-in-out infinite}.vq-spk.on .w2{animation:vqw 1.1s ease-in-out .25s infinite}
+@keyframes vqw{0%,100%{opacity:.2}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.vq-spk.on .w{animation:none;opacity:1}}
+html.fx-off .vq-spk.on .w{animation:none;opacity:1}
+.vq-st{min-height:1.6em;font-weight:700;color:var(--navy);font-size:1.05rem;margin:0 0 14px}
+.vq .opts{margin:0 auto;max-width:520px;text-align:left}
+.vq .opts.yn{grid-template-columns:1fr 1fr 74px}
+.chip.cur{outline:3px solid var(--gold2);outline-offset:1px}
+.dp{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;margin:0 0 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.dp .vq-spk{width:64px;height:64px;margin:0;border-width:2px}.dp .vq-spk svg{width:34px;height:34px}
+.dp .tx{flex:1 1 200px;min-width:0}.dp .tx b{display:block;color:var(--navy)}.dp .tx span{color:var(--muted);font-size:.92rem}
+.vtest{margin-top:14px;padding:12px 14px;background:#fbf4de;border:1.5px solid var(--gold2);border-radius:10px}
+.vtest p{margin:0 0 8px}
 </style>
 </head>
 <body>
 <div id="app"></div>
 <script src="js/config.js" charset="utf-8"></script>
-<script src="js/gate.js" charset="utf-8"></script><script src="js/dialog.js" data-lang="en" charset="utf-8"></script><script src="js/examcalc.js" charset="utf-8"></script>
+<script src="js/gate.js" charset="utf-8"></script><script src="js/dialog.js" data-lang="en" charset="utf-8"></script><script src="js/examcalc.js" charset="utf-8"></script><script src="js/examvoice.js" charset="utf-8"></script>
 <script>
 Gate.start({kinds:[],bare:true},function(ctx){
 'use strict';
 const sb=Gate.sb,el=Gate.el,app=document.getElementById('app');
 const NAME=(ctx.profile&&ctx.profile.name)||'';
 const STAGE_PARAM=parseInt(new URLSearchParams(location.search).get('stage'),10)||0;
-let MOCK=null;const QS=new URLSearchParams(location.search);let stage=0,items=null,answers={},part=0,t0=0,endIn=0,tick=null,dirty=false,saving=false,sent=false,lastSave=0;
+let MOCK=null,PLACE='',vqn=0,vheard={},dstate='idle';const QS=new URLSearchParams(location.search);let stage=0,items=null,answers={},part=0,t0=0,endIn=0,tick=null,dirty=false,saving=false,sent=false,lastSave=0;
 const PART_NAME={dictation:'Dictation',yesno:'Yes / No quiz',oral:'Listening',gap:'Gap fill',mc:'Multiple choice',err:'Error correction'};
 function clear(){app.textContent='';}
 function mmss(s){s=Math.max(0,s);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
@@ -254,24 +272,30 @@ function setA(p,n,v){
   refreshChips(p);
 }
 function draw(){
+  ExamVoice.stop();
   const p=items.parts[part];
   document.getElementById('sub').textContent='Part '+(part+1)+' of '+items.parts.length+' · '+(PART_NAME[p.id]||p.id);
   const st=document.getElementById('steps');st.textContent='';
   items.parts.forEach((x,i)=>st.append(el('li',{class:i<part?'done':(i===part?'cur':''),'aria-current':i===part?'step':null},el('i',{},i<part?'✓':String(i+1)),el('span',{},PART_NAME[x.id]||x.id))));
   const m=document.getElementById('main');m.textContent='';
-  m.append(el('div',{class:'instr'},el('h1',{},p.title),el('p',{},p.instr)));
+  m.append(el('div',{class:'instr'},el('h1',{},p.title),el('p',{},MOCK&&MOCK.voice?String(p.instr).replace('Your teacher reads','The app reads').replace('your teacher’s','the'):p.instr)));
   if(p.id==='dictation'){
     const ta=el('textarea',{class:'dic','aria-label':'Dictation: write what your teacher reads',spellcheck:'false',autocomplete:'off',autocapitalize:'sentences',autocorrect:'off'});
     const wc=el('span',{},'0 words');
     function words(){const t=ta.value.trim();return t?t.split(/\s+/).length:0;}
+    if(MOCK&&MOCK.voice)m.append(dictPanel(p));
     ta.value=answers.dictation||'';wc.textContent=words()+' words';
     ta.addEventListener('input',()=>{setA(p,1,ta.value);wc.textContent=words()+' words';});
     m.append(ta,el('div',{class:'cnt'},wc,el('span',{},'Write everything you hear.')));
     setTimeout(()=>ta.focus({preventScroll:true}),50);
+  }else if(MOCK&&MOCK.voice&&(p.id==='yesno'||p.id==='oral')){
+    m.append(el('div',{id:'vqbox'}));
   }else{
     qlist(p).forEach(n=>m.append(question(p,n)));
   }
-  footer(p);window.scrollTo(0,0);
+  footer(p);
+  if(MOCK&&MOCK.voice&&(p.id==='yesno'||p.id==='oral'))vqShow(p,qlist(p).find(n=>!isAns(p,n))||qlist(p)[0]);
+  window.scrollTo(0,0);
 }
 function question(p,n){
   const card=el('section',{class:'q',id:'q'+n,'aria-label':'Question '+n});
@@ -322,7 +346,7 @@ function footer(p){
   const ns=qlist(p),chips=el('div',{class:'chips'});
   if(ns.length){chips.append(el('span',{class:'lab'},'Questions'));
     ns.forEach(n=>{const c=el('button',{type:'button',class:'chip'+(((answers[p.id]||{})[n]==='?')?' uns':(isAns(p,n)?' ans':'')),'data-n':String(n),'aria-label':'Go to question '+n},String(n));
-      c.addEventListener('click',()=>{const q=document.getElementById('q'+n);if(q){q.scrollIntoView({behavior:'smooth',block:'center'});q.classList.add('flash');setTimeout(()=>q.classList.remove('flash'),900);const f1=q.querySelector('input,.opt');if(f1)f1.focus({preventScroll:true});}});chips.append(c);});}
+      c.addEventListener('click',()=>{if(MOCK&&MOCK.voice&&(p.id==='yesno'||p.id==='oral')){vqShow(p,n);return;}const q=document.getElementById('q'+n);if(q){q.scrollIntoView({behavior:'smooth',block:'center'});q.classList.add('flash');setTimeout(()=>q.classList.remove('flash'),900);const f1=q.querySelector('input,.opt');if(f1)f1.focus({preventScroll:true});}});chips.append(c);});}
   else chips.append(el('span',{class:'lab'},'Write the whole dictation in the box.'));
   const last=part===items.parts.length-1;
   if(MOCK&&MOCK.teach){const nb=el('button',{type:'button',class:'xnext'},last?'Close':'Next part →');nb.addEventListener('click',()=>{if(last){window.close();setTimeout(()=>{location.href='admin.html';},250);}else{part++;draw();}});
@@ -342,7 +366,7 @@ function blankText(s){return (s.blank.length?'Blank: '+s.blank.join(', '):'All a
 function confirmNext(last){
   const p=items.parts[part],s=stat(p);
   if(!last&&p.id==='yesno'&&s.blank.length){
-    const ok=el('button',{type:'button',class:'xnext'},'Go back to the questions');ok.addEventListener('click',()=>{closeModal();const q=document.getElementById('q'+s.blank[0]);if(q)q.scrollIntoView({behavior:'smooth',block:'center'});});
+    const ok=el('button',{type:'button',class:'xnext'},'Go back to the questions');ok.addEventListener('click',()=>{closeModal();if(MOCK&&MOCK.voice){vqShow(p,s.blank[0]);return;}const q=document.getElementById('q'+s.blank[0]);if(q)q.scrollIntoView({behavior:'smooth',block:'center'});});
     openModal([el('h2',{},'Answer every question'),el('p',{},'In this part you must choose Yes, No or ? for every question. Missing: ',el('b',{},s.blank.join(', ')),'.'),el('p',{},'Press ? if you did not understand the question.'),el('div',{class:'btns'},ok)]);return;
   }
   if(!last){
@@ -425,15 +449,21 @@ async function mockHome(){
 }
 function mockIntro(n,t){
   stage=n;MOCK={test:t,stage:n};
-  const go=el('button',{type:'button',class:'xnext'},'Start the mock test');
-  go.addEventListener('click',()=>{go.disabled=true;mockBegin(n,t);});
+  const go=el('button',{type:'button',class:'xnext'},'With my teacher'),gov=el('button',{type:'button',class:'xnext ghost'},'On my own, with voice');
+  go.addEventListener('click',()=>{go.disabled=true;gov.disabled=true;mockBegin(n,t,false);});
+  gov.addEventListener('click',()=>{go.disabled=true;gov.disabled=true;mockBegin(n,t,true);});
+  const tst=el('button',{type:'button',class:'xnext ghost',style:'min-height:40px;padding:6px 16px'},'Testar voz'),msg=el('p',{style:'margin:8px 0 0'});
+  tst.addEventListener('click',()=>{const i=ExamVoice.info();ExamVoice.test();
+    msg.textContent=!i.supported?'Este navegador não tem voz. Use o Chrome ou o Edge, ou escolha a opção com o professor.':i.count?'Voz do aparelho: '+i.name+'. A prova toca áudios gravados quando existirem; se não existirem, usa esta voz.':'Nenhuma voz em inglês encontrada neste aparelho. Instale uma: no Windows, Configurações > Hora e idioma > Fala; no Android, Configurações > Idioma > Saída de texto para fala; no iPhone, Ajustes > Acessibilidade > Conteúdo Falado > Vozes. Se não ouvir nada, escolha a opção com o professor.';});
   screen([el('div',{class:'scr'},logo(),el('h1',{class:'center'},'Stage '+n+' Mock '+t+(MOCK_ED==='2nd'?' · 2nd edition':'')),
     el('ul',{},
-      el('li',{},'Same parts and timer as the Stage Exam. The timer starts when you press the button.'),
+      el('li',{},'Same parts and timer as the Stage Exam. The timer starts when you press a button below.'),
       el('li',{},'You go from one part to the next and ',el('b',{},'you cannot go back'),' to a finished part.'),
-      el('li',{},'Your teacher reads the dictation and the listening questions aloud.'),
+      el('li',{},el('b',{},'With my teacher:'),' your teacher reads the dictation and the listening questions aloud.'),
+      el('li',{},el('b',{},'On my own, with voice:'),' the app reads them to you. Each question is read twice and each part of the dictation three times. There is no replay.'),
       el('li',{},'At the end you see your score for each part and the correct answers. You can try again later.')),
-    el('p',{class:'center'},go))]);
+    el('div',{class:'vtest'},el('p',{},'Antes de escolher a opção com voz, teste o som do seu aparelho.'),tst,msg),
+    el('p',{class:'center',style:'display:flex;gap:10px;justify-content:center;flex-wrap:wrap'},go,gov))]);
 }
 async function teachBegin(){
   const n=parseInt(QS.get('stage'),10),t=QS.get('test')||'X',ed=QS.get('ed')||'3rd';
@@ -467,8 +497,9 @@ async function mockPlace(d,n,t){
     const c=String((ctx.profile&&ctx.profile.ref_city)||'').toLowerCase();if(!c)return;
     const r=await fetch('mocks/places.json',{cache:'no-store'});if(!r.ok)return;
     const all=await r.json();let pl=null;
-    for(const k in all){if(all[k].match.some(m=>c.indexOf(m)>-1)){pl=all[k];break;}}
+    let pk='';for(const k in all){if(all[k].match.some(m=>c.indexOf(m)>-1)){pl=all[k];pk=k;break;}}
     if(!pl)return;
+    PLACE=pk;
     const pa=pl.patches['stage'+String(n).padStart(2,'0')+'-2nd-'+t];if(!pa)return;
     for(const pid in pa){
       const ip=d.items.parts.find(x=>x.id===pid),kp=d.keys.parts.find(x=>x.id===pid);
@@ -480,19 +511,80 @@ async function mockPlace(d,n,t){
     }
   }catch(e){}
 }
-async function mockBegin(n,t){
+async function mockBegin(n,t,voice){
   let d;
   try{const r=await fetch(mockFile(n,t),{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);d=await r.json();}
   catch(e){screen([el('div',{class:'scr'},el('h1',{},'Could not load the mock test'),el('p',{class:'msg-bad'},String(e.message||e)),el('p',{},el('a',{class:'btnl',href:'exam.html?mock=1'},'Back')))]);return;}
   if(MOCK_ED==='2nd')await mockPlace(d,n,t);
-  MOCK={test:t,stage:n,keys:d.keys,minutes:d.minutes};
+  MOCK={test:t,stage:n,keys:d.keys,minutes:d.minutes,voice:!!voice};vheard={};dstate='idle';
+  if(voice)await voiceLoad(n,t);
   items=d.items;answers={};part=0;t0=performance.now();endIn=d.minutes*60;
   window.addEventListener('beforeunload',e=>{if(!sent){e.preventDefault();e.returnValue='';}});
   shell();draw();tick=setInterval(onTick,500);onTick();
   const sv=document.getElementById('sv');if(sv)sv.textContent='Mock test';
 }
+/* ---------- voice mode ---------- */
+const SPK='<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18h8l10-8v28l-10-8H6z"/><path class="w w1" d="M31 17c3 3 3 11 0 14"/><path class="w w2" d="M36 11c6 6 6 20 0 26"/></svg>';
+function spk(){const d=el('div',{class:'vq-spk','aria-hidden':'true'});d.innerHTML=SPK;return d;}
+const pad2=n=>String(n).padStart(2,'0');
+async function voiceLoad(n,t){
+  MOCK.vs=null;
+  try{
+    const r=await fetch('mocks/voice/stage'+pad2(n)+'-'+MOCK_ED+'-'+t+'.json',{cache:'no-store'});if(!r.ok)return;
+    const d=await r.json(),ids={};d.items.forEach(i=>{ids[i.id]=i;});
+    const f=d.items[0],ac=new AbortController(),tm=setTimeout(()=>ac.abort(),2500),h=await fetch(d.base+f.id+(f.kind==='dc'?'p':'')+'.'+d.ext,{method:'HEAD',signal:ac.signal}).catch(()=>null);clearTimeout(tm);
+    MOCK.vs={base:d.base,ext:d.ext,ids:ids,items:d.items,ok:!!(h&&h.ok)};
+  }catch(e){}
+}
+function vurl(id){const v=MOCK.vs;return v&&v.ok&&v.ids[id.replace(/^(d\d+)[ps]$/,'$1')]?v.base+id+'.'+v.ext:null;}
+function vtext(p,n){const it=(p.items||[]).find(i=>i.n===n);if(it&&it.q)return it.q;const kp=MOCK.keys.parts.find(x=>x.id===p.id);return (kp&&kp.teacher&&kp.teacher[n])||'';}
+function vqShow(p,n){
+  const box=document.getElementById('vqbox');if(!box)return;
+  const my=ExamVoice.begin(),ns=qlist(p),k=p.id+n,i=ns.indexOf(n);vqn=n;
+  const id=(p.id==='yesno'?'y':'o')+pad2(n),idv=MOCK.vs&&PLACE&&MOCK.vs.ids[id+'-'+PLACE]?id+'-'+PLACE:id;
+  const st=el('p',{class:'vq-st','aria-live':'polite'}),sp=spk(),cur=(answers[p.id]||{})[n];
+  const o=el('div',{class:'opts'+(p.id==='yesno'?' row yn':''),role:'radiogroup','aria-label':'Question '+n});
+  function pick(v){
+    ExamVoice.stop();sp.classList.remove('on');const now=(answers[p.id]||{})[n];
+    if(now===v){setA(p,n,'');o.querySelectorAll('.opt').forEach(x=>x.setAttribute('aria-checked','false'));return;}
+    setA(p,n,v);o.querySelectorAll('.opt').forEach(x=>x.setAttribute('aria-checked',String(x.dataset.v===v)));
+    const nx=ns[i+1];if(nx!=null)setTimeout(()=>{if(vqn===n)vqShow(p,nx);},450);else st.textContent='Last question. Check the numbers below, then go to the next part.';
+  }
+  if(p.id==='yesno')[['Yes','Yes'],['No','No'],['?','?']].forEach(([v,tx])=>{const b=el('button',{type:'button',class:'opt'+(v==='?'?' unsure':''),role:'radio','data-v':v,'aria-checked':String(cur===v),'aria-label':v==='?'?'I did not understand the question':null,title:v==='?'?'I did not understand the question':null},tx);b.addEventListener('click',()=>pick(v));o.append(b);});
+  else{const it=p.items.find(x=>x.n===n);Object.keys(it.opts).forEach(kk=>{const b=el('button',{type:'button',class:'opt',role:'radio','data-v':kk,'aria-checked':String(cur===kk)},el('b',{},kk.toUpperCase()),el('span',{},it.opts[kk]));b.addEventListener('click',()=>pick(kk));o.append(b);});}
+  box.textContent='';box.append(el('div',{class:'vq'},el('div',{class:'vq-n'},'Question '+n+' of '+ns.length),sp,st,o));
+  document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('cur',parseInt(c.dataset.n,10)===n));
+  const done=vheard[k]||0;
+  if(done>=2){st.textContent='This question was read twice. Choose your answer.';return;}
+  sp.classList.add('on');
+  ExamVoice.readQ({text:vtext(p,n),url:vurl(idv)},2-done,s=>{st.textContent='Reading '+(done+s)+' of 2';},my).then(ok=>{
+    if(ok){vheard[k]=2;sp.classList.remove('on');st.textContent='Read twice. Choose your answer.';}
+  });
+}
+function dictPanel(p){
+  const kp=MOCK.keys.parts.find(x=>x.id==='dictation')||{};
+  let cs=(p.chunks||[]).map(t=>({text:t,id:null}));
+  if(MOCK.vs){const d=MOCK.vs.items.filter(i=>i.kind==='dc');if(d.length)cs=d.map(i=>({text:i.text,id:i.id}));}
+  if(!cs.length)cs=ExamVoice.chunks(kp.text||'').map(t=>({text:t,id:null}));
+  cs=cs.map(c=>({text:c.text,urlP:c.id?vurl(c.id+'p'):null,urlS:c.id?vurl(c.id+'s'):null}));
+  const sp=spk(),t1=el('b',{},'The dictation'),t2=el('span',{},cs.length+' parts. Each part is read three times: normal, slow, normal. Write what you hear. There is no replay.');
+  const go=el('button',{type:'button',class:'xnext'},'Start the dictation'),ps=el('button',{type:'button',class:'xnext ghost',hidden:true},'Pause');
+  if(dstate==='done'){go.hidden=true;t1.textContent='The dictation has finished';t2.textContent='Check your text before going to the next part.';}
+  else if(dstate==='run'||dstate==='paused'){go.hidden=true;t2.textContent='The dictation was interrupted. Write what you remember.';}
+  go.addEventListener('click',async()=>{
+    go.hidden=true;ps.hidden=false;dstate='run';sp.classList.add('on');const my=ExamVoice.begin();let on=true;
+    ps.onclick=()=>{if(on){ExamVoice.pause();ps.textContent='Go on';on=false;dstate='paused';}else{ExamVoice.resume();ps.textContent='Pause';on=true;dstate='run';}};
+    for(let i=0;i<cs.length;i++){
+      t1.textContent='Part '+(i+1)+' of '+cs.length;
+      const ok=await ExamVoice.readChunk(cs[i],s=>{t2.textContent='Reading '+s+' of 3 ('+(s===2?'slow':'normal')+')';},my);
+      if(!ok)return;
+    }
+    dstate='done';sp.classList.remove('on');ps.hidden=true;t1.textContent='The dictation has finished';t2.textContent='Check your text before going to the next part.';
+  });
+  return el('div',{class:'dp'},sp,el('div',{class:'tx'},t1,t2),go,ps);
+}
 async function mockSend(){
-  if(sent)return;sent=true;clearInterval(tick);closeModal();
+  if(sent)return;sent=true;clearInterval(tick);closeModal();ExamVoice.stop();
   const g=mgrade(MOCK.keys,answers),used=Math.round(MOCK.minutes*60-left());
   sb.from('mock_attempts').insert({stage:stage,edition:MOCK_ED,test:MOCK.test,answers:answers,scores:g.scores,maxes:g.maxes,seconds_used:used}).then(()=>{},()=>{});
   mockFinished(g);

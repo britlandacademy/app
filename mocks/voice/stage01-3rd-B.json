@@ -1,0 +1,301 @@
+{
+"name": "stage01-3rd-B",
+"base": "https://isrvmwebubjcvzxkorpf.supabase.co/storage/v1/object/public/simulado-voice/3rd/stage01-3rd-B/",
+"ext": "wav",
+"items": [
+{
+"id": "d01",
+"kind": "dc",
+"n": 1,
+"text": "The table is large.",
+"voice": "Orus"
+},
+{
+"id": "d02",
+"kind": "dc",
+"n": 2,
+"text": "The box is small.",
+"voice": "Orus"
+},
+{
+"id": "d03",
+"kind": "dc",
+"n": 3,
+"text": "The pen is under the book.",
+"voice": "Orus"
+},
+{
+"id": "d04",
+"kind": "dc",
+"n": 4,
+"text": "The light is on the ceiling.",
+"voice": "Orus"
+},
+{
+"id": "d05",
+"kind": "dc",
+"n": 5,
+"text": "You are sitting on the chair.",
+"voice": "Orus"
+},
+{
+"id": "d06",
+"kind": "dc",
+"n": 6,
+"text": "He is a man.",
+"voice": "Orus"
+},
+{
+"id": "d07",
+"kind": "dc",
+"n": 7,
+"text": "She is a woman.",
+"voice": "Orus"
+},
+{
+"id": "d08",
+"kind": "dc",
+"n": 8,
+"text": "The door is open.",
+"voice": "Orus"
+},
+{
+"id": "d09",
+"kind": "dc",
+"n": 9,
+"text": "The window is closed.",
+"voice": "Orus"
+},
+{
+"id": "d10",
+"kind": "dc",
+"n": 10,
+"text": "There are two pictures",
+"voice": "Orus"
+},
+{
+"id": "d11",
+"kind": "dc",
+"n": 11,
+"text": "on the wall.",
+"voice": "Orus"
+},
+{
+"id": "d12",
+"kind": "dc",
+"n": 12,
+"text": "This pencil is green.",
+"voice": "Orus"
+},
+{
+"id": "d13",
+"kind": "dc",
+"n": 13,
+"text": "That chair is brown.",
+"voice": "Orus"
+},
+{
+"id": "d14",
+"kind": "dc",
+"n": 14,
+"text": "The students are standing behind the",
+"voice": "Orus"
+},
+{
+"id": "d15",
+"kind": "dc",
+"n": 15,
+"text": "table.",
+"voice": "Orus"
+},
+{
+"id": "d16",
+"kind": "dc",
+"n": 16,
+"text": "We are in the room.",
+"voice": "Orus"
+},
+{
+"id": "d17",
+"kind": "dc",
+"n": 17,
+"text": "The wall is low.",
+"voice": "Orus"
+},
+{
+"id": "d18",
+"kind": "dc",
+"n": 18,
+"text": "Anna Brown is short.",
+"voice": "Orus"
+},
+{
+"id": "d19",
+"kind": "dc",
+"n": 19,
+"text": "I can read and write.",
+"voice": "Orus"
+},
+{
+"id": "d20",
+"kind": "dc",
+"n": 20,
+"text": "I can’t speak Chinese.",
+"voice": "Orus"
+},
+{
+"id": "d21",
+"kind": "dc",
+"n": 21,
+"text": "I don’t like television.",
+"voice": "Orus"
+},
+{
+"id": "d22",
+"kind": "dc",
+"n": 22,
+"text": "He speaks French.",
+"voice": "Orus"
+},
+{
+"id": "d23",
+"kind": "dc",
+"n": 23,
+"text": "She goes home after the lesson.",
+"voice": "Orus"
+},
+{
+"id": "d24",
+"kind": "dc",
+"n": 24,
+"text": "Put your hand on your head,",
+"voice": "Orus"
+},
+{
+"id": "d25",
+"kind": "dc",
+"n": 25,
+"text": "please.",
+"voice": "Orus"
+},
+{
+"id": "d26",
+"kind": "dc",
+"n": 26,
+"text": "Close your book.",
+"voice": "Orus"
+},
+{
+"id": "d27",
+"kind": "dc",
+"n": 27,
+"text": "Who is he?",
+"voice": "Orus"
+},
+{
+"id": "y01",
+"kind": "yn",
+"n": 1,
+"text": "Is a village large?",
+"voice": "Charon"
+},
+{
+"id": "y02",
+"kind": "yn",
+"n": 2,
+"text": "Is Windsor a city?",
+"voice": "Charon"
+},
+{
+"id": "y03",
+"kind": "yn",
+"n": 3,
+"text": "Is Grantchester a town?",
+"voice": "Charon"
+},
+{
+"id": "y04",
+"kind": "yn",
+"n": 4,
+"text": "Is the letter A a vowel?",
+"voice": "Charon"
+},
+{
+"id": "y05",
+"kind": "yn",
+"n": 5,
+"text": "Is India in Europe?",
+"voice": "Charon"
+},
+{
+"id": "y06",
+"kind": "yn",
+"n": 6,
+"text": "Is Greece in Europe?",
+"voice": "Charon"
+},
+{
+"id": "y07",
+"kind": "yn",
+"n": 7,
+"text": "Is five an ordinal number?",
+"voice": "Charon"
+},
+{
+"id": "y08",
+"kind": "yn",
+"n": 8,
+"text": "Is it right that 6 – 2 = 4?",
+"voice": "Charon"
+},
+{
+"id": "y09",
+"kind": "yn",
+"n": 9,
+"text": "Are the people of Scandinavia tall?",
+"voice": "Charon"
+},
+{
+"id": "y10",
+"kind": "yn",
+"n": 10,
+"text": "Is China a country?",
+"voice": "Charon"
+},
+{
+"id": "y11",
+"kind": "yn",
+"n": 11,
+"text": "Can you read and write?",
+"voice": "Charon"
+},
+{
+"id": "y12",
+"kind": "yn",
+"n": 12,
+"text": "Do we read with our ears?",
+"voice": "Charon"
+},
+{
+"id": "y13",
+"kind": "yn",
+"n": 13,
+"text": "Do we speak with our eyes?",
+"voice": "Charon"
+},
+{
+"id": "y14",
+"kind": "yn",
+"n": 14,
+"text": "Is the plural of “woman” “women”?",
+"voice": "Charon"
+},
+{
+"id": "y15",
+"kind": "yn",
+"n": 15,
+"text": "Is Beijing a country?",
+"voice": "Charon"
+}
+]
+}

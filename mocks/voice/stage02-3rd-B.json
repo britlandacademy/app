@@ -1,0 +1,280 @@
+{
+"name": "stage02-3rd-B",
+"base": "https://isrvmwebubjcvzxkorpf.supabase.co/storage/v1/object/public/simulado-voice/3rd/stage02-3rd-B/",
+"ext": "wav",
+"items": [
+{
+"id": "d01",
+"kind": "dc",
+"n": 1,
+"text": "I’m telling you my name.",
+"voice": "Charon"
+},
+{
+"id": "d02",
+"kind": "dc",
+"n": 2,
+"text": "Half of the people",
+"voice": "Charon"
+},
+{
+"id": "d03",
+"kind": "dc",
+"n": 3,
+"text": "in this town are men.",
+"voice": "Charon"
+},
+{
+"id": "d04",
+"kind": "dc",
+"n": 4,
+"text": "We stand up after the lesson.",
+"voice": "Charon"
+},
+{
+"id": "d05",
+"kind": "dc",
+"n": 5,
+"text": "The French are different from the",
+"voice": "Charon"
+},
+{
+"id": "d06",
+"kind": "dc",
+"n": 6,
+"text": "Russians.",
+"voice": "Charon"
+},
+{
+"id": "d07",
+"kind": "dc",
+"n": 7,
+"text": "Mrs Brown’s husband is standing",
+"voice": "Charon"
+},
+{
+"id": "d08",
+"kind": "dc",
+"n": 8,
+"text": "in front of the house.",
+"voice": "Charon"
+},
+{
+"id": "d09",
+"kind": "dc",
+"n": 9,
+"text": "I’m learning English from you.",
+"voice": "Charon"
+},
+{
+"id": "d10",
+"kind": "dc",
+"n": 10,
+"text": "There are few people",
+"voice": "Charon"
+},
+{
+"id": "d11",
+"kind": "dc",
+"n": 11,
+"text": "in a small village.",
+"voice": "Charon"
+},
+{
+"id": "d12",
+"kind": "dc",
+"n": 12,
+"text": "There are twelve months",
+"voice": "Charon"
+},
+{
+"id": "d13",
+"kind": "dc",
+"n": 13,
+"text": "in a year.",
+"voice": "Charon"
+},
+{
+"id": "d14",
+"kind": "dc",
+"n": 14,
+"text": "We wear a watch",
+"voice": "Charon"
+},
+{
+"id": "d15",
+"kind": "dc",
+"n": 15,
+"text": "on our wrist.",
+"voice": "Charon"
+},
+{
+"id": "d16",
+"kind": "dc",
+"n": 16,
+"text": "The red book is small",
+"voice": "Charon"
+},
+{
+"id": "d17",
+"kind": "dc",
+"n": 17,
+"text": "and the blue one is large.",
+"voice": "Charon"
+},
+{
+"id": "d18",
+"kind": "dc",
+"n": 18,
+"text": "Today is Thursday; the day after",
+"voice": "Charon"
+},
+{
+"id": "d19",
+"kind": "dc",
+"n": 19,
+"text": "tomorrow will be Saturday.",
+"voice": "Charon"
+},
+{
+"id": "d20",
+"kind": "dc",
+"n": 20,
+"text": "The small boy goes",
+"voice": "Charon"
+},
+{
+"id": "d21",
+"kind": "dc",
+"n": 21,
+"text": "to bed before his sister.",
+"voice": "Charon"
+},
+{
+"id": "d22",
+"kind": "dc",
+"n": 22,
+"text": "I want to live for a",
+"voice": "Charon"
+},
+{
+"id": "d23",
+"kind": "dc",
+"n": 23,
+"text": "hundred years.",
+"voice": "Charon"
+},
+{
+"id": "d24",
+"kind": "dc",
+"n": 24,
+"text": "Rob likes playing the piano.",
+"voice": "Charon"
+},
+{
+"id": "y01",
+"kind": "yn",
+"n": 1,
+"text": "Is Germany an Asian country?",
+"voice": "Puck"
+},
+{
+"id": "y02",
+"kind": "yn",
+"n": 2,
+"text": "Is the word “translate” a verb?",
+"voice": "Puck"
+},
+{
+"id": "y03",
+"kind": "yn",
+"n": 3,
+"text": "Is Mr Brown single?",
+"voice": "Puck"
+},
+{
+"id": "y04",
+"kind": "yn",
+"n": 4,
+"text": "Is seven half of fourteen?",
+"voice": "Puck"
+},
+{
+"id": "y05",
+"kind": "yn",
+"n": 5,
+"text": "Are there many people in a small village?",
+"voice": "Puck"
+},
+{
+"id": "y06",
+"kind": "yn",
+"n": 6,
+"text": "Is seven plus thirteen twenty?",
+"voice": "Puck"
+},
+{
+"id": "y07",
+"kind": "yn",
+"n": 7,
+"text": "Is the word “book” an adjective?",
+"voice": "Puck"
+},
+{
+"id": "y08",
+"kind": "yn",
+"n": 8,
+"text": "Is a town larger than a village?",
+"voice": "Puck"
+},
+{
+"id": "y09",
+"kind": "yn",
+"n": 9,
+"text": "Do we put sugar on meat?",
+"voice": "Puck"
+},
+{
+"id": "y10",
+"kind": "yn",
+"n": 10,
+"text": "Is Wednesday between Tuesday and Thursday?",
+"voice": "Puck"
+},
+{
+"id": "y11",
+"kind": "yn",
+"n": 11,
+"text": "Can we speak without opening our mouths?",
+"voice": "Puck"
+},
+{
+"id": "y12",
+"kind": "yn",
+"n": 12,
+"text": "Are there more people in a town than in a village?",
+"voice": "Puck"
+},
+{
+"id": "y13",
+"kind": "yn",
+"n": 13,
+"text": "Is the opposite of “beautiful” “handsome”?",
+"voice": "Puck"
+},
+{
+"id": "y14",
+"kind": "yn",
+"n": 14,
+"text": "Do we use a.m. for the time before midday?",
+"voice": "Puck"
+},
+{
+"id": "y15",
+"kind": "yn",
+"n": 15,
+"text": "Do we drink coffee from a glass?",
+"voice": "Puck"
+}
+]
+}

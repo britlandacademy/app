@@ -101,8 +101,10 @@ import { createClient } from "npm:@supabase/supabase-js@2";
       if(rand()>=0.5)return '';
       var L=[['review',es?'Si estás disfrutando de las clases, ¿qué tal dejar una reseña del curso en la app? Toma 1 minuto 💛':'Se você está gostando das aulas, que tal deixar uma avaliação do curso no app? Leva 1 minuto 💛'],
         ['goal',es?'Meta de la semana: haz tus Lesson Checks y mantén la racha 🔥':'Meta da semana: faça seus exercícios do dia no app e mantenha a ofensiva 🔥'],
+        ['mock1',es?'':'Antes da prova, que tal um simulado? Ele está no app, no card Stage Exam, com a nota e as respostas certas no final 💪'],
+        ['mock2',es?'':'Novidade no app: simulados de todos os Stages, no card Stage Exam. Faça com calma e veja onde errou 📝'],
         ['refer',es?'¿Conoces a alguien que quiera aprender? ¡Recomienda Britland Academy! 🤝':'Conhece alguém que queira aprender? Indique a Britland Academy! 🤝']]
-        .filter(function(x){return ok(x[0],21);}).sort(function(a,b){return (+seen[a[0]]||0)-(+seen[b[0]]||0);});
+        .filter(function(x){return x[1]&&ok(x[0],21);}).sort(function(a,b){return (+seen[a[0]]||0)-(+seen[b[0]]||0);});
       if(!L.length)return '';picks[ctx.uid0+':n:'+L[0][0]]=0;return L[0][1];}
     if(kind==='nw'&&!ctx.isMeet){var nl=noticeLine();return {type:k,picks:picks,text:pick(hasNW?E.nw:E.gen,vk)+(nl?'\n\n'+nl:'')+'\n\n'+join};}
     var bn=ctx.bdays||[],ex=[];

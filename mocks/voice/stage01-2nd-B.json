@@ -1,0 +1,324 @@
+{
+"name": "stage01-2nd-B",
+"base": "https://isrvmwebubjcvzxkorpf.supabase.co/storage/v1/object/public/simulado-voice/2nd/stage01-2nd-B/",
+"ext": "wav",
+"items": [
+{
+"id": "y01",
+"kind": "yn",
+"n": 1,
+"text": "Is São Paulo small?",
+"voice": "Orus"
+},
+{
+"id": "y01-algarve",
+"kind": "yn",
+"n": 1,
+"place": "algarve",
+"text": "Is London small?",
+"voice": "Orus"
+},
+{
+"id": "y01-waterford",
+"kind": "yn",
+"n": 1,
+"place": "waterford",
+"text": "Is London small?",
+"voice": "Orus"
+},
+{
+"id": "y02",
+"kind": "yn",
+"n": 2,
+"text": "Is the ceiling white?",
+"voice": "Orus"
+},
+{
+"id": "y03",
+"kind": "yn",
+"n": 3,
+"text": "Is the table behind you?",
+"voice": "Orus"
+},
+{
+"id": "y04",
+"kind": "yn",
+"n": 4,
+"text": "Is Moscow the capital of Russia?",
+"voice": "Orus"
+},
+{
+"id": "y05",
+"kind": "yn",
+"n": 5,
+"text": "Is the teacher standing on the table?",
+"voice": "Orus"
+},
+{
+"id": "y06",
+"kind": "yn",
+"n": 6,
+"text": "Is it right that 2+2 equals 7?",
+"voice": "Orus"
+},
+{
+"id": "y07",
+"kind": "yn",
+"n": 7,
+"text": "Am I a student?",
+"voice": "Orus"
+},
+{
+"id": "y08",
+"kind": "yn",
+"n": 8,
+"text": "Is Athens in Asia?",
+"voice": "Orus"
+},
+{
+"id": "y09",
+"kind": "yn",
+"n": 9,
+"text": "Are there a thousand students in this room?",
+"voice": "Orus"
+},
+{
+"id": "y10",
+"kind": "yn",
+"n": 10,
+"text": "Is Jack Brown tall?",
+"voice": "Orus"
+},
+{
+"id": "y11",
+"kind": "yn",
+"n": 11,
+"text": "Is foots the plural of foot?",
+"voice": "Orus"
+},
+{
+"id": "y12",
+"kind": "yn",
+"n": 12,
+"text": "Is “A” the fifth letter of the alphabet?",
+"voice": "Orus"
+},
+{
+"id": "y13",
+"kind": "yn",
+"n": 13,
+"text": "Is “I” between H and J?",
+"voice": "Orus"
+},
+{
+"id": "y14",
+"kind": "yn",
+"n": 14,
+"text": "20+30 equals 50. Is that right?",
+"voice": "Orus"
+},
+{
+"id": "y15",
+"kind": "yn",
+"n": 15,
+"text": "Have you got two shoes on your feet?",
+"voice": "Orus"
+},
+{
+"id": "y16",
+"kind": "yn",
+"n": 16,
+"text": "Is the letter “O” a consonant?",
+"voice": "Orus"
+},
+{
+"id": "y17",
+"kind": "yn",
+"n": 17,
+"text": "Is Mr. Brown standing behind the house?",
+"voice": "Orus"
+},
+{
+"id": "y18",
+"kind": "yn",
+"n": 18,
+"text": "Are there any chairs on the table?",
+"voice": "Orus"
+},
+{
+"id": "y19",
+"kind": "yn",
+"n": 19,
+"text": "Are you answering a question?",
+"voice": "Orus"
+},
+{
+"id": "y20",
+"kind": "yn",
+"n": 20,
+"text": "Has Mr. Brown got two legs?",
+"voice": "Orus"
+},
+{
+"id": "d01",
+"kind": "dc",
+"n": 1,
+"text": "A city",
+"voice": "Puck"
+},
+{
+"id": "d02",
+"kind": "dc",
+"n": 2,
+"text": "isn´t small,",
+"voice": "Puck"
+},
+{
+"id": "d03",
+"kind": "dc",
+"n": 3,
+"text": "it´s large.",
+"voice": "Puck"
+},
+{
+"id": "d04",
+"kind": "dc",
+"n": 4,
+"text": "The light",
+"voice": "Puck"
+},
+{
+"id": "d05",
+"kind": "dc",
+"n": 5,
+"text": "is on",
+"voice": "Puck"
+},
+{
+"id": "d06",
+"kind": "dc",
+"n": 6,
+"text": "the ceiling.",
+"voice": "Puck"
+},
+{
+"id": "d07",
+"kind": "dc",
+"n": 7,
+"text": "She´s Mrs. Brown",
+"voice": "Puck"
+},
+{
+"id": "d08",
+"kind": "dc",
+"n": 8,
+"text": "and he´s Mr. Blue.",
+"voice": "Puck"
+},
+{
+"id": "d09",
+"kind": "dc",
+"n": 9,
+"text": "The pencil isn´t black",
+"voice": "Puck"
+},
+{
+"id": "d10",
+"kind": "dc",
+"n": 10,
+"text": "it´s green.",
+"voice": "Puck"
+},
+{
+"id": "d11",
+"kind": "dc",
+"n": 11,
+"text": "Where´s the picture?",
+"voice": "Puck"
+},
+{
+"id": "d12",
+"kind": "dc",
+"n": 12,
+"text": "You aren´t Mr. Brown",
+"voice": "Puck"
+},
+{
+"id": "d13",
+"kind": "dc",
+"n": 13,
+"text": "you´re Mr. White.",
+"voice": "Puck"
+},
+{
+"id": "d14",
+"kind": "dc",
+"n": 14,
+"text": "The clock is",
+"voice": "Puck"
+},
+{
+"id": "d15",
+"kind": "dc",
+"n": 15,
+"text": "on the wall",
+"voice": "Puck"
+},
+{
+"id": "d16",
+"kind": "dc",
+"n": 16,
+"text": "behind me.",
+"voice": "Puck"
+},
+{
+"id": "d17",
+"kind": "dc",
+"n": 17,
+"text": "Anna Brown",
+"voice": "Puck"
+},
+{
+"id": "d18",
+"kind": "dc",
+"n": 18,
+"text": "is sitting",
+"voice": "Puck"
+},
+{
+"id": "d19",
+"kind": "dc",
+"n": 19,
+"text": "on the chair.",
+"voice": "Puck"
+},
+{
+"id": "d20",
+"kind": "dc",
+"n": 20,
+"text": "Which door",
+"voice": "Puck"
+},
+{
+"id": "d21",
+"kind": "dc",
+"n": 21,
+"text": "is closed?. A village is small",
+"voice": "Puck"
+},
+{
+"id": "d22",
+"kind": "dc",
+"n": 22,
+"text": "but a city",
+"voice": "Puck"
+},
+{
+"id": "d23",
+"kind": "dc",
+"n": 23,
+"text": "is large.",
+"voice": "Puck"
+}
+]
+}

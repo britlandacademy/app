@@ -1,0 +1,266 @@
+{
+"name": "stage03-3rd-A",
+"base": "https://isrvmwebubjcvzxkorpf.supabase.co/storage/v1/object/public/simulado-voice/3rd/stage03-3rd-A/",
+"ext": "wav",
+"items": [
+{
+"id": "d01",
+"kind": "dc",
+"n": 1,
+"text": "The plural of “tomato” is “tomatoes”.",
+"voice": "Charon"
+},
+{
+"id": "d02",
+"kind": "dc",
+"n": 2,
+"text": "We cut meat with a knife.",
+"voice": "Charon"
+},
+{
+"id": "d03",
+"kind": "dc",
+"n": 3,
+"text": "Tuesday precedes Wednesday.",
+"voice": "Charon"
+},
+{
+"id": "d04",
+"kind": "dc",
+"n": 4,
+"text": "We can see the sun",
+"voice": "Charon"
+},
+{
+"id": "d05",
+"kind": "dc",
+"n": 5,
+"text": "in the sky during the day.",
+"voice": "Charon"
+},
+{
+"id": "d06",
+"kind": "dc",
+"n": 6,
+"text": "When I get up",
+"voice": "Charon"
+},
+{
+"id": "d07",
+"kind": "dc",
+"n": 7,
+"text": "in the morning,",
+"voice": "Charon"
+},
+{
+"id": "d08",
+"kind": "dc",
+"n": 8,
+"text": "I wash and dress.",
+"voice": "Charon"
+},
+{
+"id": "d09",
+"kind": "dc",
+"n": 9,
+"text": "India is one",
+"voice": "Charon"
+},
+{
+"id": "d10",
+"kind": "dc",
+"n": 10,
+"text": "of the hottest countries",
+"voice": "Charon"
+},
+{
+"id": "d11",
+"kind": "dc",
+"n": 11,
+"text": "in the world.",
+"voice": "Charon"
+},
+{
+"id": "d12",
+"kind": "dc",
+"n": 12,
+"text": "Most people prefer texts for short",
+"voice": "Charon"
+},
+{
+"id": "d13",
+"kind": "dc",
+"n": 13,
+"text": "messages.",
+"voice": "Charon"
+},
+{
+"id": "d14",
+"kind": "dc",
+"n": 14,
+"text": "The teacher says “Goodbye”",
+"voice": "Charon"
+},
+{
+"id": "d15",
+"kind": "dc",
+"n": 15,
+"text": "to us at the end",
+"voice": "Charon"
+},
+{
+"id": "d16",
+"kind": "dc",
+"n": 16,
+"text": "of the lesson.",
+"voice": "Charon"
+},
+{
+"id": "d17",
+"kind": "dc",
+"n": 17,
+"text": "The moon is white,",
+"voice": "Charon"
+},
+{
+"id": "d18",
+"kind": "dc",
+"n": 18,
+"text": "or the colour of silver.",
+"voice": "Charon"
+},
+{
+"id": "d19",
+"kind": "dc",
+"n": 19,
+"text": "Snow is white.",
+"voice": "Charon"
+},
+{
+"id": "d20",
+"kind": "dc",
+"n": 20,
+"text": "Clouds are made of water.",
+"voice": "Charon"
+},
+{
+"id": "d21",
+"kind": "dc",
+"n": 21,
+"text": "My brother’s house is",
+"voice": "Charon"
+},
+{
+"id": "d22",
+"kind": "dc",
+"n": 22,
+"text": "by the sea.",
+"voice": "Charon"
+},
+{
+"id": "d23",
+"kind": "dc",
+"n": 23,
+"text": "We only live once.",
+"voice": "Charon"
+},
+{
+"id": "d24",
+"kind": "dc",
+"n": 24,
+"text": "The students can enter the classroom",
+"voice": "Charon"
+},
+{
+"id": "d25",
+"kind": "dc",
+"n": 25,
+"text": "when the teacher comes.",
+"voice": "Charon"
+},
+{
+"id": "d26",
+"kind": "dc",
+"n": 26,
+"text": "Please remember to shake hands",
+"voice": "Charon"
+},
+{
+"id": "d27",
+"kind": "dc",
+"n": 27,
+"text": "with Mr Jones.",
+"voice": "Charon"
+},
+{
+"id": "o01",
+"kind": "or",
+"n": 1,
+"text": "What do we cut meat with?",
+"voice": "Puck"
+},
+{
+"id": "o02",
+"kind": "or",
+"n": 2,
+"text": "What do we wash our hands with?",
+"voice": "Puck"
+},
+{
+"id": "o03",
+"kind": "or",
+"n": 3,
+"text": "What do we taste with?",
+"voice": "Puck"
+},
+{
+"id": "o04",
+"kind": "or",
+"n": 4,
+"text": "What do we play football with?",
+"voice": "Puck"
+},
+{
+"id": "o05",
+"kind": "or",
+"n": 5,
+"text": "What colour’s snow?",
+"voice": "Puck"
+},
+{
+"id": "o06",
+"kind": "or",
+"n": 6,
+"text": "What’s the opposite of “buy”?",
+"voice": "Puck"
+},
+{
+"id": "o07",
+"kind": "or",
+"n": 7,
+"text": "What are clouds made of?",
+"voice": "Puck"
+},
+{
+"id": "o08",
+"kind": "or",
+"n": 8,
+"text": "What’s the opposite of deep?",
+"voice": "Puck"
+},
+{
+"id": "o09",
+"kind": "or",
+"n": 9,
+"text": "What do we say to people on their birthday?",
+"voice": "Puck"
+},
+{
+"id": "o10",
+"kind": "or",
+"n": 10,
+"text": "What’s over this building?",
+"voice": "Puck"
+}
+]
+}

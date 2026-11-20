@@ -1,0 +1,273 @@
+{
+"name": "stage06-2nd-A",
+"base": "https://isrvmwebubjcvzxkorpf.supabase.co/storage/v1/object/public/simulado-voice/2nd/stage06-2nd-A/",
+"ext": "wav",
+"items": [
+{
+"id": "y01",
+"kind": "yn",
+"n": 1,
+"text": "Do sailing boats move slower in strong winds?",
+"voice": "Orus"
+},
+{
+"id": "y02",
+"kind": "yn",
+"n": 2,
+"text": "Has this exam finished yet?",
+"voice": "Orus"
+},
+{
+"id": "y03",
+"kind": "yn",
+"n": 3,
+"text": "Do honest people often tell lies?",
+"voice": "Orus"
+},
+{
+"id": "y04",
+"kind": "yn",
+"n": 4,
+"text": "Can we shorten a coat by cutting a piece o the bottom?",
+"voice": "Orus"
+},
+{
+"id": "y05",
+"kind": "yn",
+"n": 5,
+"text": "Should we look both ways before crossing the road?",
+"voice": "Orus"
+},
+{
+"id": "y06",
+"kind": "yn",
+"n": 6,
+"text": "Do people sometimes judge others by their appearance?",
+"voice": "Orus"
+},
+{
+"id": "y07",
+"kind": "yn",
+"n": 7,
+"text": "Will you be answering these questions until 10am tomorrow morning?",
+"voice": "Orus"
+},
+{
+"id": "y08",
+"kind": "yn",
+"n": 8,
+"text": "Is a guest a person who invites someone to their house?",
+"voice": "Orus"
+},
+{
+"id": "y09",
+"kind": "yn",
+"n": 9,
+"text": "If we double the number 50, do we get 100?",
+"voice": "Orus"
+},
+{
+"id": "y10",
+"kind": "yn",
+"n": 10,
+"text": "Are the duties of a policeman to help people and catch criminals?",
+"voice": "Orus"
+},
+{
+"id": "y11",
+"kind": "yn",
+"n": 11,
+"text": "Is sunset at the beginning of the day?",
+"voice": "Orus"
+},
+{
+"id": "y12",
+"kind": "yn",
+"n": 12,
+"text": "Supposing today were Sunday, would tomorrow be Monday?",
+"voice": "Orus"
+},
+{
+"id": "y13",
+"kind": "yn",
+"n": 13,
+"text": "Is the following sentence correct: “He speaks English, speaks he”?",
+"voice": "Orus"
+},
+{
+"id": "y14",
+"kind": "yn",
+"n": 14,
+"text": "Do newspapers have the legal right to print stories that aren't true?",
+"voice": "Orus"
+},
+{
+"id": "y15",
+"kind": "yn",
+"n": 15,
+"text": "Do most women have their hair cut at the hairdresser's?",
+"voice": "Orus"
+},
+{
+"id": "y16",
+"kind": "yn",
+"n": 16,
+"text": "Is the elbow one of the joints of the arm?",
+"voice": "Orus"
+},
+{
+"id": "y17",
+"kind": "yn",
+"n": 17,
+"text": "Is this sentence right: “Tell to them the same story that you told to me”?",
+"voice": "Orus"
+},
+{
+"id": "y18",
+"kind": "yn",
+"n": 18,
+"text": "Is “noon” another word for “midday”?",
+"voice": "Orus"
+},
+{
+"id": "y19",
+"kind": "yn",
+"n": 19,
+"text": "Has this exam already started?",
+"voice": "Orus"
+},
+{
+"id": "y20",
+"kind": "yn",
+"n": 20,
+"text": "Would you say that an area full of mountains was flat?",
+"voice": "Orus"
+},
+{
+"id": "d01",
+"kind": "dc",
+"n": 1,
+"text": "The arrow",
+"voice": "Puck"
+},
+{
+"id": "d02",
+"kind": "dc",
+"n": 2,
+"text": "flew through the air",
+"voice": "Puck"
+},
+{
+"id": "d03",
+"kind": "dc",
+"n": 3,
+"text": "and hit the tree",
+"voice": "Puck"
+},
+{
+"id": "d04",
+"kind": "dc",
+"n": 4,
+"text": "in the middle.",
+"voice": "Puck"
+},
+{
+"id": "d05",
+"kind": "dc",
+"n": 5,
+"text": "He looked very strange;",
+"voice": "Puck"
+},
+{
+"id": "d06",
+"kind": "dc",
+"n": 6,
+"text": "he had fair hair",
+"voice": "Puck"
+},
+{
+"id": "d07",
+"kind": "dc",
+"n": 7,
+"text": "but a dark beard.",
+"voice": "Puck"
+},
+{
+"id": "d08",
+"kind": "dc",
+"n": 8,
+"text": "I do not know",
+"voice": "Puck"
+},
+{
+"id": "d09",
+"kind": "dc",
+"n": 9,
+"text": "how much they gave him,",
+"voice": "Puck"
+},
+{
+"id": "d10",
+"kind": "dc",
+"n": 10,
+"text": "but it was a large amount.",
+"voice": "Puck"
+},
+{
+"id": "d11",
+"kind": "dc",
+"n": 11,
+"text": "She goes to the same café",
+"voice": "Puck"
+},
+{
+"id": "d12",
+"kind": "dc",
+"n": 12,
+"text": "every morning for a snack.",
+"voice": "Puck"
+},
+{
+"id": "d13",
+"kind": "dc",
+"n": 13,
+"text": "Poor John was not invited",
+"voice": "Puck"
+},
+{
+"id": "d14",
+"kind": "dc",
+"n": 14,
+"text": "to Mary's birthday party.",
+"voice": "Puck"
+},
+{
+"id": "d15",
+"kind": "dc",
+"n": 15,
+"text": "I am sorry,",
+"voice": "Puck"
+},
+{
+"id": "d16",
+"kind": "dc",
+"n": 16,
+"text": "but I have already thrown",
+"voice": "Puck"
+},
+{
+"id": "d17",
+"kind": "dc",
+"n": 17,
+"text": "the old cooker away;",
+"voice": "Puck"
+},
+{
+"id": "d18",
+"kind": "dc",
+"n": 18,
+"text": "it was too dangerous to keep.",
+"voice": "Puck"
+}
+]
+}

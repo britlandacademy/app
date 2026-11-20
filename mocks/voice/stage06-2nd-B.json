@@ -1,0 +1,252 @@
+{
+"name": "stage06-2nd-B",
+"base": "https://isrvmwebubjcvzxkorpf.supabase.co/storage/v1/object/public/simulado-voice/2nd/stage06-2nd-B/",
+"ext": "wav",
+"items": [
+{
+"id": "y01",
+"kind": "yn",
+"n": 1,
+"text": "Supposing today were Monday would tomorrow be Sunday?",
+"voice": "Charon"
+},
+{
+"id": "y02",
+"kind": "yn",
+"n": 2,
+"text": "Would you be making a profit if you sold your car for half its price?",
+"voice": "Charon"
+},
+{
+"id": "y03",
+"kind": "yn",
+"n": 3,
+"text": "Is it easy to guess the correct numbers of the lottery?",
+"voice": "Charon"
+},
+{
+"id": "y04",
+"kind": "yn",
+"n": 4,
+"text": "Does the temperature decrease as we move from Autumn to Winter?",
+"voice": "Charon"
+},
+{
+"id": "y05",
+"kind": "yn",
+"n": 5,
+"text": "Is the shoulder one of the joints of the arm?",
+"voice": "Charon"
+},
+{
+"id": "y06",
+"kind": "yn",
+"n": 6,
+"text": "Can we use “Yes, I do” as a short answer?",
+"voice": "Charon"
+},
+{
+"id": "y07",
+"kind": "yn",
+"n": 7,
+"text": "Is it true that we don´t have to consider carefully before making decisions?",
+"voice": "Charon"
+},
+{
+"id": "y08",
+"kind": "yn",
+"n": 8,
+"text": "Can we use a rope for cooking?",
+"voice": "Charon"
+},
+{
+"id": "y09",
+"kind": "yn",
+"n": 9,
+"text": "Do we generally shorten our trousers when they are too long?",
+"voice": "Charon"
+},
+{
+"id": "y10",
+"kind": "yn",
+"n": 10,
+"text": "Is an ache a continuous physical pain?",
+"voice": "Charon"
+},
+{
+"id": "y11",
+"kind": "yn",
+"n": 11,
+"text": "Is “to feel rough” the same as “to feel well”?",
+"voice": "Charon"
+},
+{
+"id": "y12",
+"kind": "yn",
+"n": 12,
+"text": "Must we put something under one of a table´s legs when it´s not level?",
+"voice": "Charon"
+},
+{
+"id": "y13",
+"kind": "yn",
+"n": 13,
+"text": "Are educated people the same as polite people?",
+"voice": "Charon"
+},
+{
+"id": "y14",
+"kind": "yn",
+"n": 14,
+"text": "Can we feel hungry after overeating?",
+"voice": "Charon"
+},
+{
+"id": "y15",
+"kind": "yn",
+"n": 15,
+"text": "Is it common for people to pay the service charge in restaurants?",
+"voice": "Charon"
+},
+{
+"id": "y16",
+"kind": "yn",
+"n": 16,
+"text": "Would I be your guest if you invited me to your house?",
+"voice": "Charon"
+},
+{
+"id": "y17",
+"kind": "yn",
+"n": 17,
+"text": "Is an employee a person who employs somebody to work for them?",
+"voice": "Charon"
+},
+{
+"id": "y18",
+"kind": "yn",
+"n": 18,
+"text": "Is a rough drawing a very simple drawing?",
+"voice": "Charon"
+},
+{
+"id": "y19",
+"kind": "yn",
+"n": 19,
+"text": "Can a couple adopt a child if they can´t have one?",
+"voice": "Charon"
+},
+{
+"id": "y20",
+"kind": "yn",
+"n": 20,
+"text": "Do newspapers have the legal right to print stories that aren´t true?",
+"voice": "Charon"
+},
+{
+"id": "d01",
+"kind": "dc",
+"n": 1,
+"text": "Although he has lain in bed",
+"voice": "Kore"
+},
+{
+"id": "d02",
+"kind": "dc",
+"n": 2,
+"text": "for several hours,",
+"voice": "Kore"
+},
+{
+"id": "d03",
+"kind": "dc",
+"n": 3,
+"text": "he is still awake.",
+"voice": "Kore"
+},
+{
+"id": "d04",
+"kind": "dc",
+"n": 4,
+"text": "They did not notice",
+"voice": "Kore"
+},
+{
+"id": "d05",
+"kind": "dc",
+"n": 5,
+"text": "the strange- looking house.",
+"voice": "Kore"
+},
+{
+"id": "d06",
+"kind": "dc",
+"n": 6,
+"text": "When people owe us a lot of money,",
+"voice": "Kore"
+},
+{
+"id": "d07",
+"kind": "dc",
+"n": 7,
+"text": "we ought really to have a piece of paper",
+"voice": "Kore"
+},
+{
+"id": "d08",
+"kind": "dc",
+"n": 8,
+"text": "with their signature on it",
+"voice": "Kore"
+},
+{
+"id": "d09",
+"kind": "dc",
+"n": 9,
+"text": "and the amount they owe.",
+"voice": "Kore"
+},
+{
+"id": "d10",
+"kind": "dc",
+"n": 10,
+"text": "The servant took great pride",
+"voice": "Kore"
+},
+{
+"id": "d11",
+"kind": "dc",
+"n": 11,
+"text": "in his work at the palace.",
+"voice": "Kore"
+},
+{
+"id": "d12",
+"kind": "dc",
+"n": 12,
+"text": "The lorry ran over some glass,",
+"voice": "Kore"
+},
+{
+"id": "d13",
+"kind": "dc",
+"n": 13,
+"text": "and so we had to get out",
+"voice": "Kore"
+},
+{
+"id": "d14",
+"kind": "dc",
+"n": 14,
+"text": "and change",
+"voice": "Kore"
+},
+{
+"id": "d15",
+"kind": "dc",
+"n": 15,
+"text": "one of the wheels.",
+"voice": "Kore"
+}
+]
+}

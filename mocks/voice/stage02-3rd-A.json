@@ -1,0 +1,273 @@
+{
+"name": "stage02-3rd-A",
+"base": "https://isrvmwebubjcvzxkorpf.supabase.co/storage/v1/object/public/simulado-voice/3rd/stage02-3rd-A/",
+"ext": "wav",
+"items": [
+{
+"id": "d01",
+"kind": "dc",
+"n": 1,
+"text": "Both of us are speaking English.",
+"voice": "Orus"
+},
+{
+"id": "d02",
+"kind": "dc",
+"n": 2,
+"text": "I prefer tea to coffee.",
+"voice": "Orus"
+},
+{
+"id": "d03",
+"kind": "dc",
+"n": 3,
+"text": "Seven is half of fourteen.",
+"voice": "Orus"
+},
+{
+"id": "d04",
+"kind": "dc",
+"n": 4,
+"text": "My eyes are the same colour",
+"voice": "Orus"
+},
+{
+"id": "d05",
+"kind": "dc",
+"n": 5,
+"text": "as your eyes.",
+"voice": "Orus"
+},
+{
+"id": "d06",
+"kind": "dc",
+"n": 6,
+"text": "Mr Brown is married; he has",
+"voice": "Orus"
+},
+{
+"id": "d07",
+"kind": "dc",
+"n": 7,
+"text": "got a wife.",
+"voice": "Orus"
+},
+{
+"id": "d08",
+"kind": "dc",
+"n": 8,
+"text": "There is a light hanging from",
+"voice": "Orus"
+},
+{
+"id": "d09",
+"kind": "dc",
+"n": 9,
+"text": "the ceiling.",
+"voice": "Orus"
+},
+{
+"id": "d10",
+"kind": "dc",
+"n": 10,
+"text": "Paris is in the north",
+"voice": "Orus"
+},
+{
+"id": "d11",
+"kind": "dc",
+"n": 11,
+"text": "of France.",
+"voice": "Orus"
+},
+{
+"id": "d12",
+"kind": "dc",
+"n": 12,
+"text": "We can’t walk without moving our",
+"voice": "Orus"
+},
+{
+"id": "d13",
+"kind": "dc",
+"n": 13,
+"text": "legs.",
+"voice": "Orus"
+},
+{
+"id": "d14",
+"kind": "dc",
+"n": 14,
+"text": "My watch is made of steel.",
+"voice": "Orus"
+},
+{
+"id": "d15",
+"kind": "dc",
+"n": 15,
+"text": "I don’t want anything",
+"voice": "Orus"
+},
+{
+"id": "d16",
+"kind": "dc",
+"n": 16,
+"text": "to drink at the moment.",
+"voice": "Orus"
+},
+{
+"id": "d17",
+"kind": "dc",
+"n": 17,
+"text": "I eat three meals a day.",
+"voice": "Orus"
+},
+{
+"id": "d18",
+"kind": "dc",
+"n": 18,
+"text": "Windows are made of glass.",
+"voice": "Orus"
+},
+{
+"id": "d19",
+"kind": "dc",
+"n": 19,
+"text": "The time is half past nine.",
+"voice": "Orus"
+},
+{
+"id": "d20",
+"kind": "dc",
+"n": 20,
+"text": "A town is larger than a",
+"voice": "Orus"
+},
+{
+"id": "d21",
+"kind": "dc",
+"n": 21,
+"text": "village.",
+"voice": "Orus"
+},
+{
+"id": "d22",
+"kind": "dc",
+"n": 22,
+"text": "Please take your hands out",
+"voice": "Orus"
+},
+{
+"id": "d23",
+"kind": "dc",
+"n": 23,
+"text": "of your pockets.",
+"voice": "Orus"
+},
+{
+"id": "y01",
+"kind": "yn",
+"n": 1,
+"text": "Is Chinese a European language?",
+"voice": "Charon"
+},
+{
+"id": "y02",
+"kind": "yn",
+"n": 2,
+"text": "Do some lights hang from ceilings?",
+"voice": "Charon"
+},
+{
+"id": "y03",
+"kind": "yn",
+"n": 3,
+"text": "Is a corridor a door?",
+"voice": "Charon"
+},
+{
+"id": "y04",
+"kind": "yn",
+"n": 4,
+"text": "Is Paris in the south of France?",
+"voice": "Charon"
+},
+{
+"id": "y05",
+"kind": "yn",
+"n": 5,
+"text": "Are the countries of Europe generally friends now?",
+"voice": "Charon"
+},
+{
+"id": "y06",
+"kind": "yn",
+"n": 6,
+"text": "Are there few people in a large city?",
+"voice": "Charon"
+},
+{
+"id": "y07",
+"kind": "yn",
+"n": 7,
+"text": "Is my aunt’s child my cousin?",
+"voice": "Charon"
+},
+{
+"id": "y08",
+"kind": "yn",
+"n": 8,
+"text": "Have I got more thumbs than fingers on my hands?",
+"voice": "Charon"
+},
+{
+"id": "y09",
+"kind": "yn",
+"n": 9,
+"text": "Is the ceiling above our heads?",
+"voice": "Charon"
+},
+{
+"id": "y10",
+"kind": "yn",
+"n": 10,
+"text": "Is a Rolls Royce cheap?",
+"voice": "Charon"
+},
+{
+"id": "y11",
+"kind": "yn",
+"n": 11,
+"text": "Is your chin below your mouth?",
+"voice": "Charon"
+},
+{
+"id": "y12",
+"kind": "yn",
+"n": 12,
+"text": "Are windows made of stone?",
+"voice": "Charon"
+},
+{
+"id": "y13",
+"kind": "yn",
+"n": 13,
+"text": "Do most children live with their parents?",
+"voice": "Charon"
+},
+{
+"id": "y14",
+"kind": "yn",
+"n": 14,
+"text": "Does the afternoon begin when the evening ends?",
+"voice": "Charon"
+},
+{
+"id": "y15",
+"kind": "yn",
+"n": 15,
+"text": "Do some people live in the country because they dislike cities?",
+"voice": "Charon"
+}
+]
+}

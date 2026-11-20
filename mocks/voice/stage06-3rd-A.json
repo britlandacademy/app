@@ -1,0 +1,308 @@
+{
+"name": "stage06-3rd-A",
+"base": "https://isrvmwebubjcvzxkorpf.supabase.co/storage/v1/object/public/simulado-voice/3rd/stage06-3rd-A/",
+"ext": "wav",
+"items": [
+{
+"id": "d01",
+"kind": "dc",
+"n": 1,
+"text": "The three forms",
+"voice": "Orus"
+},
+{
+"id": "d02",
+"kind": "dc",
+"n": 2,
+"text": "of “choose” are “choose,",
+"voice": "Orus"
+},
+{
+"id": "d03",
+"kind": "dc",
+"n": 3,
+"text": "chose,",
+"voice": "Orus"
+},
+{
+"id": "d04",
+"kind": "dc",
+"n": 4,
+"text": "chosen”.",
+"voice": "Orus"
+},
+{
+"id": "d05",
+"kind": "dc",
+"n": 5,
+"text": "The past of “ride” is “rode”.",
+"voice": "Orus"
+},
+{
+"id": "d06",
+"kind": "dc",
+"n": 6,
+"text": "The past of “fall” is “fell”.",
+"voice": "Orus"
+},
+{
+"id": "d07",
+"kind": "dc",
+"n": 7,
+"text": "The three forms",
+"voice": "Orus"
+},
+{
+"id": "d08",
+"kind": "dc",
+"n": 8,
+"text": "of “blow” are “blow,",
+"voice": "Orus"
+},
+{
+"id": "d09",
+"kind": "dc",
+"n": 9,
+"text": "blew,",
+"voice": "Orus"
+},
+{
+"id": "d10",
+"kind": "dc",
+"n": 10,
+"text": "blown”.",
+"voice": "Orus"
+},
+{
+"id": "d11",
+"kind": "dc",
+"n": 11,
+"text": "Books are made of paper.",
+"voice": "Orus"
+},
+{
+"id": "d12",
+"kind": "dc",
+"n": 12,
+"text": "“Ought” is the only exception",
+"voice": "Orus"
+},
+{
+"id": "d13",
+"kind": "dc",
+"n": 13,
+"text": "to this rule.",
+"voice": "Orus"
+},
+{
+"id": "d14",
+"kind": "dc",
+"n": 14,
+"text": "We call the words “who”,",
+"voice": "Orus"
+},
+{
+"id": "d15",
+"kind": "dc",
+"n": 15,
+"text": "“which” and “that” relative pronouns.",
+"voice": "Orus"
+},
+{
+"id": "d16",
+"kind": "dc",
+"n": 16,
+"text": "The expression “every now",
+"voice": "Orus"
+},
+{
+"id": "d17",
+"kind": "dc",
+"n": 17,
+"text": "and again” means “sometimes",
+"voice": "Orus"
+},
+{
+"id": "d18",
+"kind": "dc",
+"n": 18,
+"text": "but not often”.",
+"voice": "Orus"
+},
+{
+"id": "d19",
+"kind": "dc",
+"n": 19,
+"text": "Dolphins are mammals,",
+"voice": "Orus"
+},
+{
+"id": "d20",
+"kind": "dc",
+"n": 20,
+"text": "not fish.",
+"voice": "Orus"
+},
+{
+"id": "d21",
+"kind": "dc",
+"n": 21,
+"text": "I’m losing weight",
+"voice": "Orus"
+},
+{
+"id": "d22",
+"kind": "dc",
+"n": 22,
+"text": "by going to the gym.",
+"voice": "Orus"
+},
+{
+"id": "d23",
+"kind": "dc",
+"n": 23,
+"text": "Could you lend me a hand",
+"voice": "Orus"
+},
+{
+"id": "d24",
+"kind": "dc",
+"n": 24,
+"text": "getting this piano up the stairs,",
+"voice": "Orus"
+},
+{
+"id": "d25",
+"kind": "dc",
+"n": 25,
+"text": "please?",
+"voice": "Orus"
+},
+{
+"id": "d26",
+"kind": "dc",
+"n": 26,
+"text": "Geoff’s dinner consisted",
+"voice": "Orus"
+},
+{
+"id": "d27",
+"kind": "dc",
+"n": 27,
+"text": "of baked beans",
+"voice": "Orus"
+},
+{
+"id": "d28",
+"kind": "dc",
+"n": 28,
+"text": "and a slice",
+"voice": "Orus"
+},
+{
+"id": "d29",
+"kind": "dc",
+"n": 29,
+"text": "of toast.",
+"voice": "Orus"
+},
+{
+"id": "d30",
+"kind": "dc",
+"n": 30,
+"text": "We can meet any time next",
+"voice": "Orus"
+},
+{
+"id": "d31",
+"kind": "dc",
+"n": 31,
+"text": "week.",
+"voice": "Orus"
+},
+{
+"id": "d32",
+"kind": "dc",
+"n": 32,
+"text": "Let me know",
+"voice": "Orus"
+},
+{
+"id": "d33",
+"kind": "dc",
+"n": 33,
+"text": "which day you’d prefer.",
+"voice": "Orus"
+},
+{
+"id": "o01",
+"kind": "or",
+"n": 1,
+"text": "What’d happen if someone hit a policeman?",
+"voice": "Charon"
+},
+{
+"id": "o02",
+"kind": "or",
+"n": 2,
+"text": "What’s another word for midday?",
+"voice": "Charon"
+},
+{
+"id": "o03",
+"kind": "or",
+"n": 3,
+"text": "What are two other words for “ill”?",
+"voice": "Charon"
+},
+{
+"id": "o04",
+"kind": "or",
+"n": 4,
+"text": "What can we use rope for?",
+"voice": "Charon"
+},
+{
+"id": "o05",
+"kind": "or",
+"n": 5,
+"text": "What are the opposites of “overcook” and “overpay”?",
+"voice": "Charon"
+},
+{
+"id": "o06",
+"kind": "or",
+"n": 6,
+"text": "What’s mud?",
+"voice": "Charon"
+},
+{
+"id": "o07",
+"kind": "or",
+"n": 7,
+"text": "What’s another name for a chemist’s?",
+"voice": "Charon"
+},
+{
+"id": "o08",
+"kind": "or",
+"n": 8,
+"text": "How many grams make a kilogram?",
+"voice": "Charon"
+},
+{
+"id": "o09",
+"kind": "or",
+"n": 9,
+"text": "What’s an island?",
+"voice": "Charon"
+},
+{
+"id": "o10",
+"kind": "or",
+"n": 10,
+"text": "How many days does a fortnight consist of?",
+"voice": "Charon"
+}
+]
+}
