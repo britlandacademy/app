@@ -392,7 +392,7 @@ function finished(st){
 }
 
 /* ---------- mock tests (simulados) ---------- */
-const MOCK_ED='3rd';
+const MOCK_ED=QS.get('ed')==='2nd'?'2nd':'3rd';
 function mockFile(n,t){return 'mocks/stage'+String(n).padStart(2,'0')+'-'+MOCK_ED+'-'+t+'.json';}
 function mnorm(t){return String(t==null?'':t).replace(/[’‘]/g,"'").toLowerCase().replace(/[^a-z0-9' ]/g,' ').replace(/\s+/g,' ').trim();}
 function wdist(a,b){const n=a.length,m=b.length;if(!n)return m;if(!m)return n;let pv=[];for(let j=0;j<=m;j++)pv.push(j);
@@ -412,22 +412,22 @@ function mgrade(keys,ans){
   return {scores:sc,maxes:mx};
 }
 async function mockHome(){
-  const r=await sb.from('mock_attempts').select('stage,test,scores').eq('edition',MOCK_ED);
-  const by={};(r.data||[]).forEach(x=>{const k=x.stage+x.test;const t=Object.values(x.scores||{}).reduce((a,b)=>a+Number(b||0),0);const o=by[k]||(by[k]={n:0,best:0});o.n++;o.best=Math.max(o.best,t);});
+  const r=await sb.from('mock_attempts').select('stage,test,scores,maxes').eq('edition',MOCK_ED);
+  const by={};(r.data||[]).forEach(x=>{const k=x.stage+x.test;const t=Object.values(x.scores||{}).reduce((a,b)=>a+Number(b||0),0);const o=by[k]||(by[k]={n:0,best:0,max:0});o.n++;o.best=Math.max(o.best,t);o.max=Object.values(x.maxes||{}).reduce((a,b)=>a+Number(b||0),0);});
   const box=el('div',{});
   for(let n=1;n<=12;n++){
     const row=el('div',{style:'display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);flex-wrap:wrap'},el('b',{},'Stage '+n));
     const btns=el('span',{style:'display:flex;gap:8px;flex-wrap:wrap'});
-    ['A','B'].forEach(t=>{const o=by[n+t];btns.append(el('a',{class:'btnl',href:'exam.html?mock=1&stage='+n+'&test='+t},'Mock '+t+(o?' · best '+BL_EXAM.fmt(o.best)+'/50 · '+o.n+'×':'')));});
+    ['A','B'].forEach(t=>{const o=by[n+t];btns.append(el('a',{class:'btnl',href:'exam.html?mock=1&ed='+MOCK_ED+'&stage='+n+'&test='+t},'Mock '+t+(o?' · best '+BL_EXAM.fmt(o.best)+'/'+o.max+' · '+o.n+'×':'')));});
     row.append(btns);box.append(row);
   }
-  screen([el('div',{class:'scr'},logo(),el('h1',{class:'center'},'Mock tests'),el('p',{},'Practice tests with the same format as the Stage Exam. Do them with your teacher. You can repeat them as many times as you like. They do not count as the official exam.'),box,el('p',{},el('a',{class:'btnl',href:'exam.html'},'Back to the exams')))]);
+  screen([el('div',{class:'scr'},logo(),el('h1',{class:'center'},'Mock tests'),el('p',{style:'display:flex;gap:8px;justify-content:center;flex-wrap:wrap'},...['3rd','2nd'].map(e=>el('a',{class:'btnl',href:'exam.html?mock=1&ed='+e,style:e===MOCK_ED?'':'background:#fff;color:var(--navy);border-color:var(--navy)'},e+' edition'))),el('p',{},'Practice tests with the same format as the Stage Exam. Do them with your teacher. You can repeat them as many times as you like. They do not count as the official exam.'),box,el('p',{},el('a',{class:'btnl',href:'exam.html'},'Back to the exams')))]);
 }
 function mockIntro(n,t){
   stage=n;MOCK={test:t,stage:n};
   const go=el('button',{type:'button',class:'xnext'},'Start the mock test');
   go.addEventListener('click',()=>{go.disabled=true;mockBegin(n,t);});
-  screen([el('div',{class:'scr'},logo(),el('h1',{class:'center'},'Stage '+n+' Mock '+t),
+  screen([el('div',{class:'scr'},logo(),el('h1',{class:'center'},'Stage '+n+' Mock '+t+(MOCK_ED==='2nd'?' · 2nd edition':'')),
     el('ul',{},
       el('li',{},'Same parts and timer as the Stage Exam. The timer starts when you press the button.'),
       el('li',{},'You go from one part to the next and ',el('b',{},'you cannot go back'),' to a finished part.'),
@@ -461,10 +461,30 @@ async function teachBegin(){
   const sv=document.getElementById('sv');if(sv)sv.textContent='Answers shown';
   const tl=document.getElementById('tlab');if(tl)tl.textContent='Time';const tm=document.getElementById('tm');if(tm)tm.textContent=String(minutes)+' min';
 }
+/* Troca as perguntas ligadas a lugares (cidades, vilas) pelas do lugar onde o aluno mora (profiles.ref_city). Sem cidade, vale o texto do livro. */
+async function mockPlace(d,n,t){
+  try{
+    const c=String((ctx.profile&&ctx.profile.ref_city)||'').toLowerCase();if(!c)return;
+    const r=await fetch('mocks/places.json',{cache:'no-store'});if(!r.ok)return;
+    const all=await r.json();let pl=null;
+    for(const k in all){if(all[k].match.some(m=>c.indexOf(m)>-1)){pl=all[k];break;}}
+    if(!pl)return;
+    const pa=pl.patches['stage'+String(n).padStart(2,'0')+'-2nd-'+t];if(!pa)return;
+    for(const pid in pa){
+      const ip=d.items.parts.find(x=>x.id===pid),kp=d.keys.parts.find(x=>x.id===pid);
+      for(const num in pa[pid]){
+        const o=pa[pid][num],it=ip&&ip.items.find(x=>String(x.n)===num);
+        if(it){if(o.q)it.q=o.q;if(o.opts)it.opts=o.opts;}
+        if(kp&&o.k)kp.keys[num]=o.k;
+      }
+    }
+  }catch(e){}
+}
 async function mockBegin(n,t){
   let d;
   try{const r=await fetch(mockFile(n,t),{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);d=await r.json();}
   catch(e){screen([el('div',{class:'scr'},el('h1',{},'Could not load the mock test'),el('p',{class:'msg-bad'},String(e.message||e)),el('p',{},el('a',{class:'btnl',href:'exam.html?mock=1'},'Back')))]);return;}
+  if(MOCK_ED==='2nd')await mockPlace(d,n,t);
   MOCK={test:t,stage:n,keys:d.keys,minutes:d.minutes};
   items=d.items;answers={};part=0;t0=performance.now();endIn=d.minutes*60;
   window.addEventListener('beforeunload',e=>{if(!sent){e.preventDefault();e.returnValue='';}});
@@ -481,7 +501,7 @@ function mockFinished(g){
   const kids=[logo(),el('h1',{class:'center'},'Stage '+stage+' Mock '+MOCK.test)];
   let T=0,M=0;const kp=el('div',{class:'kp'});
   MOCK.keys.parts.forEach(p=>{T+=g.scores[p.id];M+=g.maxes[p.id];kp.append(el('div',{},el('small',{},PART_NAME[p.id]||p.id),el('b',{},BL_EXAM.fmt(g.scores[p.id])+' / '+p.points)));});
-  kids.push(el('p',{class:'center big'},BL_EXAM.fmt(T)+' / '+M+' ('+Math.round(100*T/M)+'%)'),kp,el('p',{class:'center'},'Pass mark in the official exam: 30 / 50.'));
+  kids.push(el('p',{class:'center big'},BL_EXAM.fmt(T)+' / '+M+' ('+Math.round(100*T/M)+'%)'),kp,MOCK_ED==='3rd'?el('p',{class:'center'},'Pass mark in the official exam: 30 / 50.'):null);
   MOCK.keys.parts.forEach(kpart=>{
     const ip=items.parts.find(x=>x.id===kpart.id)||{};
     kids.push(el('h2',{style:'margin:18px 0 6px;color:var(--navy)'},ip.title||kpart.id));
@@ -500,7 +520,7 @@ function mockFinished(g){
         ok?null:el('div',{},'Correct answer: ',el('b',{},right))));
     });
   });
-  const again=el('a',{class:'btnl',href:'exam.html?mock=1&stage='+stage+'&test='+MOCK.test},'Try again'),list=el('a',{class:'btnl',href:'exam.html?mock=1',style:'background:#fff;color:var(--navy);border-color:var(--navy)'},'All mock tests');
+  const again=el('a',{class:'btnl',href:'exam.html?mock=1&ed='+MOCK_ED+'&stage='+stage+'&test='+MOCK.test},'Try again'),list=el('a',{class:'btnl',href:'exam.html?mock=1&ed='+MOCK_ED,style:'background:#fff;color:var(--navy);border-color:var(--navy)'},'All mock tests');
   kids.push(el('p',{style:'display:flex;gap:10px;flex-wrap:wrap;margin-top:18px'},again,list,leave()));
   screen([el('div',{class:'scr'},...kids)]);
 }

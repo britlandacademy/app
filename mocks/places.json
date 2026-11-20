@@ -1,0 +1,439 @@
+{
+"nh": {
+"match": [
+"novo hamburgo"
+],
+"patches": {
+"stage03-2nd-A": {
+"yesno": {
+"1": {
+"q": "Is Novo Hamburgo as large as Rio de Janeiro?",
+"k": "No"
+},
+"18": {
+"q": "Is São Paulo farther from Novo Hamburgo than Fortaleza?",
+"k": "No"
+}
+},
+"mc": {
+"11": {
+"q": "I ____ in Novo Hamburgo."
+}
+}
+},
+"stage03-2nd-B": {
+"yesno": {
+"17": {
+"q": "Is the road between Novo Hamburgo and Gramado crooked?",
+"k": "Yes"
+}
+},
+"mc": {
+"11": {
+"q": "Torres is ____."
+}
+}
+},
+"stage04-2nd-A": {
+"mc": {
+"11": {
+"q": "I don't know ____ I'll go to Torres during the weekend or not"
+}
+}
+},
+"stage05-2nd-A": {
+"yesno": {
+"15": {
+"q": "Is Porto Alegre an agricultural city?",
+"k": "No"
+}
+}
+},
+"stage07-2nd-A": {
+"mc": {
+"20": {
+"q": "Corsan ____ Novo Hamburgo with water."
+}
+}
+},
+"stage08-2nd-B": {
+"mc": {
+"10": {
+"q": "One of the main ____ in Novo Hamburgo is “Museu Nacional do Calçado”."
+}
+}
+}
+}
+},
+"jundiai": {
+"match": [
+"jundiaí",
+"jundiai"
+],
+"patches": {
+"stage03-2nd-A": {
+"yesno": {
+"1": {
+"q": "Is Jundiaí as large as Rio de Janeiro?",
+"k": "No"
+},
+"18": {
+"q": "Is São Paulo farther from Jundiaí than Fortaleza?",
+"k": "No"
+}
+},
+"mc": {
+"11": {
+"q": "I ____ in Jundiaí."
+}
+}
+},
+"stage03-2nd-B": {
+"yesno": {
+"17": {
+"q": "Is the road between Jundiaí and São Paulo crooked?",
+"k": "No"
+}
+},
+"mc": {
+"11": {
+"q": "Santos is ____."
+}
+}
+},
+"stage04-2nd-A": {
+"mc": {
+"11": {
+"q": "I don't know ____ I'll go to Santos during the weekend or not"
+}
+}
+},
+"stage07-2nd-A": {
+"mc": {
+"20": {
+"q": "DAE ____ Jundiaí with water."
+}
+}
+},
+"stage08-2nd-B": {
+"mc": {
+"10": {
+"q": "One of the main ____ in Jundiaí is “Serra do Japi”."
+}
+}
+}
+}
+},
+"franca": {
+"match": [
+"franca"
+],
+"patches": {
+"stage03-2nd-A": {
+"yesno": {
+"1": {
+"q": "Is Franca as large as Rio de Janeiro?",
+"k": "No"
+},
+"18": {
+"q": "Is São Paulo farther from Franca than Fortaleza?",
+"k": "No"
+}
+},
+"mc": {
+"11": {
+"q": "I ____ in Franca."
+}
+}
+},
+"stage03-2nd-B": {
+"yesno": {
+"17": {
+"q": "Is the road between Franca and Ribeirão Preto crooked?",
+"k": "No"
+}
+},
+"mc": {
+"11": {
+"q": "Santos is ____."
+}
+}
+},
+"stage04-2nd-A": {
+"mc": {
+"11": {
+"q": "I don't know ____ I'll go to Santos during the weekend or not"
+}
+}
+},
+"stage07-2nd-A": {
+"mc": {
+"20": {
+"q": "Sabesp ____ Franca with water."
+}
+}
+}
+}
+},
+"uberlandia": {
+"match": [
+"uberlândia",
+"uberlandia"
+],
+"patches": {
+"stage03-2nd-A": {
+"yesno": {
+"1": {
+"q": "Is Uberlândia as large as Rio de Janeiro?",
+"k": "No"
+},
+"18": {
+"q": "Is São Paulo farther from Uberlândia than Fortaleza?",
+"k": "No"
+}
+},
+"mc": {
+"11": {
+"q": "I ____ in Uberlândia."
+}
+}
+},
+"stage03-2nd-B": {
+"yesno": {
+"17": {
+"q": "Is the road between Uberlândia and Uberaba crooked?",
+"k": "No"
+}
+},
+"mc": {
+"11": {
+"q": "Santos is ____."
+}
+}
+},
+"stage04-2nd-A": {
+"mc": {
+"11": {
+"q": "I don't know ____ I'll go to Santos during the weekend or not"
+}
+}
+},
+"stage07-2nd-A": {
+"mc": {
+"20": {
+"q": "DMAE ____ Uberlândia with water."
+}
+}
+},
+"stage08-2nd-B": {
+"mc": {
+"10": {
+"q": "One of the main ____ in Uberlândia is “Parque do Sabiá”."
+}
+}
+}
+}
+},
+"algarve": {
+"match": [
+"algarve"
+],
+"patches": {
+"stage03-2nd-A": {
+"yesno": {
+"1": {
+"q": "Is Faro as large as Lisbon?",
+"k": "No"
+},
+"18": {
+"q": "Is Lisbon farther from Faro than Porto?",
+"k": "No"
+}
+},
+"mc": {
+"11": {
+"q": "I ____ in the Algarve."
+}
+}
+},
+"stage03-2nd-B": {
+"yesno": {
+"17": {
+"q": "Is the road between Faro and Monchique crooked?",
+"k": "Yes"
+}
+},
+"mc": {
+"11": {
+"q": "Lagos is ____."
+}
+}
+},
+"stage04-2nd-A": {
+"mc": {
+"11": {
+"q": "I don't know ____ I'll go to Lagos during the weekend or not"
+}
+}
+},
+"stage05-2nd-A": {
+"yesno": {
+"15": {
+"q": "Is Lisbon an agricultural city?",
+"k": "No"
+}
+}
+},
+"stage07-2nd-A": {
+"mc": {
+"20": {
+"q": "Águas do Algarve ____ the Algarve with water."
+}
+}
+},
+"stage08-2nd-B": {
+"mc": {
+"10": {
+"q": "One of the main ____ in the Algarve is “Ria Formosa”."
+}
+}
+},
+"stage10-2nd-A": {
+"mc": {
+"9": {
+"q": "Smoking inside buildings is ____ in Portugal."
+}
+}
+},
+"stage10-2nd-B": {
+"mc": {
+"3": {
+"q": "Estádio da Luz is a ____ sports stadium."
+}
+}
+},
+"stage11-2nd-B": {
+"yesno": {
+"9": {
+"q": "Is bacalhau à Brás a traditional dish from Portugal?",
+"k": "Yes"
+}
+},
+"mc": {
+"9": {
+"q": "Sometimes the Ria Formosa is full of ____ in the morning."
+}
+}
+},
+"stage01-2nd-B": {
+"yesno": {
+"1": {
+"q": "Is London small?",
+"k": "No"
+}
+}
+}
+}
+},
+"waterford": {
+"match": [
+"waterford"
+],
+"patches": {
+"stage03-2nd-A": {
+"yesno": {
+"1": {
+"q": "Is Waterford as large as Dublin?",
+"k": "No"
+},
+"18": {
+"q": "Is Dublin farther from Waterford than Galway?",
+"k": "No"
+}
+},
+"mc": {
+"11": {
+"q": "I ____ in Waterford."
+}
+}
+},
+"stage03-2nd-B": {
+"yesno": {
+"17": {
+"q": "Is the road between Waterford and Dublin crooked?",
+"k": "No"
+}
+},
+"mc": {
+"11": {
+"q": "Tramore is ____."
+}
+}
+},
+"stage04-2nd-A": {
+"mc": {
+"11": {
+"q": "I don't know ____ I'll go to Tramore during the weekend or not"
+}
+}
+},
+"stage05-2nd-A": {
+"yesno": {
+"15": {
+"q": "Is Dublin an agricultural city?",
+"k": "No"
+}
+}
+},
+"stage07-2nd-A": {
+"mc": {
+"20": {
+"q": "Uisce Éireann ____ Waterford with water."
+}
+}
+},
+"stage08-2nd-B": {
+"mc": {
+"10": {
+"q": "One of the main ____ in Waterford is “Reginald's Tower”."
+}
+}
+},
+"stage10-2nd-A": {
+"mc": {
+"9": {
+"q": "Smoking inside buildings is ____ in Ireland."
+}
+}
+},
+"stage10-2nd-B": {
+"mc": {
+"3": {
+"q": "Croke Park is a ____ sports stadium."
+}
+}
+},
+"stage11-2nd-B": {
+"yesno": {
+"9": {
+"q": "Is colcannon a traditional dish from Ireland?",
+"k": "Yes"
+}
+},
+"mc": {
+"9": {
+"q": "Sometimes the River Suir is full of ____ in the morning."
+}
+}
+},
+"stage01-2nd-B": {
+"yesno": {
+"1": {
+"q": "Is London small?",
+"k": "No"
+}
+}
+}
+}
+}
+}
