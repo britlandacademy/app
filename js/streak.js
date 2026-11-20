@@ -48,6 +48,9 @@ var css='.sk{background:var(--card);border:1px solid var(--line);border-radius:1
 '.sk-hr{flex:1 1 100%;margin:2px 0 0;border-top:1px solid #2a3f63;padding-top:8px}.sk-hr ol{margin:0;padding:0;list-style:none}.sk-hr li{display:flex;gap:10px;align-items:center;padding:5px 0;font-size:.9rem;color:#fff}.sk-hr li .sk-p{width:24px;text-align:center}.sk-hr li .sk-nm{flex:1;min-width:0}.sk-hr li.me{font-weight:800;color:#e4c06a}.sk-hr .sk-av{border-color:#e4c06a;background:transparent}'+
 'html .head>.sk-hd{order:1}html .head>.logo{order:2}@media(max-width:760px){html .head>.logo{order:1}html .head>.sk-hd{order:3;flex-basis:100%}}'+
 '.sk-at{width:100%;border-collapse:collapse;font-size:.9rem}.sk-at th,.sk-at td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left}.sk-at td.n,.sk-at th.n{text-align:right}';
+var l3p=null;function l3(root){if(window.BLLion){BLLion.upgrade(root);return;}
+  if(!l3p)l3p=new Promise(function(ok){var sc=document.createElement('script');sc.src=(window.BL_BASE||(/\/espanol\//.test(location.pathname)?'../':''))+'js/lion3d.js';sc.onload=function(){ok(1);};sc.onerror=function(){ok(0);};document.head.appendChild(sc);});
+  l3p.then(function(k){if(k&&window.BLLion)BLLion.upgrade(root);});}
 function lion(cur,big){var st=cur>=7?'gold':cur>0?'on':'off',src='img/lion-'+st+'.png';
   if(st==='gold')return '<span class="sk-gl'+(big?' big':'')+'"><i class="sk-halo"></i><img src="'+src+'" alt="" class="sk-li"><i class="sk-sw"></i></span>';
   return '<span class="sk-gl'+(big?' big':'')+'"><img src="'+src+'" alt="" class="sk-li"></span>';}
@@ -128,12 +131,12 @@ function mount(box,opts){
       hh+='<div class="sk-hm"><div class="sk-w">'+wk.map(function(d,i){return '<div class="sk-d'+(d.on?' on':'')+(d.fz?' fz':'')+(d.today?' td':'')+'">'+esc(t.w[i])+'<i>'+(d.on?'\u2713':d.fz?IC.sn:'')+'</i></div>';}).join('')+'</div>';
       hh+='<div class="sk-hi"><span>'+(s.active_today?esc(t.ok):(cur===0&&t.z?esc(t.z):esc(nudge(t,s,cur))))+(s.freeze_left>0?' <b>\u00b7</b> '+IC.sn+' '+esc(t.fz):'')+'</span>'+('<button type="button" class="sk-rb" aria-expanded="false">'+IC.tr+' '+esc(t.rank)+' \u25B8</button>')+(gameOff()?'<button type="button" class="sk-gb"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="7" width="19" height="11" rx="5"/><path d="M7.5 10.5v4M5.5 12.5h4M15.5 11.5h.01M18 13.5h.01"/></svg> '+esc(t.game)+'</button>':'')+'</div></div>';
       hh+='<div class="sk-hr" hidden>'+(rows.length?'':'<div class="sk-hl">'+esc(t.none)+'</div>')+'<ol aria-label="'+esc(t.rank)+'">'+rows.map(function(x,i){var pos=i<3?[IC.md('#E4C06A'),IC.md('#B8C2D6'),IC.md('#C98A5B')][i]:(i+1);return '<li'+(x.me?' class="me" aria-current="true"':'')+(x.pid?' data-pid="'+esc(x.pid)+'" tabindex="0" role="button"':'')+'><span class="sk-p" aria-label="'+(i+1)+'">'+pos+'</span>'+(window.Profile?'<span class="sk-av" data-av="'+esc(x.avatar||'')+'" data-uid="'+esc(x.uid||'')+'"></span>':'')+'<span class="sk-nm">'+esc(x.name)+(x.me?' ('+esc(t.me)+')':'')+'</span><span'+(x.pts!=null?' title="'+esc((x.days30||0)+' d \u00b7 '+(x.ex30||0)+' ex')+'"':'')+'>'+(x.pts!=null?x.pts+' pts':IC.fl+' '+x.cur)+'</span></li>';}).join('')+'</ol></div>';
-      el.innerHTML=hh;var lg=hd.querySelector('.logo');hd.insertBefore(el,lg||null);
+      el.innerHTML=hh;var lg=hd.querySelector('.logo');hd.insertBefore(el,lg||null);l3(el);
       var gb=el.querySelector('.sk-gb');if(gb)gb.onclick=function(){try{localStorage.setItem('bl-game','1');localStorage.setItem('bl-tfx','in:'+Date.now());}catch(e){}location.reload();};
       var rb=el.querySelector('.sk-rb'),rl=el.querySelector('.sk-hr');
       if(rb&&rl)rb.onclick=function(){var o=rl.hidden;rl.hidden=!o;rb.setAttribute('aria-expanded',o?'true':'false');};
       paintAv(el);
-    }else{box.className='sk';box.innerHTML=h;box.hidden=false;paintAv(box);}
+    }else{box.className='sk';box.innerHTML=h;box.hidden=false;paintAv(box);l3(box);}
     if(s.active_today&&cur>0&&cur<7){var dk='streak-snd-'+lang()+'-'+(wk.filter(function(d){return d.today;})[0]||{}).d;try{if(!localStorage.getItem(dk)){localStorage.setItem(dk,'1');play('crepitar');}}catch(e){}}
     var ms=milestone(cur);if(ms){var st='';try{var ld=new Date((s.last||'')+'T12:00:00');ld.setDate(ld.getDate()-(cur-1));st=ld.toISOString().slice(0,10);}catch(e){}celebrate(ms,st);}
   }).catch(function(){undo();});

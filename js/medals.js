@@ -278,8 +278,8 @@ var CSS='.mdb{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 14
 +'@keyframes mds{0%,4%{opacity:0;left:50%;transform:translate(-50%,-50%) scale(.6)}8%,29%{opacity:1;left:50%;transform:translate(-50%,-50%) scale(1.15)}38%,84%{opacity:1;left:36px;transform:translate(-50%,-50%) scale(1)}93%{opacity:1;left:50%;transform:translate(-50%,-50%) scale(1.15)}98%,100%{opacity:0;left:50%;transform:translate(-50%,-50%) scale(.6)}}'
 +'@keyframes mdt{0%,39%{opacity:0}45%,83%{opacity:1}88%,100%{opacity:0}}@keyframes mdd{to{stroke-dashoffset:0}}@keyframes mdo{to{opacity:0}}@keyframes mdf{from{opacity:1;clip-path:inset(0 0 100% 0)}to{opacity:1;clip-path:inset(0 0 0 0)}}'
 +'html.fx-off .mdb .gd{width:100%;opacity:1;animation:none!important}html.fx-off .mdb .sc{left:36px;opacity:1;transform:translate(-50%,-50%);animation:none!important}html.fx-off .mdb .t2{opacity:1;animation:none!important}html.fx-off .mdb .ol{display:none}html.fx-off .mdb .fl{opacity:1;clip-path:none;animation:none!important}'
-+'.mlh{display:flex;justify-content:center;margin:4px 0 6px}.mls{width:100%;max-width:360px;height:190px;display:grid;place-items:center;perspective:700px;touch-action:pan-y;cursor:grab;background:radial-gradient(#1c3472,#0b1530);border:1px solid #27407a;border-radius:18px}'
-+'.mlf{width:128px;height:149px;position:relative;transform-style:preserve-3d}.mlf img{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;-webkit-user-drag:none}'
++''
++''
 +'.mgw{position:relative}.mg{display:grid;grid-template-columns:repeat(4,1fr);gap:12px 6px;margin:6px 0 4px}.mgw .md2{display:block!important;width:100%!important;min-width:0!important;min-height:0!important;margin:0!important;background:none!important;border:0!important;box-shadow:none!important;padding:0!important;color:inherit!important;font:inherit;font-size:11px!important;line-height:1.2;text-align:center;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:0!important}.md2 span{display:block;margin-top:2px}'
 +'.md2 svg{display:block;width:62px;height:67px;margin:0 auto 2px;overflow:visible;filter:drop-shadow(0 3px 5px #0005)}.md2.off svg{filter:grayscale(1) brightness(.85);opacity:.4}.md2.sec.off svg{opacity:.34}'
 +'.mgt{font:700 12px system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;opacity:.75;margin:14px 0 4px;display:flex;justify-content:space-between}'
@@ -317,20 +317,6 @@ function run(){
 }
 /* ---------- grid (profile page) ---------- */
 function fmt(d){try{return new Date(d).toLocaleDateString(ES?'es':'pt-BR',{day:'numeric',month:'short',year:'numeric'});}catch(e){return '';}}
-function lionHero(){
-  var w=el('div','mlh'),st=el('div','mls'),fig=el('div','mlf'),N=16,STEP=1.5,src=BASE()+'img/lion-gold.png';
-  for(var i=0;i<N;i++){var im=document.createElement('img');im.src=src;im.alt='';im.setAttribute('aria-hidden','true');
-    im.style.transform='translateZ('+(-i*STEP+N*STEP/2)+'px)';
-    im.style.filter=i===0?'none':'brightness('+(.38+.22*(1-i/(N-1)))+') sepia(.5) saturate(1.4)';fig.appendChild(im);}
-  st.appendChild(fig);w.appendChild(st);
-  var ry=0,vel=document.documentElement.classList.contains('fx-off')?0:18,drag=false,lx=0;
-  function tick(){if(!w.isConnected)return;if(!drag){ry+=vel;vel*=.965;if(Math.abs(vel)<.05){vel=0;var t=Math.round(ry/360)*360;ry+=(t-ry)*.08;}}fig.style.transform='rotateY('+ry+'deg)';requestAnimationFrame(tick);}
-  requestAnimationFrame(tick);
-  st.addEventListener('pointerdown',function(e){drag=true;lx=e.clientX;vel=0;try{st.setPointerCapture(e.pointerId);}catch(x){}});
-  st.addEventListener('pointermove',function(e){if(!drag)return;var dx=e.clientX-lx;lx=e.clientX;ry+=dx*.8;vel=dx*.8;});
-  st.addEventListener('pointerup',function(){drag=false;});st.addEventListener('pointercancel',function(){drag=false;});
-  st.addEventListener('click',function(){if(!vel)vel=18;});
-  return w;}
 async function render(box,all){
   css();defsSvg();var x=C.extra||await loadExtra();var mine={};try{mine=await loadMine();}catch(e){}
   var S=stats(all||await loadAll(),x),res=evalAll(S);
@@ -354,7 +340,7 @@ async function render(box,all){
       grid.appendChild(b);});
     wrap.appendChild(grid);});
   document.addEventListener('click',function(){tip.classList.remove('on');});
-  box.appendChild(lionHero());
+  
   box.appendChild(wrap);
   /* next medal */
   var nx=res.filter(function(r){return !r.have&&!mine[r.m.id]&&!r.m.secret&&!/^reviewer/.test(r.m.id);}).sort(function(a,b){return b.p-a.p;})[0];
