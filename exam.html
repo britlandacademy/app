@@ -304,7 +304,6 @@ function question(p,n){
   function pick(v){setA(p,n,v);card.classList.add('ans');card.querySelectorAll('.opt').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.v===v)));}
   if(p.id==='yesno'){
     card.classList.add('yn');
-    const yi=(p.items||[]).find(i=>i.n===n);if(yi)top.append(el('span',{class:'stem'},yi.q));
     const o=el('div',{class:'opts row yn',role:'radiogroup','aria-label':'Question '+n});
     [['Yes','Yes'],['No','No'],['?','?']].forEach(([v,txt])=>{
       const b=el('button',{type:'button',class:'opt'+(v==='?'?' unsure':''),role:'radio','data-v':v,'aria-checked':String(cur===v),'aria-label':v==='?'?'I did not understand the question':null,title:v==='?'?'I did not understand the question':null},txt);
