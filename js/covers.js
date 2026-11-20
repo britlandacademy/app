@@ -13,6 +13,7 @@ function T(s){try{return window.I18N&&I18N.t?I18N.t(s):s;}catch(e){return s;}}
 function stageOf(l){for(var i=0;i<STG.length;i++)if(l>=STG[i][0]&&l<=STG[i][1])return i+1;return 1;}
 function src(n,es){if(BUS)return 'img/covers/business.png';return 'img/covers/'+(es||C.coverEs?'es-':'cover-')+n+'.png';}
 function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
+function tickEl(){var t=document.createElement('span');t.className='cv-tick';t.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';return t;}
 function cover(n,w,es){var i=new Image();i.src=src(n,es);i.alt=(es||C.coverEs)?'Libro del Estudiante · Etapa '+n:(BUS?"Callan for Business":"Student's Book · Stage "+n);i.width=w||90;i.height=Math.round((w||90)*1.42);i.className='cv-img';i.decoding='async';return i;}
 /* progress of a Stage from the attempts list, independent of loaded content */
 function stats(att,kind,n,upto){
@@ -45,7 +46,7 @@ var STG12=[[1,12],[13,27],[28,44],[45,63],[64,82],[83,101],[102,120],[121,138],[
 function bizTile(o,cls,pct){
   var b=el('div','cv-p '+cls),img=new Image();img.src='img/covers/business.png';img.alt='Callan for Business';img.width=60;img.height=85;img.className='cv-img';img.decoding='async';
   b.append(img);
-  if(cls==='done')b.append(el('span','cv-tick','✔'));
+  if(cls==='done')b.append(tickEl());
   if(pct!=null&&cls!=='lock'){var bar=el('div','cv-bar'),fl=el('i');fl.style.width=Math.round(pct)+'%';bar.append(fl);b.append(bar);}
   if(cls!=='lock'){var a=el('a','cv-a'),pg=(location.pathname.split('/').pop()||'index.html');if(pg==='index.html')pg='check.html';
     a.href=pg+'?course=business';a.setAttribute('aria-label','Business');a.append(img);b.insertBefore(a,b.firstChild);}
@@ -63,7 +64,7 @@ function path(o){
   }
   for(i=1;i<=(C.stages?NST:(o.es?6:12));i++){s=o.state(i);
     b=el('div','cv-p '+s.cls);b.append(cover(i,60,o.es));
-    if(s.cls==='done'){b.append(el('span','cv-tick','✔'));}
+    if(s.cls==='done'){b.append(tickEl());}
     if(o.txt&&s.cls!=='lock'&&s.avail!=null){var t=el('div','cv-num'),pc=s.avail?Math.round(100*s.done/s.avail):0;
       var bb=el('b','');bb.append(el('i','',s.done+' / '+s.avail),document.createTextNode(' '),el('i','','('+pc+'%)'));t.append(bb);
       if(s.done&&s.acc!=null)t.append(el('span','',Math.round(s.acc*100)+'% '+T('correct')));b.append(t);}
@@ -131,7 +132,7 @@ var css='.cv-num{margin-top:5px;font-size:.72rem;line-height:1.25;color:var(--mu
 '.cv-badge{font-style:normal;font-size:.82rem;font-weight:700;color:#0B1B33;background:#F5C542;border-radius:99px;padding:2px 10px;align-self:flex-start;margin-top:4px}'+
 '.cv-path{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin:0 0 18px}@media(min-width:720px){.cv-path{grid-template-columns:repeat(12,minmax(0,1fr));gap:10px}}.cv-p{position:relative;text-align:center}.cv-p .cv-img{width:100%;height:auto}'+
 '.cv-p.lock .cv-img{opacity:.28;filter:grayscale(1)}.cv-p.cur .cv-img{outline:3px solid #F5C542;outline-offset:2px}.cv-p .cv-bar{width:100%}'+
-'.cv-tick{position:absolute;top:-6px;right:-4px;width:22px;height:22px;border-radius:50%;background:#F5C542;color:#0B1B33;font-weight:800;font-size:.8rem;display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.4)}'+
+'.cv-tick{position:absolute;top:-6px;right:-4px;width:clamp(13px,52%,22px);aspect-ratio:1;border-radius:50%;background:#F5C542;color:#0B1B33;display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.4)}.cv-tick svg{width:62%;height:62%;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}'+
 '.cv-ov{position:fixed;inset:0;z-index:99999;background:rgba(5,12,24,.82);display:grid;place-items:center;padding:18px;overflow:hidden;animation:cvin .3s ease}.cv-ov.out{opacity:0;transition:opacity .25s}'+
 '.cv-card{position:relative;z-index:2;background:#102038;color:#F2F5FA;border:1px solid #2A3F63;border-radius:18px;padding:26px 24px;max-width:460px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6);animation:cvpop .55s cubic-bezier(.2,1.3,.4,1)}'+
 '.cv-card h2{font:700 1.5rem BLSerif,Georgia,serif;margin:0 0 14px;color:#fff}.cv-row{display:flex;align-items:center;justify-content:center;gap:18px;margin:0 0 14px}.cv-arrow{font-size:2rem;color:#F5C542}'+
