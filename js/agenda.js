@@ -30,7 +30,7 @@ var S={
  bCur:{en:'Current lesson',pt:'Aula atual',es:'Clase actual'},
  bPick:{en:'Choose a new time',pt:'Escolha um novo horário',es:'Elige un nuevo horario'},
  bSelDate:{en:'Select a date:',pt:'Selecione uma data:',es:'Selecciona una fecha:'},
- bSelNote:{en:'Times are shown until the end of the month.',pt:'Os horários aparecem até o fim do mês.',es:'Los horarios se muestran hasta fin de mes.'},
+ bSelNote:{en:'Times are shown for this month and the next.',pt:'Os horários aparecem para este mês e o próximo.',es:'Los horarios se muestran para este mes y el siguiente.'},
  bDur:{en:'Lesson length:',pt:'Duração da aula:',es:'Duración de la clase:'},
  bPickN:{en:'Choose a time',pt:'Escolha o horário',es:'Elige el horario'},
  bNote:{en:'Only free times are shown, in your time zone. You can reschedule up to 2 hours before the lesson.',pt:'Só aparecem horários livres, no seu fuso. Dá para remarcar até 2 horas antes da aula.',es:'Solo se muestran horarios libres, en tu zona horaria. Puedes reprogramar hasta 2 horas antes de la clase.'},
@@ -212,7 +212,7 @@ function mount(box,ctx){
   function info(lbl,val){var c=el('div','ag-info');c.appendChild(el('span','ag-lbl',lbl));c.appendChild(el('b','',val));return c;}
 
   var CALSVG='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><circle cx="8.5" cy="14.5" r=".9" fill="currentColor"/><circle cx="12" cy="14.5" r=".9" fill="currentColor"/><circle cx="15.5" cy="14.5" r=".9" fill="currentColor"/></svg>';
-  function hourly(slots){var n=new Date(),lim=new Date(n.getFullYear(),n.getMonth()+1,1).getTime(),out=[];
+  function hourly(slots){var n=new Date(),lim=new Date(n.getFullYear(),n.getMonth()+2,1).getTime(),out=[];
     slots.forEach(function(iso){var t=new Date(iso);if(t.getMinutes()!==0||t.getTime()>=lim)return;out.push(iso);});
     return out;}
   function wdShort(d){try{return new Intl.DateTimeFormat(loc(),{weekday:'short'}).format(d).replace('.','').toUpperCase();}catch(e){return '';}}
@@ -230,14 +230,18 @@ function mount(box,ctx){
       if(!slots.length){body.appendChild(el('p','ag-s',T('bNoSlots')));return;}
       var days={},order=[];slots.forEach(function(iso){var k=dayKey(iso);if(!days[k]){days[k]=[];order.push(k);}days[k].push(iso);});
       var sel=null,selDay=null,rep=false,dur=(r.data.dur||50),wkOk=kind==='new'&&(r.data.weekly_used||0)<(r.data.weekly_limit||1),wkLim=r.data.weekly_limit||1;
-      var first=new Date(order[0]+'T12:00:00'),Y=first.getFullYear(),M=first.getMonth(),todayK=dayKey(new Date().toISOString());
+      var todayK=dayKey(new Date().toISOString()),dayBtns={},ms=[];
+      order.forEach(function(k){var m=k.slice(0,7);if(ms.indexOf(m)<0)ms.push(m);});
       body.appendChild(el('h2','',kind!=='reschedule'?T('bPickN'):T('bPick')));
-      var mn=el('div','ag-mn'),mt=el('b','');try{mt.textContent=new Intl.DateTimeFormat(loc(),{month:'long',year:'numeric'}).format(new Date(Y,M,1)).replace(/^./,function(c){return c.toUpperCase();});}catch(e){}
-      mn.appendChild(mt);body.appendChild(mn);
-      var grid=el('div','ag-grid'),dayBtns={};body.appendChild(grid);
-      for(var w=0;w<7;w++){grid.appendChild(el('span','ag-gw',new Intl.DateTimeFormat(loc(),{weekday:'short'}).format(new Date(2024,0,7+w)).replace('.','')));}
-      var f0=new Date(Y,M,1),nd=new Date(Y,M+1,0).getDate();for(var i0=0;i0<f0.getDay();i0++)grid.appendChild(el('span','ag-gd off',''));
-      for(var d=1;d<=nd;d++){(function(d){var k=Y+'-'+('0'+(M+1)).slice(-2)+'-'+('0'+d).slice(-2),has=!!days[k],c=el('button','ag-gd'+(has?' has':' off')+(k===todayK?' td':''),String(d));c.type='button';c.disabled=!has;if(has){dayBtns[k]=c;c.onclick=function(){pickDay(k);};}grid.appendChild(c);})(d);}
+      ms.forEach(function(m){
+        var Y=+m.slice(0,4),M=+m.slice(5,7)-1;
+        var mn=el('div','ag-mn'),mt=el('b','');try{mt.textContent=new Intl.DateTimeFormat(loc(),{month:'long',year:'numeric'}).format(new Date(Y,M,1)).replace(/^./,function(c){return c.toUpperCase();});}catch(e){}
+        mn.appendChild(mt);body.appendChild(mn);
+        var grid=el('div','ag-grid');body.appendChild(grid);
+        for(var w=0;w<7;w++){grid.appendChild(el('span','ag-gw',new Intl.DateTimeFormat(loc(),{weekday:'short'}).format(new Date(2024,0,7+w)).replace('.','')));}
+        var f0=new Date(Y,M,1),nd=new Date(Y,M+1,0).getDate();for(var i0=0;i0<f0.getDay();i0++)grid.appendChild(el('span','ag-gd off',''));
+        for(var d=1;d<=nd;d++){(function(d){var k=Y+'-'+('0'+(M+1)).slice(-2)+'-'+('0'+d).slice(-2),has=!!days[k],c=el('button','ag-gd'+(has?' has':' off')+(k===todayK?' td':''),String(d));c.type='button';c.disabled=!has;if(has){dayBtns[k]=c;c.onclick=function(){pickDay(k);};}grid.appendChild(c);})(d);}
+      });
       body.appendChild(el('p','ag-s ag-hint',T('bHint')));
       var dsl=el('h2','ag-ds',T('bPickD')),hg=el('div','ag-hg');body.appendChild(dsl);body.appendChild(hg);
       var chosen=info(T('bNew2'),'—');chosen.className+=' ag-chosen';
