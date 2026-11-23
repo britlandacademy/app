@@ -360,11 +360,13 @@ function avThumb(p,inp){
 function clampN(v,c){v=parseInt(v,10);return isNaN(v)?0:Math.max(0,Math.min(MAXC[c||'en']||MAXL,v));}
 
 /* ----- profiles ----- */
+let GRPS=[],GMEM=[];
+function loadGroups(){return Promise.all([sb.from('class_groups').select('id,name,wa_group'),sb.from('class_group_members').select('group_id,user_id')]).then(a=>{GRPS=(a[0]&&a[0].data)||[];GMEM=(a[1]&&a[1].data)||[];}).catch(()=>{});}
 function loadProfiles(){
-  return sb.from('profiles').select('*').order('created_at',{ascending:true}).then(r=>{
+  return loadGroups().then(()=>sb.from('profiles').select('*').order('created_at',{ascending:true}).then(r=>{
     if(r.error)throw r.error;PROFILES=r.data||[];
     return (window.ContractAdmin?ContractAdmin.load(sb):Promise.resolve()).then(()=>{renderPend();renderStu();renderMat();if(typeof renderPlan==="function")renderPlan();renderWho();if(typeof renderHome==='function')renderHome();});
-  });
+  }));
 }
 function update(id,patch,msgId){
   return sb.from('profiles').update(patch).eq('id',id).then(r=>{
@@ -411,6 +413,16 @@ function startBlock(p){
   sel.value=p.start_stage?String(p.start_stage):'';
   sel.addEventListener('change',()=>{const v=sel.value?parseInt(sel.value,10):null;upd(p,{start_stage:v},()=>okTag(ok));});
   return el('label',{style:'display:block;font-size:.88rem;margin:0'},'Começou no Stage: ',sel,ok);
+}
+function waBlock(p){
+  const ok=el('span',{class:'sv',style:'margin-left:8px'});
+  const gm=GMEM.find(m=>m.user_id===p.id),g=gm&&GRPS.find(x=>x.id===gm.group_id);
+  const inp=el('input',{type:'text',value:(g?g.wa_group:p.wa_group)||'',placeholder:g?'Nome do grupo da turma':'Ex.: Maria VIP - Stg 1',maxlength:'80','aria-label':'Grupo do WhatsApp, '+p.name,title:g?'Este aluno está na turma "'+g.name+'": o grupo é o da turma e vale para todos os alunos dela.':'Nome exato do grupo do WhatsApp onde o convite da aula é enviado.',style:'width:210px;max-width:100%'});
+  const save=()=>{const v=inp.value.trim()||null;if(v===((g?g.wa_group:p.wa_group)||null))return;
+    const q=g?sb.from('class_groups').update({wa_group:v}).eq('id',g.id):sb.from('profiles').update({wa_group:v}).eq('id',p.id);
+    q.then(r=>{if(r.error){setMsg('xmsg','Erro ao salvar: '+r.error.message,'bad');return;}if(g)g.wa_group=v;else p.wa_group=v;okTag(ok);});};
+  inp.addEventListener('change',save);inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();inp.blur();}});
+  return el('label',{style:'display:block;font-size:.88rem;margin:0'},g?'Grupo do WhatsApp (turma '+g.name+'): ':'Grupo do WhatsApp: ',inp,ok);
 }
 function upd(p,patch,ok){return sb.from('profiles').update(patch).eq('id',p.id).then(r=>{if(r.error){setMsg('xmsg','Erro ao salvar: '+r.error.message,'bad');return;}Object.assign(p,patch);if(ok)ok();});}
 function okTag(sp){sp.textContent='✓ salvo';clearTimeout(sp._t);sp._t=setTimeout(()=>{sp.textContent='';},2000);}
@@ -507,7 +519,7 @@ function renderStu(){
       const pLib=el('div',{class:'dp','data-p':'lib'}),pCad=el('div',{class:'dp','data-p':'cad'}),pAcc=el('div',{class:'dp','data-p':'acc'});
       pLib.append(fc('Liberações',planRow,...(ex?ex.rows:[]),ex?ex.info:el('p',{class:'hint'},'Provas indisponíveis.')));
       pCad.append(fc('Nome de cadastro',nameBlock(p)));
-      pCad.append(fc('Plano e início',startBlock(p),el('div',{style:'height:8px'}),planBlock(p),p.display_name?el('div',{style:'margin-top:8px'},el('button',{type:'button',class:'ghost',onclick:async()=>{if(await BL_DLG.confirm('Remover o apelido "'+p.display_name+'" de '+(p.name||p.email)+'?'))upd(p,{display_name:null,display_name_at:null},()=>renderStu());}},'Remover apelido')):null));
+      pCad.append(fc('Plano e início',el('div',{style:'display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center'},startBlock(p),waBlock(p)),el('div',{style:'height:8px'}),planBlock(p),p.display_name?el('div',{style:'margin-top:8px'},el('button',{type:'button',class:'ghost',onclick:async()=>{if(await BL_DLG.confirm('Remover o apelido "'+p.display_name+'" de '+(p.name||p.email)+'?'))upd(p,{display_name:null,display_name_at:null},()=>renderStu());}},'Remover apelido')):null));
       const blk=p.status==='blocked';
       const accRow=swRow('Acesso ativo',!blk,false,blk?'Aluno bloqueado':'Desligar bloqueia o acesso do aluno',on=>on?(update(p.id,{status:'approved'}),undefined):BL_DLG.confirm('Bloquear '+(p.name||p.email)+'?').then(k=>k?(update(p.id,{status:'blocked'}),undefined):false));
       pAcc.append(fc('Acesso',accRow),CON?fc('Contrato',ContractAdmin.cell({el:el,sb:sb,profile:p,reload:loadProfiles})):null,ex?fc('Ações',ex.acts):null);
