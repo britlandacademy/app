@@ -382,9 +382,10 @@ function admin(box,lg){
       var nmL=el('div','ag2-sub');v.forEach(function(i,k){if(k)nmL.appendChild(document.createTextNode(', '));var f=flagOf(gr,i);if(f)nmL.appendChild(f);nmL.appendChild(document.createTextNode(sname(gr,i)));});if(v.length)mid.appendChild(nmL);
       var il=infoLine(x);if(il&&!isPast)mid.appendChild(el('div','ag2-sub',il));mid.appendChild(pillsFor(x,isPast));
       add2(mn,el('span','ag2-tm',hhmm(x.start_at)),mid);hd.appendChild(mn);
-      if(v.length&&S){var su=NC.sheetUrl(S,v[0]);if(su&&!isPast){var a1=el('a','ag2-q','Planilha');a1.href=su;a1.target='_blank';a1.rel='noopener';hd.appendChild(a1);}}
+      var su=(v.length&&S&&NC&&NC.sheetUrl)?NC.sheetUrl(S,v[0]):null;
       if(!isPast){var a2=el('a','ag2-q go','Zoom');a2.href=(NC&&NC.zoom)||'#';a2.target='_blank';a2.rel='noopener';hd.appendChild(a2);}
       hd.appendChild(el('span','ag2-chev','›'));it.appendChild(hd);
+      hd.style.cursor='pointer';hd.onclick=function(e){if(e.target.closest&&e.target.closest('a,button'))return;mn.click();};
       (function(){var tot=0;v.forEach(function(u){tot+=(CR[u]||[]).length;});if(tot){var rw=el('div','ag2-crrow'),pl=el('button','ag2-crpill','↺ '+tot+(tot>1?' aulas a repor':' aula a repor'));pl.type='button';pl.onclick=function(){crUI(x,v);};rw.appendChild(pl);it.appendChild(rw);}})();
       var det=null;mn.onclick=function(){if(!v.length){if(gr)assignUI(gr,x);return;}
         if(det){det.hidden=!det.hidden;mn.setAttribute('aria-expanded',String(!det.hidden));return;}
@@ -393,6 +394,7 @@ function admin(box,lg){
         var ch=el('button','ag-btn alt','Mudar aluno');ch.type='button';ch.style.marginTop='10px';ch.onclick=function(){if(gr)assignUI(gr,x);};
         var bx=el('div','ag2-acts');bx.appendChild(ch);
         if(!isPast){var rb=el('button','ag-btn alt','Remarcar'),cb=el('button','ag-btn alt ag2-danger','Cancelar aula');rb.type=cb.type='button';var nms=v.map(function(i){return sname(gr,i);}).join(', ');rb.onclick=function(){changeUI(x,v.length>1?'move':'ask',nms,v);};cb.onclick=function(){changeUI(x,'cancel',nms,v);};bx.appendChild(rb);bx.appendChild(cb);}
+        if(su&&!isPast){var a1=el('a','ag-btn alt','Planilha');a1.href=su;a1.target='_blank';a1.rel='noopener';a1.style.cssText='display:inline-flex;align-items:center;text-decoration:none';bx.insertBefore(a1,bx.firstChild);}
         det.appendChild(bx);};
       return it;}
     function add2(p){for(var i=1;i<arguments.length;i++)p.appendChild(arguments[i]);return p;}
