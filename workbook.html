@@ -166,6 +166,27 @@ button.primary{background:var(--accent);color:var(--accent-ink)}
 .readbox{margin:0 0 14px;padding:12px 14px;background:var(--chip);border-radius:3px}
 .readbox h3{margin:0 0 6px;font-family:var(--font-display);font-size:1.1rem}
 .readbox p{margin:0}
+.ic{display:inline-flex;align-items:center;flex:none}
+.lis-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
+.lis-tab{flex:1 1 140px;justify-content:center;min-height:46px;padding:8px 11px;display:flex;align-items:center;gap:8px;font:inherit;font-weight:700;color:var(--accent);background:var(--surface);border:2px solid var(--line);border-radius:3px;cursor:pointer}
+.lis-tab.on{border-color:var(--accent);background:var(--chip)}
+.lis-tab:disabled{color:var(--muted);cursor:not-allowed;opacity:.8}
+.lis-tab small{font-weight:400;font-size:.78rem;color:var(--muted)}
+.lis-box{margin:0 0 14px;padding:12px 14px;background:var(--chip);border-radius:3px}
+.lis-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 8px}
+.lis-top b{font-family:var(--font-display);font-size:1.05rem}
+.lis-acc{display:inline-flex;align-items:center;min-height:32px;padding:2px 12px;border:2px solid var(--accent);border-radius:99px;font-weight:700;font-size:.82rem;background:var(--surface)}
+.lis-pl{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:3px;padding:10px 12px}
+.lis-pb{width:46px;height:46px;min-width:46px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.lis-bar{flex:1;height:16px;border-radius:99px;background:var(--chip);border:1px solid var(--line);overflow:hidden;cursor:pointer;min-width:60px}
+.lis-bar i{display:block;height:100%;width:0;background:var(--accent)}
+.lis-t{font-size:.82rem;font-variant-numeric:tabular-nums;color:var(--muted);min-width:2.6em;text-align:right}
+.lis-sp{display:flex;gap:6px}
+.lis-sp button{min-height:36px;min-width:46px;padding:0 8px;font:inherit;font-size:.82rem;color:var(--ink);background:var(--surface);border:2px solid var(--line);border-radius:3px;cursor:pointer}
+.lis-sp button.on{border-color:var(--accent);font-weight:700}
+.lis-show{margin:10px 0 0;padding:0;background:none;border:0;font:inherit;font-size:.9rem;color:var(--ink);text-decoration:underline;cursor:pointer;min-height:44px}
+.lis-msg{margin:6px 0 0;font-size:.9rem;color:var(--bad)}
+@media (max-width:420px){.lis-pl{flex-wrap:wrap}.lis-bar{order:5;flex-basis:100%}}
 .bank{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;padding:10px 12px;background:var(--chip);border-radius:3px}
 .bw{padding:4px 12px;border:2px solid var(--line);border-radius:99px;background:var(--surface);font-weight:700}
 textarea.wrt{width:100%;font:inherit;font-size:1rem;color:var(--ink);background:var(--surface);border:2px solid var(--line);border-radius:3px;padding:8px 12px}
@@ -348,9 +369,67 @@ function bD(L,d,id){
   });
   return {pre:[],rows:rows,grid:false};
 }
+const LIC={head:'<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4" height="6" rx="1"/><rect x="17" y="14" width="4" height="6" rx="1"/>',book:'<path d="M3 5h7a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H3zM21 5h-7a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h7z"/>',play:'<path d="M7 4l13 8-13 8z"/>',pause:'<path d="M8 5v14M16 5v14"/>',eye:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'};
+function ico(n,z){const w=document.createElement('span');w.className='ic';w.setAttribute('aria-hidden','true');w.innerHTML='<svg width="'+z+'" height="'+z+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+LIC[n]+'</svg>';return w;}
+let RDA={},LAUD=null;
+/* Listening / Reading toggle of a reading text (audio generated with Gemini, kept in the 'audio' bucket). Starts in Listening; opening the text before checking turns the exercise into plain Reading (no bonus). */
+function listenBlock(info,d,readbox){
+  if(LAUD){try{LAUD.pause();}catch(e){}LAUD=null;}
+  const st={mode:'listening',peeked:false,done:false};
+  let au=null,rate=1;
+  const accent=String(info.accent||'').split(' (')[0]+' accent';
+  const tabL=el('button',{type:'button',class:'lis-tab on','aria-pressed':'true'},ico('head',18),'Listening',el('small',{},'2× points'));
+  const tabR=el('button',{type:'button',class:'lis-tab','aria-pressed':'false'},ico('book',18),'Reading');
+  const msg=el('p',{class:'lis-msg',hidden:true,'aria-live':'polite'});
+  const note=el('p',{class:'hint'},'Ouça o áudio e responda. Você pode ouvir quantas vezes quiser.');
+  const pb=el('button',{type:'button',class:'lis-pb','aria-label':'Play'},ico('play',22));
+  const fill=el('i'),bar=el('div',{class:'lis-bar',role:'presentation'},fill),tm=el('span',{class:'lis-t'},'0:00');
+  const sp=[0.75,1].map(r=>el('button',{type:'button',class:r===1?'on':'','aria-pressed':r===1?'true':'false'},r+'×'));
+  const spw=el('div',{class:'lis-sp'},sp);
+  const show=el('button',{type:'button',class:'lis-show'},ico('eye',18),' Show text (no bonus)');
+  const box=el('div',{class:'lis-box'},el('div',{class:'lis-top'},el('b',{},'Listen to “'+d.head+'”'),el('span',{class:'lis-acc'},accent)),
+    el('div',{class:'lis-pl'},pb,bar,tm,spw),msg,show);
+  const mmss=t=>{t=Math.max(0,Math.floor(t||0));return Math.floor(t/60)+':'+String(t%60).padStart(2,'0');};
+  function setPlay(on){pb.replaceChildren(ico(on?'pause':'play',22));pb.setAttribute('aria-label',on?'Pause':'Play');}
+  function ensure(){
+    if(au)return Promise.resolve(au);
+    return Gate.audioUrl(info.path).then(u=>{au=new Audio(u);au.preload='auto';try{au.preservesPitch=true;}catch(e){}au.playbackRate=rate;
+      au.addEventListener('timeupdate',()=>{fill.style.width=(au.duration?au.currentTime/au.duration*100:0)+'%';tm.textContent=mmss(au.currentTime);});
+      au.addEventListener('ended',()=>{setPlay(false);fill.style.width='0%';tm.textContent='0:00';});
+      au.addEventListener('pause',()=>setPlay(false));au.addEventListener('play',()=>setPlay(true));
+      au.addEventListener('error',()=>{msg.textContent='Este áudio ainda não está disponível.';msg.hidden=false;setPlay(false);});
+      return au;});
+  }
+  pb.addEventListener('click',()=>{
+    msg.hidden=true;
+    if(au&&!au.paused){au.pause();return;}
+    ensure().then(a=>{if(LAUD&&LAUD!==a){try{LAUD.pause();}catch(e){}}LAUD=a;const p=a.play();if(p&&p.catch)p.catch(()=>{msg.textContent='Este áudio ainda não está disponível.';msg.hidden=false;});},
+      ()=>{msg.textContent='Este áudio ainda não está disponível.';msg.hidden=false;});
+  });
+  bar.addEventListener('click',e=>{if(au&&au.duration){const r=bar.getBoundingClientRect();au.currentTime=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width))*au.duration;}});
+  sp.forEach((b,i)=>b.addEventListener('click',()=>{rate=[0.75,1][i];if(au)au.playbackRate=rate;sp.forEach((x,k)=>{x.className=k===i?'on':'';x.setAttribute('aria-pressed',k===i?'true':'false');});}));
+  function view(m){
+    st.mode=m;const L=m==='listening';
+    tabL.className='lis-tab'+(L?' on':'');tabR.className='lis-tab'+(L?'':' on');
+    tabL.setAttribute('aria-pressed',L?'true':'false');tabR.setAttribute('aria-pressed',L?'false':'true');
+    box.hidden=!L;readbox.hidden=L;note.hidden=!L&&!(st.peeked&&!st.done);
+    note.textContent=L?'Ouça o áudio e responda. Você pode ouvir quantas vezes quiser.':'Você abriu o texto: este exercício vale pontos normais.';
+    if(L&&au)au.pause();
+    if(!L&&!st.done){st.peeked=true;tabL.disabled=true;}
+  }
+  tabL.addEventListener('click',()=>{if(!tabL.disabled)view('listening');});
+  tabR.addEventListener('click',()=>{if(au)au.pause();view('reading');});
+  show.addEventListener('click',()=>{if(au)au.pause();view('reading');});
+  readbox.hidden=true;
+  return {nodes:[el('div',{class:'lis-tabs',role:'group','aria-label':'Listening or Reading'},tabL,tabR),note,box,readbox],
+    getMode:()=>st.peeked?'reading':'listening',
+    lockAll:()=>{if(au)au.pause();st.done=true;tabL.disabled=false;}};
+}
 function bTF(L,d,id,withText){
-  const pre=[];
-  if(withText)pre.push(el('div',{class:'readbox'},el('h3',{},d.head),el('p',{},d.text)));
+  const pre=[];let lb=null;
+  if(withText){const rb=el('div',{class:'readbox'},el('h3',{},d.head),el('p',{},d.text));
+    const info=RDA[id];
+    if(info&&!/^duo/.test(id)){lb=listenBlock(info,d,rb);lb.nodes.forEach(n=>pre.push(n));}else pre.push(rb);}
   const rows=d.items.map((it,i)=>{
     const name=id+'r'+i;
     const r1=el('input',{type:'radio',name:name,id:name+'t',value:'1'}),r0=el('input',{type:'radio',name:name,id:name+'f',value:'0'});
@@ -359,7 +438,7 @@ function bTF(L,d,id,withText){
       get:()=>{if(!r1.checked&&!r0.checked)return {ok:false,msg:'Choose True or False.',model:m};return (r1.checked===it.ans)?{ok:true,model:m}:{ok:false,msg:'Check the model answer.',model:m};},
       lock:()=>{r1.disabled=true;r0.disabled=true;}};
   });
-  return {pre:pre,rows:rows,grid:false};
+  return {pre:pre,rows:rows,grid:false,getMode:lb?lb.getMode:null,lockAll:lb?lb.lockAll:null};
 }
 function bH(L,d,id){
   const pre=[];if(d.instr)pre.push(el('p',{class:'hint'},d.instr));if(d.bank){let B;for(let t=0;t<30;t++){B=shuf(d.bank);if(B.length<2||B.join('|')!==d.items.map(x=>x.ans).join('|'))break;}pre.push(el('div',{class:'bank'},B.map(w=>el('span',{class:'bw'},w))));}
@@ -539,13 +618,14 @@ function buildCard(L,s){
       if(r.ok)right++;
     });
     if(spec.free&&right<built.length){score.textContent='Write something in each box.';return;}
-    built.forEach(o=>o.r.lock());
+    const mode=spec.getMode?spec.getMode():'reading';
+    built.forEach(o=>o.r.lock());if(spec.lockAll)spec.lockAll();
     verify.disabled=true;
     const total=secTotal(L,s);
     score.textContent='Score: '+right+' of '+total+' · saving…';
-    const att={l:L.id,e:id,s:right,t:total,at:Date.now()};
+    const att={l:L.id,e:id,s:right,t:total,at:Date.now(),mode:mode};
     me().attempts.push(att);
-    try{Gate.logErrors('ex',att,errs);}catch(e){}Gate.saveAttempt('ex',att).then(()=>{score.textContent='Score: '+right+' of '+total+' · saved';warnEl.hidden=true;},
+    try{Gate.logErrors('ex',att,errs);}catch(e){}Gate.saveAttempt('ex',att).then(()=>{score.textContent='Score: '+right+' of '+total+' · saved'+(mode==='listening'?' · Listening: 2× points':'');warnEl.hidden=true;},
       ()=>{score.textContent='Score: '+right+' of '+total+' · NOT saved';warnEl.hidden=false;});
     updateLesson(L);renderTabs();renderHistory();setTimeout(()=>cvCele(Covers.stageOf(L.id)),700);
   });
@@ -680,6 +760,7 @@ function renderHistory(){
   const wa=el('a',{class:'btn ghost',href:'https://wa.me/?text='+encodeURIComponent(reportText()),target:'_blank',rel:'noopener'},'Send via WhatsApp');
   histPanel.append(el('p',{class:'sub'},'Your scores are saved on the server and your teacher can see them.'),sum,el('div',{class:'tblwrap'},tbl),el('div',{class:'btnrow'},copy,wa),ta,note);
 }
+Gate.readingAudio().then(m=>{RDA=m;Object.keys(m).forEach(k=>{const x=m[k],L=BYID[x.lesson];if(!L||!L.wb||!L.wb[x.sec]||L.wb[x.sec].kind!=='tf')return;const h=hosts[k];if(h&&!h.querySelector('input:checked')&&!h.querySelector('.score').textContent)place(L,x.sec,false);});},()=>{});
 whoEl.textContent=me().name;appEl.hidden=false;
 LESSONS.forEach(L=>panelsEl.append(mountLesson(L)));panelsEl.append(histPanel);
 const first=LESSONS.find(L=>!lessonStats(L).complete);

@@ -776,9 +776,9 @@ function fetchAttempts(kind){
     });
 }
 function saveAttempt(kind,a){
-  var row={kind:kind,lesson:BUS?a.l+1000:a.l,ex:a.e,score:a.s,total:a.total!==undefined?a.total:a.t};
+  var row={kind:kind,lesson:BUS?a.l+1000:a.l,ex:a.e,score:a.s,total:a.total!==undefined?a.total:a.t,mode:a.mode==='listening'?'listening':'reading'};
   var stamp=null,settled=false;
-  function later(){var q=pq();stamp=new Date().toISOString();q.push({kind:row.kind,lesson:row.lesson,ex:row.ex,score:row.score,total:row.total,created_at:stamp});pqSet(q);offBanner(true);}
+  function later(){var q=pq();stamp=new Date().toISOString();q.push({kind:row.kind,lesson:row.lesson,ex:row.ex,score:row.score,total:row.total,mode:row.mode,created_at:stamp});pqSet(q);offBanner(true);}
   if(navigator.onLine===false){later();return Promise.resolve();}
   /* if the request never answers (stuck connection or session), keep the result in the offline queue after 12 s instead of leaving "saving…" on screen */
   var guard=new Promise(function(res){setTimeout(function(){if(!settled){later();res();}},12000);});
@@ -795,6 +795,15 @@ function saveAttempt(kind,a){
 function logErrors(kind,a,rows){
   if(!rows||!rows.length||!sb||(prof&&prof.is_admin)||navigator.onLine===false)return;
   try{sb.from('attempt_errors').insert(rows.slice(0,20).map(function(r){return {kind:kind,lesson:BUS?a.l+1000:a.l,ex:String(a.e).slice(0,40),item:String(r.item||'').slice(0,40),given:String(r.given||'').slice(0,200),expected:String(r.expected||'').slice(0,200)};})).then(function(){},function(){});}catch(e){}
+}
+var RDA=null;
+/* Listening dos readings do Workbook: lista (lesson, secao, sotaque, arquivo) dos audios ja gerados; falha silenciosa = sem Listening */
+function readingAudio(){
+  if(RDA)return RDA;
+  RDA=sb.from('reading_audio').select('lesson,sec,accent,path').eq('status','done').then(function(r){
+    var m={};(r.data||[]).forEach(function(x){m['wb'+x.lesson+x.sec]=x;});return m;
+  },function(){return {};});
+  return RDA;
 }
 function audioUrl(path){
   return sb.storage.from('audio').createSignedUrl(path,7200).then(function(r){
@@ -1070,6 +1079,6 @@ function start(opts,cb){
 
 function skel(box,n,h){if(!box)return;box.setAttribute('aria-busy','true');for(var i=0;i<(n||3);i++){var d=document.createElement('span');d.className='bl-sk';d.style.height=(h||52)+'px';d.style.marginBottom='10px';box.append(d);}}
 function unskel(box){if(!box)return;box.removeAttribute('aria-busy');Array.prototype.slice.call(box.querySelectorAll(':scope>.bl-sk')).forEach(function(n){n.remove();});}
-window.Gate={gates:function(){return GATES;},rawUpto:function(){return prof.lessons_upto||0;},birthdayField:birthdayField,birthdayToday:birthdayToday,settingsBlock:settingsBlock,gameSwitch:gameSwitch,gameConfirm:gameConfirm,gameOn:gameIsOn,pushRow:pushRow,help:function(){showHelp();},skel:skel,unskel:unskel,profile:function(){return prof;},start:start,signOut:signOut,setSize:setSize,setTheme:function(t){setTheme(t);},theme:function(){return theme;},shownTheme:shownTheme,setAvatar:setAvatar,loadProfile:loadProfile,sizeIdx:function(){return fsIdx;},sizeMax:function(){return SIZES.length-1;},saveAttempt:saveAttempt,logErrors:logErrors,audioUrl:audioUrl,el:el,
+window.Gate={readingAudio:readingAudio,gates:function(){return GATES;},rawUpto:function(){return prof.lessons_upto||0;},birthdayField:birthdayField,birthdayToday:birthdayToday,settingsBlock:settingsBlock,gameSwitch:gameSwitch,gameConfirm:gameConfirm,gameOn:gameIsOn,pushRow:pushRow,help:function(){showHelp();},skel:skel,unskel:unskel,profile:function(){return prof;},start:start,signOut:signOut,setSize:setSize,setTheme:function(t){setTheme(t);},theme:function(){return theme;},shownTheme:shownTheme,setAvatar:setAvatar,loadProfile:loadProfile,sizeIdx:function(){return fsIdx;},sizeMax:function(){return SIZES.length-1;},saveAttempt:saveAttempt,logErrors:logErrors,audioUrl:audioUrl,el:el,
   get profile(){return prof;},bizUpto:function(){return bizUpto();},mainUpto:function(){return mainUpto();},get user(){return user;},sb:null};
 })();
