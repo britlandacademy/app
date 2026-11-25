@@ -1,5 +1,6 @@
 /* Britland: checkout dentro do app (opcao B, passo a passo: Plano, Pagamento, Pronto).
-   Aberto pelo js/planpick.js quando o aluno sem plano toca em "Assinar".
+   Aberto pelo js/planpick.js quando o aluno sem plano toca em "Assinar", e pela aba Pagamentos do My profile
+   para pagar uma mensalidade ja lancada (o.charge; Wise e "Enviar comprovante" chamam o.onProof).
    Pix e cartao em reais pelo Asaas, cartao em euro pelo Stripe (campo seguro embutido), Wise e outra forma viram pedido ao professor.
    Preco e calculado de novo no servidor (funcao checkout); aqui so mostramos.
    No app em ingles, toda esta parte fica em portugues (regra de precos e pagamentos); no espanhol, em espanhol. */
@@ -61,7 +62,14 @@ var TX={
          es:'Tu profesor recibió tu pedido y te enviará el pago. Lo verás todo aquí en la pestaña Pagos.'},
   active:{en:'Ativo',es:'Activo'},pending:{en:'Aguardando',es:'Pendiente'},
   paidL:{en:'Pago',es:'Pagado'},until:{en:'Válido até',es:'Válido hasta'},next:{en:'Próxima cobrança',es:'Próximo cobro'},
-  rcpt:{en:'Baixar recibo',es:'Descargar recibo'},done:{en:'Concluir',es:'Terminar'}
+  rcpt:{en:'Baixar recibo',es:'Descargar recibo'},done:{en:'Concluir',es:'Terminar'},
+  /* mensalidade ja lancada (aba Pagamentos do My profile) */
+  s1c:{en:'Mensalidade',es:'Mensualidad'},due:{en:'vence em ',es:'vence el '},
+  cardC:{en:'Crédito, pagamento único',es:'Crédito, pago único'},
+  wiseC:{en:'Pague pela Wise e envie o comprovante',es:'Paga con Wise y envía el comprobante'},
+  proof:{en:'Enviar comprovante',es:'Enviar comprobante'},proofS:{en:'Pagou por fora? Anexe aqui',es:'¿Pagaste por fuera? Adjúntalo aquí'},
+  okC:{en:'Mensalidade paga. Obrigado!',es:'Mensualidad pagada. ¡Gracias!'},
+  okCB:{en:'A parcela já aparece como paga na aba Pagamentos.',es:'La cuota ya aparece como pagada en la pestaña Pagos.'}
 };
 function tx(k,L){return (TX[k]||{})[L]||(TX[k]||{}).en||k;}
 function el(t,a,c){var n=document.createElement(t);if(a)Object.keys(a).forEach(function(k){if(a[k]!=null)n.setAttribute(k,a[k]);});
@@ -154,7 +162,11 @@ function css(){
 /* ---------- abre o checkout no lugar da escolha de plano ---------- */
 function open(box,o){
   css();
-  var L=o.L==='es'?'es':'en',sb=o.sb,p=o.plan,cur=p.moeda,per=o.per,P2=o.period,months=P2.months||1;
+  var L=o.L==='es'?'es':'en',sb=o.sb,C=o.charge||null;
+  /* modo mensalidade: o.charge = {id,amount,currency,title,due_date,plan}; vira um "plano" de 1 mes so para mostrar */
+  if(C)o=Object.assign({},o,{plan:{nome:C.plan||tx('s1c',L),moeda:C.currency==='EUR'?'EUR':'BRL',valor_centavos:Math.round(+C.amount*100),slug:null},
+    per:'mensalidade',period:{months:1,label:C.title||(tx('due',L)+ddmmyyyy(new Date(C.due_date+'T12:00:00')))},val:+C.amount,off:0});
+  var p=o.plan,cur=p.moeda,per=o.per,P2=o.period,months=P2.months||1;
   var full=p.valor_centavos/100,val=o.val,total=val*months,off=o.off||0;
   var cfg={asaas:false,stripe:false},pick=null,timers=[];
   function clear(){timers.forEach(function(t){clearInterval(t);clearTimeout(t);});timers=[];}
@@ -162,7 +174,7 @@ function open(box,o){
 
   function steps(n){
     var w=el('div',{class:'co-steps'});
-    [tx('s1',L),tx('s2',L),tx('s3',L)].forEach(function(t,i){
+    [tx(C?'s1c':'s1',L),tx('s2',L),tx('s3',L)].forEach(function(t,i){
       if(i)w.append(el('span',{class:'ln'}));
       var k=i+1,nb=el('span',{class:'n'},k<n?ico('check'):String(k));
       w.append(el('div',{class:'s'+(k<n?' dn':k===n?' on':'')},[nb,t]));});
@@ -180,11 +192,19 @@ function open(box,o){
       sm.append(el('div',{class:'r t'},[el('span',{},tx('perMonth',L)),el('span',{},money(cur,val))]));
     }
     return sm;}
-  function priceLine(){return months>1?money(cur,total):money(cur,val)+tx('month',L);}
+  function priceLine(){if(C)return money(cur,val);return months>1?money(cur,total):money(cur,val)+tx('month',L);}
 
   /* formas de pagamento conforme moeda, periodo e o que esta ligado no servidor */
   function methods(){
     var M=[];
+    if(C){
+      if(cur==='BRL'){
+        M.push({k:'pix',t:tx('pix',L),s:tx('pixS',L),on:cfg.asaas,soon:!cfg.asaas});
+        M.push({k:'card',t:tx('card',L),s:tx('cardC',L),on:cfg.asaas,soon:!cfg.asaas});
+      }else M.push({k:'card',t:tx('card',L),s:tx('cardE',L),on:cfg.stripe,soon:!cfg.stripe});
+      M.push({k:'wise',t:tx('wise',L),s:tx('wiseC',L),on:true});
+      M.push({k:'proof',t:tx('proof',L),s:tx('proofS',L),on:true});
+      return M;}
     if(cur==='BRL'){
       var pixOk=per!=='cartao6',cardOk=per==='mensal'||per==='cartao6';
       M.push({k:'pix',t:tx('pix',L),s:pixOk?tx('pixS',L):tx('onlyAv',L),on:pixOk&&cfg.asaas,soon:pixOk&&!cfg.asaas});
@@ -207,7 +227,7 @@ function open(box,o){
     M.forEach(function(m){
       var b=el('button',{type:'button',class:'co-tile','aria-pressed':m.k===pick?'true':'false'});
       if(!m.on)b.setAttribute('disabled','disabled');
-      b.append(el('span',{class:'ic'},ico(m.k==='card'?'card':m.k)),el('b',{},m.t),el('small',{},m.s));
+      b.append(el('span',{class:'ic'},ico(m.k==='proof'?'send':m.k==='card'?'card':m.k)),el('b',{},m.t),el('small',{},m.s));
       if(m.soon)b.append(el('span',{class:'tg'},tx('soon',L)));
       b.addEventListener('click',function(){pick=m.k;choose();});
       g.append(b);});
@@ -215,12 +235,16 @@ function open(box,o){
     var cm=M.filter(function(m){return m.k===pick;})[0];
     var go=el('button',{type:'button',class:'co-go'},tx('cont',L)+(cm?cm.t:''));
     go.addEventListener('click',function(){
-      if(pick==='pix')pix();else if(pick==='card')(cur==='BRL'?cardBR():cardEU());else manual(pick);});
-    var bk=el('button',{type:'button',class:'co-lnk'},tx('back',L));
+      go_(pick);});
+    var bk=el('button',{type:'button',class:'co-lnk'},tx(C?'back2':'back',L));
     bk.addEventListener('click',function(){clear();if(o.onBack)o.onBack();});
     box.append(go,bk);
   }
 
+  function go_(k){
+    if(k==='pix')pix();else if(k==='card')(cur==='BRL'?cardBR():cardEU());
+    else if(C){clear();if(o.onProof)o.onProof(k==='wise'?'Wise':'Pix');}
+    else manual(k);}
   function head(title){
     clear();box.textContent='';
     var bk=el('button',{type:'button',class:'co-bk','aria-label':tx('back2',L)},ico('back'));
@@ -231,7 +255,8 @@ function open(box,o){
     box.append(sub);top();}
 
   function start(body){
-    body.action='start';body.slug=p.slug;body.periodo=per;body.dupla=!!o.dupla;body.codigo=o.code||null;
+    body.action='start';
+    if(C)body.charge_id=C.id;else{body.slug=p.slug;body.periodo=per;body.dupla=!!o.dupla;body.codigo=o.code||null;}
     return sb.functions.invoke('checkout',{body:body}).then(function(r){
       if(r&&r.error){
         var ctx=r.error.context,pr=ctx&&ctx.json?ctx.json().catch(function(){return {};}):Promise.resolve({});
@@ -302,6 +327,7 @@ function open(box,o){
   /* ---- cartao em reais (Asaas) ---- */
   function field(ph,attrs){var a={type:'text',class:'co-in',placeholder:ph,'aria-label':ph};Object.keys(attrs||{}).forEach(function(k){a[k]=attrs[k];});return el('input',a);}
   function accept(eu){
+    if(C)return {node:document.createTextNode(''),ok:function(){return true;}}; /* mensalidade: o contrato ja foi aceito */
     var lb=el('label',{class:'co-acc'}),ck=el('input',{type:'checkbox'});
     lb.append(ck,el('span',{},tx(per==='cartao6'?'acc6':'acc',L)+(eu?tx('accEU',L):'')));
     return {node:lb,ok:function(){return ck.checked;}};}
@@ -409,12 +435,16 @@ function open(box,o){
         var lk=document.createElement('link');lk.rel='stylesheet';lk.href=B+'js/coin.css?v='+v;document.head.append(lk);
         var sc=document.createElement('script');sc.src=B+'js/coin.js?v='+v;sc.onload=mk;sc.onerror=function(){c.replaceWith(el('div',{class:'co-ok'},ico('check')));};document.head.append(sc);}
     }else big.append(el('div',{class:'co-ok'},ico(paid?'check':'send')));
-    big.append(el('h2',{},tx(paid?'okT':'sentT',L)),el('p',{},paid?tx('okB',L).replace('{p}',p.nome):tx('sentB',L)));
+    if(C)big.append(el('h2',{},tx('okC',L)),el('p',{},tx('okCB',L)));
+    else big.append(el('h2',{},tx(paid?'okT':'sentT',L)),el('p',{},paid?tx('okB',L).replace('{p}',p.nome):tx('sentB',L)));
     box.append(big);
     var today=new Date(),till=new Date();till.setMonth(till.getMonth()+months);
     var res=el('div',{class:'co-res'});
-    res.append(el('div',{class:'h'},[el('b',{},p.nome),el('span',{class:'pill '+(paid?'ok':'wt')},tx(paid?'active':'pending',L))]));
-    res.append(el('div',{class:'g'},[
+    res.append(el('div',{class:'h'},[el('b',{},p.nome),el('span',{class:'pill '+(paid?'ok':'wt')},tx(C?'paidL':paid?'active':'pending',L))]));
+    if(C)res.append(el('div',{class:'g'},[
+      el('div',{},[el('small',{},tx('paidL',L)),el('b',{},money(cur,val))]),
+      el('div',{},[el('small',{},tx(C?'s1c':'next',L)),el('b',{},P2.label)])]));
+    else res.append(el('div',{class:'g'},[
       el('div',{},[el('small',{},paid?tx('paidL',L):tx('total',L)),el('b',{},money(cur,months>1?total:val))]),
       el('div',{},[el('small',{},months>1?tx('until',L):tx('next',L)),el('b',{},ddmmyyyy(till))])]));
     box.append(res);
@@ -422,7 +452,7 @@ function open(box,o){
       var rb=el('button',{type:'button',class:'co-go'},tx('rcpt',L));
       rb.addEventListener('click',function(){if(rb.disabled)return;rb.disabled=true;
         var iso=today.toISOString().slice(0,10);
-        Promise.resolve(Receipt.download({charge:{id:'C'+(ckId||''),amount:months>1?total:val,currency:cur,paid_on:iso,due_date:iso,
+        Promise.resolve(Receipt.download({charge:C?{id:C.id,amount:val,currency:cur,paid_on:iso,due_date:C.due_date,title:C.title||null}:{id:'C'+(ckId||''),amount:months>1?total:val,currency:cur,paid_on:iso,due_date:iso,
           title:p.nome+(months>1?' · '+months+tx('months',L):'')},plan:p.nome,name:(o.profile&&o.profile.name)||'',base:o.base||''}))
           .then(function(){rb.disabled=false;},function(){rb.disabled=false;});});
       box.append(rb);}
@@ -434,7 +464,10 @@ function open(box,o){
   /* pergunta ao servidor o que esta ligado; se falhar, so Wise e outra forma */
   box.textContent='';box.append(steps(2),el('p',{class:'hint'},tx('loading',L)));
   var cfgP=sb.functions&&sb.functions.invoke?sb.functions.invoke('checkout',{body:{action:'config'}}):Promise.reject();
-  Promise.resolve(cfgP).then(function(r){if(r&&r.data)cfg=r.data;},function(){}).then(function(){choose();top();});
+  Promise.resolve(cfgP).then(function(r){if(r&&r.data)cfg=r.data;},function(){}).then(function(){
+    /* o.method: aberto direto numa forma (toque no quadrado do cartao da mensalidade) */
+    var M=methods(),m0=o.method&&M.filter(function(m){return m.k===o.method&&m.on;})[0];
+    if(m0){pick=m0.k;go_(m0.k);}else choose();top();});
 }
 
 window.Checkout={open:open,TX:TX};

@@ -47,3 +47,7 @@ revoke insert, update, delete on public.checkouts from anon, authenticated;
 --   desconto text, codigo text, tipo text not null default 'novo', status text not null default 'aberto', obs text,
 --   created_at timestamptz not null default now(), handled_at timestamptz);
 -- (politicas iguais as do ingles: insere/le/apaga o proprio pedido aberto; admin atualiza)
+
+-- Pagamento de mensalidade (charges) pelo app: o checkout aponta para a parcela paga.
+alter table public.checkouts add column if not exists charge_id bigint references public.charges(id) on delete set null;
+create index if not exists checkouts_charge_idx on public.checkouts(charge_id);

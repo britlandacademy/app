@@ -2,6 +2,7 @@
    Newest first. Written for students (no technical terms). Each entry: v, d [pt, es], t [pt, es] short title, p [pt, es] one sentence,
    show:1 = also shown once in the "O que há de novo" notice after the update (use ONLY when the teacher marks a version as important; none is marked by default), c:'en'|'es' = only that course (omit = both). */
 window.BL_RELEASES=[
+{v:'2.0.150',d:['25 de novembro','25 de noviembre'],t:['Pague a mensalidade pelo app','Paga la mensualidad en la app'],p:['Na aba Pagamentos do seu perfil, pague a mensalidade com Pix ou cartão, ou envie o comprovante.','En la pestaña Pagos de tu perfil, paga la mensualidad con Pix o tarjeta, o envía el comprobante.']},
 {v:'2.0.149',d:['25 de novembro','25 de noviembre'],t:['Pagamento passo a passo, dentro do app','Pago paso a paso, dentro de la app'],p:['Depois de escolher o plano, escolha como pagar e acompanhe tudo até a confirmação, sem sair do app.','Después de elegir el plan, elige cómo pagar y sigue todo hasta la confirmación, sin salir de la app.']},
 {v:'2.0.148',d:['25 de novembro','25 de noviembre'],t:['Novo: Listening no Workbook. Em alguns textos de leitura, você pode ouvir o áudio em vez de ler, em vários sotaques, e responder só pelo que ouviu. Ouvir vale o dobro de pontos no ranking.','Nuevo: Listening en el Workbook.'],p:['',''],c:'en'},
 {v:'2.0.147',d:['25 de novembro','25 de noviembre'],t:['Correção de bugs','Corrección de errores'],p:['',''],c:'en'},

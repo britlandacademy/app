@@ -4,6 +4,7 @@
 //   Cartao (EUR, Stripe): assinatura (mensal/fidelidade) ou PaymentIntent (a vista); devolve client_secret para o Payment Element.
 // O preco e sempre recalculado aqui (o navegador nao decide valor). Dados de cartao nunca sao gravados nem registrados em log.
 // Segredos: ASAAS_API_KEY, ASAAS_ENV (sandbox|production), STRIPE_SECRET_KEY, STRIPE_PUBLISHABLE_KEY.
+//   Mensalidade (charge_id): Pix ou cartao (BRL) e cartao (EUR) numa cobranca unica; o webhook marca a parcela como paga.
 // Deploy com verify_jwt = true.
 import { createClient } from "npm:@supabase/supabase-js@2";
 
@@ -108,31 +109,55 @@ Deno.serve(async (req) => {
 
   if (b.action !== "start") return out({ error: "action" }, 400);
 
-  const slug = String(b.slug || ""), per = String(b.periodo || ""), metodo = String(b.metodo || "");
-  const { data: plan } = await admin.from("billing_plans").select("id,slug,nome,moeda,valor_centavos").eq("slug", slug).maybeSingle();
-  if (!plan) return out({ error: "plano" }, 400);
-  const cur = plan.moeda as string;
-  const P = periodOf(per, cur);
-  if (!P) return out({ error: "periodo" }, 400);
-  if (!allowed(cur, per, metodo)) return out({ error: "forma" }, 400);
+  const metodo = String(b.metodo || "");
+  /* "job": o que vai ser cobrado. Ou um plano novo (slug + periodo), ou uma mensalidade ja lancada (charge_id). */
+  let slug: string, per: string, cur: string, months: number, mensal: number, total: number, ref: string, desc: string,
+    plano: string, via: string | null = null, chargeId: number | null = null, once = false;
+  if (b.charge_id) {
+    /* mensalidade: o valor vem da parcela (charges), nunca do navegador */
+    const cid = Number(b.charge_id);
+    const { data: chg } = await admin.from("charges").select("id,sub_id,amount,currency,paid_on,title,due_date").eq("id", cid).maybeSingle();
+    if (!chg) return out({ error: "cobranca" }, 404);
+    const { data: sub } = chg.sub_id ? await admin.from("subs").select("user_id,plan").eq("id", chg.sub_id).maybeSingle() : { data: null };
+    if (!sub || sub.user_id !== user.id) return out({ error: "cobranca" }, 403);
+    if (chg.paid_on) return out({ error: "pago" }, 409);
+    cur = chg.currency === "EUR" ? "EUR" : "BRL";
+    if (!(cur === "BRL" ? (metodo === "pix" || metodo === "card") : metodo === "card")) return out({ error: "forma" }, 400);
+    chargeId = chg.id; once = true; slug = "mensalidade"; per = "mensalidade"; months = 1;
+    mensal = total = Math.round(Number(chg.amount) * 100);
+    if (!(total > 0)) return out({ error: "valor" }, 400);
+    plano = String(sub.plan || "Mensalidade");
+    const ttl = chg.title || String(chg.due_date || "").split("-").reverse().join("/");
+    ref = `${user.id}|charge|${chg.id}`;
+    desc = `Britland Academy · Mensalidade ${plano} · ${ttl}`;
+  } else {
+    slug = String(b.slug || ""); per = String(b.periodo || "");
+    const { data: plan } = await admin.from("billing_plans").select("id,slug,nome,moeda,valor_centavos").eq("slug", slug).maybeSingle();
+    if (!plan) return out({ error: "plano" }, 400);
+    cur = plan.moeda as string;
+    const P = periodOf(per, cur);
+    if (!P) return out({ error: "periodo" }, 400);
+    if (!allowed(cur, per, metodo)) return out({ error: "forma" }, 400);
+    /* dupla: 10% so no Fluency Club; descontos nao acumulam, vale o maior */
+    const dupla = !!b.dupla && fam(slug) === "fluency-club" ? 10 : 0;
+    const off = Math.max(P.off, dupla);
+    via = dupla > P.off ? "dupla-10" : (P.off ? `${per}-${P.off}` : null);
+    months = P.months; plano = plan.nome;
+    mensal = Math.round(plan.valor_centavos * (1 - off / 100));
+    total = mensal * months;
+    ref = `${user.id}|${slug}|${per}`;
+    desc = `Britland Academy · ${plan.nome}` + (months > 1 ? ` · ${months} meses` : "");
+    once = per === "avista3" || per === "avista6";
+  }
   if (cur === "BRL" && !ASAAS_KEY) return out({ error: "asaas-off" }, 503);
   if (cur === "EUR" && !(STRIPE_KEY && STRIPE_PK)) return out({ error: "stripe-off" }, 503);
-
-  /* dupla: 10% so no Fluency Club; descontos nao acumulam, vale o maior */
-  const dupla = !!b.dupla && fam(slug) === "fluency-club" ? 10 : 0;
-  const off = Math.max(P.off, dupla);
-  const via = dupla > P.off ? "dupla-10" : (P.off ? `${per}-${P.off}` : null);
-  const mensal = Math.round(plan.valor_centavos * (1 - off / 100));
-  const total = mensal * P.months;
-  const ref = `${user.id}|${slug}|${per}`;
-  const desc = `Britland Academy · ${plan.nome}` + (P.months > 1 ? ` · ${P.months} meses` : "");
 
   const { data: prof } = await admin.from("profiles").select("name,email").eq("id", user.id).maybeSingle();
   const name = String(b.holder?.name || prof?.name || user.email || "Aluno").slice(0, 100);
   const email = String(prof?.email || user.email || "");
 
   const { data: ck, error: e0 } = await admin.from("checkouts").insert({
-    user_id: user.id, slug, plano: plan.nome, periodo: per, moeda: cur, meses: P.months,
+    user_id: user.id, slug, plano, periodo: per, moeda: cur, meses: months, charge_id: chargeId,
     valor_centavos: mensal, total_centavos: total, desconto: via, codigo: b.codigo ? String(b.codigo).slice(0, 40) : null,
     metodo, gateway: cur === "BRL" ? "asaas" : "stripe",
   }).select("id").single();
@@ -157,7 +182,7 @@ Deno.serve(async (req) => {
 
       if (metodo === "pix") {
         let payId: string;
-        if (per === "mensal") {
+        if (!once && per === "mensal") {
           const s = await asaas("/subscriptions", { method: "POST", body: { customer, billingType: "PIX", value: mensal / 100, nextDueDate: todayBR(), cycle: "MONTHLY", description: desc, externalReference: ref } });
           await upd({ gateway_ref: s.id });
           const ps = await asaas(`/subscriptions/${s.id}/payments`);
@@ -173,25 +198,37 @@ Deno.serve(async (req) => {
         return out({ id: ck.id, kind: "pix", payload: q.payload, image: q.encodedImage, expires: q.expirationDate || null, total });
       }
 
-      // cartao: sempre assinatura mensal (mensal ou fidelidade de 6 meses)
+      // cartao: assinatura mensal (plano mensal ou fidelidade de 6 meses) ou cobranca unica (mensalidade ja lancada)
       const cc = b.card || {}, h = b.holder || {};
       const [mm, yy] = String(cc.exp || "").split("/").map((x: string) => x.trim());
-      const s = await asaas("/subscriptions", {
-        method: "POST",
-        body: {
-          customer, billingType: "CREDIT_CARD", value: mensal / 100, nextDueDate: todayBR(), cycle: "MONTHLY",
-          description: desc + (per === "cartao6" ? " · fidelidade 6 meses" : ""), externalReference: ref,
-          creditCard: { holderName: String(cc.name || name), number: onlyDigits(cc.number), expiryMonth: mm, expiryYear: yy && yy.length === 2 ? "20" + yy : yy, ccv: onlyDigits(cc.cvc) },
-          creditCardHolderInfo: { name: String(cc.name || name), email, cpfCnpj: cpf, postalCode: onlyDigits(h.cep), addressNumber: String(h.number || "").slice(0, 10), phone: onlyDigits(h.phone), mobilePhone: onlyDigits(h.phone) },
-          remoteIp: (req.headers.get("x-forwarded-for") || "").split(",")[0].trim() || undefined,
-        },
-      });
-      await upd({ gateway_ref: s.id });
-      // a primeira cobranca e feita na hora; o webhook confirma, mas ja respondemos com o que o Asaas diz
-      const ps = await asaas(`/subscriptions/${s.id}/payments`).catch(() => null);
-      const st = ps?.data?.[0]?.status as string | undefined;
+      const cardInfo = {
+        creditCard: { holderName: String(cc.name || name), number: onlyDigits(cc.number), expiryMonth: mm, expiryYear: yy && yy.length === 2 ? "20" + yy : yy, ccv: onlyDigits(cc.cvc) },
+        creditCardHolderInfo: { name: String(cc.name || name), email, cpfCnpj: cpf, postalCode: onlyDigits(h.cep), addressNumber: String(h.number || "").slice(0, 10), phone: onlyDigits(h.phone), mobilePhone: onlyDigits(h.phone) },
+        remoteIp: (req.headers.get("x-forwarded-for") || "").split(",")[0].trim() || undefined,
+      };
+      let st: string | undefined;
+      if (once) {
+        const p = await asaas("/payments", { method: "POST", body: { customer, billingType: "CREDIT_CARD", value: total / 100, dueDate: todayBR(), description: desc, externalReference: ref, ...cardInfo } });
+        await upd({ gateway_ref: p.id });
+        st = p.status;
+      } else {
+        const s = await asaas("/subscriptions", {
+          method: "POST",
+          body: {
+            customer, billingType: "CREDIT_CARD", value: mensal / 100, nextDueDate: todayBR(), cycle: "MONTHLY",
+            description: desc + (per === "cartao6" ? " · fidelidade 6 meses" : ""), externalReference: ref, ...cardInfo,
+          },
+        });
+        await upd({ gateway_ref: s.id });
+        // a primeira cobranca e feita na hora; o webhook confirma, mas ja respondemos com o que o Asaas diz
+        const ps = await asaas(`/subscriptions/${s.id}/payments`).catch(() => null);
+        st = ps?.data?.[0]?.status as string | undefined;
+      }
       const paid = st === "CONFIRMED" || st === "RECEIVED";
-      if (paid) await upd({ status: "paid", paid_at: new Date().toISOString() });
+      if (paid) {
+        await upd({ status: "paid", paid_at: new Date().toISOString() });
+        if (chargeId) await admin.from("charges").update({ paid_on: todayBR(), note: `Pago no app por cartão · checkout #${ck.id}` }).eq("id", chargeId).is("paid_on", null);
+      }
       return out({ id: ck.id, kind: "card", status: paid ? "paid" : "pending" });
     }
 
@@ -200,10 +237,11 @@ Deno.serve(async (req) => {
     let customer = prevS.data?.gateway_customer_id as string | undefined;
     if (!customer) customer = (await stripe("/customers", { email: email || undefined, name, metadata: { student_id: user.id } })).id;
     await upd({ gateway_customer_id: customer });
-    const meta = { student_id: user.id, plan_slug: slug, checkout_id: String(ck.id), periodo: per };
+    const meta: Record<string, string> = { student_id: user.id, plan_slug: slug, checkout_id: String(ck.id), periodo: per };
+    if (chargeId) meta.charge_id = String(chargeId);
 
-    if (per === "mensal" || per === "cartao6") {
-      const price = await stripe("/prices", { currency: "eur", unit_amount: mensal, recurring: { interval: "month" }, product_data: { name: plan.nome } });
+    if (!once && (per === "mensal" || per === "cartao6")) {
+      const price = await stripe("/prices", { currency: "eur", unit_amount: mensal, recurring: { interval: "month" }, product_data: { name: plano } });
       const sub = await stripe("/subscriptions", {
         customer, items: [{ price: price.id }], payment_behavior: "default_incomplete",
         payment_settings: { save_default_payment_method: "on_subscription" },

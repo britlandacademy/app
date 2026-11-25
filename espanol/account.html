@@ -67,6 +67,15 @@ summary{cursor:pointer;font-weight:700;padding:4px 0}
 .pill.ok{background:var(--ok-bg);color:var(--ok)}.pill.bad{background:var(--bad-bg);color:var(--bad)}.pill.wt{background:var(--warn-bg);color:var(--warn)}
 .next{border:2px solid var(--accent);border-radius:18px;padding:14px;margin:10px 0;background:var(--surface)}
 .next b{font-size:1.3rem}
+/* mensalidade: formas de pagamento dentro do cartao da proxima parcela (opcao B) */
+.mtl{font-weight:700;margin:12px 0 8px;font-size:.95rem}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mg .mt{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 6px;min-height:0;background:var(--card);border:2px solid var(--line);color:var(--ink);border-radius:16px!important;font-weight:400;cursor:pointer}
+.mg .mt:last-child:nth-child(odd){grid-column:1/-1}
+.mg .mt b{font-size:1rem}.mg .mt small{color:var(--muted);font-size:.78rem}
+.mg .mt svg{width:24px;height:24px;fill:none;stroke:var(--accent);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;margin-bottom:2px}
+.mg .mt:active{border-color:var(--accent)}
+.rpay{min-height:36px;padding:4px 16px;background:var(--accent);border:2px solid var(--accent);color:var(--accent-ink);border-radius:999px!important;font-weight:700;font-size:.9rem;flex:none}
 .hero{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.hero .ed{position:relative;border:0;background:none;padding:0;border-radius:50%;cursor:pointer}
 .hero .ed .cam{position:absolute;right:-2px;bottom:-2px;width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--accent-ink);border:3px solid var(--card);display:flex;align-items:center;justify-content:center}
 .hero .ed .cam svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
@@ -269,11 +278,29 @@ async function pays0(){
     if(CLM===null)return pill;
     const c=CLM.find(k=>k.charge_id===x.id);
     if(c&&c.status==='pendente')return el('span',{class:'pill ok'},'Under review');
-    const b=el('button',{type:'button',class:c?'ghost':''},c?'Send again':"I've paid");
-    b.addEventListener('click',()=>paidSheet(x));return b;}
-  function paidSheet(x){
+    const b=el('button',{type:'button',class:'rpay','data-noi18n':'1'},'Pagar');
+    b.addEventListener('click',()=>openPay(x));return b;}
+  /* pagar uma mensalidade dentro do app (js/checkout.js, modo mensalidade); Wise e comprovante abrem o envio de comprovante */
+  function openPay(x,m){
+    if(!window.Checkout){paidSheet(x,m==='wise'?'Wise':'Pix');return;}
+    const s0=subs.find(q=>q.id===x.sub_id),back=()=>{box.textContent='';pays0();};
+    box.textContent='';const w=el('div',{'data-noi18n':'1'});box.append(w);
+    Checkout.open(w,{sb,L:'es',profile:ctx.profile,base:'../',method:m||null,
+      charge:{id:x.id,amount:+x.amount,currency:x.currency,title:x.title||null,due_date:x.due_date,plan:s0?s0.plan:null},
+      onBack:back,onDone:back,onProof:pm=>{back();paidSheet(x,pm);}});}
+  const PI={pix:'<path d="M12 3l9 9-9 9-9-9z"/><path d="M8 12l4-4 4 4-4 4z"/>',card:'<rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M2.5 10h19M6.5 15h4"/>',
+    wise:'<path d="M4 8h13l-3-3M20 16H7l3 3"/>',proof:'<path d="M4 12l16-8-6 16-3-7z"/>'};
+  function payGrid(x){
+    const g=el('div',{class:'mg'}),t=(k,a,b)=>{const bt=el('button',{type:'button',class:'mt','data-noi18n':'1'});
+      bt.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+PI[k]+'</svg>';bt.append(el('b',{},a),el('small',{},b));
+      bt.addEventListener('click',()=>k==='proof'?paidSheet(x,'Pix'):openPay(x,k));g.append(bt);};
+    if(x.currency!=='EUR')t('pix','Pix','al instante');
+    t('card','Tarjeta','crédito');t('wise','Wise','desde el exterior');t('proof','Enviar comprobante','pagaste por fuera');
+    const c=CLM&&CLM.find(k=>k.charge_id===x.id&&k.status==='pendente');
+    return c?document.createTextNode(''):el('div',{},el('div',{class:'mtl','data-noi18n':'1'},'¿Cómo quieres pagar?'),g);}
+  function paidSheet(x,m0){
     const ov=el('div',{class:'g-hov',role:'dialog','aria-modal':'true'}),close=()=>ov.remove();
-    let method='Pix';const mb={};
+    let method=m0||'Pix';const mb={};
     const mrow=el('div',{class:'row'});
     ['Pix','Wise','Revolut','Other'].forEach(m=>{const b=el('button',{type:'button',class:m===method?'':'ghost'},m);mb[m]=b;
       b.addEventListener('click',()=>{method=m;Object.keys(mb).forEach(k=>mb[k].className=k===m?'':'ghost');note.textContent=(m==='Wise'||m==='Pix')?NOTE_W:NOTE_O;});mrow.append(b);});
@@ -297,7 +324,7 @@ async function pays0(){
       if(r.error){msgE.textContent='Não foi possível enviar. Tente de novo.';ok.disabled=false;return;}
       if(path&&r.data&&sb.functions){try{sb.functions.invoke('pay-ocr',{body:{claim_id:r.data.id}}).catch(()=>{});}catch(e){}}
       close();box.textContent='';pays0();});
-    ov.append(el('div',{class:'g-hdlg'},el('h2',{style:'margin:0 0 6px'},"I've paid"),
+    ov.append(el('div',{class:'g-hdlg'},el('h2',{style:'margin:0 0 6px','data-noi18n':'1'},'Enviar comprobante'),
       el('p',{style:'margin:0 0 10px'},money(x.amount,x.currency)+' · '+(x.title||dt(x.due_date))),mrow,note,fi,msgE,el('div',{class:'row'},cn,ok)));
     ov.addEventListener('click',e=>{if(e.target===ov)close();});document.body.append(ov);}
   if(GS.some(g=>g.status==='past_due')||GI.some(i=>i.status==='failed'||i.status==='overdue')){
@@ -335,7 +362,7 @@ async function pays0(){
   const open=ch.filter(x=>!x.paid_on).sort((x,y)=>x.due_date<y.due_date?-1:1);
   if(open.length){const n=open[0],late=n.due_date<today;
     box.append(el('div',{class:'next'},el('small',{},late?'Overdue payment':'Next payment'),el('br'),el('b',{},money(n.amount,n.currency)),
-      el('span',{},' · due '+dt(n.due_date)+' '),el('span',{class:'pill '+(late?'bad':'wt')},late?'Overdue':'Open'),promoBox(n),(function(){const dd=new Date(n.due_date+'T12:00:00'),st=new Date(dd);st.setMonth(st.getMonth()-1);const p=Math.max(0,Math.min(1,(Date.now()-st)/(dd-st)));return el('div',{class:'bar'},el('i',{style:'width:'+Math.round((late?1:p)*100)+'%'}));})()));}
+      el('span',{},' · due '+dt(n.due_date)+' '),el('span',{class:'pill '+(late?'bad':'wt')},late?'Overdue':'Open'),promoBox(n),(function(){const dd=new Date(n.due_date+'T12:00:00'),st=new Date(dd);st.setMonth(st.getMonth()-1);const p=Math.max(0,Math.min(1,(Date.now()-st)/(dd-st)));return el('div',{class:'bar'},el('i',{style:'width:'+Math.round((late?1:p)*100)+'%'}));})(),(n.sub_id&&subs.some(q=>q.id===n.sub_id))?payGrid(n):null));}
   else if(ch.length)box.append(el('div',{class:'next'},el('b',{},'All paid. Thank you!')));
   if(ch.length){const paid={};ch.forEach(x=>{if(x.paid_on)paid[x.currency]=(paid[x.currency]||0)+ +x.amount;});
     box.append(el('p',{class:'hint'},'Total paid so far: '+(Object.keys(paid).map(k=>money(paid[k],k)).join(' + ')||'—')));

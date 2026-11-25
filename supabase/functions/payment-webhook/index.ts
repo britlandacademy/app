@@ -83,6 +83,13 @@ async function markCheckout(gateway: string, ref?: string | null, oneOff = false
   const { data: ck } = await sb.from("checkouts").select("*").eq("gateway", gateway).eq("gateway_ref", ref).maybeSingle();
   if (!ck) return false;
   if (ck.status !== "paid") await sb.from("checkouts").update({ status: "paid", paid_at: new Date().toISOString() }).eq("id", ck.id);
+  if (ck.charge_id) { // mensalidade paga no app: baixa automatica da parcela
+    const met = ck.metodo === "pix" ? "Pix" : "cartão";
+    const hoje = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);
+    await sb.from("charges").update({ paid_on: hoje, note: `Pago no app por ${met} · checkout #${ck.id}` }).eq("id", ck.charge_id).is("paid_on", null);
+    console.log("mensalidade paga", ck.charge_id, met);
+    return true;
+  }
   if (oneOff) {
     const end = new Date(); end.setMonth(end.getMonth() + (ck.meses || 1));
     await upsertSub({ student_id: ck.user_id, plan_id: await planBySlug(ck.slug), gateway, sub_id: ref, status: "active", period_end: end.toISOString() });
