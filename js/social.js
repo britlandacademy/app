@@ -133,7 +133,7 @@
   var SHIELD = null, SHIELD_ES = null;
   function loadShield() {
     function ld(f) { return new Promise(function (res) { var i = new Image(); i.onload = function () { res(i); }; i.onerror = function () { res(null); }; i.src = BASE + 'img/' + f; }); }
-    return Promise.all([SHIELD ? SHIELD : ld('britland-shield.png'), SHIELD_ES ? SHIELD_ES : ld('britland-shield-es.png')]).then(function (a) { SHIELD = a[0]; SHIELD_ES = a[1]; return SHIELD; });
+    return Promise.all([SHIELD ? SHIELD : ld('britland-shield.svg'), SHIELD_ES ? SHIELD_ES : ld('britland-shield-es.svg')]).then(function (a) { SHIELD = a[0]; SHIELD_ES = a[1]; return SHIELD; });
   }
 
   /* ---------- desenho ---------- */

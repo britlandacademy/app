@@ -23,7 +23,7 @@ async function make(o){
   var lang=o.lang==='es'?'es':'en',t=TX[lang],ce=o.cert,base=o.base||'';
   var cv=document.createElement('canvas');cv.width=W*S;cv.height=H*S;var c=cv.getContext('2d');c.scale(S,S);
   await Promise.race([fonts(),new Promise(function(r){setTimeout(r,4000);})]);
-  var shield=await img(base+'img/britland-shield.png'),sig=await img(base+'img/assinatura.png');
+  var shield=await img(base+'img/britland-shield.svg'),sig=await img(base+'img/assinatura.png');
   var SERIF='"Cormorant Garamond",Georgia,serif',SANS='Montserrat,Arial,sans-serif';
   function ls(v){try{c.letterSpacing=v;}catch(e){}}
   function txt(s,x,y,font,col,al,sp){c.font=font;c.fillStyle=col;c.textAlign=al||'left';ls(sp||'0px');

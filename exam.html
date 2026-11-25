@@ -5,7 +5,7 @@
 <meta name="google" content="notranslate">
 <title>Stage Exam · Britland Academy</title>
 <meta property="og:type" content="website"><meta property="og:site_name" content="Britland Academy"><meta property="og:locale" content="pt_BR"><meta property="og:title" content="Britland Academy · Exames por etapa"><meta property="og:description" content="Exames ao final de cada etapa do curso Callan."><meta property="og:url" content="https://www.britlandacademy.co.uk/app/exam.html"><meta property="og:image" content="https://www.britlandacademy.co.uk/app/img/og/og-exam.jpg"><meta property="og:image:secure_url" content="https://www.britlandacademy.co.uk/app/img/og/og-exam.jpg"><meta property="og:image:type" content="image/jpeg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Britland Academy: Exames por etapa"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Britland Academy · Exames por etapa"><meta name="twitter:description" content="Exames ao final de cada etapa do curso Callan."><meta name="twitter:image" content="https://www.britlandacademy.co.uk/app/img/og/og-exam.jpg"><meta name="description" content="Exames ao final de cada etapa do curso Callan.">
-<link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b1733"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Britland"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="js/pwa.js" defer></script>
+<link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="img/britland-shield.svg"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b1733"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Britland"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script src="js/pwa.js" defer></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
 <meta name="color-scheme" content="light">
@@ -167,7 +167,7 @@ function left(){return Math.max(0,Math.round(endIn-(performance.now()-t0)/1000))
 
 /* ---------- plain screens ---------- */
 function screen(children){clear();app.append(el('main',{style:'padding-bottom:30px'},...children));window.scrollTo(0,0);}
-function logo(){return el('div',{class:'lock',role:'img','aria-label':'Britland Academy'},el('img',{src:'img/britland-shield.png',alt:''}),el('span',{class:'nm'},el('b',{},'BRITLAND'),el('i',{},'ACADEMY')));}
+function logo(){return el('div',{class:'lock',role:'img','aria-label':'Britland Academy'},el('img',{src:'img/britland-shield.svg',alt:''}),BLWordmark({cls:'nm',center:true,k:5.94,base:''}));}
 function mockLink(){return el('a',{class:'btnl',href:'exam.html?mock=1',style:'background:#fff;color:var(--navy);border-color:var(--navy)'},'Mock tests');}
 function leave(){return el('a',{class:'btnl',href:'index.html'},'Back to the activities');}
 
@@ -242,7 +242,7 @@ function shell(){
   minus.addEventListener('click',()=>{Gate.setSize(Gate.sizeIdx()-1);upd();});plus.addEventListener('click',()=>{Gate.setSize(Gate.sizeIdx()+1);upd();});norm.addEventListener('click',()=>{Gate.setSize(1);upd();});upd();
   app.append(
     el('header',{class:'xh'},el('div',{class:'xh-in'},
-      el('div',{class:'brand'},el('img',{src:'img/britland-shield.png',alt:''}),el('span',{class:'hl'},el('b',{},'BRITLAND'),el('i',{},'ACADEMY')),el('div',{},el('b',{},MOCK&&MOCK.teach?'Stage '+stage+(MOCK.exam?' Exam':' Mock '+MOCK.test)+' · answers':(MOCK?'Stage '+stage+' Mock '+MOCK.test:'Stage '+stage+' Exam')),el('small',{id:'sub'},''))),
+      el('div',{class:'brand'},el('img',{src:'img/britland-shield.svg',alt:''}),BLWordmark({cls:'hl',k:5.94,base:''}),el('div',{},el('b',{},MOCK&&MOCK.teach?'Stage '+stage+(MOCK.exam?' Exam':' Mock '+MOCK.test)+' · answers':(MOCK?'Stage '+stage+' Mock '+MOCK.test:'Stage '+stage+' Exam')),el('small',{id:'sub'},''))),
       el('span',{class:'who'},MOCK&&MOCK.teach?'Teacher view':NAME),el('span',{class:'sv',id:'sv','aria-live':'polite'},'Saved'),
       el('div',{class:'fs',role:'group','aria-label':'Text size'},minus,norm,plus),
       el('div',{class:'timer',id:'tbox',role:'timer','aria-label':'Time left'},el('div',{},el('small',{id:'tlab'},'Time left'),el('b',{id:'tm'},'--:--'))))),

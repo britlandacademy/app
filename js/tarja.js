@@ -4,8 +4,8 @@
   var SERIF = '"Noto Serif",serif', SANS = 'Montserrat,sans-serif', CW = 1080, CH = 1920;
   var SX = 135, CY = 1772, SWD = 150, X0 = 40, X1 = 1040, BH = 200;
   var PAL = {
-    en: { bar: 'rgba(11,23,51,.9)', line: '#C9A13B', t: '#F2F5FA', t2: '#E4C06A', acc: '#EC4654', bg: '#0B1733', sh: 'img/britland-shield.png' },
-    es: { bar: 'rgba(58,10,16,.92)', line: '#F1BF00', t: '#FFF6DD', t2: '#FFD43B', acc: '#FF5C5F', bg: '#3A0A10', sh: 'img/britland-shield-es.png' }
+    en: { bar: 'rgba(11,23,51,.9)', line: '#C9A13B', t: '#F2F5FA', t2: '#E4C06A', acc: '#EC4654', bg: '#0B1733', sh: 'img/britland-shield.svg' },
+    es: { bar: 'rgba(58,10,16,.92)', line: '#F1BF00', t: '#FFF6DD', t2: '#FFD43B', acc: '#FF5C5F', bg: '#3A0A10', sh: 'img/britland-shield-es.svg' }
   };
   function ez(t) { t = Math.max(0, Math.min(1, t)); return t * t * (3 - 2 * t); }
   /* tempos: entrada 2.6 s, saída 1.9 s */

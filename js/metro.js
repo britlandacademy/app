@@ -674,7 +674,7 @@ function mount(c,o){
   /* ----- skeleton ----- */
   var top=h('div','top');
   var av=h('button','av');av.type='button';av.setAttribute('data-pf-av','1');av.setAttribute('aria-label',tx.pro);av.addEventListener('click',function(){tick();tab='pro';view();});
-  var lk=h('div','lk','<img alt="" src="'+B+'img/britland-shield.png"><div><b>BRITLAND</b><i>ACADEMY</i></div>');
+  var lk=h('div','lk','<img alt="" src="'+B+'img/britland-shield.svg">'+(window.BLWordmark?BLWordmark.html({base:B,k:6.22,tag:'div'}):'<div><b>BRITLAND</b><i>ACADEMY</i></div>'));
   var fl=h('div','fl');fl.id='mt-fl';fl.textContent='🔥 0';
   top.append(av,lk,fl);
   var vw=h('div');vw.id='mt-view';

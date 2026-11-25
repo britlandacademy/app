@@ -1,8 +1,8 @@
 /* Britland Academy service worker.
    Change VERSION every time the app is updated, so students always get the new files. */
-const VERSION = '2.0.150';
+const VERSION = '2.0.151';
 const CACHE = 'bl-' + VERSION;
-const CORE = ['offline.html', 'img/britland-shield.png', 'img/icons/icon-192.png', 'favicon-32.png'];
+const CORE = ['offline.html', 'img/britland-shield.svg', 'img/britland-wordmark.svg', 'js/brandmark.css', 'img/britland-shield.png', 'img/icons/icon-192.png', 'favicon-32.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));

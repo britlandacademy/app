@@ -1,0 +1,18 @@
+/* Britland Academy · logotipo vetorial (escudo SVG + letras SVG oficiais).
+   As palavras BRITLAND e ACADEMY vêm de img/britland-wordmark.svg (traçado original, fill=currentColor),
+   então cada lugar continua usando a cor que já tinha em <b> e <i>.
+   Proporção oficial: BRITLAND ocupa a mesma largura do texto antigo; ACADEMY = 74,617% dela,
+   afastado 5,593% (medidas do arquivo "Texto ao lado"/"Texto ao centro"). */
+:where(.blwm){display:inline-flex} /* especificidade zero: regras da página (ex.: display:none) continuam valendo */
+.blwm{flex-direction:column!important;align-items:flex-start!important;justify-content:flex-start!important;
+  width:max-content;max-width:none;line-height:0!important;gap:0!important}
+.blwm>.blw-b,.blwm>.blw-a{display:block!important;line-height:0!important;letter-spacing:0!important;
+  padding:0!important;font-style:normal;text-indent:0}
+/* --blk = largura de "BRITLAND" em em na fonte antiga daquele lugar (BLSerif +0,01em = 5,47) */
+.blwm>.blw-b{--blk:5.47;margin:0!important}
+.blwm>.blw-b>svg{display:block;width:calc(var(--blk) * 1em);height:calc(var(--blk) * 1em * .136706);overflow:visible}
+.blwm>.blw-a{width:74.617%!important;min-width:0;contain:inline-size;margin:5.593% 0 0 .602%!important}
+.blwm.blwm-c>.blw-a{margin-left:11.282%!important}
+.blwm>.blw-a>svg{display:block;width:100%;height:auto;aspect-ratio:1090/139.9;overflow:visible}
+/* fontes antigas por contexto */
+.lk .blwm>.blw-b{--blk:5.80}          /* Lora → Georgia (privacy, verify, curso) */

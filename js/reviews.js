@@ -61,7 +61,7 @@ var star='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6
 var spark='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M18 15l.8 2.2L21 18l-2.2.8L18 21l-.8-2.2L15 18l2.2-.8z"/></svg>';
 function el(t,c,h){var e=D.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
-function seal(){var w=el('div','rv-sl'),i=el('img');i.src=(ES_?'../':'')+'img/britland-shield.png';i.alt='';i.setAttribute('aria-hidden','true');w.appendChild(i);return w;}
+function seal(){var w=el('div','rv-sl'),i=el('img');i.src=(ES_?'../':'')+'img/britland-shield.svg';i.alt='';i.setAttribute('aria-hidden','true');w.appendChild(i);return w;}
 function ensureCss(){if(D.getElementById('rv-css'))return;var s=el('style');s.id='rv-css';s.textContent=css;D.head.appendChild(s);}
 function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}

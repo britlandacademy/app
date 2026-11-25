@@ -7,6 +7,14 @@ var CFG=window.CALLAN_CFG||{};
 (function(){try{var B=window.BL_BASE||'',h=document.head,l=document.createElement('link');l.rel='stylesheet';l.href=B+'js/fx.css';h.appendChild(l);var sc=document.createElement('script');sc.src=B+'js/fx.js';h.appendChild(sc);var s2=document.createElement('script');s2.src=B+'js/loadfx.js';s2.onload=function(){try{ldMount();}catch(e){}};h.appendChild(s2);}catch(e){}})();
 var COURSE=window.BL_COURSE||{};
 try{var _u=document.createElement('link');_u.rel='stylesheet';_u.href=(window.BL_BASE||'')+'js/ui.css?v='+(window.BL_VERSION||'1');document.head.appendChild(_u);}catch(e){} /* per-course settings (Spanish sets its own in espanol/js/config.js) */
+/* Logotipo vetorial: CSS compartilhado + gerador das letras oficiais (img/britland-wordmark.svg) */
+try{if(!document.querySelector('link[data-blwm]')){var _bm=document.createElement('link');_bm.rel='stylesheet';_bm.setAttribute('data-blwm','1');_bm.href=(window.BL_BASE||'')+'js/brandmark.css?v='+(window.BL_VERSION||'1');document.head.appendChild(_bm);}}catch(e){}
+window.BLWordmark=function(o){o=o||{};var B=o.base!=null?o.base:(window.BL_BASE||''),NS='http://www.w3.org/2000/svg';
+  function word(tag,cls,id){var e=document.createElement(tag),s=document.createElementNS(NS,'svg'),u=document.createElementNS(NS,'use');e.className=cls;s.setAttribute('aria-hidden','true');s.setAttribute('focusable','false');u.setAttribute('href',B+'img/britland-wordmark.svg#'+id);s.appendChild(u);e.appendChild(s);return e;}
+  var w=document.createElement(o.tag||'span'),b=word('b','blw-b','bl-britland'),a=word('i','blw-a','bl-academy');
+  w.className=((o.cls||'')+' blwm'+(o.center?' blwm-c':'')).trim();w.setAttribute('role','img');w.setAttribute('aria-label','Britland Academy');
+  if(o.k)b.style.setProperty('--blk',String(o.k));if(o.style)w.setAttribute('style',o.style);w.appendChild(b);w.appendChild(a);return w;};
+window.BLWordmark.html=function(o){return window.BLWordmark(o).outerHTML;};
 var LIB=['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js',
          'https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js'];
 var sb=null,prof=null,user=null,overlay=null,bar=null;
@@ -125,7 +133,7 @@ function ldMount(){
 function ldEnd(cb){if(!LD){cb();return;}var d=false,go=function(){if(d)return;d=true;try{LD.destroy();}catch(e){}LD=null;cb();};LD.finish(go);setTimeout(go,1700);}
 function loadingView(){
   var o=showOverlay();o.setAttribute('aria-label','Loading');o.setAttribute('aria-busy','true');
-  o.append(el('div',{class:'g-ld',role:'status'},el('img',{src:(window.BL_BASE||'')+'img/britland-shield.png',alt:''}),el('div',{class:'bar'},el('i',{}))));
+  o.append(el('div',{class:'g-ld',role:'status'},el('img',{src:(window.BL_BASE||'')+'img/britland-shield.svg',alt:''}),el('div',{class:'bar'},el('i',{}))));
   ldProg(.08);try{ldMount();}catch(e){}
 }
 function injectCss(){var s=document.createElement('style');s.textContent=CSS+CSS2+LDCSS+(COURSE.css||'');document.head.append(s);}
@@ -139,7 +147,7 @@ function langRow(){return window.I18N?el('div',{class:'g-langrow'},window.I18N.s
 function brand(){return el('p',{class:'g-hint'},'Student Area - Teacher Paulo Cruz');}
 
 function box(title){
-  var o=showOverlay(),b=el('div',{class:'g-box'},langRow(),el('div',{class:'bl-lock','aria-label':'Britland Academy'},el('img',{src:'img/britland-shield.png',alt:''}),el('span',{class:'bl-name'},el('b',{},'BRITLAND'),el('i',{},'ACADEMY'))),brand(),el('h1',{},title));
+  var o=showOverlay(),b=el('div',{class:'g-box'},langRow(),el('div',{class:'bl-lock','aria-label':'Britland Academy'},el('img',{src:'img/britland-shield.svg',alt:''}),BLWordmark({cls:'bl-name'})),brand(),el('h1',{},title));
   o.append(b);document.documentElement.classList.add('g-open');return b;
 }
 /* /espanol: show the value proposition before the closed sign-in screen */
@@ -623,7 +631,7 @@ function addBar(){
   document.addEventListener('keydown',function(e){if(e.key==='Escape')open(false);});
   kids.push(el('span',{class:'g-um'},av,mn));
   bar=el('div',{class:'g-bar'},kids);
-  bar.appendChild(el('span',{class:'g-logoc','aria-label':'Britland Academy'},el('img',{src:(window.BL_BASE||'')+'img/britland-shield.png',alt:''}),el('span',{},el('b',{},'BRITLAND'),el('i',{},'ACADEMY'))));
+  bar.appendChild(el('span',{class:'g-logoc','aria-label':'Britland Academy'},el('img',{src:(window.BL_BASE||'')+'img/britland-shield.svg',alt:''}),BLWordmark()));
   var isHome=/(^|\/)(index\.html)?$/.test(location.pathname),top=bar;
   if(!isHome){var lg=(window.I18N&&I18N.lang)||'en',bt=el('a',{class:'g-back',href:'index.html','aria-label':{en:'Back',pt:'Voltar',es:'Atrás'}[lg]||'Back'},ico('back'));
     bt.addEventListener('click',function(e){try{if(history.length>1&&document.referrer&&new URL(document.referrer).origin===location.origin&&document.referrer.split('#')[0]!==location.href.split('#')[0]){e.preventDefault();history.back();}}catch(x){}});

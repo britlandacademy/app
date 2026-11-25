@@ -26,7 +26,7 @@ async function make(o){
   var cv=document.createElement('canvas');cv.width=W*S;cv.height=Hh*S;var c=cv.getContext('2d');c.scale(S,S);
   try{await Promise.all(['700 24px Lora','500 14px Montserrat','600 12px Montserrat'].map(function(f){return document.fonts.load(f);}));}catch(e){}
   var SERIF='Lora,Georgia,serif',SANS='Montserrat,Arial,sans-serif';
-  var shield=await img(base+'img/britland-shield.png'),sig=await img(base+'img/assinatura.png');
+  var shield=await img(base+'img/britland-shield.svg'),sig=await img(base+'img/assinatura.png');
   function ls(v){try{c.letterSpacing=v;}catch(e){}}
   c.fillStyle='#F9F9F7';c.fillRect(0,0,W,Hh);
   c.fillStyle='#0F2247';c.fillRect(0,0,W,70);

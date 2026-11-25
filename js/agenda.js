@@ -204,7 +204,7 @@ function mount(box,ctx){
     if(ov&&ov.parentNode)ov.parentNode.removeChild(ov);
     ov=el('div','ag-ov');ov.setAttribute('role','dialog');ov.setAttribute('aria-label',title);
     var bar=el('div','ag-fbar'),bk=el('button','ag-back','‹');bk.type='button';bk.setAttribute('aria-label',T('bBack'));bk.onclick=close;
-    var lg=el('span','ag-flogo'),im=el('img');im.src=(window.BL_BASE||'')+'img/britland-shield.png';im.alt='';lg.appendChild(im);var nm=el('span');nm.appendChild(el('b','','BRITLAND'));nm.appendChild(el('i','','ACADEMY'));lg.appendChild(nm);
+    var lg=el('span','ag-flogo'),im=el('img');im.src=(window.BL_BASE||'')+'img/britland-shield.svg';im.alt='';lg.appendChild(im);var nm=window.BLWordmark?BLWordmark({k:5.40}):el('span','','BRITLAND ACADEMY');lg.appendChild(nm);
     bar.appendChild(bk);bar.appendChild(lg);bar.appendChild(el('span','ag-fsp'));ov.appendChild(bar);
     var top=el('div','ag-ovt');top.appendChild(el('h1','',title));if(!nohead)ov.appendChild(top);ov.appendChild(body);document.body.appendChild(ov);document.body.style.overflow='hidden';
   }

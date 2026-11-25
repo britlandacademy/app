@@ -857,7 +857,7 @@
       var pct=total?right/total:0,stars=pct>=.9?3:pct>=.6?2:1;
       var nx=null;try{nx=o.next?o.next():null;}catch(e){}
       var pop=el('div','dz-pop'),card=el('div','dz-card');pop.setAttribute('role','alertdialog');pop.setAttribute('aria-label',T('gdone'));pop.setAttribute('data-noi18n','');
-      var lg=el('div','dz-logo'),li=el('img');li.src='img/britland-shield.png';li.alt='';lg.appendChild(li);lg.appendChild(el('b','','BRITLAND'));lg.appendChild(el('i','','ACADEMY'));lg.appendChild(el('u',''));card.appendChild(lg);
+      var lg=el('div','dz-logo'),li=el('img');li.src='img/britland-shield.svg';li.alt='';lg.appendChild(li);lg.appendChild(window.BLWordmark?BLWordmark({center:true,k:6.08,tag:'div',style:'margin:0 auto'}):el('b','','BRITLAND ACADEMY'));lg.appendChild(el('u',''));card.appendChild(lg);
       var ch=pickCh();card.appendChild(flagRow(ch));setTimeout(function(){if(root.parentNode)playTune(tuneKey(ch.flag));},300);
       var hero=el('div','dz-hero');hero.appendChild(famBox(ch));hero.appendChild(medal(stars));card.appendChild(hero);
       var say=ch.say[3-stars],sy=el('p','dz-say',say[1]);card.appendChild(sy);

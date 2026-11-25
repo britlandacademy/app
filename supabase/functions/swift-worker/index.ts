@@ -59,7 +59,7 @@ async function logSent(rows: any[], sentFlags: number[]) {
 
 // ---- e-mail de feliz aniversário (visual A do livro de estilo). Só roda se o segredo SMTP_PASS existir. ----
 // Segredos: SMTP_USER, SMTP_PASS (senha de app do Gmail), MAIL_FROM (ex.: Britland Academy <contact@britlandacademy.co.uk>), MAIL_LANG (pt no inglês; es no espanhol).
-const SHIELD = "https://www.britlandacademy.co.uk/app/img/britland-shield.png";
+const SHIELD = "https://www.britlandacademy.co.uk/app/img/britland-shield-email.png";
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]!));
 function birthdayMail(name: string, lang: string) {
   const es = lang === "es", n = esc(name || (es ? "alumno" : "aluno"));
