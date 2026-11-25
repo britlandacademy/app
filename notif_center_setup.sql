@@ -242,3 +242,17 @@ begin
 end $$;
 drop trigger if exists notif_log_to_list on public.notif_log;
 create trigger notif_log_to_list after insert on public.notif_log for each row execute function public.trg_log_to_list();
+
+-- Atualização: prova liberada mostra só a liberação mais recente de cada aluno (últimos 30 dias, ainda não entregue)
+-- Trecho da função notif_sync_user que substitui o bloco "prova liberada":
+--   select r.stage into ls from exam_release r (ou es.exam_release) where r.user_id=p_uid and r.released_at>now()-interval '30 days'
+--     and not exists(... exam_results enviado ...) order by r.released_at desc limit 1;
+--   insere o aviso desse stage e resolve (resolved_at) os avisos de prova com outro stage.
+
+-- Atualização: notif_sync_extra(p_uid) gera mais três avisos automáticos e é chamada por notif_sync_me():
+--   stage (Stage liberado pelo professor, só o mais recente dos últimos 7 dias, tabela stage_unlock / es.stage_unlock),
+--   cert (certificado emitido nos últimos 30 dias, não revogado, tabela certificates / es.certificates),
+--   lessons (limite efetivo de lições subiu pelo plano da planilha: least(lessons_upto, lessons_auto) quando auto_release; o primeiro valor de cada aluno é só a base, sem aviso).
+-- A definição completa está aplicada no banco (migração notif_stage_cert_lessons).
+
+-- Atualização: notif_sync_referral(p_uid): "sua indicação se matriculou" enquanto o bônus não foi liberado (promo_links indicacao, ativo, credited=false); some quando o crédito é liberado. Chamada por notif_sync_me().

@@ -44,6 +44,22 @@ function render(n,L){
     en:{t:'Referral credit: '+money(i.cur,i.amount),b:'Your friend joined. The credit will be applied to your next payment.'},
     pt:{t:'Crédito de indicação: '+money(i.cur,i.amount),b:'Seu amigo entrou. O crédito será aplicado no seu próximo pagamento.'},
     es:{t:'Crédito por referido: '+money(i.cur,i.amount),b:'Tu amigo se unió. El crédito se aplicará en tu próximo pago.'}}[L];
+  if(n.kind==='referral'){var w=i.name;return{
+    en:{t:'Your referral joined the Britland family!',b:(w?w+' is':'Your friend is')+' now studying with us, thanks to you. When they pay their monthly fee, your bonus is yours. Keep sharing the love for languages!'},
+    pt:{t:'Sua indicação entrou para a família Britland!',b:(w||'Seu amigo')+' agora estuda com a gente, graças a você. Quando pagar a mensalidade, o seu bônus é seu. Continue espalhando o amor pelos idiomas!'},
+    es:{t:'¡Tu referido ya es parte de la familia Britland!',b:(w||'Tu amigo')+' ahora estudia con nosotros, gracias a ti. Cuando pague su mensualidad, tu bono es tuyo. ¡Sigue compartiendo el amor por los idiomas!'}}[L];}
+  if(n.kind==='stage')return{
+    en:{t:'Stage '+i.stage+' unlocked',b:'Your teacher opened Stage '+i.stage+' for you.'},
+    pt:{t:'Stage '+i.stage+' liberado',b:'Seu professor liberou o Stage '+i.stage+' para você.'},
+    es:{t:'Etapa '+i.stage+' desbloqueada',b:'Tu profesor abrió la Etapa '+i.stage+' para ti.'}}[L];
+  if(n.kind==='cert')return{
+    en:{t:'Certificate available',b:'Your Stage '+i.stage+' certificate is ready. Open My Profile to see it.'},
+    pt:{t:'Certificado disponível',b:'Seu certificado do Stage '+i.stage+' está pronto. Abra Meu Perfil para ver.'},
+    es:{t:'Certificado disponible',b:'Tu certificado de la Etapa '+i.stage+' está listo. Abre Mi Perfil para verlo.'}}[L];
+  if(n.kind==='lessons')return{
+    en:{t:'New exercises available',b:'Your lesson plan opened exercises up to Lesson '+i.upto+'.'},
+    pt:{t:'Novos exercícios disponíveis',b:'Seu plano de aula liberou exercícios até a Lição '+i.upto+'.'},
+    es:{t:'Nuevos ejercicios disponibles',b:'Tu plan de clase abrió ejercicios hasta la Lección '+i.upto+'.'}}[L];
   if(n.kind==='push'){
     var k=i.k,hm=i.at?new Date(i.at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'';
     var P={
@@ -62,7 +78,7 @@ function render(n,L){
   return{t:n.title||t(n.kind==='promo'?'offer':'notice',L),b:n.body||''};
 }
 function iconOf(n){var k=n.kind==='push'?(n.info||{}).k:n.kind;
-  return {lesson1h:'makeup',lessonday:'makeup',newlesson:'exam',grade:'exam',streak:'promo',pay:'pay',birthday:'credit'}[k]||(ICONS[k]?k:'msg');}
+  return {referral:'credit',stage:'exam',cert:'exam',lessons:'makeup',lesson1h:'makeup',lessonday:'makeup',newlesson:'exam',grade:'exam',streak:'promo',pay:'pay',birthday:'credit'}[k]||(ICONS[k]?k:'msg');}
 function when(d,L){var days=Math.floor((Date.now()-new Date(d).getTime())/864e5);return days<=0?t('today',L):days===1?t('yday',L):days<30?t('ago',L,{n:days}):fdate(new Date(d).toISOString());}
 function svg(k){return'<svg viewBox="0 0 24 24" aria-hidden="true">'+ICONS[k]+'</svg>';}
 
