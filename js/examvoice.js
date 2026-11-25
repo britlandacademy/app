@@ -25,7 +25,7 @@
       if(my!==tok)return res();
       var fall=function(){ttsSay(text,rate,my,res);};
       if(!url||bad[url])return fall();
-      var a=new Audio(url),used=false;a.preload='auto';a.playbackRate=rate;
+      var a=new Audio(url),used=false;a.preload='auto';a.playbackRate=1;
       try{a.preservesPitch=true;}catch(e){}
       cur={a:a};
       a.onended=function(){res();};
