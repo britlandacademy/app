@@ -6,11 +6,13 @@ create table if not exists public.contracts (
   user_id     uuid primary key references public.profiles(id) on delete cascade,
   country     text,
   course      text,
-  plan        text check (plan is null or plan in ('VIP','Turma','Intensivo','Business')),
+  plan        text check (plan is null or plan in ('VIP','Turma','Intensivo','Business','Essential','Fluency Club','VIP Intensive')),
   currency    text check (currency is null or currency in ('BRL','EUR','USD')),
-  pay_method  text check (pay_method is null or pay_method in ('Wise','Revolut')),
+  pay_method  text check (pay_method is null or pay_method in ('Wise','Revolut','Pix','Cartão')),
   due_day     int  check (due_day is null or due_day in (10,15,25)),
   start_date  date,
+  periodo     text check (periodo is null or periodo in ('mensal','cartao6','avista3','avista6')),
+  desconto    int  not null default 0 check (desconto >= 0 and desconto <= 50),
   status      text not null default 'draft' check (status in ('draft','sent','signed','error')),
   doc_id      text,
   sign_link   text,
@@ -27,7 +29,7 @@ drop policy if exists contracts_own on public.contracts;
 create policy contracts_own on public.contracts for select to authenticated using (user_id = auth.uid());
 
 -- Texto do contrato (fica no banco; só envia quando ready = true).
--- Variáveis: {{nome}} {{email}} {{pais}} {{curso}} {{plano}} {{valor}} {{moeda}} {{pagamento}} {{vencimento}} {{inicio}} {{data}}
+-- Variáveis: {{nome}} {{email}} {{pais}} {{curso}} {{plano}} {{valor}} {{moeda}} {{pagamento}} {{vencimento}} {{inicio}} {{data}} {{periodo}} {{valor_tabela}} {{desconto}} {{total_periodo}}
 create table if not exists public.contract_template (
   id         int primary key default 1 check (id = 1),
   ready      boolean not null default false,

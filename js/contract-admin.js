@@ -4,9 +4,10 @@
   var CT = {}, ON = false, CSS = false;
   var OPT = {
     pais: ['Portugal', 'Irlanda', 'Brasil', 'Outro'],
-    plano: ['VIP', 'Turma', 'Intensivo', 'Business'],
+    plano: ['Essential', 'Fluency Club', 'VIP Intensive', 'Business'],
+    periodo: [['mensal', 'Mensal, sem permanência'], ['cartao6', 'Cartão, fidelidade de 6 meses'], ['avista3', '3 meses à vista'], ['avista6', '6 meses à vista']],
     moeda: ['EUR', 'BRL', 'USD'],
-    pagto: ['Wise', 'Revolut'],
+    pagto: ['Pix', 'Cartão', 'Wise', 'Revolut'],
     dia: [10, 15, 25]
   };
   var ERR = {
@@ -48,9 +49,11 @@
     var g = el('div', { class: 'ct-g' },
       sel(el, 'country', 'País de residência', OPT.pais, c.country || 'Portugal'),
       sel(el, 'course', 'Curso', ['Inglês', 'Espanhol'], c.course || defCourse),
-      sel(el, 'plan', 'Plano', OPT.plano, c.plan || 'VIP'),
+      sel(el, 'plan', 'Plano', OPT.plano, c.plan || 'Fluency Club'),
       sel(el, 'currency', 'Moeda', OPT.moeda, c.currency || 'EUR'),
-      sel(el, 'pay_method', 'Meio de pagamento', OPT.pagto, c.pay_method || 'Wise'),
+      sel(el, 'periodo', 'Período de pagamento', OPT.periodo.map(function (x) { return x[0]; }), c.periodo || 'mensal', function (k) { return OPT.periodo.filter(function (x) { return x[0] === k; })[0][1]; }),
+      el('label', {}, 'Desconto (%)', el('input', { type: 'number', name: 'desconto', min: '0', max: '50', step: '1', value: String(c.desconto != null ? c.desconto : 0) })),
+      sel(el, 'pay_method', 'Meio de pagamento', OPT.pagto, c.pay_method || (c.currency === 'BRL' ? 'Pix' : 'Wise')),
       sel(el, 'due_day', 'Vencimento', OPT.dia, c.due_day || 10, function (d) { return 'Dia ' + d; }),
       el('label', {}, 'Início das aulas', el('input', { type: 'date', name: 'start_date', value: start })));
     var msg = el('p', { class: 'ct-m', 'aria-live': 'polite' }, '');
@@ -58,7 +61,7 @@
     function close() { ov.remove(); }
     function val() {
       var v = {}; g.querySelectorAll('select,input').forEach(function (x) { v[x.name] = x.value; });
-      v.due_day = parseInt(v.due_day, 10); return v;
+      v.due_day = parseInt(v.due_day, 10); v.desconto = Math.max(0, Math.min(50, parseInt(v.desconto, 10) || 0)); return v;
     }
     function say(t, cls) { msg.textContent = t; msg.className = 'ct-m' + (cls ? ' ' + cls : ''); }
     function btns(list, on) { list.forEach(function (b) { b.disabled = on; }); }

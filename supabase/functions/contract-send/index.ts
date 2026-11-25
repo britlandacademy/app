@@ -7,7 +7,24 @@ const cors = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers
 const json = (o: unknown, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { ...cors, "Content-Type": "application/json" } });
 const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
 
-const PRICE_EUR: Record<string, string> = { VIP: "€120,00", Turma: "€80,00", Intensivo: "€200,00", Business: "€200,00" };
+// Tabela de preços mensais (centavos nao: valor inteiro) por plano e moeda. Fonte: claude/planos-e-precos.md
+const PRICE: Record<string, Record<string, number>> = {
+  Essential: { BRL: 260, EUR: 50 },
+  "Fluency Club": { BRL: 790, EUR: 168 },
+  "VIP Intensive": { BRL: 1800, EUR: 360 },
+  Business: { BRL: 1200, EUR: 200, USD: 225 },
+  VIP: { EUR: 120, BRL: 700, USD: 134 }, Turma: { EUR: 80, BRL: 480, USD: 90 }, Intensivo: { EUR: 200, BRL: 1200, USD: 225 },
+};
+const PERIODO: Record<string, { label: string; months: number }> = {
+  mensal: { label: "Mensal, sem permanência mínima", months: 1 },
+  cartao6: { label: "Cartão, cobrança mensal, com fidelidade de 6 meses", months: 6 },
+  avista3: { label: "3 meses pagos de forma antecipada", months: 3 },
+  avista6: { label: "6 meses pagos de forma antecipada", months: 6 },
+};
+function money(cur: string, v: number) {
+  const s = v.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return (cur === "BRL" ? "R$ " : cur === "USD" ? "US$ " : "€") + s;
+}
 
 function fill(body: string, v: Record<string, string>) {
   return body.replace(/\{\{(\w+)\}\}/g, (_, k) => (v[k] ?? `{{${k}}}`));
@@ -75,8 +92,15 @@ Deno.serve(async (req) => {
     // 4) texto + PDF
     const hoje = new Date().toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" });
     const ini = new Date(c.start_date + "T12:00:00").toLocaleDateString("pt-BR");
+    const full = PRICE[c.plan]?.[c.currency];
+    if (full == null) return json({ ok: false, error: "no_price_for_plan_currency" });
+    const per = PERIODO[c.periodo || "mensal"] || PERIODO.mensal;
+    const off = Math.max(0, Math.min(50, Number(c.desconto) || 0));
+    const net = Math.round(full * (100 - off)) / 100;
     const text = fill(tpl.body, {
-      nome, email, pais: c.country, curso: c.course, plano: c.plan, valor: PRICE_EUR[c.plan] || "",
+      nome, email, pais: c.country, curso: c.course, plano: c.plan, valor: money(c.currency, net),
+      valor_tabela: money(c.currency, full), desconto: off ? off + "%" : "sem desconto",
+      periodo: per.label, total_periodo: (c.periodo || "mensal") === "mensal" ? "não se aplica (cobrança mensal)" : money(c.currency, Math.round(net * per.months * 100) / 100),
       moeda: c.currency, pagamento: c.pay_method, vencimento: String(c.due_day), inicio: ini, data: hoje,
     });
     if (/\{\{\w+\}\}|\[[^\]]{2,40}\]/.test(text)) return json({ ok: false, error: "template_has_placeholders" });
