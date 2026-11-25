@@ -631,6 +631,7 @@ function addBar(){
   document.body.insertBefore(top,document.body.firstChild);
   if(gameIsOn()){top.style.display='none';bar.style.display='none';if(!/(^|\/)(index\.html)?$/.test(location.pathname))gameNav();}
   paintAvatars();
+  if(!prof.is_admin)try{var ns=document.createElement('script');ns.src=(window.BL_BASE||'')+'js/notif.js?v='+(window.BL_VERSION||'1');ns.onload=function(){try{window.Notif.init(bar,sb,{es:COURSE.id==='es'});}catch(e){}};document.head.appendChild(ns);}catch(e){}
   if(BUS)fixLinks();
 }
 function fixLinks(){

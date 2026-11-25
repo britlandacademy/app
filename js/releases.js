@@ -2,6 +2,7 @@
    Newest first. Written for students (no technical terms). Each entry: v, d [pt, es], t [pt, es] short title, p [pt, es] one sentence,
    show:1 = also shown once in the "O que há de novo" notice after the update (use ONLY when the teacher marks a version as important; none is marked by default), c:'en'|'es' = only that course (omit = both). */
 window.BL_RELEASES=[
+{v:'2.0.142',d:['25 de novembro','25 de noviembre'],t:['Central de notificações: avisos no sino','Centro de notificaciones: avisos en la campana'],p:['O sino no topo reúne seus avisos: pagamentos, aulas a repor, provas e promoções.','La campana de arriba reúne tus avisos: pagos, clases por reponer, exámenes y promociones.']},
 {v:'2.0.141',d:['25 de novembro','25 de noviembre'],t:['Pagamentos: promoções de indicação e dupla','Pagos: promociones por recomendación y en pareja'],p:['',''],c:'en'},
 {v:'2.0.140',d:['25 de novembro','25 de noviembre'],t:['Pagamentos: comprovante de Pix e Wise em análise','Pagos: comprobante de Pix y Wise en revisión'],p:['',''],c:'en'},
 {v:'2.0.139',d:['25 de novembro','25 de noviembre'],t:['Pagamentos: nova aba com assinatura e faturas','Pagos: nueva pestaña con suscripción y facturas'],p:['',''],c:'en'},
