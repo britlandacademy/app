@@ -46,6 +46,16 @@ td.g{background:var(--ok-bg)}td.m{background:var(--warn-bg)}td.r{background:var(
 .tabs button{flex-direction:column;justify-content:center;gap:6px;min-height:84px;padding:12px 6px;background:var(--card);color:var(--ink);border:2px solid var(--line);border-radius:20px!important;font-size:.92rem}
 .tabs button svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .tabs button[aria-selected=true]{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
+.sc{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px;margin:10px 0}
+.sc-h{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.sc-h>b{font-size:1.2rem}.sc-b{display:flex;flex-wrap:wrap;gap:6px}
+.pill.nt{background:var(--card);color:var(--muted);border:1px solid var(--line)}
+.sc-m{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:12px 0 4px}
+.sc-m small{display:block;color:var(--muted);font-size:.82rem;text-transform:uppercase;letter-spacing:.06em}
+.sc-m b{font-size:1.35rem;display:block}.sc-s{display:block;color:var(--muted);font-size:.9rem}.sc-s.bad{color:var(--bad);font-weight:700}
+.sc-f{margin-top:8px;padding-top:8px;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem}
+.next.late{border-color:var(--bad);background:var(--bad-bg)}
+.rmore[hidden]{display:none}
 .kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:10px 0}
 .kp>div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px}
 .kp small{display:block;color:var(--muted);font-size:.82rem;text-transform:uppercase;letter-spacing:.06em}
@@ -226,11 +236,29 @@ async function pays0(){
   if(!subs.length){box.append(el('p',{class:'hint'},'No plan registered yet. If you think this is a mistake, contact the school.'));}
   const c=await sb.from('charges').select('*').order('due_date',{ascending:false});const ch=c.data||[];
   const today=iso(new Date());
-  subs.forEach(s=>{box.append(el('div',{class:'kp'},
-    el('div',{},el('small',{},'Plan'),el('b',{},s.plan)),
-    el('div',{},el('small',{},'Monthly amount'),el('b',{},money(s.amount,s.currency))),
-    el('div',{},el('small',{},'Due day'),el('b',{},'Day '+s.due_day)),
-    el('div',{},el('small',{},'Status'),el('b',{style:'font-size:1.1rem'},s.active?'Active':'Paused'))));});
+  /* assinatura recorrente (Stripe/Asaas), quando existir; as tabelas novas podem nao existir ainda: tudo opcional */
+  let GS=[],GI=[],GP={};
+  try{const q=await sb.from('subscriptions').select('*').order('created_at');if(!q.error)GS=q.data||[];}catch(e){}
+  try{const q=await sb.from('invoices').select('*').order('created_at',{ascending:false});if(!q.error)GI=q.data||[];}catch(e){}
+  try{const q=await sb.from('billing_plans').select('id,nome');if(!q.error)(q.data||[]).forEach(p=>{GP[p.id]=p.nome;});}catch(e){}
+  const gwOf=s=>GS.find(g=>g.gateway!=='manual'&&['active','past_due','paused','incomplete'].includes(g.status)&&(g.gateway==='stripe'?'EUR':'BRL')===s.currency)||null;
+  const dayDiff=d=>Math.round((new Date(d+'T12:00:00')-new Date(iso(new Date())+'T12:00:00'))/864e5);
+  const rel=n=>n===0?'Due today':n===1?'Due in 1 day':n>1?'Due in {0} days'.replace('{0}',n):n===-1?'Overdue by 1 day':'Overdue by {0} days'.replace('{0}',-n);
+  function nextDue(s,g){
+    if(g&&g.current_period_end)return iso(new Date(g.current_period_end));
+    const o=ch.filter(x=>x.sub_id===s.id&&!x.paid_on).sort((x,y)=>x.due_date<y.due_date?-1:1)[0];if(o)return o.due_date;
+    const t=new Date();let d=new Date(t.getFullYear(),t.getMonth(),Math.min(+s.due_day||1,28),12);if(d<new Date(t.getFullYear(),t.getMonth(),t.getDate(),0))d=new Date(t.getFullYear(),t.getMonth()+1,Math.min(+s.due_day||1,28),12);return iso(d);}
+  function subCard(s){
+    const g=gwOf(s),st=g?({active:['ok','Active'],past_due:['bad','Overdue'],paused:['wt','Paused'],incomplete:['wt','Pending']})[g.status]:(s.active?['ok','Active']:['wt','Paused']);
+    const meth=g?(g.gateway==='stripe'?'Card · Stripe':'Subscription · Asaas'):'Manual';
+    const nd=nextDue(s,g),n=dayDiff(nd);
+    const lp=ch.filter(x=>x.sub_id===s.id&&x.paid_on).map(x=>x.paid_on).concat(g?GI.filter(i=>i.subscription_id===g.id&&i.status==='paid'&&i.paid_at).map(i=>iso(new Date(i.paid_at))):[]).sort().pop();
+    return el('div',{class:'sc'},
+      el('div',{class:'sc-h'},el('b',{},(g&&g.plan_id&&GP[g.plan_id])||s.plan),el('span',{class:'sc-b'},el('span',{class:'pill '+st[0]},st[1]),el('span',{class:'pill nt'},meth))),
+      el('div',{class:'sc-m'},
+        el('div',{},el('small',{},'Monthly amount'),el('b',{},money(s.amount,s.currency)+' / month')),
+        el('div',{},el('small',{},g?'Next renewal':'Next due date'),el('b',{},dt(nd)),el('span',{class:'sc-s'+(n<0?' bad':'')},rel(n)))),
+      lp?el('div',{class:'sc-f'},'Last payment confirmed '+dt(lp)):null);}
   const IC='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg>';
   const rcpt=x=>{const bt=el('button',{type:'button','aria-label':'Download receipt',class:'rcb'});bt.innerHTML=IC;bt.addEventListener('click',async()=>{if(bt.disabled)return;bt.disabled=true;try{const sb0=subs.find(q=>q.id===x.sub_id);await Receipt.download({charge:x,plan:sb0?sb0.plan:'',name:(ctx.profile&&ctx.profile.name)||'',base:''});}catch(e){}bt.disabled=false;});return bt;};
 
@@ -270,6 +298,10 @@ async function pays0(){
     ov.append(el('div',{class:'g-hdlg'},el('h2',{style:'margin:0 0 6px'},"I've paid"),
       el('p',{style:'margin:0 0 10px'},money(x.amount,x.currency)+' · '+(x.title||dt(x.due_date))),mrow,note,fi,msgE,el('div',{class:'row'},cn,ok)));
     ov.addEventListener('click',e=>{if(e.target===ov)close();});document.body.append(ov);}
+  if(GS.some(g=>g.status==='past_due')||GI.some(i=>i.status==='failed'||i.status==='overdue')){
+    const bn=el('div',{class:'next late',role:'alert'},el('b',{},'Payment failed or overdue'),el('br'),el('small',{},'Please update your payment method or talk to the school to avoid interruption of your classes.'));
+    box.append(bn);}
+  subs.forEach(s=>box.append(subCard(s)));
   const open=ch.filter(x=>!x.paid_on).sort((x,y)=>x.due_date<y.due_date?-1:1);
   if(open.length){const n=open[0],late=n.due_date<today;
     box.append(el('div',{class:'next'},el('small',{},late?'Overdue payment':'Next payment'),el('br'),el('b',{},money(n.amount,n.currency)),
@@ -277,12 +309,28 @@ async function pays0(){
   else if(ch.length)box.append(el('div',{class:'next'},el('b',{},'All paid. Thank you!')));
   if(ch.length){const paid={};ch.forEach(x=>{if(x.paid_on)paid[x.currency]=(paid[x.currency]||0)+ +x.amount;});
     box.append(el('p',{class:'hint'},'Total paid so far: '+(Object.keys(paid).map(k=>money(paid[k],k)).join(' + ')||'—')));
-    box.append(el('div',{class:'sec'},'Receipts'));
+  }
+  /* historico unico: cobrancas manuais + faturas do gateway, da mais recente para a mais antiga (6 primeiras; o resto abre em "See all invoices") */
+  if(ch.length||GI.length){
+    box.append(el('div',{class:'sec'},'Invoice history'));
+    const R=[];
     ch.forEach(x=>{const late=!x.paid_on&&x.due_date<today;const d=new Date(x.due_date+'T12:00:00');
       const t=x.title||d.toLocaleDateString('en-GB',{month:'long',year:'numeric'});
       const sub=x.paid_on?money(x.amount,x.currency)+' · paid '+dt(x.paid_on):money(x.amount,x.currency)+' · due '+dt(x.due_date);
       const st=x.paid_on?rcpt(x):claimCtl(x,late);
-      box.append(el('div',{class:'rc'},el('div',{class:'ri'},x.currency==='EUR'?'€':'R$'),el('div',{class:'rt2'},el('b',{},t),el('small',{},sub)),st));});}
+      R.push({k:x.paid_on||x.due_date,n:el('div',{class:'rc'},el('div',{class:'ri'},x.currency==='EUR'?'€':'R$'),el('div',{class:'rt2'},el('b',{},t),el('small',{},sub)),st)});});
+    GI.forEach(i=>{const d0=i.paid_at||i.created_at,cur=i.moeda,amt=i.valor_centavos/100,late=i.status==='overdue'||i.status==='failed';
+      const t=new Date(d0).toLocaleDateString('en-GB',{month:'long',year:'numeric'});
+      const lab={paid:'Paid',open:'Open',overdue:'Overdue',failed:'Failed',refunded:'Refunded',void:'Canceled'}[i.status]||'Open';
+      let right;
+      if(i.invoice_url){right=el('button',{type:'button','aria-label':'Open invoice',class:'rcb'});right.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"/></svg>';right.addEventListener('click',()=>{if(/^https:\/\//.test(i.invoice_url))window.open(i.invoice_url,'_blank','noopener');});}
+      else right=el('span',{class:'pill '+(i.status==='paid'?'ok':late?'bad':'wt')},lab);
+      R.push({k:iso(new Date(d0)),n:el('div',{class:'rc'},el('div',{class:'ri'},cur==='EUR'?'€':'R$'),el('div',{class:'rt2'},el('b',{},t),el('small',{},money(amt,cur)+' · '+lab.toLowerCase())),right)});});
+    R.sort((a,b)=>a.k<b.k?1:-1);
+    R.slice(0,6).forEach(r=>box.append(r.n));
+    if(R.length>6){const more=el('div',{class:'rmore',hidden:''});R.slice(6).forEach(r=>more.append(r.n));
+      const bt=el('button',{type:'button',class:'ghost'},'See all invoices');bt.addEventListener('click',()=>{more.hidden=false;bt.remove();});box.append(bt,more);}
+  }
   const nm=(ctx.profile&&ctx.profile.name)||'';
   box.append(el('p',{},el('a',{class:'btn',href:'https://wa.me/5511914881274?text='+encodeURIComponent('Hello! This is '+nm+', a Britland Academy student. I have a question about my payments.'),target:'_blank',rel:'noopener'},'Talk to the school')));
 }
