@@ -194,7 +194,8 @@ function draw(wrap,rows,sb,L,o){
   var sel=i,per='mensal',dupla=false,code='',open=false,busy=false;
 
   var body=el('div',{});
-  wrap.append(el('h3',{class:'sec'},tx(o.current?'change':'pick',L)),body);
+  var h3=el('h3',{class:'sec'},tx(o.current?'change':'pick',L));
+  wrap.append(h3,body);
 
   function pct(){
     var P=periods(cur,L),p=P.filter(function(x){return x.k===per;})[0]||P[0];
@@ -291,6 +292,16 @@ function draw(wrap,rows,sb,L,o){
   function send(p,r,val,msg,go){
     if(busy)return;busy=true;go.setAttribute('disabled','disabled');msg.textContent='';
     var P=periods(cur,L),P2=P.filter(function(x){return x.k===per;})[0]||P[0];
+    /* aluno sem plano: segue para o checkout dentro do app (js/checkout.js), passo a passo */
+    if(!o.current&&window.Checkout){
+      busy=false;go.removeAttribute('disabled');h3.hidden=true;
+      window.Checkout.open(body,{sb:sb,L:L,plan:p,per:per,period:P2,val:val,off:r.off,
+        offLabel:r.via==='dupla'?(L==='es'?'Pareja de estudio':'Dupla'):P2.label,
+        dupla:!!dupla&&fam(p.slug)==='fluency-club',code:code,desc:r.off?(r.via==='dupla'?'dupla-10':P2.k+'-'+P2.off):null,
+        profile:o.profile,base:o.base!=null?o.base:(L==='es'?'../':''),
+        onBack:function(){h3.hidden=false;render();},
+        onDone:function(){h3.hidden=false;if(o.onDone)o.onDone();}});
+      return;}
     /* se o gateway ja estiver ligado, o aluno vai direto para o checkout */
     if(p.ativo&&p.checkout_url&&per==='mensal'){
       try{window.open(p.checkout_url,'_blank','noopener');}catch(e){location.href=p.checkout_url;}

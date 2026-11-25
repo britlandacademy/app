@@ -75,6 +75,34 @@ async function upsertInvoice(subscription_id: number, r: { id: string; valor: nu
   if (error) throw error;
 }
 
+/* ---------------- checkout dentro do app ---------------- */
+/* Pagamento confirmado: marca o checkout como pago, avisa o professor com um pedido ja pago e,
+   no pagamento a vista (sem assinatura no gateway), cria a assinatura local ate o fim do periodo pago. */
+async function markCheckout(gateway: string, ref?: string | null, oneOff = false) {
+  if (!ref) return false;
+  const { data: ck } = await sb.from("checkouts").select("*").eq("gateway", gateway).eq("gateway_ref", ref).maybeSingle();
+  if (!ck) return false;
+  if (ck.status !== "paid") await sb.from("checkouts").update({ status: "paid", paid_at: new Date().toISOString() }).eq("id", ck.id);
+  if (oneOff) {
+    const end = new Date(); end.setMonth(end.getMonth() + (ck.meses || 1));
+    await upsertSub({ student_id: ck.user_id, plan_id: await planBySlug(ck.slug), gateway, sub_id: ref, status: "active", period_end: end.toISOString() });
+  }
+  {
+    const met = ck.metodo === "pix" ? "Pix" : "cartão";
+    const { data: dup } = await sb.from("plan_requests").select("id").eq("user_id", ck.user_id).like("obs", `%checkout #${ck.id}`).maybeSingle();
+    if (!dup) await sb.from("plan_requests").insert({
+      user_id: ck.user_id, slug: ck.slug, plano: ck.plano, periodo: ck.periodo, moeda: ck.moeda, valor_centavos: ck.valor_centavos,
+      desconto: ck.desconto, codigo: ck.codigo, tipo: "novo", status: "aberto", obs: `Pago no app por ${met} · checkout #${ck.id}`,
+    });
+    console.log("checkout pago", ck.id, met);
+  }
+  return true;
+}
+async function failCheckout(gateway: string, ref: string | null | undefined, status: string) {
+  if (!ref) return;
+  await sb.from("checkouts").update({ status }).eq("gateway", gateway).eq("gateway_ref", ref).eq("status", "pending");
+}
+
 /* ---------------- Stripe ---------------- */
 const STRIPE_SUB: Record<string, string> = { active: "active", trialing: "active", past_due: "past_due", unpaid: "past_due", canceled: "canceled", paused: "paused", incomplete: "incomplete", incomplete_expired: "canceled" };
 
@@ -105,8 +133,16 @@ async function stripeEvent(ev: any) {
       const paid = ev.type === "invoice.paid" || ev.type === "invoice.payment_succeeded" || o.status === "paid";
       const status = paid ? "paid" : ev.type === "invoice.payment_failed" ? "failed" : o.status === "void" ? "void" : o.status === "uncollectible" ? "failed" : "open";
       await upsertInvoice(sid, { id: o.id, valor: paid ? (o.amount_paid ?? o.total ?? 0) : (o.amount_due ?? o.total ?? 0), moeda: o.currency || "eur", status, paid_at: paid ? iso(o.status_transitions?.paid_at) || new Date().toISOString() : null, url: o.hosted_invoice_url });
-      if (paid) await sb.from("subscriptions").update({ status: "active" }).eq("id", sid).in("status", ["past_due", "incomplete", "pending"]);
+      if (paid) { await sb.from("subscriptions").update({ status: "active" }).eq("id", sid).in("status", ["past_due", "incomplete", "pending"]); await markCheckout("stripe", subGw); }
       if (ev.type === "invoice.payment_failed") await sb.from("subscriptions").update({ status: "past_due" }).eq("id", sid).eq("status", "active");
+      return "ok";
+    }
+    case "payment_intent.succeeded": {
+      if (o.invoice) return "ignored"; // pagamento de fatura de assinatura: tratado em invoice.paid
+      return (await markCheckout("stripe", o.id, true)) ? "ok" : "ignored";
+    }
+    case "payment_intent.payment_failed": {
+      if (!o.invoice) await failCheckout("stripe", o.id, "failed");
       return "ok";
     }
     default: return "ignored";
@@ -131,6 +167,12 @@ async function asaasEvent(ev: any) {
   }
   if (t.startsWith("PAYMENT_") && ev.payment) {
     const p = ev.payment;
+    if (!p.subscription) { // cobranca avulsa: pagamento a vista feito no app
+      const st = t === "PAYMENT_DELETED" ? "void" : (ASAAS_PAY[p.status] || "open");
+      if (st === "paid") return (await markCheckout("asaas", p.id, true)) ? "ok" : "no-checkout";
+      if (st === "void" || st === "overdue") await failCheckout("asaas", p.id, "expired");
+      return "ok";
+    }
     let sid = await subIdOf("asaas", p.subscription);
     if (!sid && p.subscription) { // pagamento chegou antes do evento da assinatura: cria se o aluno estiver no externalReference
       const r = split(p.externalReference);
@@ -140,7 +182,7 @@ async function asaasEvent(ev: any) {
     const status = t === "PAYMENT_DELETED" ? "void" : (ASAAS_PAY[p.status] || "open");
     const paid = status === "paid";
     await upsertInvoice(sid, { id: p.id, valor: Math.round(Number(p.value || 0) * 100), moeda: "BRL", status, paid_at: paid ? new Date((p.clientPaymentDate || p.paymentDate || new Date().toISOString().slice(0, 10)) + (String(p.clientPaymentDate || p.paymentDate || "").length === 10 ? "T12:00:00Z" : "")).toISOString() : null, url: p.invoiceUrl });
-    if (paid) await sb.from("subscriptions").update({ status: "active" }).eq("id", sid).in("status", ["past_due", "pending", "incomplete"]);
+    if (paid) { await sb.from("subscriptions").update({ status: "active" }).eq("id", sid).in("status", ["past_due", "pending", "incomplete"]); await markCheckout("asaas", p.subscription); }
     if (status === "overdue") await sb.from("subscriptions").update({ status: "past_due" }).eq("id", sid).eq("status", "active");
     return "ok";
   }
