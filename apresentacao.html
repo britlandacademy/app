@@ -35,12 +35,12 @@ canvas.flag[data-f=uk]{filter:drop-shadow(0 0 14px rgba(190,215,255,.55)) drop-s
 .pane:hover .go{background:#fff;color:#111}
 .pane.es .go{border-color:#fff}
 .top{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:5;display:flex;align-items:center;gap:10px;padding:8px 18px 8px 10px;border-radius:999px;background:rgba(11,23,51,.88);border:1px solid #27407a;pointer-events:none}
-.top img{height:38px}.top b{font:700 18px BLSerif,Georgia,serif;display:block;line-height:1}.top i{font:500 9.5px BLSans,Arial;letter-spacing:.14em;color:#ec4654;font-style:normal}
+.top img{height:38px}.top b{font:700 18px BLSerif,Georgia,serif;display:block;line-height:1}.top i{font:600 9.5px BLSans,Arial;letter-spacing:.22em;color:#F3C65F;font-style:normal}
 .tagline{position:absolute;top:calc(74px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:5;width:max-content;max-width:92vw;text-align:center;font:700 clamp(13px,1.8vw,17px) Montserrat,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6);pointer-events:none}
 .scrollhint{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:5;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#fff;opacity:.8;animation:bob 2s ease-in-out infinite;pointer-events:none}
 @keyframes bob{50%{transform:translate(-50%,8px)}}
 @media(max-width:700px){.hero{flex-direction:column}.pane{padding:76px 16px 20px;gap:10px}.pane canvas{width:min(54%,230px)}.hero:hover .pane,.hero .pane:hover{flex:1}.pane p{display:none}.tagline{position:absolute;top:calc(74px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:5;width:max-content;max-width:92vw;text-align:center;font:700 clamp(13px,1.8vw,17px) Montserrat,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6);pointer-events:none}
-.pane.uk{padding-top:122px}.tagline{width:auto;max-width:84vw;text-wrap:balance;line-height:1.3;font-size:12px}
+.pane.uk{padding-top:122px}.tagline{width:auto;max-width:32ch;margin-inline:auto;text-wrap:balance;line-height:1.3;font-size:12px}
 .scrollhint{display:none}}
 /* ---------- course sections ---------- */
 .course{position:relative;padding:clamp(70px,10vw,130px) max(18px,env(safe-area-inset-left)) clamp(60px,8vw,110px);overflow:hidden}
@@ -129,7 +129,7 @@ footer{padding:26px 16px calc(26px + env(safe-area-inset-bottom,0px));text-align
 <header class="hero" id="top">
   <div class="top"><img src="img/britland-shield.png" alt=""><div><b>Britland</b><i>ACADEMY</i></div></div>
   <a class="pane uk" href="#english"><canvas class="flag" data-f="uk" width="600" height="300"></canvas><h2>English</h2><p>Fale inglês com segurança, do primeiro dia à fluência.</p><span class="go">Conhecer o curso <b>→</b></span></a>
-  <a class="pane es" href="#espanol"><canvas class="flag" data-f="es" width="600" height="300"></canvas><h2>Español</h2><p>Fale espanhol sem travar, com acompanhamento de perto.</p><span class="go">Conhecer o curso <b>→</b></span></a>
+  <a class="pane es" href="#espanol"><canvas class="flag" data-f="es" width="600" height="300"></canvas><h2 lang="es">Español</h2><p lang="es">Hable español sin trabarse, con acompañamiento personalizado.</p><span class="go" lang="es">Conocer el curso <b>→</b></span></a>
   <div class="tagline">Inglês e Espanhol com resultado de verdade</div><div class="scrollhint">escolha seu idioma</div>
 </header>
 
@@ -222,8 +222,8 @@ document.getElementById('cta').href=WHATSAPP?('https://wa.me/'+WHATSAPP+'?text='
 var RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 /* ---- bandeiras tremulando ---- */
 var SV={
-uk:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30"><clipPath id="s"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#s)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg>',
-es:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30"><rect width="60" height="30" fill="#AA151B"/><rect y="7.5" width="60" height="15" fill="#F1BF00"/></svg>'};
+uk:'<svg xmlns="http://www.w3.org/2000/svg" width="600" height="300" viewBox="0 0 60 30" preserveAspectRatio="xMidYMid slice"><clipPath id="s"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#s)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg>',
+es:'<svg xmlns="http://www.w3.org/2000/svg" width="600" height="300" viewBox="0 0 60 30" preserveAspectRatio="xMidYMid slice"><rect width="60" height="30" fill="#AA151B"/><rect y="7.5" width="60" height="15" fill="#F1BF00"/></svg>'};
 var IM={},flags=[].slice.call(document.querySelectorAll('canvas.flag'));
 Object.keys(SV).forEach(function(k){var i=new Image();i.onload=function(){IM[k]=i;};i.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(SV[k]);});
 function wave(c,img,t){

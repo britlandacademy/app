@@ -37,7 +37,7 @@ input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus,.
 .g-logoc img{height:34px;width:auto}
 .g-logoc span{display:flex;flex-direction:column;line-height:1}
 .g-logoc b{font:700 18px/1 BLSerif,Georgia,serif;color:#fff!important;letter-spacing:.01em}
-.g-logoc i{font:500 9.5px/1 BLSans,Arial,sans-serif;font-style:normal;letter-spacing:.12em;margin-top:4px;color:#ec4654}
+.g-logoc i{font:500 9.5px/1 BLSans,Arial,sans-serif;font-style:normal;letter-spacing:.22em;margin-top:4px;color:#F3C65F}
 @media(max-width:560px){.g-bar:not(.gp) .g-name{display:none}}
 @media(max-width:380px){.g-logoc span{display:none}}
 /* only one logo per screen: the big one in the page header goes away */

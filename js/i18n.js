@@ -94,7 +94,13 @@ var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they 
 ["Next","Próximo","Siguiente"],
 ["Skip","Pular","Omitir"],
 ['Offline mode · your results will be sent when you are back online.','Modo offline · seus resultados serão enviados quando você voltar a ficar online.','Modo sin conexión · tus resultados se enviarán cuando vuelvas a tener conexión.'],
-['Sign in','Entrar','Iniciar sesión'],
+['Log in','Entrar','Entrar'],
+['Sign in','Acesse sua conta','Iniciar sesión'],
+['Access my dashboard →','Acessar meu painel →','Acceder al panel →'],
+['name@example.com','exemplo@email.com','ejemplo@correo.com'],
+['Your password','Sua senha','Tu contraseña'],
+['Show password','Mostrar senha','Mostrar contraseña'],
+['Hide password','Ocultar senha','Ocultar contraseña'],
 ["Create account","Criar conta","Crear cuenta"],
 ["Sign in or create account","Entrar ou criar conta","Inicia sesión o crea una cuenta"],
 ["My account","Minha conta","Mi cuenta"],
@@ -226,7 +232,7 @@ var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they 
 ['{0} lessons released','{0} lições liberadas','{0} lecciones liberadas'],
 ['{0} lesson released','{0} lição liberada','{0} lección liberada'],
 ['Wrong e-mail or password.','E-mail ou senha incorretos.','Correo o contraseña incorrectos.'],
-['This e-mail is already registered. Use "Sign in".','Este e-mail já está cadastrado. Use "Entrar".','Este correo ya está registrado. Usa "Iniciar sesión".'],
+['This e-mail is already registered. Use "Log in".','Este e-mail já está cadastrado. Use "Entrar".','Este correo ya está registrado. Usa "Entrar".'],
 ['This e-mail is not confirmed yet. Ask your teacher.','Este e-mail ainda não foi confirmado. Fale com seu professor.','Este correo aún no está confirmado. Habla con tu profesor.'],
 ['Choose a longer password (at least 6 characters).','Escolha uma senha mais longa (mínimo de 6 caracteres).','Elige una contraseña más larga (mínimo 6 caracteres).'],
 ['Too many attempts. Wait a few minutes and try again.','Muitas tentativas. Espere alguns minutos e tente de novo.','Demasiados intentos. Espera unos minutos e inténtalo de nuevo.'],
@@ -364,7 +370,6 @@ var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they 
 ['Apply to all approved students','Aplicar a todos os alunos aprovados','Aplicar a todos los alumnos aprobados'],
 ['Block closes access immediately (audio already opened may play for up to 2 hours). To delete an account for good: Supabase, Authentication, Users, Delete.','Bloquear fecha o acesso na hora (o áudio já aberto pode tocar por até 2 horas). Para apagar uma conta de vez: Supabase, Authentication, Users, Delete.','Bloquear cierra el acceso al instante (el audio ya abierto puede sonar hasta 2 horas). Para borrar una cuenta definitivamente: Supabase, Authentication, Users, Delete.'],
 ['Scores','Notas','Notas'],
-['Show','Mostrar','Mostrar'],
 ['Export all attempts (CSV)','Exportar todas as tentativas (CSV)','Exportar todos los intentos (CSV)'],
 ['Choose the Stage to see its lessons. Each cell shows the student’s best score in the lesson (points / total). Green: 80% or more. Yellow: 50% to 79%. Red: below 50%.','Escolha a etapa para ver as lições dela. Cada célula mostra a melhor nota do aluno na lição (pontos / total). Verde: 80% ou mais. Amarelo: 50% a 79%. Vermelho: abaixo de 50%.','Elige la etapa para ver sus lecciones. Cada celda muestra la mejor nota del alumno en la lección (puntos / total). Verde: 80% o más. Amarillo: 50% a 79%. Rojo: menos de 50%.'],
 ['Details for one student','Detalhe de um aluno','Detalle de un alumno'],
@@ -993,7 +998,7 @@ function selector(free){
 }
 var css=document.createElement('style');
 css.textContent='.lang-sel{display:inline-flex;gap:8px;align-items:center}'+
- '.lang-btn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;padding:0;border:2px solid var(--line,#b8b8b8);border-radius:50%;background:var(--surface,var(--bg,#fff));cursor:pointer}'+
+ '.lang-btn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;min-width:44px;min-height:44px;padding:0;border:2px solid var(--line,#b8b8b8);border-radius:50%;background:var(--surface,var(--bg,#fff));cursor:pointer}'+
  '.lang-btn[aria-pressed="true"]{border-color:var(--accent,#111);box-shadow:0 0 0 2px var(--accent,#111)}'+
  '.lang-btn:not([aria-pressed="true"]){opacity:.9}.lang-btn:hover{opacity:1}'+
  '.lang-btn:focus-visible{outline:3px solid var(--accent,#111);outline-offset:2px}'+

@@ -55,7 +55,12 @@ var CSS=
 '.g-box h1{font-size:1.5rem;line-height:1.2;margin:0 0 6px}'+
 '.g-box p{margin:8px 0}'+
 '.g-hint{color:var(--muted,#4d4d4d);font-size:.92rem}'+
-'.g-forgot{margin:8px 0 0}.g-forgot a{color:inherit;font-weight:600}'+
+'.g-forgot{margin:8px 0 0}.g-forgot a{display:inline-flex;align-items:center;min-height:44px;color:inherit;font-weight:600}'+
+'.g-pwrap{position:relative}.g-pwrap input{padding-right:56px}.g-eye{position:absolute;top:0;right:0;width:44px;height:100%;min-width:44px;min-height:46px;display:inline-flex;align-items:center;justify-content:center;padding:0;border:0;border-radius:3px;background:none;color:var(--muted,#4d4d4d);cursor:pointer}.g-eye:hover,.g-eye[aria-pressed="true"]{color:var(--ink,#111)}.g-eye svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.g-eye:focus-visible{outline:3px solid var(--accent,#111);outline-offset:-3px}'+
+'.g-btn.g-submit{width:100%;min-height:48px;font-size:1.05rem}'+
+/* sign-in screen scrolls with the page: no inner scrollbar */
+'html.g-open,html.g-open body{overflow-x:hidden;height:auto;min-height:100dvh}html.g-open body{padding:0!important;margin:0}html.g-open body>*:not(.g-ov):not(script):not(style):not(link){display:none!important}html.g-open .g-ov{position:relative;inset:auto;min-height:100dvh;overflow:visible}'+
+'.g-land{max-width:720px;margin-inline:auto;margin-block:0 28px;text-align:center}.g-land .eyebrow{font:700 .78rem system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--accent,#F5C542);margin:6px 0 10px}.g-land h2{font:700 clamp(1.7rem,6vw,2.5rem)/1.15 BLSerif,Georgia,serif;margin:0 0 12px;color:var(--ink,#fff)}.g-land h2 em{font-style:normal;color:var(--accent,#F5C542)}.g-land .lead{font-size:1.05rem;color:var(--muted,#ccc);max-width:36em;margin:0 auto 18px}.g-land .acts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:26px}.g-land .acts a{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 22px;border-radius:99px;font-weight:700;text-decoration:none;border:2px solid var(--accent,#F5C542)}.g-land .acts a.pri{background:var(--accent,#F5C542);color:var(--accent-ink,#111)}.g-land .acts a.sec{color:var(--ink,#fff)}.g-land h3{font:700 1.15rem system-ui,sans-serif;margin:26px 0 12px;color:var(--ink,#fff)}.g-land .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;text-align:left}.g-land .cd{background:var(--card,#222);border:1px solid var(--line,#444);border-radius:14px;padding:16px}.g-land .cd b{display:block;margin-bottom:4px}.g-land .cd p{margin:0;color:var(--muted,#ccc);font-size:.95rem}.g-land .cd.vip{border:2px solid var(--accent,#F5C542)}.g-land .amt{font:800 1.9rem system-ui,sans-serif;color:var(--ink,#fff)}.g-land .amt small{font-size:.9rem;font-weight:600;color:var(--muted,#ccc)}'+
 '.g-box label{display:block;font-weight:700;margin:14px 0 4px}'+
 '.g-box input{width:100%;min-height:46px;padding:8px 10px;font:inherit;font-size:16px;color:var(--ink,#111);background:var(--surface,var(--bg,#fff));border:2px solid var(--line,#b8b8b8);border-radius:3px}'+
 'html input:not([type=checkbox]):not([type=radio]):not([type=range]),html select,html textarea{border-color:var(--muted,#6b7280)}'+
@@ -127,15 +132,34 @@ function injectCss(){var s=document.createElement('style');s.textContent=CSS+CSS
 
 function showOverlay(){
   if(!overlay){if(window.I18N&&I18N.def)I18N.def(COURSE.loginLang||'pt');overlay=el('div',{class:'g-ov',role:'dialog','aria-modal':'true','aria-label':'Sign in'});document.body.append(overlay);}
-  if(LD){try{LD.destroy();}catch(e){}LD=null;}overlay.textContent='';overlay.removeAttribute('aria-busy');overlay.setAttribute('aria-label','Sign in');return overlay;
+  if(LD){try{LD.destroy();}catch(e){}LD=null;}overlay.textContent='';overlay.removeAttribute('aria-busy');overlay.setAttribute('aria-label','Sign in');document.documentElement.classList.remove('g-open');return overlay;
 }
-function hideOverlay(){if(LD){try{LD.destroy();}catch(e){}LD=null;}if(overlay){overlay.remove();overlay=null;if(window.I18N){if(I18N.after)I18N.after();else if(I18N.def)I18N.def(COURSE.uiLang||'en');}}}
+function hideOverlay(){document.documentElement.classList.remove('g-open');if(LD){try{LD.destroy();}catch(e){}LD=null;}if(overlay){overlay.remove();overlay=null;if(window.I18N){if(I18N.after)I18N.after();else if(I18N.def)I18N.def(COURSE.uiLang||'en');}}}
 function langRow(){return window.I18N?el('div',{class:'g-langrow'},window.I18N.selector(true)):null;}
 function brand(){return el('p',{class:'g-hint'},'Student Area - Teacher Paulo Cruz');}
 
 function box(title){
   var o=showOverlay(),b=el('div',{class:'g-box'},langRow(),el('div',{class:'bl-lock','aria-label':'Britland Academy'},el('img',{src:'img/britland-shield.png',alt:''}),el('span',{class:'bl-name'},el('b',{},'BRITLAND'),el('i',{},'ACADEMY'))),brand(),el('h1',{},title));
-  o.append(b);return b;
+  o.append(b);document.documentElement.classList.add('g-open');return b;
+}
+/* /espanol: show the value proposition before the closed sign-in screen */
+function landing(){
+  var WA='https://wa.me/5511914881274?text='+encodeURIComponent('¡Hola! Quiero agendar mis 2 clases gratis en Britland Academy.');
+  var L=el('section',{class:'g-land','aria-labelledby':'g-land-h'},
+    el('p',{class:'eyebrow'},'Britland Academy · Curso de Español'),
+    el('h2',{id:'g-land-h'},'Hable español ',el('em',{},'sin trabarse')),
+    el('p',{class:'lead'},'Clases en vivo por videollamada con el Prof. Paulo Cruz. Hablas desde el primer minuto, te corrigen al instante y avanzas a tu ritmo.'),
+    el('div',{class:'acts'},el('a',{class:'pri',href:WA,target:'_blank',rel:'noopener'},'Agendar 2 clases gratis →'),el('a',{class:'sec',href:'#g-login',onclick:function(ev){ev.preventDefault();var t=document.getElementById('g-login');if(!t)return;var rm=false;try{rm=matchMedia('(prefers-reduced-motion:reduce)').matches;}catch(e){}t.scrollIntoView({behavior:rm?'auto':'smooth',block:'center'});setTimeout(function(){var i=document.getElementById('g-email');if(i)i.focus({preventScroll:true});},rm?0:550);}},'Ya soy alumno: acceder al panel ↓')),
+    el('h3',{},'Cómo son las clases'),
+    el('div',{class:'cards'},
+      el('div',{class:'cd'},el('b',{},'Hablas todo el tiempo'),el('p',{},'Preguntas y respuestas cortas, en ritmo constante. La mayor parte de la clase es tu voz, no la del profesor.')),
+      el('div',{class:'cd'},el('b',{},'Corrección al instante'),el('p',{},'Cada error se corrige en el momento en que ocurre y repites hasta que suene natural.')),
+      el('div',{class:'cd'},el('b',{},'Estudia también fuera de clase'),el('p',{},'Un área en línea con textos, audios y ejercicios corregidos automáticamente para practicar entre clases.'))),
+    el('h3',{},'Planes'),
+    el('div',{class:'cards'},
+      el('div',{class:'cd vip'},el('b',{},'VIP · atención exclusiva'),el('div',{class:'amt'},'€120',el('small',{},' /mes')),el('p',{},'Clases individuales en vivo, 2 por semana. Horarios acordados contigo.')),
+      el('div',{class:'cd'},el('b',{},'En grupo'),el('div',{class:'amt'},'€80',el('small',{},' /mes')),el('p',{},'Grupo de máximo 4 alumnos. Todos hablan en cada clase.'))));
+  return L;
 }
 function message(title,lines,buttons){
   var b=box(title);
@@ -149,7 +173,7 @@ function btn(label,fn,ghost){return el('button',{type:'button',class:'g-btn'+(gh
 function niceError(e){
   var m=(e&&e.message)||String(e||'');
   if(/invalid login/i.test(m))return 'Wrong e-mail or password.';
-  if(/already registered|already been registered/i.test(m))return 'This e-mail is already registered. Use "Sign in".';
+  if(/already registered|already been registered/i.test(m))return 'This e-mail is already registered. Use "Log in".';
   if(/email not confirmed/i.test(m))return 'This e-mail is not confirmed yet. Ask your teacher.';
   if(/password/i.test(m)&&/(least|short|weak)/i.test(m))return 'Choose a longer password (at least 6 characters).';
   if(/rate limit|too many/i.test(m))return 'Too many attempts. Wait a few minutes and try again.';
@@ -161,20 +185,26 @@ function niceError(e){
 function showLogin(mode){
   mode=mode||'in';
   var b=box(mode==='in'?'Sign in':'Create account');
+  b.id='g-login';
+  if(COURSE.id==='es'&&b.parentNode)b.parentNode.insertBefore(landing(),b);
   b.append(el('div',{class:'g-tabs',role:'group','aria-label':'Sign in or create account'},
-    el('button',{type:'button',class:'g-tab','aria-pressed':String(mode==='in'),onclick:function(){showLogin('in');}},'Sign in'),
+    el('button',{type:'button',class:'g-tab','aria-pressed':String(mode==='in'),onclick:function(){showLogin('in');}},'Log in'),
     el('button',{type:'button',class:'g-tab','aria-pressed':String(mode==='up'),onclick:function(){showLogin('up');}},'Create account')));
   if(mode==='up')b.append(el('p',{class:'g-hint'},'First time here? Fill in the form. Your teacher will approve your access.'));
   var name=el('input',{id:'g-name',type:'text',autocomplete:'name',maxlength:'60',enterkeyhint:'next'});
-  var email=el('input',{id:'g-email',type:'email',autocomplete:'email',inputmode:'email',autocapitalize:'none',spellcheck:'false',enterkeyhint:'next'});
+  var email=el('input',{id:'g-email',name:'email',type:'email',autocomplete:mode==='in'?'username':'email',inputmode:'email',autocapitalize:'none',spellcheck:'false',enterkeyhint:'next',placeholder:'name@example.com'});
   var bday=el('input',{id:'g-bd',type:'date',min:'1920-01-01',max:isoToday(),autocomplete:'bday'});
-  var pass=el('input',{id:'g-pass',type:'password',autocomplete:mode==='in'?'current-password':'new-password',enterkeyhint:'go'});
+  var pass=el('input',{id:'g-pass',name:'password',type:'password',autocomplete:mode==='in'?'current-password':'new-password',enterkeyhint:'go',placeholder:'Your password'});
+  var EYE='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',EYE0='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.1A10.4 10.4 0 0112 6c6.400 0 10 6 10 6a17 17 0 01-3.200 3.800M6.600 6.700C3.700 8.500 2 12 2 12s3.600 7 10 7c1.700 0 3.200-.4 4.500-1"/><path d="M9.900 9.900a3 3 0 004.200 4.200"/></svg>';
+  var eye=el('button',{type:'button',class:'g-eye','aria-pressed':'false','aria-label':'Show password',title:'Show password',onclick:function(){var show=pass.type==='password';pass.type=show?'text':'password';eye.setAttribute('aria-pressed',String(show));var l=show?'Hide password':'Show password';var t=window.I18N&&I18N.t?I18N.t(l):l;eye.setAttribute('aria-label',t);eye.title=t;eye.innerHTML=show?EYE0:EYE;pass.focus();}});
+  eye.innerHTML=EYE;
+  var passWrap=el('div',{class:'g-pwrap'},pass,eye);
   var err=el('p',{class:'g-err','aria-live':'polite'});
-  var go=el('button',{type:'submit',class:'g-btn'},mode==='in'?'Sign in':'Create account');
+  var go=el('button',{type:'submit',class:'g-btn g-submit'},mode==='in'?'Access my dashboard →':'Create account');
   var form=el('form',{novalidate:true},
     mode==='up'?[el('label',{for:'g-name'},'Your name'),name,el('label',{for:'g-bd'},'Date of birth'),bday]:null,
     el('label',{for:'g-email'},'E-mail'),email,
-    el('label',{for:'g-pass'},mode==='in'?'Password':'Choose a password (at least 6 characters)'),pass,
+    el('label',{for:'g-pass'},mode==='in'?'Password':'Choose a password (at least 6 characters)'),passWrap,
     mode==='in'?el('p',{class:'g-forgot'},el('a',{href:'#',onclick:function(ev){ev.preventDefault();showForgot(email.value.trim());}},'Forgot my password')):null,
     err,el('div',{class:'g-row'},go));
   form.addEventListener('submit',function(ev){

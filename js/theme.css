@@ -56,7 +56,7 @@ a{color:var(--accent)}
 .bl-name{display:flex;flex-direction:column;line-height:1}
 .bl-lock.stack .bl-name{align-items:center}
 .bl-name b{font:700 1.9rem/1 BLSerif,Georgia,serif;letter-spacing:.01em;color:#fff}
-.bl-name i{font:500 1.05rem/1 BLSans,Helvetica,Arial,sans-serif;font-style:normal;letter-spacing:.1em;margin-top:8px;color:#ec4654}
+.bl-name i{font:600 1.05rem/1 BLSans,Helvetica,Arial,sans-serif;font-style:normal;letter-spacing:.22em;margin-top:8px;margin-right:-.22em;color:#F3C65F}
 html[data-theme="light"] .g-ov .bl-name b{color:#0f2a50}
 html[data-theme="light"] .g-ov .bl-name i{color:#b01928}
 .band .bl-lock{flex:none;order:0}
@@ -95,7 +95,7 @@ a.card:hover,.card:hover{border-color:var(--accent)}
 /* Faixa sempre escura: logos sempre claros, inclusive no modo claro */
 .head .logo,.band .logo,.head>.logo,.band>.logo{color:#fff!important}
 .head .bl-name b,.band .bl-name b{color:#fff!important}
-.head .bl-name i,.band .bl-name i{color:#ec4654!important}
+.head .bl-name i,.band .bl-name i{color:#F3C65F!important}
 .head p,.head small,.head .sub,.band p,.band small{color:#cfd7e6!important}
 
 /* Topo: escudo Britland à esquerda e Callan à direita, centralizados na mesma linha */

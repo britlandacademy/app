@@ -2,6 +2,7 @@
    Newest first. Written for students (no technical terms). Each entry: v, d [pt, es], t [pt, es] short title, p [pt, es] one sentence,
    show:1 = also shown once in the "O que há de novo" notice after the update (use ONLY when the teacher marks a version as important; none is marked by default), c:'en'|'es' = only that course (omit = both). */
 window.BL_RELEASES=[
+{v:'2.0.136',d:['24 de novembro','24 de noviembre'],t:['Melhorias no celular','Mejoras en el móvil'],p:['Botões maiores e mais fáceis de tocar, tela de entrada mais clara (com botão para mostrar a senha) e apresentação do curso de espanhol antes do acesso.','Botones más grandes y fáciles de tocar, pantalla de acceso más clara (con botón para mostrar la contraseña) y presentación del curso antes del acceso.']},
 {v:'2.0.135',d:['24 de novembro','24 de noviembre'],t:['Correção de bugs','Corrección de errores'],p:['',''],c:'en'},
 {v:'2.0.132',d:['20 de novembro','20 de noviembre'],t:['Correção de bugs','Corrección de errores'],p:['',''],c:'en'},
 {v:'2.0.131',d:['20 de novembro','20 de noviembre'],t:['Correção de bugs','Corrección de errores'],p:['',''],c:'en'},
