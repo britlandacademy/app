@@ -28,10 +28,10 @@ function open(msg,o,isConfirm){
     var prev=document.activeElement,ov=mk('div','bld-ov'+(danger?' bld-d':'')),b=mk('div','bld-b'),ic=mk('div','bld-ic',danger?'!':(isConfirm?'?':'i'));
     var tid='bld'+Math.random().toString(36).slice(2,8);
     var t=mk('h3','bld-t',o.title||(isConfirm?(danger?T.s:T.c):T.a));t.id=tid;
-    var m=mk('p','bld-m',String(msg==null?'':msg));
+    var m=mk('p','bld-m',String(msg==null?'':msg));if(msg===''||msg==null)m.style.display='none';
     var ac=mk('div','bld-a'),no=null,ok=mk('button',null,o.ok||(isConfirm?(danger?T.okd:T.ok):T.okA));ok.type='button';
     if(isConfirm){no=mk('button','bld-no',o.cancel||T.no);no.type='button';ac.appendChild(no);}
-    ac.appendChild(ok);b.appendChild(ic);b.appendChild(t);b.appendChild(m);b.appendChild(ac);ov.appendChild(b);
+    ac.appendChild(ok);b.appendChild(ic);b.appendChild(t);b.appendChild(m);if(o.node){b.style.textAlign='left';b.appendChild(o.node);}b.appendChild(ac);ov.appendChild(b);
     ov.setAttribute('role',isConfirm?'alertdialog':'dialog');ov.setAttribute('aria-modal','true');ov.setAttribute('aria-labelledby',tid);ov.setAttribute('data-noi18n','1');
     document.body.appendChild(ov);
     var rm=reduced(),done=false;

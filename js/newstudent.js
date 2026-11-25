@@ -69,5 +69,5 @@ function mount(w,before,evl,stu,sb){
     });});
   },function(){});
 }
-window.BL_NS={mount:mount,form:form};
+window.BL_NS={mount:mount,form:form,create:create};
 })();

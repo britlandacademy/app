@@ -8,7 +8,7 @@ var LAB_EN={dictation:'Ditado',yesno:'Yes/No',mc:'M\u00faltipla escolha',err:'Co
 function isES(c){return c?c==='es':PATH_ES;}
 function labels(c){return isES(c)?LAB_ES:LAB_EN;}
 var LABEL=labels();
-var CRIT=[['Entendeu',1],['Completa',1],['Gram\u00e1tica',2],['Pron\u00fancia',1]];
+var CRIT=[['Comprehension',1],['Fluency',1],['Grammar',1],['Pronunciation',2]];
 function r1(x){return Math.round(x*10)/10;}
 function oralTot(o){var s=0,done=false,q=(o&&o.q)||[];if(!q.length)return {s:0,m:15,done:false};
   done=q.every(function(x){return x.s&&x.s.length===4&&x.s.every(function(v){return v!=null;});});

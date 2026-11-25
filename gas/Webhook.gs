@@ -126,7 +126,22 @@ function doPost(e) {
     if (d.date && c.date) sh.getRange(row, c.date).setNumberFormat('dd/mm/yyyy').setValue(new Date(d.date + 'T12:00:00'));
     if (d.paragraph != null && c.para) sh.getRange(row, c.para).setNumberFormat('@').setValue(String(d.paragraph));
     if (d.lastWord != null && c.last)  sh.getRange(row, c.last).setValue(d.lastWord);
-    if (d.done && c.done)   sh.getRange(row, c.done).setValue(true);
+    // leitura/ditado: numero na celula = ainda nao dado. Dado hoje -> '—'; Done so marca quando nao sobra numero na linha.
+    const temNum = v => { v = String(v == null ? '' : v).trim(); return v !== '' && !/^[—–-]+$/.test(v); };
+    // pendente de aula anterior dado hoje (resolveRead/resolveDict = numero da linha da planilha de origem)
+    [['resolveRead', c.read, c.dict], ['resolveDict', c.dict, c.read]].forEach(([key, kA, kB]) => {
+      const r0 = Number(d[key]);
+      if (!r0 || !kA || r0 === row) return;
+      sh.getRange(r0, kA).setValue('—');
+      if (c.done && !(kB && temNum(sh.getRange(r0, kB).getValue()))) sh.getRange(r0, c.done).setValue(true);
+    });
+    if (d.done && c.done) {
+      const rv = c.read ? sh.getRange(row, c.read) : null, dv = c.dict ? sh.getRange(row, c.dict) : null;
+      const rP = rv && temNum(rv.getValue()), dP = dv && temNum(dv.getValue());
+      const rOk = !rP || !!d.readingGiven, dOk = !dP || !!d.dictationGiven;
+      if (rOk && dOk) sh.getRange(row, c.done).setValue(true);
+      else { if (d.readingGiven && rP) rv.setValue('—'); if (d.dictationGiven && dP) dv.setValue('—'); }
+    }
     if (d.lessonCheck != null && c.lc) sh.getRange(row, c.lc).setValue(isNaN(Number(d.lessonCheck)) ? String(d.lessonCheck) : Number(d.lessonCheck));
     // sugestões da aula (Song / Video / Film / Activity): acrescenta nas notas sem apagar o que já existe
     if (d.notes && c.notes) {

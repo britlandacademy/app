@@ -140,12 +140,19 @@ html.fx-off .vq-spk.on .w{animation:none;opacity:1}
 .dp .tx{flex:1 1 200px;min-width:0}.dp .tx b{display:block;color:var(--navy)}.dp .tx span{color:var(--muted);font-size:.92rem}
 .vtest{margin-top:14px;padding:12px 14px;background:#fbf4de;border:1.5px solid var(--gold2);border-radius:10px}
 .vtest p{margin:0 0 8px}
+
+.ox-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px}.ox-bar select{min-height:44px;border:2px solid var(--line2);border-radius:10px;background:#fff;padding:0 10px;font:inherit;color:var(--ink);max-width:100%}
+.ox-bar .xnext{min-height:44px;padding:8px 16px}.ox-tot{margin-left:auto;font-weight:800;color:var(--navy)}
+.ox-crit{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}@media(max-width:700px){.ox-crit{grid-template-columns:repeat(2,1fr)}}
+.ox-c{border:1.5px solid var(--line);border-radius:10px;padding:6px 8px;background:#fff}.ox-c b{display:block;font-size:.76rem;color:var(--muted);margin-bottom:4px}
+.ox-sg{display:flex;gap:4px}.ox-sg button{flex:1;min-height:44px;border-radius:8px;border:2px solid var(--line2);background:#fff;font-weight:700;font-size:1.05rem;color:var(--ink)}.ox-sg button.on{background:var(--gold);border-color:var(--gold);color:var(--navy)}
+.ox-qt{font-weight:700}.ox-sub{font-size:.76rem;color:var(--muted)}.ox-sum{text-align:right;font-weight:800;color:var(--navy);margin-top:8px}
 </style>
 </head>
 <body>
 <div id="app"></div>
 <script src="js/config.js" charset="utf-8"></script>
-<script src="js/gate.js" charset="utf-8"></script><script src="js/dialog.js" data-lang="en" charset="utf-8"></script><script src="js/examcalc.js" charset="utf-8"></script><script src="js/examvoice.js" charset="utf-8"></script>
+<script src="js/gate.js" charset="utf-8"></script><script src="js/dialog.js" data-lang="en" charset="utf-8"></script><script src="js/examcalc.js" charset="utf-8"></script><script src="js/oralgen.js" charset="utf-8"></script><script src="js/examvoice.js" charset="utf-8"></script>
 <script>
 Gate.start({kinds:[],bare:true},function(ctx){
 'use strict';
@@ -153,7 +160,7 @@ const sb=Gate.sb,el=Gate.el,app=document.getElementById('app');
 const NAME=(ctx.profile&&ctx.profile.name)||'';
 const STAGE_PARAM=parseInt(new URLSearchParams(location.search).get('stage'),10)||0;
 let MOCK=null,PLACE='',vqn=0,vheard={},dstate='idle';const QS=new URLSearchParams(location.search);let stage=0,items=null,answers={},part=0,t0=0,endIn=0,tick=null,dirty=false,saving=false,sent=false,lastSave=0;
-const PART_NAME={dictation:'Dictation',yesno:'Yes / No quiz',oral:'Listening',gap:'Gap fill',mc:'Multiple choice',err:'Error correction'};
+const PART_NAME={oralx:'Oral exam',dictation:'Dictation',yesno:'Yes / No quiz',oral:'Listening',gap:'Gap fill',mc:'Multiple choice',err:'Error correction'};
 function clear(){app.textContent='';}
 function mmss(s){s=Math.max(0,s);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
 function left(){return Math.max(0,Math.round(endIn-(performance.now()-t0)/1000));}
@@ -279,7 +286,8 @@ function draw(){
   items.parts.forEach((x,i)=>st.append(el('li',{class:i<part?'done':(i===part?'cur':''),'aria-current':i===part?'step':null},el('i',{},i<part?'✓':String(i+1)),el('span',{},PART_NAME[x.id]||x.id))));
   const m=document.getElementById('main');m.textContent='';
   m.append(el('div',{class:'instr'},el('h1',{},p.title),el('p',{},MOCK&&MOCK.voice?String(p.instr).replace('Your teacher reads','The app reads').replace('your teacher’s','the'):p.instr)));
-  if(p.id==='dictation'){
+  if(p.id==='oralx'){renderOralx(m);}
+  else if(p.id==='dictation'){
     const ta=el('textarea',{class:'dic','aria-label':'Dictation: write what your teacher reads',spellcheck:'false',autocomplete:'off',autocapitalize:'sentences',autocorrect:'off'});
     const wc=el('span',{},'0 words');
     function words(){const t=ta.value.trim();return t?t.split(/\s+/).length:0;}
@@ -333,9 +341,51 @@ function question(p,n){
     const r=el('button',{type:'button',class:'clr',style:'margin-left:0'},'Start again with the original sentence');r.addEventListener('click',()=>{i.value=it.text;setA(p,n,'');card.classList.remove('ans');});
     card.append(el('div',{class:'inwrap'},i,r));
   }
-  if(MOCK&&MOCK.teach){const kp=MOCK.keys.parts.find(x=>x.id===p.id);const tx=kp&&kp.teacher&&kp.teacher[n];if(tx){const rd=el('div',{class:'src'},'You read: '+tx);card.insertBefore(rd,card.firstChild);}}
+  if(MOCK&&MOCK.teach){const kp=MOCK.keys.parts.find(x=>x.id===p.id);const tx=(kp&&kp.teacher&&kp.teacher[n])||(p.id==='yesno'?((p.items||[]).find(i=>i.n===n)||{}).q:'');if(tx){const rd=el('div',{class:'src'},'You read: '+tx);card.insertBefore(rd,card.firstChild);}}
   if(isAns(p,n))card.classList.add('ans');
   return card;
+}
+async function renderOralx(m){
+  const bar=el('div',{class:'ox-bar'}),body=el('div',{}),sel=el('select',{'aria-label':'Student'});
+  m.append(bar,body);
+  let STU=[],cur=null,O=null,res=null;
+  const msg=el('p',{class:'ox-sub'});
+  try{
+    const rr=await sb.from('exam_results').select('user_id,stage,oral,submitted_at').eq('stage',stage).not('submitted_at','is',null);
+    const rows=rr.data||[];if(!rows.length){body.append(el('p',{},'No student has finished the Stage '+stage+' exam yet.'));return;}
+    const ids=rows.map(x=>x.user_id);
+    const [pr,gr,gm]=await Promise.all([sb.from('profiles').select('id,name,course').in('id',ids),sb.from('class_groups').select('id,name'),sb.from('class_group_members').select('group_id,user_id').in('user_id',ids)]);
+    const G={};(gr.data||[]).forEach(g=>G[g.id]=g.name);const GM={};(gm.data||[]).forEach(x=>GM[x.user_id]=G[x.group_id]||'');
+    STU=(pr.data||[]).map(x=>({id:x.id,name:x.name||'(no name)',course:x.course==='es'?'es':'en',group:GM[x.id]||'',res:rows.find(r=>r.user_id===x.id)})).sort((a,b)=>(a.group||'~').localeCompare(b.group||'~')||a.name.localeCompare(b.name));
+  }catch(e){body.append(el('p',{class:'msg-bad'},'Could not load students: '+(e.message||e)));return;}
+  STU.forEach(x=>sel.append(el('option',{value:x.id},x.name+(x.group?' · '+x.group:''))));
+  const tot=el('span',{class:'ox-tot'},''),nw=el('button',{type:'button',class:'xnext ghost',style:'background:#fff;color:var(--navy);border:2px solid var(--navy)'},'New questions');
+  bar.append(sel,nw,tot);body.after(msg);
+  const sum=o=>{const t=BL_EXAM.oralTot(o);return t.s;};
+  async function save(){O.at=new Date().toISOString();const r=await sb.from('exam_results').update({oral:O}).eq('user_id',cur.id).eq('stage',stage);msg.textContent=r.error?'Could not save: '+r.error.message:'Saved.';msg.className='ox-sub'+(r.error?' msg-bad':'');}
+  function totals(){tot.textContent='Oral total '+sum(O)+' / 15';}
+  function draw2(){
+    body.textContent='';
+    O.q.forEach((x,i)=>{
+      const card=el('section',{class:'q'}),sq=el('span',{class:'ox-sum'},''),upd=()=>{sq.textContent=((x.s||[]).reduce((a,v)=>a+(v||0),0))+' / 5';};
+      card.append(el('div',{class:'top'},el('span',{class:'no'},String(i+1)),el('div',{},el('div',{class:'ox-qt'},x.q),el('div',{class:'ox-sub'},(x.lesson?'Lesson '+x.lesson:'')+(x.alt?' · adapted':'')))),el('div',{class:'src',style:'margin-left:46px'},'Expected: '+x.e));
+      const grid=el('div',{class:'ox-crit'});
+      BL_EXAM.CRIT.forEach((c,j)=>{const g=el('div',{class:'ox-sg',role:'group','aria-label':c[0]});
+        for(let v=0;v<=c[1];v++){const b=el('button',{type:'button',class:x.s[j]===v?'on':'','aria-pressed':String(x.s[j]===v)},String(v));
+          b.addEventListener('click',()=>{x.s[j]=(x.s[j]===v)?null:v;g.querySelectorAll('button').forEach((bb,k)=>{bb.classList.toggle('on',x.s[j]===k);bb.setAttribute('aria-pressed',String(x.s[j]===k));});upd();totals();save();});g.append(b);}
+        grid.append(el('div',{class:'ox-c'},el('b',{},c[0]+' (0–'+c[1]+')'),g));});
+      upd();card.append(grid,sq);body.append(card);
+    });
+    totals();
+  }
+  async function load(id){
+    cur=STU.find(x=>x.id===id);res=cur.res;O=res.oral&&res.oral.q&&res.oral.q.length?JSON.parse(JSON.stringify(res.oral)):{q:[]};
+    if(!O.q.length){body.textContent='Choosing questions…';try{O.q=await BL_ORAL.gen(sb,stage,3,[],cur.course,true);await save();}catch(e){body.textContent='';body.append(el('p',{class:'msg-bad'},'Could not choose the questions: '+(e.message||e)));return;}}
+    draw2();
+  }
+  sel.addEventListener('change',()=>load(sel.value));
+  nw.addEventListener('click',async()=>{if(!O)return;if(O.q.some(x=>x.s&&x.s.some(v=>v!=null))&&!await BL_DLG.confirm('This will replace the three questions and clear the marks already given. Continue?'))return;nw.disabled=true;try{O.q=await BL_ORAL.gen(sb,stage,3,O.q.map(y=>y.q),cur.course,true);await save();draw2();}catch(e){msg.textContent='Could not choose new questions: '+(e.message||e);}nw.disabled=false;});
+  load(sel.value);
 }
 function refreshChips(p){
   document.querySelectorAll('.chip').forEach(c=>{const n=parseInt(c.dataset.n,10),u=(answers[p.id]||{})[n]==='?';c.classList.toggle('uns',u);c.classList.toggle('ans',isAns(p,n)&&!u);});
@@ -346,7 +396,7 @@ function footer(p){
   if(ns.length){chips.append(el('span',{class:'lab'},'Questions'));
     ns.forEach(n=>{const c=el('button',{type:'button',class:'chip'+(((answers[p.id]||{})[n]==='?')?' uns':(isAns(p,n)?' ans':'')),'data-n':String(n),'aria-label':'Go to question '+n},String(n));
       c.addEventListener('click',()=>{if(MOCK&&MOCK.voice&&(p.id==='yesno'||p.id==='oral')){vqShow(p,n);return;}const q=document.getElementById('q'+n);if(q){q.scrollIntoView({behavior:'smooth',block:'center'});q.classList.add('flash');setTimeout(()=>q.classList.remove('flash'),900);const f1=q.querySelector('input,.opt');if(f1)f1.focus({preventScroll:true});}});chips.append(c);});}
-  else chips.append(el('span',{class:'lab'},'Write the whole dictation in the box.'));
+  else chips.append(el('span',{class:'lab'},p.id==='oralx'?'Mark the four criteria for each question.':'Write the whole dictation in the box.'));
   const last=part===items.parts.length-1;
   if(MOCK&&MOCK.teach){const nb=el('button',{type:'button',class:'xnext'},last?'Close':'Next part →');nb.addEventListener('click',()=>{if(last){window.close();setTimeout(()=>{location.href='admin.html';},250);}else{part++;draw();}});
     if(part>0){const pb=el('button',{type:'button',class:'xnext',style:'background:#fff;color:var(--navy);border:2px solid var(--navy);margin-right:8px'},'← Previous part');pb.addEventListener('click',()=>{part--;draw();});f.append(chips,pb,nb);}else f.append(chips,nb);
@@ -435,16 +485,25 @@ function mgrade(keys,ans){
   return {scores:sc,maxes:mx};
 }
 async function mockHome(){
-  const r=await sb.from('mock_attempts').select('stage,test,scores,maxes').eq('edition',MOCK_ED);
-  const by={};(r.data||[]).forEach(x=>{const k=x.stage+x.test;const t=Object.values(x.scores||{}).reduce((a,b)=>a+Number(b||0),0);const o=by[k]||(by[k]={n:0,best:0,max:0});o.n++;o.best=Math.max(o.best,t);o.max=Object.values(x.maxes||{}).reduce((a,b)=>a+Number(b||0),0);});
+  const r=await sb.from('mock_attempts').select('id,stage,test,scores,maxes,answers,created_at').eq('edition',MOCK_ED).order('created_at',{ascending:false});
+  const by={};(r.data||[]).forEach(x=>{const k=x.stage+x.test;const t=Object.values(x.scores||{}).reduce((a,b)=>a+Number(b||0),0);const o=by[k]||(by[k]={n:0,best:0,max:0});o.n++;if(!o.last)o.last=x;o.best=Math.max(o.best,t);o.max=Object.values(x.maxes||{}).reduce((a,b)=>a+Number(b||0),0);});
   const box=el('div',{});
   for(let n=1;n<=12;n++){
     const row=el('div',{style:'display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);flex-wrap:wrap'},el('b',{},'Stage '+n));
     const btns=el('span',{style:'display:flex;gap:8px;flex-wrap:wrap'});
-    ['A','B'].forEach(t=>{const o=by[n+t];btns.append(el('a',{class:'btnl',href:'exam.html?mock=1&ed='+MOCK_ED+'&stage='+n+'&test='+t},'Mock '+t+(o?' · best '+BL_EXAM.fmt(o.best)+'/'+o.max+' · '+o.n+'×':'')));});
+    ['A','B'].forEach(t=>{const o=by[n+t];btns.append(el('a',{class:'btnl',href:'exam.html?mock=1&ed='+MOCK_ED+'&stage='+n+'&test='+t},'Mock '+t+(o?' · best '+BL_EXAM.fmt(o.best)+'/'+o.max+' · '+o.n+'×':'')));
+      if(o&&o.last){const lt=Object.values(o.last.scores||{}).reduce((a,b)=>a+Number(b||0),0),dt=new Date(o.last.created_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short'});const v=el('button',{type:'button',class:'btnl',style:'background:#fff;color:var(--navy);border-color:var(--navy)'},'Last result '+BL_EXAM.fmt(lt)+'/'+o.max+' · '+dt);v.addEventListener('click',()=>{v.disabled=true;mockViewLast(n,t,o.last);});btns.append(v);}});
     row.append(btns);box.append(row);
   }
   screen([el('div',{class:'scr'},logo(),el('h1',{class:'center'},'Mock tests'),el('p',{style:'display:flex;gap:8px;justify-content:center;flex-wrap:wrap'},...['3rd','2nd'].map(e=>el('a',{class:'btnl',href:'exam.html?mock=1&ed='+e,style:e===MOCK_ED?'':'background:#fff;color:var(--navy);border-color:var(--navy)'},e+' edition'))),el('p',{},'Practice tests with the same format as the Stage Exam. Do them with your teacher. You can repeat them as many times as you like. They do not count as the official exam.'),box,el('p',{},el('a',{class:'btnl',href:'exam.html'},'Back to the exams')))]);
+}
+async function mockViewLast(n,t,at){
+  try{
+    const rs=await fetch(mockFile(n,t),{cache:'no-store'});if(!rs.ok)throw new Error('HTTP '+rs.status);const d=await rs.json();
+    if(MOCK_ED==='2nd')await mockPlace(d,n,t);
+    stage=n;items=d.items;answers=at.answers||{};MOCK={test:t,stage:n,keys:d.keys,minutes:d.minutes};
+    try{mockFinished({scores:at.scores||{},maxes:at.maxes||{}});}catch(e){mockFallback({scores:at.scores||{},maxes:at.maxes||{}});}
+  }catch(e){screen([el('div',{class:'scr'},el('h1',{},'Could not open the result'),el('p',{class:'msg-bad'},String(e.message||e)),el('p',{},el('a',{class:'btnl',href:'exam.html?mock=1&ed='+MOCK_ED},'Back')))]);}
 }
 function mockIntro(n,t){
   stage=n;MOCK={test:t,stage:n};
@@ -480,6 +539,7 @@ async function teachBegin(){
   }catch(e){screen([el('div',{class:'scr'},el('h1',{},'Could not open'),el('p',{class:'msg-bad'},String(e.message||e)),el('p',{},el('a',{class:'btnl',href:'admin.html'},'Back')))]);return;}
   stage=n;items=it;answers={};part=0;
   MOCK={test:t,stage:n,keys:keys,minutes:minutes,teach:true,exam:!(t==='A'||t==='B')};
+  if(MOCK.exam)items=Object.assign({},it,{parts:(it.parts||[]).concat([{id:'oralx',title:'Oral exam',instr:'Ask the student the three questions below and mark each criterion. The oral exam is an extra 15 points, outside the points of the written exam.',items:[]}])});
   keys.parts.forEach(k=>{
     const ip=(it.parts||[]).find(x=>x.id===k.id)||{};
     if(k.id==='dictation')answers.dictation=k.text;
@@ -586,7 +646,11 @@ async function mockSend(){
   if(sent)return;sent=true;clearInterval(tick);closeModal();ExamVoice.stop();
   const g=mgrade(MOCK.keys,answers),used=Math.round(MOCK.minutes*60-left());
   sb.from('mock_attempts').insert({stage:stage,edition:MOCK_ED,test:MOCK.test,answers:answers,scores:g.scores,maxes:g.maxes,seconds_used:used}).then(()=>{},()=>{});
-  mockFinished(g);
+  try{mockFinished(g);}catch(e){mockFallback(g);}
+}
+function mockFallback(g){
+  let T=0,M=0;Object.keys(g.scores||{}).forEach(k=>{T+=Number(g.scores[k]||0);M+=Number(g.maxes[k]||0);});
+  screen([el('div',{class:'scr center'},logo(),el('h1',{},'Stage '+stage+' Mock '+(MOCK?MOCK.test:'')),el('p',{class:'big'},BL_EXAM.fmt(T)+' / '+M),el('p',{},'Your result is saved. You can open it again in the list of mock tests.'),el('p',{style:'display:flex;gap:10px;flex-wrap:wrap;justify-content:center'},el('a',{class:'btnl',href:'exam.html?mock=1&ed='+MOCK_ED},'All mock tests'),leave()))]);
 }
 function mockFinished(g){
   const kids=[logo(),el('h1',{class:'center'},'Stage '+stage+' Mock '+MOCK.test)];

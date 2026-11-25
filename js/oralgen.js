@@ -44,9 +44,19 @@ function alter(c,voc,C){var WB=C.WB,WA=C.WA,RF=C.RF,RG=C.RG,ART=C.ART;
   var f=function(s){return s.replace(re2,function(m,p){return p+n2;});};
   return {lesson:c.lesson,q:f(c.q),e:f(c.e),alt:true,from:c.q};
 }
-async function gen(sb,stage,n,avoid,course){
+async function gen(sb,stage,n,avoid,course,thirds){
   var C=cfg(course),D=await load(sb,stage,course),used={};(avoid||[]).forEach(function(x){used[x]=1;});
   var out=[],lessons={},pool=shuffle(D.pool);
+  if(thirds&&n===3&&pool.length>=3){
+    var ls=pool.map(function(c){return c.lesson;}),lo=Math.min.apply(null,ls),hi=Math.max.apply(null,ls),w=(hi-lo+1)/3;
+    for(var b=0;b<3;b++){
+      var a0=lo+w*b,a1=lo+w*(b+1),cs=pool.filter(function(c){return !used[c.q]&&c.lesson>=a0&&(b===2?c.lesson<=hi:c.lesson<a1);});
+      if(!cs.length)continue;var c=cs[0],x=(Math.random()<.7?alter(c,D.voc,C):null)||{lesson:c.lesson,q:c.q,e:c.e,alt:false};
+      used[c.q]=1;lessons[c.lesson]=1;out.push({q:x.q,e:x.e,alt:!!x.alt,lesson:x.lesson,s:[null,null,null,null]});
+    }
+    if(out.length===3)return out;
+    out=[];lessons={};
+  }
   for(var pass=0;pass<2&&out.length<n;pass++){
     for(var i=0;i<pool.length&&out.length<n;i++){
       var c=pool[i];if(used[c.q]||(pass===0&&lessons[c.lesson]))continue;

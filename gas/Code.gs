@@ -161,6 +161,7 @@ function parsePlanTab(values, sheetName) {
       row: i + 1, cls: col.cls != null ? num(r[col.cls]) : null, contents: contents,
       att: scols.map(function (sc) { return { name: sc.name, here: /^true$/i.test(norm(r[sc.k])) }; }),
       conv: /^e$/i.test(par) || /conversation|conversaci[oó]n/i.test(contents),
+      dchk: col.done != null && /^true$/i.test(String(r[col.done])),
       status: status, noShow: noShow, done: /^(completed|realizada|completada)$/i.test(status) && !noShow,
       paragraph: num(par), word: noShow ? '' : word,
       read: col.read != null ? norm(r[col.read]) : '', dict: col.dict != null ? norm(r[col.dict]) : '',
@@ -229,6 +230,13 @@ function parsePlanTab(values, sheetName) {
   var parRow = null;
   rows.forEach(function (x) { if (x.done && !x.conv && x.word && !/^[—–-]+$/.test(x.word)) wordRow = x; if (x.done && x.paragraph != null) parRow = x; });
   var pending = function (v) { return v !== '' && !dash.test(v); };
+  /* leitura/ditado de aula ja dada que ficou sem Done e ainda tem numero: pendente (vai para a proxima aula, nunca pulado) */
+  var pendR = null, pendD = null, nIdx = nextRow ? rows.indexOf(nextRow) : rows.length;
+  rows.forEach(function (x, q) {
+    if (q >= nIdx || !x.done || x.dchk) return;
+    if (!pendR && pending(x.read)) pendR = { row: x.row, cls: x.cls, val: x.read };
+    if (!pendD && pending(x.dict)) pendD = { row: x.row, cls: x.cls, val: x.dict };
+  });
   return {
     ok: true, sheetName: sheetName, stage: stage, lang: es ? 'es' : 'en', students: students,
     currentPosition: lastRow ? {
@@ -240,7 +248,7 @@ function parsePlanTab(values, sheetName) {
       classNumber: nextRow.cls, contents: nextRow.contents, conversation: !!nextRow.conv, activity: (!nextRow.conv && !nextRow.rev && !nextRow.nw) ? nextRow.contents : '',
       review: nextRow.rev, newWords: nextRow.nw,
       hasReading: pending(nextRow.read), hasDictation: pending(nextRow.dict), hasQuiz: pending(nextRow.lc),
-      reading: nextRow.read, dictation: nextRow.dict, lessonCheck: nextRow.lc
+      reading: nextRow.read, dictation: nextRow.dict, lessonCheck: nextRow.lc, pendRead: pendR, pendDict: pendD
     } : null,
     classesDone: rows.filter(function (x) { return x.done; }).length, classesTotal: rows.length,
     bounds: bounds

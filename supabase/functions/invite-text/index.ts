@@ -220,7 +220,9 @@ async function due(b: any) {
 async function nowDue() {
   const { data: q } = await sb.from("invite_sent").select("event_key,kind,text_sent").eq("status", "now");
   const items: any[] = [], problems: any[] = [];
+  const hSP = Number(new Intl.DateTimeFormat("en-GB", { timeZone: "America/Sao_Paulo", hour: "2-digit", hour12: false }).format(new Date())) % 24;
   for (const x of q || []) {
+    if ((x.kind === "repo" || x.kind === "nudge") && (hSP < 9 || hSP >= 19)) continue;
     const [ek, startIso] = String(x.event_key).split("|");
     const { data: ls } = await sb.from("lessons").select("id,user_id,title,start_at,is_group").eq("start_at", startIso);
     const rows = (ls || []).filter((l: any) => evKey(l.id) === ek && l.user_id);

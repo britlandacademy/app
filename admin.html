@@ -68,6 +68,7 @@ td.g{background:var(--ok-bg)}td.m{background:var(--warn-bg)}td.r{background:var(
 .pc .brow .v{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
 .pc .gf{background:var(--ok)}.pc .yf{background:var(--warn)}.pc .rf{background:var(--bad)}
 .pc .why{font-size:.82rem;opacity:.9;flex-basis:100%}
+.hm-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}.hm-tabs button{min-height:40px;padding:0 18px;border-radius:99px;border:2px solid var(--line);background:transparent;color:var(--ink);font:inherit;font-weight:700;cursor:pointer;display:inline-flex;gap:8px;align-items:center}.hm-tabs button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}.hm-tabs button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}.hm-n{min-width:22px;height:22px;border-radius:99px;padding:0 6px;background:var(--bad,#9c2a22);color:#fff;font-size:.74rem;display:inline-grid;place-items:center}.hm-pane[hidden],.hm-tabs[hidden]{display:none}
 .tp-attn{border:2px solid var(--accent);border-left-width:6px;border-radius:12px;padding:14px 16px;margin:0 0 18px;background:var(--card)}
 .tp-attn h2{margin:0 0 8px}
 .tp-attn ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
@@ -105,7 +106,7 @@ body{padding-bottom:104px}
  .tp-side .tp-tab.on{background:var(--accent);color:var(--accent-ink)}
  .tp-side .tp-n{margin-left:auto}
  .tp-side .sb-t{font:700 1.05rem var(--font-body);padding:4px 10px 12px;text-transform:uppercase;letter-spacing:.06em}
- #s-home.on{display:grid;grid-template-columns:1.2fr 1fr;gap:0 18px;align-items:start}
+ #s-home.on{display:block}
  #s-home .rings,#tpAlert,#tpNext,#tpRings{grid-column:1/-1}
  #agendaBox{grid-column:1/-1}
  #tpCards{grid-template-columns:1fr 1fr}
@@ -229,12 +230,24 @@ details.h{background:var(--surface);border:1px solid var(--line);border-radius:1
 <main>
 <section class="sc on" id="s-home" aria-label="Início">
   <button type="button" class="tp-alert" id="tpAlert" data-noi18n="1" hidden></button>
-  <div id="reqBox" data-noi18n="1" hidden></div>
-  <div class="tp-next" id="tpNext" data-noi18n="1" hidden></div>
-  <div class="tp-sum" id="tpRings" data-noi18n="1"></div>
-  <div class="tp-attn" id="tpAttn" data-noi18n="1"><h2>Precisa de atenção hoje</h2><ul id="tpAttnList"><li style="list-style:none"><span class="bl-sk" style="height:22px;width:70%"></span></li><li style="list-style:none;margin-top:8px"><span class="bl-sk" style="height:22px;width:50%"></span></li></ul></div>
-  <div class="tp-grid" id="tpCards" data-noi18n="1"></div>
-  <div id="agendaBox" data-noi18n="1"></div>
+  <div class="hm-tabs" id="hmTabs" role="tablist" aria-label="Início" data-noi18n="1">
+    <button type="button" role="tab" data-p="sala" id="hmT-sala">Sala de aula</button>
+    <button type="button" role="tab" data-p="pend" id="hmT-pend">Pendências<span class="hm-n" id="hmN" hidden></span></button>
+    <button type="button" role="tab" data-p="geral" id="hmT-geral">Visão geral da escola</button>
+  </div>
+  <div class="hm-pane" id="hmP-sala" role="tabpanel" aria-labelledby="hmT-sala">
+    <div class="tp-next" id="tpNext" data-noi18n="1" hidden></div>
+    <p class="hint" id="hmSalaEmpty" data-noi18n="1" hidden>Nenhuma aula agora nem aula esperando para fechar. As próximas aulas aparecem aqui assim que chegar a hora.</p>
+  </div>
+  <div class="hm-pane" id="hmP-pend" role="tabpanel" aria-labelledby="hmT-pend" hidden>
+    <div id="reqBox" data-noi18n="1" hidden></div>
+    <div class="tp-attn" id="tpAttn" data-noi18n="1"><h2>Precisa de atenção hoje</h2><ul id="tpAttnList"><li style="list-style:none"><span class="bl-sk" style="height:22px;width:70%"></span></li><li style="list-style:none;margin-top:8px"><span class="bl-sk" style="height:22px;width:50%"></span></li></ul></div>
+  </div>
+  <div class="hm-pane" id="hmP-geral" role="tabpanel" aria-labelledby="hmT-geral" hidden>
+    <div class="tp-sum" id="tpRings" data-noi18n="1"></div>
+    <div class="tp-grid" id="tpCards" data-noi18n="1"></div>
+  </div>
+  <div class="hm-pane" id="hmP-agenda" hidden><div id="agendaBox" data-noi18n="1"></div></div>
 </section>
 <div class="sc" id="s-more"><div id="moreBox" data-noi18n="1"></div></div>
 <div class="sc" id="s-today"><section class="card" aria-labelledby="h-today"><h2 id="h-today">Hoje</h2><div id="todayBox"></div></section></div>
@@ -261,6 +274,10 @@ details.h{background:var(--surface);border:1px solid var(--line);border-radius:1
   <div class="tw"><table id="mat"></table></div>
   <div class="row"><label for="who">Detalhe de um aluno</label><select id="who"></select></div>
   <div class="tw"><table id="det"></table></div>
+</section>
+<section class="card" aria-labelledby="h-mk"><h2 id="h-mk">Simulados feitos</h2>
+  <p class="hint">Simulados (mock) feitos pelos alunos, do mais recente ao mais antigo. Cada simulado conta como dia de estudo e vale 5 pontos no ranking.</p>
+  <div class="tw"><table id="mkt"></table></div>
 </section>
 </div>
 <div class="sc" id="s-content"><section class="card" aria-labelledby="h-ct"><h2 id="h-ct">Conteúdo (texto, checks e exercícios)</h2>
@@ -414,6 +431,20 @@ function startBlock(p){
   sel.addEventListener('change',()=>{const v=sel.value?parseInt(sel.value,10):null;upd(p,{start_stage:v},()=>okTag(ok));});
   return el('label',{style:'display:block;font-size:.88rem;margin:0'},'Começou no Stage: ',sel,ok);
 }
+function turmaBlock(p){
+  const ok=el('span',{class:'sv',style:'margin-left:8px'}),sel=el('select',{'aria-label':'Turma de '+(p.name||p.email)});
+  const cur=GMEM.find(m=>m.user_id===p.id);
+  sel.append(el('option',{value:''},'Nenhuma (aluno individual)'));GRPS.slice().sort((a,b)=>String(a.name).localeCompare(String(b.name))).forEach(g=>sel.append(el('option',{value:g.id},g.name)));
+  sel.value=cur?cur.group_id:'';
+  sel.addEventListener('change',async()=>{
+    const v=sel.value,name=v?(GRPS.find(g=>g.id===v)||{}).name:'';
+    if(!await BL_DLG.confirm(v?'Colocar '+(p.name||p.email)+' na turma "'+name+'"?':'Tirar '+(p.name||p.email)+' da turma?')){sel.value=cur?cur.group_id:'';return;}
+    let r=await sb.from('class_group_members').delete().eq('user_id',p.id);
+    if(!r.error&&v)r=await sb.from('class_group_members').insert({group_id:v,user_id:p.id});
+    if(r.error){setMsg('xmsg','Erro ao salvar: '+r.error.message,'bad');return;}
+    loadGroups().then(()=>renderStu());okTag(ok);});
+  return el('label',{style:'display:block;font-size:.88rem;margin:0'},'Turma: ',sel,ok);
+}
 function waBlock(p){
   const ok=el('span',{class:'sv',style:'margin-left:8px'});
   const gm=GMEM.find(m=>m.user_id===p.id),g=gm&&GRPS.find(x=>x.id===gm.group_id);
@@ -440,12 +471,13 @@ function exPill(p,st){
   return el('span',{class:'pl gr'},'Não liberada');
 }
 function loadPlan(){
-  return Promise.all([sb.from('plan_links').select('user_id,sheet_name,student_col'),sb.from('plan_progress').select('user_id,stage,lesson,class_number,last_word,updated_at,data'),sb.from('plan_tabs').select('sheet_name,students').order('sheet_name'),sb.from('lessons').select('user_id,start_at').gte('start_at',new Date(Date.now()-28*864e5).toISOString()).lt('start_at',new Date(Date.now()+35*864e5).toISOString()).limit(2000),sb.from('class_credits').select('user_id').is('made_up_at',null)]).then(function(rs){
+  return Promise.all([sb.from('plan_links').select('user_id,sheet_name,student_col'),sb.from('plan_progress').select('user_id,stage,lesson,class_number,last_word,updated_at,data'),sb.from('plan_tabs').select('sheet_name,students').order('sheet_name'),sb.from('lessons').select('user_id,start_at').gte('start_at',new Date(Date.now()-28*864e5).toISOString()).lt('start_at',new Date(Date.now()+35*864e5).toISOString()).limit(2000),sb.from('class_credits').select('user_id').is('made_up_at',null),sb.from('teacher_cfg').select('key,value').in('key',['plans_sheet','plans_gids'])]).then(function(rs){
     const P={links:{},cols:{},prog:{},tabs:{}};
     ((rs[0]&&rs[0].data)||[]).forEach(x=>{P.links[x.user_id]=x.sheet_name;P.cols[x.user_id]=x.student_col||'';});
     ((rs[1]&&rs[1].data)||[]).forEach(x=>{P.prog[x.user_id]=x;});
     ((rs[2]&&rs[2].data)||[]).forEach(x=>{P.tabs[x.sheet_name]=x.students||[];});
     P.cr={};((rs[4]&&rs[4].data)||[]).forEach(x=>{P.cr[x.user_id]=(P.cr[x.user_id]||0)+1;});P.fut={};P.pst={};const nw=Date.now();((rs[3]&&rs[3].data)||[]).forEach(x=>{const o=new Date(x.start_at).getTime()>nw?P.fut:P.pst;o[x.user_id]=(o[x.user_id]||0)+1;});
+    P.sid=null;P.gids={};((rs[5]&&rs[5].data)||[]).forEach(x=>{if(x.key==='plans_sheet')P.sid=x.value&&x.value.id;if(x.key==='plans_gids')P.gids=x.value||{};});
     PLAN=P;renderStu();
   }).catch(()=>{});
 }
@@ -460,12 +492,15 @@ function planBlock(p){
     q.then(r=>{if(r.error){m.textContent='Erro: '+r.error.message;m.className='msg bad';return;}PLAN.links[p.id]=v;PLAN.cols[p.id]=v?cl.value:'';m.className='sv';m.textContent=v?'✓ salvo':'✓ removido';});};
   ab.addEventListener('change',()=>{fill(cl,PLAN.tabs[ab.value]||[],'','individual (sem turma)');save();});
   cl.addEventListener('change',save);
+  const open=el('a',{class:'ghost',target:'_blank',rel:'noopener',style:'display:inline-flex;align-items:center;min-height:44px;padding:0 14px;text-decoration:none'},'Abrir planilha');
+  const setOpen=()=>{const v=ab.value,g=(PLAN.gids||{})[v];if(v&&PLAN.sid){open.href='https://docs.google.com/spreadsheets/d/'+PLAN.sid+'/edit'+(g?'#gid='+g:'');open.hidden=false;}else{open.removeAttribute('href');open.hidden=true;}};
+  ab.addEventListener('change',setOpen);setOpen();
   const g=PLAN.prog[p.id];
   const last=g?('Stage '+(g.stage||'?')+' · Lição '+(g.lesson||'?')+(g.last_word?' · '+g.last_word:'')+' · '+new Date(g.updated_at).toLocaleString('pt-BR')):(cur?'aguardando a próxima leitura':'—');
   const nsBox=el('div',{});
   if(!cur&&window.BL_NS&&BL_NS.form)BL_NS.form(sb,p.id,()=>{loadPlan();}).then(c=>{if(c)nsBox.append(c);}).catch(()=>{});
   let fc='';try{const dd=g&&g.data;if(dd&&dd.classesTotal&&window.BL_FORECAST){const ms=(dd.me&&dd.me.missed)||[],dn=+dd.classesDone||0,fut=(PLAN.fut||{})[p.id]||0,pst=(PLAN.pst||{})[p.id]||0,r=BL_FORECAST.calc({done:dn,total:+dd.classesTotal,freq:BL_FORECAST.freq(fut,pst),missRate:ms.length/Math.max(1,dn+ms.length)});fc=BL_FORECAST.fmt(r,'pt','Stage '+(g.stage||'?'));}}catch(e){}
-  return el('div',{},el('div',{class:'pr'},ab,cl,m),el('div',{class:'sm lr'},'Última leitura: '+last),fc?el('div',{class:'sm lr'},fc):'',(PLAN.cr||{})[p.id]?el('div',{class:'sm lr'},el('span',{class:'bd warn'},PLAN.cr[p.id]+(PLAN.cr[p.id]===1?' aula a repor':' aulas a repor'))):'',nsBox);
+  return el('div',{},el('div',{class:'pr'},ab,cl,open,m),el('div',{class:'sm lr'},'Última leitura: '+last),fc?el('div',{class:'sm lr'},fc):'',(PLAN.cr||{})[p.id]?el('div',{class:'sm lr'},el('span',{class:'bd warn'},PLAN.cr[p.id]+(PLAN.cr[p.id]===1?' aula a repor':' aulas a repor'))):'',nsBox);
 }
 function stuMeta(p,sst){const E=ends(crsOf(p)),d=idleDays(p),a=sst>1?E[sst-2]+1:1,b=E[sst-1]||MAXC[crsOf(p)],up=p.lessons_upto||0,pct=Math.max(0,Math.min(100,Math.round((up-a+1)/(b-a+1)*100)));
   const cls=d<=3?'ok':d<=7?'warn':'bad',txt=d<=3?'Em dia':d>=999?'Ainda não estudou':'Sem estudar há '+d+' dias';
@@ -519,8 +554,9 @@ function renderStu(){
       planRow.append(autoOk);
       const pLib=el('div',{class:'dp','data-p':'lib'}),pCad=el('div',{class:'dp','data-p':'cad'}),pAcc=el('div',{class:'dp','data-p':'acc'});
       pLib.append(fc('Liberações',planRow,...(ex?ex.rows:[]),ex?ex.info:el('p',{class:'hint'},'Provas indisponíveis.')));
-      pCad.append(fc('Nome de cadastro',nameBlock(p)));
-      pCad.append(fc('Plano e início',el('div',{style:'display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center'},startBlock(p),waBlock(p)),el('div',{style:'height:8px'}),planBlock(p),p.display_name?el('div',{style:'margin-top:8px'},el('button',{type:'button',class:'ghost',onclick:async()=>{if(await BL_DLG.confirm('Remover o apelido "'+p.display_name+'" de '+(p.name||p.email)+'?'))upd(p,{display_name:null,display_name_at:null},()=>renderStu());}},'Remover apelido')):null));
+      pCad.append(fc('Nome de cadastro',nameBlock(p),p.display_name?el('div',{style:'margin-top:8px'},el('button',{type:'button',class:'ghost',onclick:async()=>{if(await BL_DLG.confirm('Remover o apelido "'+p.display_name+'" de '+(p.name||p.email)+'?'))upd(p,{display_name:null,display_name_at:null},()=>renderStu());}},'Remover apelido')):null));
+      pCad.append(fc('Planilha de aulas',el('div',{style:'margin-bottom:8px'},startBlock(p)),planBlock(p)));
+      pCad.append(fc('Turma e WhatsApp',el('div',{style:'display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center'},turmaBlock(p),waBlock(p))));
       const blk=p.status==='blocked';
       const accRow=swRow('Acesso ativo',!blk,false,blk?'Aluno bloqueado':'Desligar bloqueia o acesso do aluno',on=>on?(update(p.id,{status:'approved'}),undefined):BL_DLG.confirm('Bloquear '+(p.name||p.email)+'?').then(k=>k?(update(p.id,{status:'blocked'}),undefined):false));
       pAcc.append(fc('Acesso',accRow),CON?fc('Contrato',ContractAdmin.cell({el:el,sb:sb,profile:p,reload:loadProfiles})):null,ex?fc('Ações',ex.acts):null);
@@ -596,6 +632,25 @@ function renderMat(){
     tb.append(el('tr',{},cells));
   });
   t.append(th(heads),tb);
+}
+let MKA=[];
+async function loadMocks(){
+  try{const r=await sb.from('mock_attempts').select('id,user_id,stage,edition,test,scores,maxes,created_at').order('created_at',{ascending:false}).limit(500);MKA=r.data||[];}catch(e){MKA=[];}
+  renderMocks();
+}
+function renderMocks(){
+  const t=$('mkt');if(!t)return;t.textContent='';
+  const by={};PROFILES.forEach(p=>{by[p.id]=p;});
+  const sum=o=>Object.values(o||{}).reduce((a,b)=>a+(+b||0),0);
+  const PN={mc:'Múltipla escolha',yesno:'Yes/No',dictation:'Ditado'};
+  const tb=el('tbody',{});
+  if(!MKA.length)tb.append(el('tr',{},el('td',{colspan:'5'},'Nenhum simulado feito ainda.')));
+  MKA.forEach(a=>{
+    const p=by[a.user_id]||{},S=sum(a.scores),M=sum(a.maxes),pct=M?Math.round(S/M*100):0;
+    const parts=Object.keys(a.maxes||{}).map(k=>(PN[k]||k)+' '+((a.scores||{})[k]||0)+'/'+a.maxes[k]).join(' · ');
+    tb.append(el('tr',{},el('td',{},fmt(a.created_at)),el('td',{},p.name||p.email||'—'),el('td',{},'Stage '+a.stage+' · '+a.edition+' ed. · '+a.test),el('td',{title:parts},parts),el('td',{class:'c '+(pct>=80?'g':pct>=50?'m':'r')},S+'/'+M+' ('+pct+'%)')));
+  });
+  t.append(th(['Data','Aluno','Simulado','Partes','Nota']),tb);
 }
 function renderWho(){
   const sel=$('who'),cur=sel.value;sel.textContent='';
@@ -935,7 +990,7 @@ function examCard(p,st){
       sb.from('stage_unlock').insert({user_id:p.id,stage:st}).then(reload);});
     const notaRow=sub?swRow('Nota visível ao aluno',!!res.score_visible,false,'A nota da prova aparece para ele',async on=>{
       if(on&&nrev&&!await BL_DLG.confirm('Ainda há '+nrev+' resposta(s) para você revisar. Liberar a nota assim mesmo?'))return false;
-      sb.from('exam_results').update({score_visible:on}).eq('user_id',p.id).eq('stage',st).then(reload);}):null;
+      sb.from('exam_results').update({score_visible:on}).eq('user_id',p.id).eq('stage',st).then(r=>{reload(r);if(on&&!r.error&&BL_EXAM.compose(res.scores,res.maxes,res.oral,crsOf(p)).ok)nextTab(p,st);});}):null;
     const zerar=res?el('button',{type:'button',class:'lnk'},'Zerar prova'):null;
     if(zerar)zerar.addEventListener('click',async()=>{if(!await BL_DLG.confirm('APAGAR a prova de '+p.name+' ('+SW(crsOf(p))+' '+st+') para ele poder refazer? Isso não pode ser desfeito.'))return;
       sb.from('exam_results').delete().eq('user_id',p.id).eq('stage',st).then(r=>{if(!fail(r)){$('xdet').textContent='';loadExams();}});});
@@ -959,6 +1014,21 @@ function examCard(p,st){
     }else ltSub.append(lt?'Teste liberado ao aluno':'Precisa acertar todas · 20 perguntas');
     const testeRow=swRow('Teste de nível · '+SW(crsOf(p))+' '+st,!!lt,taken,ltSub,on=>on?ltDo('level_test_release',{p_user:p.id,p_stage:st},'Teste liberado para '+p.name+'.'):sb.from('level_tests').delete().eq('user_id',p.id).eq('stage',st).then(reload));
     return {rows:[el('div',{class:'sub2'},'Prova e teste'),provaRow,testeRow,el('div',{class:'sub2'},'Passagem e nota'),passRow,notaRow].filter(Boolean),info:el('div',{},el('div',{class:'bar2'},el('i',{style:'width:'+pc+'%'})),el('div',{class:'m'},m1,el('span',{},bits.join(' · ')))),acts:act};
+}
+/* Aprovado no exame do Stage: cria a aba do proximo Stage em Planos de Aula (copia o modelo) e liga ao aluno (plan_links) */
+async function nextTab(p,st){
+  const ES=crsOf(p)==='es',nx=st+1;
+  if(nx>(ES?6:12)||!window.BL_NS||!BL_NS.create)return;
+  const q=await sb.from('plan_links').select('sheet_name').eq('user_id',p.id).limit(1);
+  const cur=q&&q.data&&q.data[0]&&q.data[0].sheet_name||'';
+  let tab=cur&&/(STG|ETP)\s*\d+\s*$/i.test(cur)?cur.replace(/(STG|ETP)\s*\d+\s*$/i,(m,a)=>a+' '+nx):'';
+  const vip=/\sVIP\b/i.test(cur);
+  const nm=(cur?cur.replace(/\s*(VIP\s*)?-\s*(STG|ETP)\s*\d+\s*$/i,''):(p.display_name||p.name||'')).trim();
+  if(!tab)tab=nm+(vip?' VIP':'')+(ES?' - ETP ':' - STG ')+nx;
+  if(!await BL_DLG.confirm((p.name||'O aluno')+' foi aprovado no '+(ES?'exame da Etapa ':'exame do Stage ')+st+'. Criar a aba "'+tab+'" em Planos de Aula e ligá-la ao aluno?',{danger:false,title:'Aba do próximo '+(ES?'Etapa':'Stage'),ok:'Criar aba',cancel:'Agora não'}))return;
+  setMsg('xmsg','Criando a aba '+tab+'…','');
+  BL_NS.create(sb,{uid:p.id,name:nm,vip:vip,stage:nx,course:crsOf(p),start_at:new Date().toISOString(),fee:''},(e,t)=>{
+    if(e)setMsg('xmsg',e,'bad');else setMsg('xmsg','Aba criada e ligada ao aluno: '+t,'ok');});
 }
 function swRow(title,on,dis,sub,fn,keep){
   const cb=el('input',{type:'checkbox',class:'sws',role:'switch','aria-label':title});cb.checked=!!on;cb.disabled=!!dis;
@@ -984,8 +1054,8 @@ async function showExam(p,st){
   const sc=res.scores||{},mx=res.maxes||{};
   {const c=BL_EXAM.compose(sc,mx,res.oral,crsOf(p));
    card.append(el('p',{},el('b',{},EXN(crsOf(p))+' '+BL_EXAM.fmt(c.T)+'/'+c.M+' ('+c.pct+'%)'),'  ·  '+c.rows.map(r=>r.label+' '+BL_EXAM.fmt(r.s)+'/'+r.m).join(' · '),' · ',el('span',{class:'pl '+(c.ok?'ok':'bad')},c.ok?EXN(crsOf(p))+' OK (mín. '+BL_EXAM.fmt(c.min)+')':'Abaixo do mínimo de '+BL_EXAM.fmt(c.min)+' '+(crsOf(p)==='es'?'na prova':'no exam'))));
-   card.append(el('p',{class:'hint'},'A prova '+(crsOf(p)==='es'?'':'oficial do livro ')+'vale '+c.M+' pontos. A conversa abaixo é uma nota a mais, de 15 pontos, que não entra nos '+c.M+'.'));}
-  xOralCard(p,st,res,card);
+   card.append(el('p',{class:'hint'},'A prova '+(crsOf(p)==='es'?'':'oficial do livro ')+'vale '+c.M+' pontos. O Oral exam (conversa) é uma nota a mais, de 15 pontos, que não entra nos '+c.M+'. Ele é feito no exam do professor (Avaliações).'));
+   {const o=BL_EXAM.oralTot(res.oral);card.append(el('p',{},el('b',{},'Oral exam '+(o.done?o.s+'/15':(res.oral&&res.oral.q&&res.oral.q.length?o.s+'/15 (incompleto)':'ainda não feito')))));}}
   if(K.dictation){const d=xdiff(K.dictation.text,A.dictation||'');const p1=el('p',{style:'line-height:2'});
     d.parts.forEach(x=>{if(x[0]==='ok')p1.append(x[1]+' ');
       else if(x[0]==='sub'){p1.append(el('span',{style:'background:var(--bad-bg);color:var(--bad);font-weight:700;padding:0 3px'},x[1]),el('span',{style:'color:var(--ok);font-weight:700'},'['+x[2]+'] '));}
@@ -1081,11 +1151,17 @@ function markTabs(){
   document.querySelectorAll('#tpTabs .tp-tab').forEach(x=>x.classList.toggle('on',x.dataset.k===CUR||(x.dataset.k==='more'&&MORE.includes(CUR))));
   document.querySelectorAll('#tpSide .tp-tab').forEach(x=>x.classList.toggle('on',x.dataset.k===CUR));
 }
+let HP='sala';
+function setPane(n){HP=n==='agenda'?HP:n;
+  ['sala','pend','geral','agenda'].forEach(q=>{const e=$('hmP-'+q);if(e)e.hidden=q!==n;});
+  document.querySelectorAll('#hmTabs button').forEach(b=>{const on=b.dataset.p===n;b.classList.toggle('on',on);b.setAttribute('aria-selected',on?'true':'false');});
+  const t=$('hmTabs');if(t)t.hidden=n==='agenda';}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#hmTabs button');if(b)setPane(b.dataset.p);});
 function go(k){
   let qn='';{const i=k.indexOf('?');if(i>0){qn=decodeURIComponent((k.slice(i+1).match(/(?:^|&)q=([^&]*)/)||[])[1]||'');k=k.slice(0,i);}}
   if(k==='exams')k='students';
   if(k!=='more'&&!TABS.some(t=>t[0]===k&&!t[2]))k='home';
-  CUR=k;const sec=k==='agenda'?'home':k;
+  CUR=k;const sec=k==='agenda'?'home':k;if(sec==='home')setPane(k==='agenda'?'agenda':HP);
   document.querySelectorAll('.sc').forEach(x=>x.classList.toggle('on',x.id==='s-'+sec));
   markTabs();
   {const t=TABS.find(x=>x[0]===k),h=$('tpH1');if(h)h.textContent=(!t||k==='home')?'Painel do professor':t[1];}
@@ -1226,7 +1302,8 @@ function loadPend(){
     return sb.from('class_log').select('event_key').in('event_key',ks).then(c=>{if(c.error)return;const done=new Set((c.data||[]).map(x=>x.event_key));PEND=ks.filter(k=>!done.has(k)).map(k=>by[k]);});
   }).catch(()=>{});
 }
-function renderNext(force){const b=$('tpNext');if(!b)return;if(!NEXT&&!PEND.length){b.hidden=true;return;}b.hidden=false;
+function renderNext(force){renderNext0(force);const b=$('tpNext'),e=$('hmSalaEmpty');if(b&&e)e.hidden=!b.hidden;}
+function renderNext0(force){const b=$('tpNext');if(!b)return;if(!NEXT&&!PEND.length){b.hidden=true;return;}b.hidden=false;
   if(!(window.NextClass&&NextClass.render)){b.textContent='';return;}
   const hh=l=>new Date(l.start_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'});
   if(PEND.length&&NSEL==='n'&&!b.dataset.ncUser)NSEL='p0';
@@ -1248,7 +1325,7 @@ function renderHome(){
   const TI=k=>TABS.findIndex(t=>t[0]===k);TABS[TI('students')][3]=()=>h.pend+h.rev;TABS[TI('home')]&&(TABS[TI('home')][3]=()=>PEND.length);TABS[TI('pay')][3]=()=>h.over||0;TABS[TI('agenda')][3]=()=>h.lreq+h.lcan;TABS[TI('social')][3]=()=>socSoon();renderToday();
   buildTabs();markTabs();renderRings(h);renderMore(h);renderNext();
   {const al=$('tpAlert');if(al){const parts=[];if(h.lreq)parts.push(h.lreq+(h.lreq===1?' pedido':' pedidos'));if(h.lcan)parts.push(h.lcan+(h.lcan===1?' cancelamento':' cancelamentos'));
-    al.hidden=!parts.length;al.textContent='';if(parts.length){const bb=el('b',{},parts.join(' \u00B7 '));bb.insertAdjacentHTML('afterbegin','<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 17V11a6 6 0 0112 0v6l1.5 2h-15z"/><path d="M10 21h4"/></svg>');al.append(bb,el('i',{},'Ver'));al.onclick=()=>{const g=$('agendaBox');if(g)g.scrollIntoView({behavior:'smooth',block:'start'});};}}}
+    al.hidden=!parts.length;al.textContent='';if(parts.length){const bb=el('b',{},parts.join(' \u00B7 '));bb.insertAdjacentHTML('afterbegin','<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 17V11a6 6 0 0112 0v6l1.5 2h-15z"/><path d="M10 21h4"/></svg>');al.append(bb,el('i',{},'Ver'));al.onclick=()=>go('agenda');}}}
   const rows=[];
   if(h.pend)rows.push([h.pend+' pedido(s) de acesso para aprovar','students']);
   if(h.rev)rows.push([h.rev+' prova(s) com respostas para você revisar','exams']);
@@ -1258,12 +1335,13 @@ function renderHome(){
   ul.textContent='';
   const idl=idleList(),low=lowList();
   if(!rows.length&&!idl.length&&!low.length&&!PLA.length)ul.append(el('li',{},el('span',{},'Nada pendente. Tudo em dia!')));
-  rows.forEach(r=>ul.append(el('li',{},el('span',{},r[0]),el('button',{type:'button',onclick:()=>{if(r[1]==='__agenda'){const b=$('agendaBox');if(b)b.scrollIntoView({behavior:'smooth',block:'start'});}else if(/\.html$/.test(r[1]))location.href=r[1];else go(r[1]);}},'Ver'))));
+  rows.forEach(r=>ul.append(el('li',{},el('span',{},r[0]),el('button',{type:'button',onclick:()=>{if(r[1]==='__agenda'){go('agenda');}else if(/\.html$/.test(r[1]))location.href=r[1];else go(r[1]);}},'Ver'))));
   PLA.forEach(x=>{const pr=PROFILES.find(q=>q.id===x.user_id)||{};ul.append(el('li',{},el('span',{},el('b',{},pr.name||pr.email||'Aluno'),el('small',{},'Stage inicial ajustado automaticamente: de Stage '+x.from_stage+' para Stage '+x.to_stage+' ('+x.pct+'% de acerto nos primeiros exercícios, '+x.n+' avaliados)')),
     el('button',{type:'button',class:'ghost',onclick:()=>sb.from('placement_adjust').update({seen:true}).eq('id',x.id).then(()=>{PLA=PLA.filter(y=>y.id!==x.id);renderHome();})},'Ok'),
     el('button',{type:'button',class:'ghost',onclick:()=>{if(!pr.id)return;sb.from('profiles').update({start_stage:x.from_stage}).eq('id',pr.id).then(r=>{if(r.error){setMsg('xmsg','Erro ao desfazer: '+r.error.message,'bad');return;}pr.start_stage=x.from_stage;sb.from('placement_adjust').update({undone:true,seen:true}).eq('id',x.id).then(()=>{PLA=PLA.filter(y=>y.id!==x.id);renderHome();});});}},'Desfazer')));});
   low.slice(0,5).forEach(x=>ul.append(el('li',{},el('span',{},el('b',{},x.p.name||x.p.email),el('small',{},'Entrou há pouco e está com '+x.pct+'% de acerto na primeira tentativa dos exercícios (últimas '+x.n+')')),el('button',{type:'button',class:'ghost',onclick:()=>go('students')},'Ver alunos'))));
   idl.slice(0,5).forEach(x=>ul.append(el('li',{},el('span',{},el('b',{},x.p.name||x.p.email),el('small',{},x.d>=999?'ainda não estudou':x.d+' dias sem estudar')),el('button',{type:'button',class:'ghost',onclick:e=>nudgeP(x.p,e.currentTarget)},'Enviar lembrete'))));
+  {const nn=rows.length+PLA.length+Math.min(low.length,5)+Math.min(idl.length,5)+(idl.length>5?1:0),hn=$('hmN');if(hn){hn.textContent=String(nn);hn.hidden=!nn;}}
   if(idl.length>5)ul.append(el('li',{},el('span',{},'+ '+(idl.length-5)+' aluno(s) sem estudar há mais de 7 dias'),el('button',{type:'button',class:'ghost',onclick:()=>go('today')},'Ver todos')));
   const C=[['students',String(h.stu),'Alunos','Aprovar, liberar lessons, ver progresso',h.pend?h.pend+' pedido(s)':''],
     ['grades','','Notas','Lesson Checks, exercises e workbook',''],
@@ -1305,7 +1383,7 @@ buildTabs();go((location.hash||'#home').slice(1));
 window.addEventListener('hashchange',()=>go((location.hash||'#home').slice(1)));
 
 loadPlacement();
-loadProfiles().then(loadAttempts).then(()=>{renderMat();renderWho();renderHome();loadHomeExtras();return loadExams();}).then(renderHome).catch(e=>setMsg('scmsg','Erro ao carregar: '+(e.message||e),'bad'));
+loadProfiles().then(loadAttempts).then(()=>{renderMat();renderWho();loadMocks();renderHome();loadHomeExtras();return loadExams();}).then(renderHome).catch(e=>setMsg('scmsg','Erro ao carregar: '+(e.message||e),'bad'));
 ctInfo();auInfo();tbInfo();
 });
 </script>
