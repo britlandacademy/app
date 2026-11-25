@@ -83,7 +83,7 @@ var META={
 function periods(cur,L){
   var P=[{k:'mensal',off:0,months:1,
       t:{en:'Mensal',es:'Mensual'},s:{en:'Cancele quando quiser',es:'Cancela cuando quieras'}}];
-  if(cur==='BRL')P.push({k:'cartao6',off:5,months:1,
+  P.push({k:'cartao6',off:cur==='BRL'?promoCard():10,months:1,
       t:{en:'Cartão, 6 meses',es:'Tarjeta, 6 meses'},
       s:{en:'Cobrado todo mês, compromisso de 6 meses',es:'Cobro mensual, compromiso de 6 meses'}});
   P.push({k:'avista3',off:5,months:3,
@@ -93,13 +93,16 @@ function periods(cur,L){
       t:{en:'6 meses à vista',es:'6 meses por adelantado'},
       s:cur==='BRL'?{en:'Pix ou Wise, o maior desconto',es:'Pix o Wise, el mayor descuento'}
                    :{en:'Wise ou cartão, o maior desconto',es:'Wise o tarjeta, el mayor descuento'}});
-  if(promo6()>10)P[P.length-1].tip={en:'Até 30/11',es:'Hasta el 30/11'};
+  if(promo6()>10){P[P.length-1].tip={en:'Até 30/11',es:'Hasta el 30/11'};
+    if(cur==='BRL')P[1].tip={en:'Até 30/11',es:'Hasta el 30/11'};}
   P.forEach(function(p){p.label=p.t[L]||p.t.en;p.note=p.s[L]||p.s.en;});
   return P;
 }
 
 /* promocao de lancamento: 30% no semestre a vista ate 30/11/2026 (fim do dia em Brasilia); depois, 10% */
 function promo6(){return Date.now()<Date.UTC(2026,11,1,3,0,0)?30:10;}
+/* cartao com compromisso de 6 meses (so BRL tem promocao): 20% ate 30/11, depois 5%; em euro, 10% fixo */
+function promoCard(){return Date.now()<Date.UTC(2026,11,1,3,0,0)?20:5;}
 var DUPLA=10; /* dupla: 10% para cada um, so no Fluency Club */
 
 function money(cur,v){
