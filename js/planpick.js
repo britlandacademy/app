@@ -1,5 +1,5 @@
-/* Britland: escolha e troca de plano (aba Pagamentos). Abas por plano, periodo de pagamento,
-   dupla/indicacao, resumo e barra fixa. Os descontos nunca acumulam: vale sempre o maior. */
+/* Britland: escolha e troca de plano (aba Pagamentos). Lista de planos, periodo de pagamento,
+   dupla/indicacao, resumo e botao de assinar. Os descontos nunca acumulam: vale sempre o maior. */
 (function(){
 'use strict';
 
@@ -10,7 +10,7 @@ var TX={
   change:{en:'Change plan',es:'Cambiar de plan'},
   cur:{en:'Current plan',es:'Plan actual'},
   month:{en:'/month',es:'/mes'},
-  pace:{en:'Pace',es:'Ritmo'},
+  main:{en:'Most popular',es:'Más elegido'},
   how:{en:'How to pay',es:'Forma de pago'},
   more:{en:'See other ways to pay',es:'Ver otras formas de pago'},
   less:{en:'Show fewer options',es:'Ver menos opciones'},
@@ -23,6 +23,7 @@ var TX={
            es:'Los descuentos no se acumulan: siempre aplicamos el mayor.'},
   first:{en:'Billing starts on your 3rd lesson, the first regular one. The 2 trial lessons are free.',
          es:'El cobro empieza en tu 3.\u00AA clase, la primera regular. Las 2 clases de prueba son gratis.'},
+  plan:{en:'Plan',es:'Plan'},
   free:{en:'2 free lessons before you pay',es:'2 clases gratis antes de pagar'},
   go:{en:'Subscribe',es:'Suscribirme'},
   goc:{en:'Request change',es:'Pedir el cambio'},
@@ -45,6 +46,7 @@ var TX={
 var META={
   'essential':{
     tag:{en:'Up to 4 students',es:'Hasta 4 alumnos'},
+    line:{en:'1 lesson per week, light pace',es:'1 clase por semana, ritmo suave'},
     sub:{en:'Steady weekly practice, at a lighter pace.',es:'Práctica semanal constante, a un ritmo más suave.'},
     li:[{en:'1 live lesson per week (50 min), small group of up to 4 students at your level',
          es:'1 clase en vivo por semana (50 min), grupo reducido de hasta 4 alumnos de tu nivel'},
@@ -54,6 +56,7 @@ var META={
     pace:{en:'1 full stage (25 lessons) in about 6 months',es:'1 etapa completa (25 clases) en unos 6 meses'}},
   'fluency-club':{
     tag:{en:'Up to 2 students',es:'Hasta 2 alumnos'},
+    line:{en:'2 lessons per week, to speak with confidence',es:'2 clases por semana, para hablar con confianza'},
     sub:{en:'For real speaking confidence at work and when travelling.',
          es:'Para hablar con confianza en el trabajo y en los viajes.'},
     li:[{en:'2 live lessons per week (50 min), in a pair of up to 2 students at your level',
@@ -64,6 +67,7 @@ var META={
     pace:{en:'1 full stage in about 3 months',es:'1 etapa completa en unos 3 meses'}},
   'vip-intensive':{
     tag:{en:'One to one',es:'Individual'},
+    line:{en:'3 lessons per week, for those with a deadline',es:'3 clases por semana, para quien tiene plazo'},
     sub:{en:'For a set deadline: an interview, a move abroad or an exam.',
          es:'Para un plazo concreto: una entrevista, una mudanza o un examen.'},
     li:[{en:'3 private lessons per week (50 min), built around your goal',
@@ -111,24 +115,23 @@ function css(){
   if(document.getElementById('pp-css'))return;
   var s=document.createElement('style');s.id='pp-css';s.textContent=[
   '.pp{margin:0 0 18px}',
-  '.pp-tabs{display:flex;gap:6px;margin:0 0 12px}',
-  '.pp-tabs button{flex:1;min-height:44px;padding:8px 4px;justify-content:center;text-align:center;',
-    'border-radius:20px!important;border:2px solid var(--line);background:var(--surface);color:var(--ink);',
-    'font-size:.92rem;line-height:1.15}',
-  '.pp-tabs button[aria-selected=true]{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}',
+  '.pp-pl{display:block;width:100%;text-align:left;position:relative;padding:12px 14px;',
+    'margin:0 0 8px;border-radius:14px!important;border:2px solid var(--line);background:var(--surface);',
+    'color:var(--ink);font-weight:400;min-height:0}',
+  '.pp-pl[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}',
+  '.pp-pl .t{display:flex;justify-content:space-between;align-items:baseline;gap:8px}',
+  '.pp-pl b{font-size:1.05rem}',
+  '.pp-pl .pr{font-weight:700;white-space:nowrap}',
+  '.pp-pl small{display:block;color:var(--muted);font-size:.86rem;margin-top:2px;padding-right:34px}',
+  '.pp-pl .tg{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:0 9px;',
+    'font-size:.74rem;color:var(--muted);margin-top:6px}',
+  '.pp-pl .rd{position:absolute;right:14px;bottom:14px;width:22px;height:22px;border-radius:50%;',
+    'border:2px solid var(--line);box-sizing:border-box}',
+  '.pp-pl[aria-pressed=true] .rd{border-color:var(--accent);background:var(--accent);',
+    'box-shadow:inset 0 0 0 4px var(--surface)}',
+  '.pp-star{display:inline-block;background:var(--accent);color:var(--accent-ink);border-radius:999px;',
+    'padding:0 8px;font-size:.72rem;font-weight:700;margin-left:6px;vertical-align:1px}',
   '.pp-card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px;margin:0 0 12px}',
-  '.pp-top{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px}',
-  '.pp-top b{font-size:1.2rem}',
-  '.pp-pr{font-size:1.35rem;font-weight:700;white-space:nowrap}',
-  '.pp-pr small{font-size:.8rem;font-weight:400;color:var(--muted)}',
-  '.pp-tag{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:1px 10px;',
-    'font-size:.8rem;color:var(--muted);margin:6px 0 0}',
-  '.pp-sub{color:var(--muted);margin:8px 0 0}',
-  '.pp-li{list-style:none;margin:10px 0 0;padding:0}',
-  '.pp-li li{position:relative;padding:0 0 0 24px;margin:0 0 6px;font-size:.95rem}',
-  '.pp-li li svg{position:absolute;left:0;top:3px;width:16px;height:16px;fill:none;stroke:var(--ink);',
-    'stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}',
-  '.pp-pace{margin:10px 0 0;padding-top:8px;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem}',
   '.pp-h{font-weight:700;margin:14px 0 8px}',
   '.pp-per{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}',
   '.pp-per button{display:block;width:100%;text-align:left;padding:10px 12px;border-radius:14px!important;',
@@ -145,19 +148,14 @@ function css(){
   '.pp-sum .r.d{color:var(--ok);font-weight:700}',
   '.pp-sum .r.t{font-weight:700;font-size:1.15rem;border-top:1px solid var(--line);margin-top:6px;padding-top:8px}',
   '.pp-note{color:var(--muted);font-size:.85rem;margin:8px 0 0}',
-  '.pp-bar{position:sticky;bottom:0;z-index:4;display:flex;align-items:center;justify-content:space-between;',
-    'gap:12px;background:var(--accent);color:var(--accent-ink);border-radius:18px;padding:12px 14px;margin:14px 0 0}',
-  '.pp-bar b{font-size:1.15rem;display:block;white-space:nowrap}',
-  '.pp-bar small{display:block;font-size:.8rem;opacity:.85}',
-  '.pp-bar button{background:var(--accent-ink);color:var(--accent);border-color:var(--accent-ink);white-space:nowrap}',
-  '.pp-bar button[disabled]{opacity:.55}',
+  '.pp-go{width:100%;min-height:50px;font-weight:700;margin:4px 0 0}',
+  '.pp-go[disabled]{opacity:.55}',
   '.pp-free{text-align:center;color:var(--muted);font-size:.86rem;margin:8px 0 0}',
   '.pp-rule{margin:10px 0 0;padding:10px 12px;border-left:3px solid var(--accent);background:var(--card);',
     'border-radius:0 14px 14px 0;font-size:.9rem}',
   '.pp-msg{font-weight:700;min-height:1.3em;color:var(--bad);margin:6px 0 0}'
   ].join('');document.head.append(s);
 }
-var CK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>';
 
 function mount(box,o){
   o=o||{};css();
@@ -186,12 +184,11 @@ function draw(wrap,rows,sb,L,o){
   if(!plans.length){wrap.append(el('p',{class:'hint'},TX.nop[L]||TX.nop.en));return;}
 
   var curFam=o.current?fam(o.current):null;
-  var i=0;plans.forEach(function(p,k){if(fam(p.slug)===curFam)i=k;});
+  var i=0;plans.forEach(function(p,k){if(fam(p.slug)===(curFam||'fluency-club'))i=k;});
   var sel=i,per='mensal',dupla=false,code='',open=false,busy=false;
 
-  var tabs=el('div',{class:'pp-tabs',role:'tablist'});
   var body=el('div',{});
-  wrap.append(el('h3',{class:'sec'},tx(o.current?'change':'pick',L)),tabs,body);
+  wrap.append(el('h3',{class:'sec'},tx(o.current?'change':'pick',L)),body);
 
   function pct(){
     var P=periods(cur,L),p=P.filter(function(x){return x.k===per;})[0]||P[0];
@@ -199,26 +196,26 @@ function draw(wrap,rows,sb,L,o){
     return{off:Math.max(p.off,d),via:d>p.off?'dupla':'periodo',p:p};
   }
   function render(){
-    tabs.textContent='';
-    plans.forEach(function(p,k){
-      var b=el('button',{type:'button',role:'tab','aria-selected':k===sel?'true':'false'},p.nome);
-      b.addEventListener('click',function(){if(sel!==k){sel=k;if(fam(plans[sel].slug)!=='fluency-club')dupla=false;render();}});
-      tabs.append(b);});
-
     body.textContent='';
     var p=plans[sel],m=META[fam(p.slug)]||{},full=p.valor_centavos/100;
-    var c=el('div',{class:'pp-card'});
-    c.append(el('div',{class:'pp-top'},[el('b',{},p.nome),
-      el('span',{class:'pp-pr'},[money(cur,full),el('small',{},tx('month',L))])]));
-    if(m.tag)c.append(el('span',{class:'pp-tag'},m.tag[L]||m.tag.en));
-    if(m.sub)c.append(el('p',{class:'pp-sub'},m.sub[L]||m.sub.en));
-    if(m.li){var ul=el('ul',{class:'pp-li'});m.li.forEach(function(x){
-      var li=el('li',{});li.innerHTML=CK;li.append(x[L]||x.en);ul.append(li);});c.append(ul);}
-    if(m.pace)c.append(el('div',{class:'pp-pace'},tx('pace',L)+': '+(m.pace[L]||m.pace.en)));
-    body.append(c);
+
+    /* lista de planos: um cartao por plano, o escolhido fica marcado */
+    var lc=el('div',{class:'pp-card'});
+    lc.append(el('div',{class:'pp-h',style:'margin-top:0'},tx('plan',L)));
+    plans.forEach(function(q,k){
+      var mq=META[fam(q.slug)]||{},b=el('button',{type:'button',class:'pp-pl','aria-pressed':k===sel?'true':'false'});
+      var nm=el('b',{},q.nome);
+      if(fam(q.slug)==='fluency-club')nm.append(el('span',{class:'pp-star'},tx('main',L)));
+      b.append(el('div',{class:'t'},[nm,el('span',{class:'pr'},money(cur,q.valor_centavos/100))]),
+        el('small',{},mq.line?(mq.line[L]||mq.line.en):''),
+        el('span',{class:'tg'},mq.tag?(mq.tag[L]||mq.tag.en):''),el('span',{class:'rd'}));
+      b.addEventListener('click',function(){if(sel!==k){sel=k;if(fam(plans[sel].slug)!=='fluency-club')dupla=false;render();}});
+      lc.append(b);});
+    body.append(lc);
 
     /* periodo: dois visiveis (mensal e o de maior desconto) e o resto atras do link */
-    body.append(el('div',{class:'pp-h'},tx('how',L)));
+    var hc=el('div',{class:'pp-card'});
+    hc.append(el('div',{class:'pp-h',style:'margin-top:0'},tx('how',L)));
     var P=periods(cur,L),show=open?P:[P[0],P[P.length-1]];
     var gr=el('div',{class:'pp-per'});
     show.forEach(function(x){
@@ -229,15 +226,15 @@ function draw(wrap,rows,sb,L,o){
       b.append(h,el('small',{},money(cur,v)+tx('month',L)+' · '+x.note));
       b.addEventListener('click',function(){per=x.k;render();});
       gr.append(b);});
-    body.append(gr);
+    hc.append(gr);
     var lk=el('button',{type:'button',class:'pp-link'},tx(open?'less':'more',L));
     lk.addEventListener('click',function(){open=!open;
       if(!open&&!show.some(function(x){return x.k===per;}))per='mensal';render();});
-    body.append(lk);
+    hc.append(lk);
 
     /* dupla e indicacao: a dupla so existe no Fluency Club, que e o plano de ate 2 alunos */
-    var pc=el('div',{class:'pp-card'});
-    pc.append(el('div',{style:'font-weight:700'},tx('promo',L)));
+    var pc=hc;
+    pc.append(el('div',{class:'pp-h'},tx('promo',L)));
     if(fam(p.slug)==='fluency-club'){
       var lb=el('label',{style:'display:flex;gap:8px;align-items:flex-start;margin:8px 0 0;font-size:.95rem'});
       var ck=el('input',{type:'checkbox',style:'min-height:0;width:20px;height:20px;margin-top:2px'});
@@ -250,7 +247,7 @@ function draw(wrap,rows,sb,L,o){
     var inp=el('input',{type:'text',class:'pp-in',placeholder:tx('code',L),'aria-label':tx('code',L),value:code});
     inp.addEventListener('change',function(){code=inp.value;});
     pc.append(inp);
-    body.append(pc);
+    body.append(hc);
 
     /* resumo */
     var r=pct(),val=full*(1-r.off/100),cut=full-val,P2=r.p;
@@ -275,13 +272,13 @@ function draw(wrap,rows,sb,L,o){
       upg=ni>ci;body.append(el('div',{class:'pp-rule'},tx(upg?'up':'down',L)));}
 
     var msg=el('p',{class:'pp-msg','aria-live':'polite'});body.append(msg);
-    var go=el('button',{type:'button'},same?tx('same',L):tx(o.current?'goc':'go',L));
+    var go=el('button',{type:'button'});
     if(same||busy)go.setAttribute('disabled','disabled');
     go.addEventListener('click',function(){send(p,r,val,msg,go);});
+    go.className='pp-go';
+    go.textContent=(same?tx('same',L):tx(o.current?'goc':'go',L)+' '+p.nome.split(' ')[0]+' · '+money(cur,val)+tx('month',L));
+    body.append(go);
     if(!o.current)body.append(el('p',{class:'pp-free'},tx('free',L)));
-    body.append(el('div',{class:'pp-bar'},[
-      el('div',{},[el('b',{},money(cur,val)+tx('month',L)),
-        el('small',{},(m.tag?(m.tag[L]||m.tag.en)+' · ':'')+P2.label)]),go]));
   }
 
   function send(p,r,val,msg,go){

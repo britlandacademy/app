@@ -191,7 +191,7 @@ Gate.start({admin:true,kinds:[]},function(ctx){
 const sb=Gate.sb,el=Gate.el,$=id=>document.getElementById(id);
 const SYM={EUR:'€',BRL:'R$'};
 /* valores de tabela por plano e moeda (ver claude/planos-e-precos.md) */
-const PRESET={'Essential':{EUR:60,BRL:320},'Fluency Club':{EUR:168,BRL:790},'VIP Intensive':{EUR:360,BRL:1800}};
+const PRESET={'Essential':{EUR:50,BRL:260},'Fluency Club':{EUR:168,BRL:790},'VIP Intensive':{EUR:360,BRL:1800}};
 function preset(){const p=PRESET[$('f-pl').value];return p?p[$('f-cu').value]:undefined;}
 let PRQ=[];
 let SUBS=[],CH=[],PROF=[];
