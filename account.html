@@ -308,10 +308,10 @@ async function pays0(){
     if(!window.PlanPick)return;
     const open0=PRQ.filter(r=>r.status==='aberto')[0];
     if(open0){
-      const w=el('div',{class:'sc'},el('b',{},open0.tipo==='troca'?'Plan change requested':'Plan requested'),
-        el('div',{class:'sc-f'},open0.plano+' · '+money(open0.valor_centavos/100,open0.moeda)+' / month · waiting for your teacher'));
-      const cx=el('button',{type:'button',class:'ghost',style:'margin-top:10px'},'Cancel request');
-      cx.addEventListener('click',async()=>{if(window.BL_DLG&&!(await BL_DLG.confirm('Cancel this request?',{title:'Plan request'})))return;
+      const w=el('div',{class:'sc'},el('b',{},open0.tipo==='troca'?'Troca de plano pedida':'Plano pedido'),
+        el('div',{class:'sc-f'},open0.plano+' · '+money(open0.valor_centavos/100,open0.moeda)+' / mês · aguardando o professor'));
+      const cx=el('button',{type:'button',class:'ghost',style:'margin-top:10px'},'Cancelar pedido');
+      cx.addEventListener('click',async()=>{if(window.BL_DLG&&!(await BL_DLG.confirm('Cancelar este pedido?',{title:'Pedido de plano'})))return;
         cx.disabled=true;await sb.from('plan_requests').delete().eq('id',open0.id);box.textContent='';pays0();});
       w.append(cx);box.append(w);return;}
     const cur0=subs.filter(s=>s.active)[0]||subs[0]||null;
@@ -320,16 +320,16 @@ async function pays0(){
       current:cur0?String(cur0.plan||'').toLowerCase().replace(/\s+/g,'-'):null,
       onDone:()=>{box.textContent='';pays0();}};
     if(!cur0){PlanPick.mount(host,opts);return;}
-    const bt=el('button',{type:'button',class:'ghost'},'Change plan');
+    const bt=el('button',{type:'button',class:'ghost'},'Trocar de plano');
     bt.addEventListener('click',()=>{bt.remove();PlanPick.mount(host,opts);host.scrollIntoView({block:'start',behavior:'smooth'});});
     host.append(bt);
   })();
   function promoBox(n){const off=+n.promo_off||0;if(off<=0)return document.createTextNode('');
     const sb0=subs.find(q=>q.id===n.sub_id),row=(a,b,st)=>el('div',{style:'display:flex;justify-content:space-between;gap:10px'+(st||'')},el('span',{},a),el('span',{},b));
     const w=el('div',{style:'margin-top:10px;border-top:1px solid var(--line);padding-top:8px;font-size:.95rem'});
-    w.append(row((sb0&&sb0.plan)||'Monthly fee',money(+n.amount+off,n.currency)));
-    if(+n.promo_dupla>0)w.append(row('Study partner','\u2212'+money(n.promo_dupla,n.currency),';color:var(--ok)'));
-    if(+n.promo_credit>0)w.append(row('Referral credit','\u2212'+money(n.promo_credit,n.currency),';color:var(--ok)'));
+    w.append(row((sb0&&sb0.plan)||'Mensalidade',money(+n.amount+off,n.currency)));
+    if(+n.promo_dupla>0)w.append(row('Dupla','\u2212'+money(n.promo_dupla,n.currency),';color:var(--ok)'));
+    if(+n.promo_credit>0)w.append(row('Crédito de indicação','\u2212'+money(n.promo_credit,n.currency),';color:var(--ok)'));
     w.append(row('Total',money(n.amount,n.currency),';font-weight:700;border-top:1px solid var(--line);margin-top:6px;padding-top:6px'));return w;}
   const open=ch.filter(x=>!x.paid_on).sort((x,y)=>x.due_date<y.due_date?-1:1);
   if(open.length){const n=open[0],late=n.due_date<today;

@@ -6,97 +6,100 @@
 var ORDER=['essential','fluency-club','vip-intensive'];
 
 var TX={
-  pick:{en:'Choose your plan',es:'Elige tu plan'},
-  change:{en:'Change plan',es:'Cambiar de plan'},
-  cur:{en:'Current plan',es:'Plan actual'},
-  month:{en:'/month',es:'/mes'},
-  main:{en:'Most popular',es:'Más elegido'},
-  how:{en:'How to pay',es:'Forma de pago'},
-  more:{en:'See other ways to pay',es:'Ver otras formas de pago'},
-  less:{en:'Show fewer options',es:'Ver menos opciones'},
-  promo:{en:'Study partner or referral',es:'Pareja o recomendación'},
-  code:{en:'Code (optional)',es:'Código (opcional)'},
-  sum:{en:'Order summary',es:'Resumen del pedido'},
-  total:{en:'Total per month',es:'Total por mes'},
-  once:{en:'Charged once',es:'Cobro único'},
-  nostack:{en:'Discounts do not stack: we always apply the best one.',
+  pick:{en:'Escolha seu plano',es:'Elige tu plan'},
+  change:{en:'Trocar de plano',es:'Cambiar de plan'},
+  cur:{en:'Plano atual',es:'Plan actual'},
+  month:{en:'/mês',es:'/mes'},
+  main:{en:'Mais escolhido',es:'Más elegido'},
+  how:{en:'Como pagar',es:'Forma de pago'},
+  more:{en:'Ver outras formas de pagar',es:'Ver otras formas de pago'},
+  less:{en:'Ver menos opções',es:'Ver menos opciones'},
+  promo:{en:'Dupla ou indicação',es:'Pareja o recomendación'},
+  code:{en:'Código (opcional)',es:'Código (opcional)'},
+  sum:{en:'Resumo do pedido',es:'Resumen del pedido'},
+  total:{en:'Total por mês',es:'Total por mes'},
+  once:{en:'Cobrança única',es:'Cobro único'},
+  nostack:{en:'Os descontos não acumulam: aplicamos sempre o maior.',
            es:'Los descuentos no se acumulan: siempre aplicamos el mayor.'},
-  first:{en:'Billing starts on your 3rd lesson, the first regular one. The 2 trial lessons are free.',
+  first:{en:'A cobrança começa na sua 3ª aula, a primeira regular. As 2 aulas de teste são grátis.',
          es:'El cobro empieza en tu 3.\u00AA clase, la primera regular. Las 2 clases de prueba son gratis.'},
-  plan:{en:'Plan',es:'Plan'},
-  free:{en:'2 free lessons before you pay',es:'2 clases gratis antes de pagar'},
-  go:{en:'Subscribe',es:'Suscribirme'},
-  goc:{en:'Request change',es:'Pedir el cambio'},
-  same:{en:'This is your current plan',es:'Este es tu plan actual'},
-  up:{en:'An upgrade starts right away and is charged pro rata for the rest of the month.',
+  plan:{en:'Plano',es:'Plano'},
+  free:{en:'2 aulas grátis antes de pagar',es:'2 clases gratis antes de pagar'},
+  go:{en:'Assinar',es:'Suscribirme'},
+  goc:{en:'Pedir a troca',es:'Pedir el cambio'},
+  same:{en:'Este é o seu plano atual',es:'Este es tu plan actual'},
+  up:{en:'A subida de plano vale na hora e é cobrada proporcional ao resto do mês.',
       es:'La subida de plan empieza enseguida y se cobra proporcional al resto del mes.'},
-  down:{en:'A downgrade starts on your next billing date. Nothing changes this month.',
+  down:{en:'A descida de plano vale na próxima data de cobrança. Este mês nada muda.',
         es:'La bajada de plan empieza en tu próxima fecha de cobro. Este mes no cambia nada.'},
-  sent:{en:'Request sent',es:'Pedido enviado'},
-  sentb:{en:'Your teacher received it and will set everything up. You will see it here when it is done.',
+  sent:{en:'Pedido enviado',es:'Pedido enviado'},
+  sentb:{en:'O professor recebeu e vai deixar tudo pronto. Você verá aqui quando estiver feito.',
          es:'Tu profesor lo recibió y lo dejará listo. Lo verás aquí cuando esté hecho.'},
-  pend:{en:'Request sent. Waiting for your teacher.',es:'Pedido enviado. Esperando a tu profesor.'},
-  cancel:{en:'Cancel request',es:'Cancelar pedido'},
-  close:{en:'Close',es:'Cerrar'},
-  err:{en:'Could not send. Please try again.',es:'No se pudo enviar. Inténtalo de nuevo.'},
-  nop:{en:'Plans are not available right now.',es:'Los planes no están disponibles ahora.'}
+  pend:{en:'Pedido enviado. Aguardando o professor.',es:'Pedido enviado. Esperando a tu profesor.'},
+  cancel:{en:'Cancelar pedido',es:'Cancelar pedido'},
+  close:{en:'Fechar',es:'Cerrar'},
+  err:{en:'Não foi possível enviar. Tente de novo.',es:'No se pudo enviar. Inténtalo de nuevo.'},
+  nop:{en:'Os planos não estão disponíveis agora.',es:'Los planes no están disponibles ahora.'}
 };
 
 /* o que cada plano entrega; o tamanho da turma e o que separa um plano do outro */
 var META={
   'essential':{
-    tag:{en:'Up to 4 students',es:'Hasta 4 alumnos'},
-    line:{en:'1 lesson per week, light pace',es:'1 clase por semana, ritmo suave'},
-    sub:{en:'Steady weekly practice, at a lighter pace.',es:'Práctica semanal constante, a un ritmo más suave.'},
-    li:[{en:'1 live lesson per week (50 min), small group of up to 4 students at your level',
+    tag:{en:'Até 4 alunos',es:'Hasta 4 alumnos'},
+    line:{en:'1 aula por semana, ritmo leve',es:'1 clase por semana, ritmo suave'},
+    sub:{en:'Prática semanal constante, em ritmo mais leve.',es:'Práctica semanal constante, a un ritmo más suave.'},
+    li:[{en:'1 aula ao vivo por semana (50 min), em grupo de até 4 alunos do seu nível',
          es:'1 clase en vivo por semana (50 min), grupo reducido de hasta 4 alumnos de tu nivel'},
-        {en:'1 group conversation session per month',es:'1 sesión de conversación en grupo al mes'},
-        {en:'Full access to the app: lessons, audio, smart revision and progress',
+        {en:'1 sessão de conversação em grupo por mês',es:'1 sesión de conversación en grupo al mes'},
+        {en:'Acesso completo ao app: lições, áudios, revisão inteligente e progresso',
          es:'Acceso completo a la app: lecciones, audios, repaso inteligente y progreso'}],
-    pace:{en:'1 full stage (25 lessons) in about 6 months',es:'1 etapa completa (25 clases) en unos 6 meses'}},
+    pace:{en:'1 estágio completo (25 aulas) em cerca de 6 meses',es:'1 etapa completa (25 clases) en unos 6 meses'}},
   'fluency-club':{
-    tag:{en:'Up to 2 students',es:'Hasta 2 alumnos'},
-    line:{en:'2 lessons per week, to speak with confidence',es:'2 clases por semana, para hablar con confianza'},
-    sub:{en:'For real speaking confidence at work and when travelling.',
+    tag:{en:'Até 2 alunos',es:'Hasta 2 alumnos'},
+    line:{en:'2 aulas por semana, para falar com confiança',es:'2 clases por semana, para hablar con confianza'},
+    sub:{en:'Para falar com confiança de verdade no trabalho e em viagens.',
          es:'Para hablar con confianza en el trabajo y en los viajes.'},
-    li:[{en:'2 live lessons per week (50 min), in a pair of up to 2 students at your level',
+    li:[{en:'2 aulas ao vivo por semana (50 min), em dupla de até 2 alunos do seu nível',
          es:'2 clases en vivo por semana (50 min), en pareja de hasta 2 alumnos de tu nivel'},
-        {en:'2 group conversation sessions per month',es:'2 sesiones de conversación en grupo al mes'},
-        {en:'Full access to the app, plus tracking of your recurring mistakes',
+        {en:'2 sessões de conversação em grupo por mês',es:'2 sesiones de conversación en grupo al mes'},
+        {en:'Acesso completo ao app, mais acompanhamento dos seus erros recorrentes',
          es:'Acceso completo a la app, más seguimiento de tus errores recurrentes'}],
-    pace:{en:'1 full stage in about 3 months',es:'1 etapa completa en unos 3 meses'}},
+    pace:{en:'1 estágio completo em cerca de 3 meses',es:'1 etapa completa en unos 3 meses'}},
   'vip-intensive':{
-    tag:{en:'One to one',es:'Individual'},
-    line:{en:'3 lessons per week, for those with a deadline',es:'3 clases por semana, para quien tiene plazo'},
-    sub:{en:'For a set deadline: an interview, a move abroad or an exam.',
+    tag:{en:'Individual',es:'Individual'},
+    line:{en:'3 aulas por semana, para quem tem prazo',es:'3 clases por semana, para quien tiene plazo'},
+    sub:{en:'Para um prazo definido: uma entrevista, uma mudança para o exterior ou uma prova.',
          es:'Para un plazo concreto: una entrevista, una mudanza o un examen.'},
-    li:[{en:'3 private lessons per week (50 min), built around your goal',
+    li:[{en:'3 aulas particulares por semana (50 min), feitas em torno do seu objetivo',
          es:'3 clases particulares por semana (50 min), centradas en tu objetivo'},
-        {en:'Free access to the group conversation sessions at your level',
+        {en:'Acesso livre às sessões de conversação em grupo do seu nível',
          es:'Acceso libre a las sesiones de conversación de tu nivel'},
-        {en:'Full access to the app, plus a stage-by-stage plan and priority support',
+        {en:'Acesso completo ao app, mais plano por estágio e suporte prioritário',
          es:'Acceso completo a la app, más un plan por etapa y soporte prioritario'}],
-    pace:{en:'1 full stage in about 2 months',es:'1 etapa completa en unos 2 meses'}}
+    pace:{en:'1 estágio completo em cerca de 2 meses',es:'1 etapa completa en unos 2 meses'}}
 };
 
 /* periodos de pagamento. off = desconto em %; months = ciclos cobrados de uma vez */
 function periods(cur,L){
   var P=[{k:'mensal',off:0,months:1,
-      t:{en:'Monthly',es:'Mensual'},s:{en:'Cancel whenever you want',es:'Cancela cuando quieras'}}];
+      t:{en:'Mensal',es:'Mensual'},s:{en:'Cancele quando quiser',es:'Cancela cuando quieras'}}];
   if(cur==='BRL')P.push({k:'cartao6',off:5,months:1,
-      t:{en:'Card, 6 months',es:'Tarjeta, 6 meses'},
-      s:{en:'Charged every month, 6-month commitment',es:'Cobro mensual, compromiso de 6 meses'}});
+      t:{en:'Cartão, 6 meses',es:'Tarjeta, 6 meses'},
+      s:{en:'Cobrado todo mês, compromisso de 6 meses',es:'Cobro mensual, compromiso de 6 meses'}});
   P.push({k:'avista3',off:5,months:3,
-      t:{en:'3 months upfront',es:'3 meses por adelantado'},
-      s:cur==='BRL'?{en:'Pix or Wise',es:'Pix o Wise'}:{en:'Wise or card',es:'Wise o tarjeta'}});
-  P.push({k:'avista6',off:10,months:6,
-      t:{en:'6 months upfront',es:'6 meses por adelantado'},
-      s:cur==='BRL'?{en:'Pix or Wise, biggest discount',es:'Pix o Wise, el mayor descuento'}
-                   :{en:'Wise or card, biggest discount',es:'Wise o tarjeta, el mayor descuento'}});
+      t:{en:'3 meses à vista',es:'3 meses por adelantado'},
+      s:cur==='BRL'?{en:'Pix ou Wise',es:'Pix o Wise'}:{en:'Wise ou cartão',es:'Wise o tarjeta'}});
+  P.push({k:'avista6',off:promo6(),months:6,
+      t:{en:'6 meses à vista',es:'6 meses por adelantado'},
+      s:cur==='BRL'?{en:'Pix ou Wise, o maior desconto',es:'Pix o Wise, el mayor descuento'}
+                   :{en:'Wise ou cartão, o maior desconto',es:'Wise o tarjeta, el mayor descuento'}});
+  if(promo6()>10)P[P.length-1].tip={en:'Até 30/11',es:'Hasta el 30/11'};
   P.forEach(function(p){p.label=p.t[L]||p.t.en;p.note=p.s[L]||p.s.en;});
   return P;
 }
 
+/* promocao de lancamento: 30% no semestre a vista ate 30/11/2026 (fim do dia em Brasilia); depois, 10% */
+function promo6(){return Date.now()<Date.UTC(2026,11,1,3,0,0)?30:10;}
 var DUPLA=10; /* dupla: 10% para cada um, so no Fluency Club */
 
 function money(cur,v){
@@ -223,6 +226,7 @@ function draw(wrap,rows,sb,L,o){
       var b=el('button',{type:'button','aria-pressed':x.k===per?'true':'false'});
       var h=el('b',{},x.label);
       if(x.off)h.append(el('span',{class:'pp-off'},'−'+x.off+'%'));
+      if(x.tip)h.append(el('span',{class:'pp-off'},x.tip[L]||x.tip.en));
       b.append(h,el('small',{},money(cur,v)+tx('month',L)+' · '+x.note));
       b.addEventListener('click',function(){per=x.k;render();});
       gr.append(b);});
@@ -242,7 +246,7 @@ function draw(wrap,rows,sb,L,o){
       ck.addEventListener('change',function(){dupla=ck.checked;render();});
       lb.append(ck,el('span',{},(L==='es'
         ?'Estudio con una pareja (10% para cada uno mientras los dos sigan activos)'
-        :'I study with a partner (10% off each while both stay active)')));
+        :'Estudo com uma dupla (10% para cada um enquanto os dois estiverem ativos)')));
       pc.append(lb);}
     var inp=el('input',{type:'text',class:'pp-in',placeholder:tx('code',L),'aria-label':tx('code',L),value:code});
     inp.addEventListener('change',function(){code=inp.value;});
@@ -255,11 +259,11 @@ function draw(wrap,rows,sb,L,o){
     sm.append(el('div',{class:'pp-h',style:'margin-top:0'},tx('sum',L)));
     sm.append(el('div',{class:'r'},[el('span',{},p.nome),el('span',{},money(cur,full))]));
     if(cut>0.004)sm.append(el('div',{class:'r d'},[
-      el('span',{},r.via==='dupla'?(L==='es'?'Pareja de estudio (10%)':'Study partner (10%)'):P2.label+' ('+P2.off+'%)'),
+      el('span',{},r.via==='dupla'?(L==='es'?'Pareja de estudio (10%)':'Dupla (10%)'):P2.label+' ('+P2.off+'%)'),
       el('span',{},'−'+money(cur,cut))]));
     sm.append(el('div',{class:'r t'},[el('span',{},tx('total',L)),el('span',{},money(cur,val))]));
     if(P2.months>1)sm.append(el('div',{class:'r'},[
-      el('span',{},tx('once',L)+' ('+P2.months+(L==='es'?' meses':' months')+')'),
+      el('span',{},tx('once',L)+' ('+P2.months+(L==='es'?' meses':' meses')+')'),
       el('span',{},money(cur,val*P2.months))]));
     sm.append(el('p',{class:'pp-note'},tx('nostack',L)));
     sm.append(el('p',{class:'pp-note'},tx('first',L)));
