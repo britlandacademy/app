@@ -114,7 +114,7 @@ summary{cursor:pointer;font-weight:700;padding:4px 0}
 </div>
 <script src="js/i18n.js" charset="utf-8"></script>
 <script src="js/config.js" charset="utf-8"></script>
-<script src="js/gate.js" charset="utf-8"></script><script src="js/sheet.js" charset="utf-8"></script><script src="js/motion.js" charset="utf-8"></script><script src="js/medals.js" charset="utf-8"></script><script src="js/reviews.js" charset="utf-8"></script><script src="js/profile2.js" charset="utf-8"></script><script src="js/displayname.js" charset="utf-8"></script><script src="js/receipt.js" charset="utf-8"></script><script src="js/qr.js" charset="utf-8"></script><script src="js/certificate.js" charset="utf-8"></script>
+<script src="js/gate.js" charset="utf-8"></script><script src="js/sheet.js" charset="utf-8"></script><script src="js/motion.js" charset="utf-8"></script><script src="js/medals.js" charset="utf-8"></script><script src="js/reviews.js" charset="utf-8"></script><script src="js/profile2.js" charset="utf-8"></script><script src="js/displayname.js" charset="utf-8"></script><script src="js/receipt.js" charset="utf-8"></script><script src="js/qr.js" charset="utf-8"></script><script src="js/certificate.js" charset="utf-8"></script><script src="js/dialog.js" data-lang="en" charset="utf-8"></script><script src="js/planpick.js" charset="utf-8"></script>
 <script>
 Gate.start({kinds:[]},function(ctx){
 if(Gate.gameOn()){location.replace('index.html#profile');return;}
@@ -233,7 +233,7 @@ async function pays0(){
   const a=await sb.from('subs').select('*').order('created_at');
   if(a.error){box.append(el('p',{class:'hint'},'Payment information is not available yet.'));return;}
   const subs=a.data||[];
-  if(!subs.length){box.append(el('p',{class:'hint'},'No plan registered yet. If you think this is a mistake, contact the school.'));}
+  let PRQ=[];try{const q=await sb.from('plan_requests').select('*').order('created_at',{ascending:false});if(!q.error)PRQ=q.data||[];}catch(e){}
   const c=await sb.from('charges').select('*').order('due_date',{ascending:false});const ch=c.data||[];
   const today=iso(new Date());
   /* assinatura recorrente (Stripe/Asaas), quando existir; as tabelas novas podem nao existir ainda: tudo opcional */
@@ -303,6 +303,27 @@ async function pays0(){
     const bn=el('div',{class:'next late',role:'alert'},el('b',{},'Payment failed or overdue'),el('br'),el('small',{},'Please update your payment method or talk to the school to avoid interruption of your classes.'));
     box.append(bn);}
   subs.forEach(s=>box.append(subCard(s)));
+  /* escolha de plano (sem plano) ou troca de plano (com plano); a tela mora em js/planpick.js */
+  (function(){
+    if(!window.PlanPick)return;
+    const open0=PRQ.filter(r=>r.status==='aberto')[0];
+    if(open0){
+      const w=el('div',{class:'sc'},el('b',{},open0.tipo==='troca'?'Plan change requested':'Plan requested'),
+        el('div',{class:'sc-f'},open0.plano+' · '+money(open0.valor_centavos/100,open0.moeda)+' / month · waiting for your teacher'));
+      const cx=el('button',{type:'button',class:'ghost',style:'margin-top:10px'},'Cancel request');
+      cx.addEventListener('click',async()=>{if(window.BL_DLG&&!(await BL_DLG.confirm('Cancel this request?',{title:'Plan request'})))return;
+        cx.disabled=true;await sb.from('plan_requests').delete().eq('id',open0.id);box.textContent='';pays0();});
+      w.append(cx);box.append(w);return;}
+    const cur0=subs.filter(s=>s.active)[0]||subs[0]||null;
+    const host=el('div',{});box.append(host);
+    const opts={sb,profile:ctx.profile,es:false,currency:cur0?cur0.currency:null,
+      current:cur0?String(cur0.plan||'').toLowerCase().replace(/\s+/g,'-'):null,
+      onDone:()=>{box.textContent='';pays0();}};
+    if(!cur0){PlanPick.mount(host,opts);return;}
+    const bt=el('button',{type:'button',class:'ghost'},'Change plan');
+    bt.addEventListener('click',()=>{bt.remove();PlanPick.mount(host,opts);host.scrollIntoView({block:'start',behavior:'smooth'});});
+    host.append(bt);
+  })();
   function promoBox(n){const off=+n.promo_off||0;if(off<=0)return document.createTextNode('');
     const sb0=subs.find(q=>q.id===n.sub_id),row=(a,b,st)=>el('div',{style:'display:flex;justify-content:space-between;gap:10px'+(st||'')},el('span',{},a),el('span',{},b));
     const w=el('div',{style:'margin-top:10px;border-top:1px solid var(--line);padding-top:8px;font-size:.95rem'});

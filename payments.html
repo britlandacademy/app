@@ -134,6 +134,12 @@ td input[type=number]{width:7em}
 <div class="wrap">
 <div class="band"><p>Britland Academy</p><h1>Pagamentos dos alunos</h1><p style="margin-top:8px"><a href="admin.html" style="color:#fff">← Painel do professor</a></p></div>
 
+<section class="card" id="prq-sec" hidden><h2>Pedidos de plano</h2>
+  <p class="hint">O aluno escolheu um plano no app. Crie ou ajuste a assinatura e marque como feito.</p>
+  <div id="prq" data-noi18n="1"></div>
+  <p class="msg" id="prqmsg" aria-live="polite"></p>
+</section>
+
 <section class="card"><h2>Resumo do mês</h2>
   <div class="row mrow"><input type="month" id="mes" hidden><div class="mnav"><button type="button" class="mb" id="mprev" aria-label="Mês anterior">‹</button><b id="mlbl" aria-live="polite"></b><button type="button" class="mb" id="mnext" aria-label="Próximo mês">›</button></div><span id="gst" class="gst"></span><button type="button" class="ghost" id="gen" hidden>Gerar a que falta</button><span class="msg" id="gmsg" aria-live="polite"></span></div>
   <p class="hint">As mensalidades são geradas automaticamente todo dia 1, às 9h. O botão só aparece quando falta alguma (um aluno novo, por exemplo).</p>
@@ -165,7 +171,7 @@ td input[type=number]{width:7em}
   <div class="grid2">
     <div><label for="f-st">Aluno com conta</label><select id="f-st"></select></div>
     <div><label for="f-nm">Nome (se não tem conta)</label><input type="text" id="f-nm"></div>
-    <div><label for="f-pl">Plano</label><select id="f-pl"><option>Grupo</option><option selected>VIP</option><option>Intensivo</option><option>Outro</option></select></div>
+    <div><label for="f-pl">Plano</label><select id="f-pl"><option>Essential</option><option selected>Fluency Club</option><option>VIP Intensive</option><option>Outro</option></select></div>
     <div><label for="f-cu">Moeda</label><select id="f-cu"><option value="EUR">Euro (€)</option><option value="BRL">Real (R$)</option></select></div>
     <div><label for="f-am">Valor mensal</label><input type="number" id="f-am" min="0" step="0.01"></div>
     <div><label for="f-dd">Dia do vencimento</label><input type="number" id="f-dd" min="1" max="28" value="5"></div>
@@ -183,7 +189,11 @@ td input[type=number]{width:7em}
 Gate.start({admin:true,kinds:[]},function(ctx){
 'use strict';
 const sb=Gate.sb,el=Gate.el,$=id=>document.getElementById(id);
-const SYM={EUR:'€',BRL:'R$'},PRESET={Grupo:80,VIP:120,Intensivo:200};
+const SYM={EUR:'€',BRL:'R$'};
+/* valores de tabela por plano e moeda (ver claude/planos-e-precos.md) */
+const PRESET={'Essential':{EUR:60,BRL:320},'Fluency Club':{EUR:168,BRL:790},'VIP Intensive':{EUR:360,BRL:1800}};
+function preset(){const p=PRESET[$('f-pl').value];return p?p[$('f-cu').value]:undefined;}
+let PRQ=[];
 let SUBS=[],CH=[],PROF=[];
 function money(v,c){return (SYM[c]||'')+'\u00a0'+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
@@ -202,6 +212,7 @@ async function loadAll(){
   const p=await sb.from('profiles').select('id,name,email,status,is_admin,country,tz,course').order('name');PROF=p.data||[];
   const c=await sb.from('charges').select('*').order('due_date');if(c.error)return fail(c.error);
   CH=c.data||[];
+  try{const q=await sb.from('plan_requests').select('*').eq('status','aberto').order('created_at');if(!q.error)PRQ=q.data||[];}catch(e){}
   fillStudents();renderAll();
 }
 function fail(e){const m=/relation .* does not exist|schema cache/i.test(e.message||'');
@@ -210,7 +221,36 @@ function fillStudents(){
   const s=$('f-st');s.textContent='';s.append(el('option',{value:''},'— sem conta —'));
   PROF.filter(p=>!SUBS.some(x=>x.user_id===p.id)).forEach(p=>s.append(el('option',{value:p.id},(p.name||p.email))));
 }
-function renderAll(){renderHead();renderSum();renderTable();renderLate();renderChart();renderSubs();}
+function renderAll(){renderPrq();renderHead();renderSum();renderTable();renderLate();renderChart();renderSubs();}
+
+/* pedidos de plano feitos pelo aluno na aba Pagamentos do app (tabela plan_requests) */
+const PERL={mensal:'mensal',cartao6:'cartão, 6 meses',avista3:'à vista, 3 meses',avista6:'à vista, 6 meses'};
+function nameOf(uid){const p=PROF.find(x=>x.id===uid);return p?(p.name||p.email):uid.slice(0,8);}
+function renderPrq(){
+  const box=$('prq');box.textContent='';
+  $('prq-sec').hidden=!PRQ.length;
+  if(!PRQ.length)return;
+  const tb=el('table',{});tb.append(th(['Aluno','Pedido','Valor','Quando','']));
+  const bd=el('tbody',{});
+  PRQ.forEach(r=>{
+    const sub=SUBS.find(x=>x.user_id===r.user_id);
+    const what=r.plano+' · '+(PERL[r.periodo]||r.periodo)+(r.desconto?' · '+r.desconto:'')+(r.codigo?' · código '+r.codigo:'');
+    const tag=el('span',{class:'st '+(r.tipo==='troca'?'pending':'approved')},r.tipo==='troca'?'troca':'novo');
+    const ok=el('button',{type:'button',class:'ghost'},'Marcar como feito');
+    ok.addEventListener('click',async()=>{
+      if(window.BL_DLG&&!(await BL_DLG.confirm('Já criou ou ajustou a assinatura de '+nameOf(r.user_id)+'?',{title:'Pedido de plano'})))return;
+      ok.disabled=true;
+      const u=await sb.from('plan_requests').update({status:'feito',handled_at:new Date().toISOString()}).eq('id',r.id);
+      if(u.error){ok.disabled=false;msg('prqmsg','Não deu para marcar: '+u.error.message,'bad');return;}
+      PRQ=PRQ.filter(x=>x.id!==r.id);renderPrq();msg('prqmsg','Pedido fechado.','ok');});
+    bd.append(el('tr',{},
+      el('td',{},[nameOf(r.user_id),' ',tag,sub?el('small',{class:'hint'},' · hoje: '+sub.plan):'']),
+      el('td',{},what),
+      el('td',{class:'c'},money(r.valor_centavos/100,r.moeda)),
+      el('td',{class:'c'},br(String(r.created_at).slice(0,10))),
+      el('td',{class:'c'},ok)));});
+  tb.append(bd);const w=el('div',{class:'tw'});w.append(tb);box.append(w);
+}
 
 function monthCh(m){const [a,b]=monthRange(m);return CH.filter(c=>c.due_date>=a&&c.due_date<b);}
 function totals(list){const t={};list.forEach(c=>{const o=t[c.currency]||(t[c.currency]={paid:0,open:0});if(c.paid_on)o.paid+=+c.amount;else o.open+=+c.amount;});return t;}
@@ -314,8 +354,9 @@ function renderHead(){const m=$('mes').value,miss=missingRows(),n=monthCh(m).fil
 $('mprev').addEventListener('click',()=>{$('mes').value=addM($('mes').value,-1);renderAll();});
 $('mnext').addEventListener('click',()=>{$('mes').value=addM($('mes').value,1);renderAll();});
 $('mes').addEventListener('change',renderAll);
-$('f-pl').addEventListener('change',()=>{const v=PRESET[$('f-pl').value];if(v!==undefined&&$('f-cu').value==='EUR')$('f-am').value=v;});
-$('f-cu').addEventListener('change',()=>{if($('f-cu').value==='BRL'&&PRESET[$('f-pl').value]!==undefined&&+$('f-am').value===PRESET[$('f-pl').value])$('f-am').value='';});
+function fillPreset(){const v=preset();if(v!==undefined)$('f-am').value=v;}
+$('f-pl').addEventListener('change',fillPreset);
+$('f-cu').addEventListener('change',fillPreset);
 $('f-pl').dispatchEvent(new Event('change'));
 $('f-st').addEventListener('change',()=>{const p=PROF.find(x=>x.id===$('f-st').value);if(p)$('f-nm').value=p.name||p.email;});
 $('f-add').addEventListener('click',()=>{
