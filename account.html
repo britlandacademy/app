@@ -267,16 +267,16 @@ async function pays0(){
     const pill=el('span',{class:'pill '+(late?'bad':'wt')},late?'Overdue':'Open');
     if(CLM===null)return pill;
     const c=CLM.find(k=>k.charge_id===x.id);
-    if(c&&c.status==='pendente')return el('span',{class:'pill ok'},'Sent, in review');
+    if(c&&c.status==='pendente')return el('span',{class:'pill ok'},'Under review');
     const b=el('button',{type:'button',class:c?'ghost':''},c?'Send again':"I've paid");
     b.addEventListener('click',()=>paidSheet(x));return b;}
   function paidSheet(x){
     const ov=el('div',{class:'g-hov',role:'dialog','aria-modal':'true'}),close=()=>ov.remove();
-    let method='Wise';const mb={};
+    let method='Pix';const mb={};
     const mrow=el('div',{class:'row'});
-    ['Wise','Revolut','Other'].forEach(m=>{const b=el('button',{type:'button',class:m===method?'':'ghost'},m);mb[m]=b;
-      b.addEventListener('click',()=>{method=m;Object.keys(mb).forEach(k=>mb[k].className=k===m?'':'ghost');note.textContent=m==='Wise'?NOTE_W:NOTE_O;});mrow.append(b);});
-    const NOTE_W='Pagou pelo Wise? Não precisa de comprovante: o pagamento é identificado sozinho. Se quiser, anexe mesmo assim.';
+    ['Pix','Wise','Revolut','Other'].forEach(m=>{const b=el('button',{type:'button',class:m===method?'':'ghost'},m);mb[m]=b;
+      b.addEventListener('click',()=>{method=m;Object.keys(mb).forEach(k=>mb[k].className=k===m?'':'ghost');note.textContent=(m==='Wise'||m==='Pix')?NOTE_W:NOTE_O;});mrow.append(b);});
+    const NOTE_W='Pagou por Pix ou Wise? Anexe o comprovante (opcional): o app lê o valor e confere com o e-mail de recebimento. Até o pagamento chegar, a parcela fica Em análise.';
     const NOTE_O='Pagou pela Revolut ou por outro meio? Anexe o comprovante (foto ou PDF) para o professor conferir.';
     const note=el('p',{class:'hint','data-noi18n':'1'},NOTE_W);
     const fi=el('input',{type:'file',accept:'image/*,application/pdf','aria-label':'Proof of payment'});
@@ -285,15 +285,16 @@ async function pays0(){
     cn.addEventListener('click',close);
     ok.addEventListener('click',async()=>{
       const f=fi.files&&fi.files[0];
-      if(method!=='Wise'&&!f){msgE.textContent='Anexe o comprovante.';return;}
+      if(method!=='Wise'&&method!=='Pix'&&!f){msgE.textContent='Anexe o comprovante.';return;}
       if(f&&f.size>8*1024*1024){msgE.textContent='Arquivo muito grande (máximo 8 MB).';return;}
       ok.disabled=true;msgE.textContent='';let path=null;
       if(f){const ext=(f.name.split('.').pop()||'bin').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,5)||'bin';
         path=(ctx.user.id)+'/'+x.id+'-'+Date.now()+'.'+ext;
         const u=await sb.storage.from('proofs').upload(path,f,{contentType:f.type||undefined});
         if(u.error){msgE.textContent='Não foi possível enviar o arquivo. Tente de novo.';ok.disabled=false;return;}}
-      const r=await sb.from('pay_claims').insert({charge_id:x.id,method:method==='Other'?'Outro':method,proof_path:path});
+      const r=await sb.from('pay_claims').insert({charge_id:x.id,method:method==='Other'?'Outro':method,proof_path:path}).select('id').single();
       if(r.error){msgE.textContent='Não foi possível enviar. Tente de novo.';ok.disabled=false;return;}
+      if(path&&r.data&&sb.functions){try{sb.functions.invoke('pay-ocr',{body:{claim_id:r.data.id}}).catch(()=>{});}catch(e){}}
       close();box.textContent='';pays0();});
     ov.append(el('div',{class:'g-hdlg'},el('h2',{style:'margin:0 0 6px'},"I've paid"),
       el('p',{style:'margin:0 0 10px'},money(x.amount,x.currency)+' · '+(x.title||dt(x.due_date))),mrow,note,fi,msgE,el('div',{class:'row'},cn,ok)));
@@ -302,10 +303,17 @@ async function pays0(){
     const bn=el('div',{class:'next late',role:'alert'},el('b',{},'Payment failed or overdue'),el('br'),el('small',{},'Please update your payment method or talk to the school to avoid interruption of your classes.'));
     box.append(bn);}
   subs.forEach(s=>box.append(subCard(s)));
+  function promoBox(n){const off=+n.promo_off||0;if(off<=0)return document.createTextNode('');
+    const sb0=subs.find(q=>q.id===n.sub_id),row=(a,b,st)=>el('div',{style:'display:flex;justify-content:space-between;gap:10px'+(st||'')},el('span',{},a),el('span',{},b));
+    const w=el('div',{style:'margin-top:10px;border-top:1px solid var(--line);padding-top:8px;font-size:.95rem'});
+    w.append(row((sb0&&sb0.plan)||'Monthly fee',money(+n.amount+off,n.currency)));
+    if(+n.promo_dupla>0)w.append(row('Study partner','\u2212'+money(n.promo_dupla,n.currency),';color:var(--ok)'));
+    if(+n.promo_credit>0)w.append(row('Referral credit','\u2212'+money(n.promo_credit,n.currency),';color:var(--ok)'));
+    w.append(row('Total',money(n.amount,n.currency),';font-weight:700;border-top:1px solid var(--line);margin-top:6px;padding-top:6px'));return w;}
   const open=ch.filter(x=>!x.paid_on).sort((x,y)=>x.due_date<y.due_date?-1:1);
   if(open.length){const n=open[0],late=n.due_date<today;
     box.append(el('div',{class:'next'},el('small',{},late?'Overdue payment':'Next payment'),el('br'),el('b',{},money(n.amount,n.currency)),
-      el('span',{},' · due '+dt(n.due_date)+' '),el('span',{class:'pill '+(late?'bad':'wt')},late?'Overdue':'Open'),(function(){const dd=new Date(n.due_date+'T12:00:00'),st=new Date(dd);st.setMonth(st.getMonth()-1);const p=Math.max(0,Math.min(1,(Date.now()-st)/(dd-st)));return el('div',{class:'bar'},el('i',{style:'width:'+Math.round((late?1:p)*100)+'%'}));})()));}
+      el('span',{},' · due '+dt(n.due_date)+' '),el('span',{class:'pill '+(late?'bad':'wt')},late?'Overdue':'Open'),promoBox(n),(function(){const dd=new Date(n.due_date+'T12:00:00'),st=new Date(dd);st.setMonth(st.getMonth()-1);const p=Math.max(0,Math.min(1,(Date.now()-st)/(dd-st)));return el('div',{class:'bar'},el('i',{style:'width:'+Math.round((late?1:p)*100)+'%'}));})()));}
   else if(ch.length)box.append(el('div',{class:'next'},el('b',{},'All paid. Thank you!')));
   if(ch.length){const paid={};ch.forEach(x=>{if(x.paid_on)paid[x.currency]=(paid[x.currency]||0)+ +x.amount;});
     box.append(el('p',{class:'hint'},'Total paid so far: '+(Object.keys(paid).map(k=>money(paid[k],k)).join(' + ')||'—')));

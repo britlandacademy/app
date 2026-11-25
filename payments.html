@@ -153,6 +153,13 @@ td input[type=number]{width:7em}
 
 <section class="card"><h2>Últimos 6 meses</h2><div id="chart"></div></section>
 
+<section class="card"><h2>Promoções</h2>
+  <p class="hint">Indicação: quem indicou ganha crédito igual à 1ª mensalidade do indicado (no máximo a própria mensalidade), liberado quando o indicado paga a 2ª. Dupla: os dois ganham desconto mensal enquanto estudam juntos. Vale para as mensalidades geradas daqui para frente.</p>
+  <div class="row"><select id="pm-a" aria-label="Primeiro aluno"></select><select id="pm-k" aria-label="Tipo"><option value="indicacao">indicou</option><option value="dupla">estuda junto com</option></select><select id="pm-b" aria-label="Segundo aluno"></select><button type="button" id="pm-add">Registrar</button></div>
+  <p class="msg" id="pmmsg" aria-live="polite"></p>
+  <div id="pml" data-noi18n="1"></div>
+</section>
+
 <section class="card"><h2>Alunos e planos</h2>
   <p class="hint">Cadastre cada aluno uma vez. As mensalidades de cada mês são criadas pelo botão "Gerar mensalidades do mês". Para um valor diferente em um mês, edite o valor na tabela acima. Para um desconto permanente, mude o valor aqui.</p>
   <div class="grid2">
@@ -429,7 +436,7 @@ function renderInbox(){
       await sb.from('pay_claims').update({status:'confirmado'}).eq('id',k.id);msg('tmsg','Pagamento confirmado.','ok');loadAll();loadInbox();});
     no.addEventListener('click',async()=>{await sb.from('pay_claims').update({status:'recusado'}).eq('id',k.id);msg('tmsg','Comprovante recusado. O aluno poderá reenviar.','ok');loadInbox();});
     box.append(el('div',{class:'it'},el('div',{},el('b',{},nmS+' · '+(c.amount!=null?money(c.amount,c.currency):'?'))),
-      el('small',{},'Aluno avisou que pagou ('+k.method+') · '+new Date(k.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})),
+      el('small',{},'Em análise · aluno avisou que pagou ('+k.method+')'+(k.ocr_amount!=null?' · comprovante lido: '+k.ocr_amount+' '+(k.ocr_currency||'')+(k.ocr_payer?' de '+k.ocr_payer:''):'')+' · '+new Date(k.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})),
       el('div',{class:'row'},ver,ok,no)));});
   INB.forEach(p=>{
     const op=CH.filter(c=>!c.paid_on).sort((a,b)=>{const sa=(a.currency===p.currency&&+a.amount===+p.amount)?0:1,sb2=(b.currency===p.currency&&+b.amount===+p.amount)?0:1;return sa-sb2||(a.due_date<b.due_date?-1:1);});
@@ -454,7 +461,59 @@ function renderInbox(){
   if(INB.length)box.append(el('p',{class:'hint'},'Ao baixar, o nome do pagador fica salvo e os próximos pagamentos dele são baixados sozinhos.'));
 }
 
-loadAll().then(loadInbox);
+
+/* ---- promoções: indicação (crédito) e dupla (desconto mensal) ---- */
+let PL=[],PC=[],PR=[];
+const tierOf=p=>{p=(p||'').toLowerCase();return p.startsWith('essential')?'essential':p.startsWith('fluency')?'fluency':p.startsWith('vip intensive')?'vip':null;};
+function pname(id){const p=PROF.find(x=>x.id===id);return p?(p.name||p.email||'?'):'?';}
+async function loadPromos(){
+  const a=await sb.from('promo_links').select('*').order('created_at',{ascending:false});
+  if(a.error){const b=$('pml');if(b)b.textContent='Promoções indisponíveis: rode promo_setup.sql no Supabase.';return;}
+  PL=a.data||[];
+  const c=await sb.from('promo_credits').select('*');PC=c.error?[]:(c.data||[]);
+  const r=await sb.from('promo_rates').select('*');PR=r.error?[]:(r.data||[]);
+  renderPromos();
+}
+function renderPromos(){
+  const st=PROF.filter(p=>!p.is_admin);
+  ['pm-a','pm-b'].forEach((id,i)=>{const sel=$(id);if(sel.options.length)return;
+    sel.append(el('option',{value:''},i?'Segundo aluno':'Primeiro aluno'));st.forEach(p=>sel.append(el('option',{value:p.id},p.name||p.email)));});
+  const box=$('pml');box.textContent='';
+  const sty='border:1px solid var(--line);background:var(--surface);padding:10px 12px;margin:8px 0';
+  PL.forEach(l=>{
+    const a=pname(l.owner_id),b=pname(l.partner_id),fb=b.split(' ')[0];
+    let title,pill,det;
+    if(l.kind==='indicacao'){
+      title=a+' indicou '+b;const cr=PC.find(x=>x.link_id===l.id);
+      if(l.credited&&cr){pill=['approved','Crédito liberado'];det=money(cr.amount,cr.currency)+' · válido até '+br(cr.expires_at)+(+cr.used>=+cr.amount?' · já usado':(+cr.used>0?' · usado '+money(cr.used,cr.currency):''));}
+      else if(l.credited){pill=['approved','Crédito liberado'];det='';}
+      else{pill=[l.active?'pending':'blocked',l.active?'Aguardando a 2ª mensalidade de '+fb:'Encerrada'];det='Crédito previsto: igual à 1ª mensalidade de '+b+', no máximo a mensalidade de '+a.split(' ')[0]+'.';}
+    }else{
+      title=a+' estuda junto com '+b;pill=[l.active?'approved':'blocked',l.active?'Dupla ativa':'Encerrada'];
+      const part=[l.owner_id,l.partner_id].map(u=>{const s2=SUBS.find(x=>x.user_id===u&&x.active!==false);if(!s2)return null;
+        const r=PR.find(x=>x.tier===tierOf(s2.plan)&&x.currency===s2.currency);return r?pname(u).split(' ')[0]+': '+money(r.amount,r.currency):null;});
+      det=part.every(Boolean)?'Desconto mensal automático · '+part.join(' · '):'Desconto só vale para quem tem plano Essential, Fluency Club ou VIP Intensive cadastrado em Alunos e planos.';
+    }
+    const it=el('div',{style:sty},el('div',{},el('b',{},title),' ',el('span',{class:'st '+pill[0]},pill[1])));
+    if(det)it.append(el('small',{},det));
+    if(!l.credited){const bt=el('button',{type:'button',class:'ghost'},l.active?'Encerrar':'Reativar');
+      bt.addEventListener('click',async()=>{bt.disabled=true;const u=await sb.from('promo_links').update({active:!l.active}).eq('id',l.id);
+        if(u.error){msg('pmmsg',u.error.message,'bad');bt.disabled=false;return;}loadPromos();});
+      it.append(el('div',{class:'row'},bt));}
+    box.append(it);});
+  if(!PL.length)box.append(el('p',{class:'hint'},'Nenhuma promoção registrada.'));
+}
+$('pm-add').addEventListener('click',async()=>{
+  const a=$('pm-a').value,b=$('pm-b').value,k=$('pm-k').value;
+  if(!a||!b){msg('pmmsg','Escolha os dois alunos.','bad');return;}
+  if(a===b){msg('pmmsg','Escolha dois alunos diferentes.','bad');return;}
+  $('pm-add').disabled=true;
+  const r=await sb.from('promo_links').insert({kind:k,owner_id:a,partner_id:b});
+  $('pm-add').disabled=false;
+  if(r.error){msg('pmmsg',r.error.code==='23505'?'Esse aluno já tem uma promoção registrada.':r.error.message,'bad');return;}
+  msg('pmmsg','Promoção registrada.','ok');$('pm-a').value='';$('pm-b').value='';loadPromos();});
+
+loadAll().then(()=>{loadInbox();loadPromos();});
 });
 </script>
 </body></html>

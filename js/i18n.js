@@ -148,6 +148,11 @@ var D=[ /* [English, Português, Español] ; {0} {1} = values that stay as they 
 ["Send to teacher","Enviar ao professor","Enviar al profesor"],
 ["Send again","Reenviar","Reenviar"],
 ["Sent, in review","Enviado, em análise","Enviado, en revisión"],
+["Under review","Em análise","En revisión"],
+["Study partner","Parceiro de estudo","Compañero de estudio"],
+["Referral credit","Crédito de indicação","Crédito por recomendación"],
+["Monthly fee","Mensalidade","Mensualidad"],
+
 ["Cancel","Cancelar","Cancelar"],
 ["Adjust your photo","Ajuste sua foto","Ajusta tu foto"],
 ["Drag to move. Pinch or use the slider to zoom.","Arraste para mover. Use dois dedos ou o controle para aproximar.","Arrastra para mover. Usa dos dedos o el control para acercar."],
