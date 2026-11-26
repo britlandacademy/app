@@ -76,6 +76,8 @@ summary{cursor:pointer;font-weight:700;padding:4px 0}
 .mg .mt b{font-size:1rem}.mg .mt small{color:var(--muted);font-size:.78rem}
 .mg .mt svg{width:24px;height:24px;fill:none;stroke:var(--accent);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;margin-bottom:2px}
 .mg .mt:active{border-color:var(--accent)}
+.mg .mt.wide{grid-column:1/-1;flex-direction:row;justify-content:center;gap:10px}.mg .mt.wide svg{margin:0}
+.mg .mt svg.lg{fill:var(--accent);stroke:none}
 .rpay{min-height:36px;padding:4px 16px;background:var(--accent);border:2px solid var(--accent);color:var(--accent-ink);border-radius:999px!important;font-weight:700;font-size:.9rem;flex:none}
 .hero{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.hero .ed{position:relative;border:0;background:none;padding:0;border-radius:50%;cursor:pointer}
 .hero .ed .cam{position:absolute;right:-2px;bottom:-2px;width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--accent-ink);border:3px solid var(--card);display:flex;align-items:center;justify-content:center}
@@ -291,13 +293,26 @@ async function pays0(){
       charge:{id:x.id,amount:+x.amount,currency:x.currency,title:x.title||null,due_date:x.due_date,plan:s0?s0.plan:null},
       onBack:back,onDone:back,onProof:pm=>{back();paidSheet(x,pm);}});}
   const PI={pix:'<path d="M12 3l9 9-9 9-9-9z"/><path d="M8 12l4-4 4 4-4 4z"/>',card:'<rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M2.5 10h19M6.5 15h4"/>',
-    wise:'<path d="M4 8h13l-3-3M20 16H7l3 3"/>',proof:'<path d="M4 12l16-8-6 16-3-7z"/>'};
+    wise:'<path d="M6.488 7.469 0 15.05h11.585l1.301-3.576H7.922l3.033-3.507.01-.092L8.993 4.48h8.873l-6.878 18.925h4.706L24 .595H2.543l3.945 6.874Z"/>',
+    revolut:'<path d="M20.9133 6.9566C20.9133 3.1208 17.7898 0 13.9503 0H2.424v3.8605h10.9782c1.7376 0 3.177 1.3651 3.2087 3.043.016.84-.2994 1.633-.8878 2.2324-.5886.5998-1.375.9303-2.2144.9303H9.2322a.2756.2756 0 0 0-.2755.2752v3.431c0 .0585.018.1142.052.1612L16.2646 24h5.3114l-7.2727-10.094c3.6625-.1838 6.61-3.2612 6.61-6.9494zM6.8943 5.9229H2.424V24h4.4704z"/>',proof:'<path d="M4 12l16-8-6 16-3-7z"/>'};
+  /* Wise e Revolut: mostra o link de pagamento da escola e, depois, o envio do comprovante */
+  const LINK={wise:'https://wise.com/pay/me/paulos4622',revolut:'https://revolut.me/britlandacademy'};
+  function linkSheet(x,k){
+    const N=k==='wise'?'Wise':'Revolut',ov=el('div',{class:'g-hov',role:'dialog','aria-modal':'true','data-noi18n':'1'}),close=()=>ov.remove();
+    const go=el('a',{class:'btn',href:LINK[k],target:'_blank',rel:'noopener',style:'display:flex;align-items:center;justify-content:center;gap:8px;margin:12px 0 6px'});
+    go.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true" style="width:20px;height:20px;fill:currentColor">'+PI[k]+'</svg>';go.append((k==='wise'?'Abrir a ':'Abrir o ')+N);
+    const pr=el('button',{type:'button',class:'ghost'},'Enviar comprovante'),cn=el('button',{type:'button',class:'ghost'},'Cancelar');
+    pr.addEventListener('click',()=>{close();paidSheet(x,N);});cn.addEventListener('click',close);
+    ov.append(el('div',{class:'g-hdlg'},el('h2',{style:'margin:0 0 6px'},'Pagar pela '+N),
+      el('p',{style:'margin:0'},el('small',{},'Valor a pagar'),el('br'),el('b',{style:'font-size:1.4rem'},money(x.amount,x.currency)),el('span',{},' · '+(x.title||dt(x.due_date)))),
+      go,el('p',{class:'hint',style:'margin:4px 0 10px'},'Depois de pagar, envie o comprovante.'),el('div',{class:'row'},cn,pr)));
+    ov.addEventListener('click',e=>{if(e.target===ov)close();});document.body.append(ov);}
   function payGrid(x){
-    const g=el('div',{class:'mg'}),t=(k,a,b)=>{const bt=el('button',{type:'button',class:'mt','data-noi18n':'1'});
-      bt.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+PI[k]+'</svg>';bt.append(el('b',{},a),el('small',{},b));
-      bt.addEventListener('click',async()=>{if(bt.disabled)return;bt.disabled=true;const y=await realCharge(x);bt.disabled=false;if(!y)return;k==='proof'?paidSheet(y,'Pix'):openPay(y,k);});g.append(bt);};
-    if(x.currency!=='EUR')t('pix','Pix','na hora');
-    t('card','Cartão','crédito');t('wise','Wise','do exterior');t('proof','Enviar comprovante','pagou por fora');
+    const g=el('div',{class:'mg'}),t=(k,a,b,w)=>{const bt=el('button',{type:'button',class:'mt'+(w?' wide':''),'data-noi18n':'1'});
+      bt.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"'+(LINK[k]?' class="lg"':'')+'>'+PI[k]+'</svg>';bt.append(el('b',{},a));if(b)bt.append(el('small',{},b));
+      bt.addEventListener('click',async()=>{if(bt.disabled)return;bt.disabled=true;const y=await realCharge(x);bt.disabled=false;if(!y)return;k==='proof'?paidSheet(y,'Pix'):LINK[k]?linkSheet(y,k):openPay(y,k);});g.append(bt);};
+    const eur=x.currency==='EUR';if(!eur)t('pix','Pix','na hora');
+    t('card','Cartão','crédito',eur);t('wise','Wise','do exterior');t('revolut','Revolut','do exterior');t('proof','Enviar comprovante','',true);
     const c=CLM&&CLM.find(k=>k.charge_id===x.id&&k.status==='pendente');
     return c?document.createTextNode(''):el('div',{},el('div',{class:'mtl','data-noi18n':'1'},'Como quer pagar?'),g);}
   function paidSheet(x,m0){
@@ -307,7 +322,7 @@ async function pays0(){
     ['Pix','Wise','Revolut','Other'].forEach(m=>{const b=el('button',{type:'button',class:m===method?'':'ghost'},m);mb[m]=b;
       b.addEventListener('click',()=>{method=m;Object.keys(mb).forEach(k=>mb[k].className=k===m?'':'ghost');note.textContent=(m==='Wise'||m==='Pix')?NOTE_W:NOTE_O;});mrow.append(b);});
     const NOTE_W='Pagou por Pix ou Wise? Anexe o comprovante (opcional): o app lê o valor e confere com o e-mail de recebimento. Até o pagamento chegar, a parcela fica Em análise.';
-    const NOTE_O='Pagou pela Revolut ou por outro meio? Anexe o comprovante (foto ou PDF) para o professor conferir.';
+    const NOTE_O='Pagou pela Revolut ou por outro meio? Anexe o comprovante (foto ou PDF).';
     const note=el('p',{class:'hint','data-noi18n':'1'},NOTE_W);
     const fi=el('input',{type:'file',accept:'image/*,application/pdf','aria-label':'Proof of payment'});
     const msgE=el('p',{class:'msg','aria-live':'polite','data-noi18n':'1'});
