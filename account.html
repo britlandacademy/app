@@ -312,7 +312,7 @@ async function pays0(){
       bt.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"'+(LINK[k]?' class="lg"':'')+'>'+PI[k]+'</svg>';bt.append(el('b',{},a));if(b)bt.append(el('small',{},b));
       bt.addEventListener('click',async()=>{if(bt.disabled)return;bt.disabled=true;const y=await realCharge(x);bt.disabled=false;if(!y)return;k==='proof'?paidSheet(y,'Pix'):LINK[k]?linkSheet(y,k):openPay(y,k);});g.append(bt);};
     const eur=x.currency==='EUR';if(!eur)t('pix','Pix','na hora');
-    t('card','Cartão','crédito',eur);t('wise','Wise','do exterior');t('revolut','Revolut','do exterior');t('proof','Enviar comprovante','',true);
+    t('card','Cartão',eur?'crédito ou débito':'crédito',eur);t('wise','Wise','');t('revolut','Revolut','');t('proof','Enviar comprovante','',true);
     const c=CLM&&CLM.find(k=>k.charge_id===x.id&&k.status==='pendente');
     return c?document.createTextNode(''):el('div',{},el('div',{class:'mtl','data-noi18n':'1'},'Como quer pagar?'),g);}
   function paidSheet(x,m0){
