@@ -166,6 +166,22 @@ const split = (ref?: string | null) => { const [a, b] = String(ref || "").split(
 
 async function asaasEvent(ev: any) {
   const t: string = ev.event || "";
+  if (t.startsWith("PIX_AUTOMATIC_RECURRING_AUTHORIZATION_")) { // Pix Automático: autorização de débito ligada à assinatura
+    const a = ev.pixAutomaticAuthorization || ev.pixAutomaticRecurringAuthorization || ev.authorization || ev.recurringAuthorization || {};
+    const subRef = a.subscriptionId || a.subscription || ev.subscriptionId;
+    if (!subRef) { console.log("pix-auto sem assinatura", t, JSON.stringify(ev).slice(0, 600)); return "ignored"; }
+    const sid = await subIdOf("asaas", subRef);
+    if (!sid) return "no-subscription";
+    const map: Record<string, string> = { CREATED: "created", ACTIVATED: "active", CANCELLED: "cancelled", EXPIRED: "expired" };
+    const st = map[t.slice("PIX_AUTOMATIC_RECURRING_AUTHORIZATION_".length)];
+    if (!st) return "ignored";
+    // a ordem dos eventos não é garantida: "created" atrasado não rebaixa uma autorização já ativa ou encerrada
+    let q = sb.from("subscriptions").update({ pix_auto_id: a.id || null, pix_auto_status: st, pix_auto_at: new Date().toISOString() }).eq("id", sid);
+    if (st === "created") q = q.is("pix_auto_status", null);
+    const { error } = await q;
+    if (error) throw error;
+    return "ok";
+  }
   if (t.startsWith("SUBSCRIPTION_") && ev.subscription) {
     const s = ev.subscription, r = split(s.externalReference);
     const status = t === "SUBSCRIPTION_DELETED" || t === "SUBSCRIPTION_INACTIVATED" ? "canceled" : (ASAAS_SUB[s.status] || "pending");
