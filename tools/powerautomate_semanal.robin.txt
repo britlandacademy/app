@@ -1,0 +1,46 @@
+# Power Automate Desktop - bloco "Confirmacao semanal" (vai DENTRO do LOOP WHILE do fluxo dos convites, DEPOIS do LOOP FOREACH dos convites e ANTES do WAIT 30).
+# Assim os convites sempre rodam primeiro (prioridade) e o bloco semanal trata no maximo 1 envio e 1 leitura por volta de 30 s.
+# Pasta: G:\My Drive\Avisos_Semana (criada pelo Apps Script Semanal.gs). Scripts JS: tools/whatsapp_web_scripts.js (1 a 5 para enviar, 1, 2 e 6 para ler).
+# Os scripts 1 a 5 usam %Convite['group']% e %Conteudo%, entao aqui o objeto tambem se chama Convite e o texto Conteudo.
+SET PastaS TO $'''G:\My Drive\Avisos_Semana'''
+
+# ---- ENVIO (confirmacao, lembrete, agradecimento) ----
+Folder.GetFiles Folder: $'''%PastaS%\pendentes''' FileFilter: $'''*.json''' IncludeSubfolders: False SortBy1: Folder.SortBy.CreationTime SortDescending1: False Files=> ArqS
+IF ArqS.Count > 0 THEN
+    File.ReadTextFromFile.ReadText File: ArqS[0] Encoding: File.TextFileEncoding.UTF8 Content=> Conteudo
+    Variables.ConvertJsonToCustomObject Json: Conteudo CustomObject=> Convite
+    File.Move Files: ArqS[0] Destination: $'''%PastaS%\enviando''' IfFileExists: File.IfExists.Overwrite MovedFiles=> MovS
+    WebAutomation.LaunchEdge Url: $'''''' LaunchMode: AttachToRunningInstance TabTitle: $'''WhatsApp''' BrowserInstance=> Browser
+    WAIT 1.5
+    WebAutomation.ExecuteJavascript Browser: Browser Script: <script 1> Result=> BuscaRes
+    WAIT 1.5
+    WebAutomation.ExecuteJavascript Browser: Browser Script: <script 2> Result=> SelRes
+    WAIT 1.5
+    WebAutomation.ExecuteJavascript Browser: Browser Script: <script 3> Result=> Result
+    WAIT 1.5
+    WebAutomation.ExecuteJavascript Browser: Browser Script: <script 4> Result=> SendResult
+    WAIT 2
+    WebAutomation.ExecuteJavascript Browser: Browser Script: <script 5> Result=> VerifResult
+    IF VerifResult = $'''ENVIADO''' THEN
+        File.Move Files: MovS Destination: $'''%PastaS%\enviados''' IfFileExists: File.IfExists.Overwrite MovedFiles=> MovS2
+    END
+    IF VerifResult <> $'''ENVIADO''' THEN
+        File.Move Files: MovS Destination: $'''%PastaS%\erros''' IfFileExists: File.IfExists.Overwrite MovedFiles=> MovS2
+    END
+END
+
+# ---- LEITURA DAS RESPOSTAS ----
+Folder.GetFiles Folder: $'''%PastaS%\ler''' FileFilter: $'''*.json''' IncludeSubfolders: False Files=> ArqL
+IF ArqL.Count > 0 THEN
+    File.ReadTextFromFile.ReadText File: ArqL[0] Encoding: File.TextFileEncoding.UTF8 Content=> Conteudo
+    Variables.ConvertJsonToCustomObject Json: Conteudo CustomObject=> Convite
+    WebAutomation.LaunchEdge Url: $'''''' LaunchMode: AttachToRunningInstance TabTitle: $'''WhatsApp''' BrowserInstance=> Browser
+    WAIT 1.5
+    WebAutomation.ExecuteJavascript Browser: Browser Script: <script 1> Result=> BuscaRes
+    WAIT 1.5
+    WebAutomation.ExecuteJavascript Browser: Browser Script: <script 2> Result=> SelRes
+    WAIT 3
+    WebAutomation.ExecuteJavascript Browser: Browser Script: <script 6> Result=> Lidas
+    File.WriteText File: $'''%PastaS%\respostas\%ArqL[0].Name%''' TextToWrite: Lidas AppendNewLine: False IfFileExists: File.IfFileExists.Overwrite Encoding: File.FileEncoding.UTF8NoBOM
+    File.Delete Files: ArqL[0]
+END

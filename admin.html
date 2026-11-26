@@ -456,6 +456,21 @@ function waBlock(p){
   inp.addEventListener('change',save);inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();inp.blur();}});
   return el('label',{style:'display:block;font-size:.88rem;margin:0'},g?'Grupo do WhatsApp (turma '+g.name+'): ':'Grupo do WhatsApp: ',inp,ok);
 }
+/* confirmacao semanal das aulas (WhatsApp de quinta/sexta): desligar pausa ate uma data; volta sozinha depois dela */
+function pauseBlock(p){
+  const ok=el('span',{class:'sv',style:'margin-left:8px'}),today=new Date().toISOString().slice(0,10);
+  const paused=()=>!!(p.confirm_paused_until&&String(p.confirm_paused_until)>=today);
+  const dt=el('input',{type:'date',min:today,'aria-label':'Pausada até, '+(p.name||p.email),style:'min-height:38px'});
+  const dl=el('label',{style:'display:flex;align-items:center;gap:8px;font-size:.88rem;margin:4px 0 2px'},'Pausada até',dt);
+  const plus=d=>{const x=new Date();x.setDate(x.getDate()+d);return x.toISOString().slice(0,10);};
+  const row=swRow('Confirmação semanal das aulas',!paused(),false,'',on=>{const v=on?null:plus(14);upd(p,{confirm_paused_until:v},()=>{okTag(ok);sync();});},true);
+  const sub=el('small',{});row.querySelector('.t').append(sub);row.append(ok);
+  const sync=()=>{const ps=paused();dt.value=ps?String(p.confirm_paused_until).slice(0,10):'';dl.style.display=ps?'flex':'none';row.style.borderBottom=ps?'':'0';
+    sub.textContent=ps?'Pausada: não recebe a mensagem de quinta/sexta':'Recebe a mensagem de quinta/sexta com os horários da semana';row.querySelector('input.sws').checked=!ps;};
+  dt.addEventListener('change',()=>{if(!dt.value)return;upd(p,{confirm_paused_until:dt.value},()=>{okTag(ok);sync();});});
+  sync();
+  return el('div',{style:'margin-top:10px;border-top:1px solid var(--line);width:100%'},row,dl);
+}
 function upd(p,patch,ok){return sb.from('profiles').update(patch).eq('id',p.id).then(r=>{if(r.error){setMsg('xmsg','Erro ao salvar: '+r.error.message,'bad');return;}Object.assign(p,patch);if(ok)ok();});}
 function okTag(sp){sp.textContent='✓ salvo';clearTimeout(sp._t);sp._t=setTimeout(()=>{sp.textContent='';},2000);}
 function exStat(uid,st){
@@ -557,7 +572,7 @@ function renderStu(){
       pLib.append(fc('Liberações',planRow,...(ex?ex.rows:[]),ex?ex.info:el('p',{class:'hint'},'Provas indisponíveis.')));
       pCad.append(fc('Nome de cadastro',nameBlock(p),p.display_name?el('div',{style:'margin-top:8px'},el('button',{type:'button',class:'ghost',onclick:async()=>{if(await BL_DLG.confirm('Remover o apelido "'+p.display_name+'" de '+(p.name||p.email)+'?'))upd(p,{display_name:null,display_name_at:null},()=>renderStu());}},'Remover apelido')):null));
       pCad.append(fc('Planilha de aulas',el('div',{style:'margin-bottom:8px'},startBlock(p)),planBlock(p)));
-      pCad.append(fc('Turma e WhatsApp',el('div',{style:'display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center'},turmaBlock(p),waBlock(p))));
+      pCad.append(fc('Turma e WhatsApp',el('div',{style:'display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center'},turmaBlock(p),waBlock(p)),pauseBlock(p)));
       const blk=p.status==='blocked';
       const accRow=swRow('Acesso ativo',!blk,false,blk?'Aluno bloqueado':'Desligar bloqueia o acesso do aluno',on=>on?(update(p.id,{status:'approved'}),undefined):BL_DLG.confirm('Bloquear '+(p.name||p.email)+'?').then(k=>k?(update(p.id,{status:'blocked'}),undefined):false));
       pAcc.append(fc('Acesso',accRow),CON?fc('Contrato',ContractAdmin.cell({el:el,sb:sb,profile:p,reload:loadProfiles})):null,ex?fc('Ações',ex.acts):null);

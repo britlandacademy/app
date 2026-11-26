@@ -103,3 +103,32 @@ function ExecuteScript() {
   if (box && (box.innerText || '').trim()) return 'ERRO:CAIXA_NAO_ESVAZIOU';
   return 'ENVIADO';
 }
+
+/* ===== Confirmacao semanal (pasta Avisos_Semana) =====
+   ENVIO: os arquivos de "pendentes" tem {key, group, text}; o fluxo usa os MESMOS scripts 1 a 5 acima (Convite = objeto do arquivo).
+   LEITURA: os arquivos de "ler" tem {key, group, marks[]}; o fluxo usa os scripts 1 e 2 (busca e abre o grupo) e depois o 6 abaixo,
+   e grava o retorno (texto JSON) em "respostas" com o mesmo nome do arquivo. */
+
+/* 6) Le as mensagens que chegaram depois da ultima confirmacao semanal (saida: Lidas -> JSON) */
+function ExecuteScript() {
+  var d = %Conteudo%;
+  var g = d.group, marks = d.marks || [];
+  var hd = document.querySelector('#main header');
+  var nm = hd ? ((hd.innerText || '').split('\n').filter(function (x) { return x.trim(); })[0] || '').trim() : '';
+  if (!(nm === g || nm.indexOf(g) === 0)) return JSON.stringify({ key: d.key, ok: false, error: 'CHAT:' + nm });
+  var els = document.querySelectorAll('#main .message-in, #main .message-out');
+  var list = [], norm = function (s) { return String(s || '').replace(/\s+/g, ' ').trim().toLowerCase(); };
+  for (var i = 0; i < els.length; i++) {
+    var e = els[i], c = e.querySelector('.copyable-text'), pre = c ? (c.getAttribute('data-pre-plain-text') || '') : '';
+    var tx = e.querySelector('.selectable-text');
+    var text = tx ? tx.innerText : (c ? c.innerText : '');
+    if (!text) { var im = e.querySelector('img[alt]'); text = im ? im.getAttribute('alt') : ''; }
+    list.push({ dir: e.classList.contains('message-in') ? 'in' : 'out', who: pre.replace(/^\[[^\]]*\]\s*/, '').replace(/:\s*$/, ''), at: (pre.match(/^\[([^\]]*)\]/) || [])[1] || '', text: text || '' });
+  }
+  /* a confirmacao desta semana e a ULTIMA mensagem enviada que contem marks[0]; tudo que veio depois dela conta (lembrete e agradecimento sao ignorados por serem "out") */
+  var last = -1;
+  for (var j = list.length - 1; j >= 0; j--) if (list[j].dir === 'out' && marks[0] && norm(list[j].text).indexOf(norm(marks[0])) >= 0) { last = j; break; }
+  if (last < 0) return JSON.stringify({ key: d.key, ok: false, error: 'SEM_MENSAGEM_SEMANAL' });
+  var firstIdx = last;
+  return JSON.stringify({ key: d.key, ok: true, msgs: list.slice(firstIdx + 1).filter(function (x) { return x.text; }) });
+}
