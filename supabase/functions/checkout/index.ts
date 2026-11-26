@@ -152,6 +152,12 @@ Deno.serve(async (req) => {
   if (cur === "BRL" && !ASAAS_KEY) return out({ error: "asaas-off" }, 503);
   if (cur === "EUR" && !(STRIPE_KEY && STRIPE_PK)) return out({ error: "stripe-off" }, 503);
 
+  /* mensalidade por Pix: se ja existe um QR valido para esta parcela (do app ou do e-mail), devolve o mesmo para nao gerar duas cobrancas */
+  if (chargeId && metodo === "pix") {
+    const { data: op } = await admin.from("checkouts").select("id,pix_payload,pix_image,pix_expires_at,total_centavos").eq("charge_id", chargeId).eq("user_id", user.id).eq("metodo", "pix").eq("status", "pending").not("pix_payload", "is", null).order("created_at", { ascending: false }).limit(1).maybeSingle();
+    if (op && op.total_centavos === total && (!op.pix_expires_at || new Date(op.pix_expires_at).getTime() > Date.now() + 36e5))
+      return out({ id: op.id, kind: "pix", payload: op.pix_payload, image: op.pix_image, expires: op.pix_expires_at, total });
+  }
   const { data: prof } = await admin.from("profiles").select("name,email").eq("id", user.id).maybeSingle();
   const name = String(b.holder?.name || prof?.name || user.email || "Aluno").slice(0, 100);
   const email = String(prof?.email || user.email || "");

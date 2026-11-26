@@ -140,6 +140,7 @@ function th(l){return el('thead',{},el('tr',{},l.map(h=>el('th',{scope:'col'},h)
 function pct(s,t){return t?Math.round(s/t*100)+'%':'—';}
 function show(w){['g','p','s'].forEach(k=>{$('p-'+k).hidden=k!==w;$('t-'+k).setAttribute('aria-selected',String(k===w));});}
 $('t-g').addEventListener('click',()=>show('g'));$('t-p').addEventListener('click',()=>show('p'));$('t-s').addEventListener('click',()=>show('s'));
+if(location.hash==='#payments'||/^#recibo-\d+$/.test(location.hash))show('p'); /* links dos e-mails de mensalidade */
 const me=ctx.profile||{};
 $('hn').textContent=me.display_name||me.name||'';if(window.DisplayName)DisplayName.mount({sb:sb,me:me,el:$('hn')});$('hs').textContent=COURSE.name||'Callan English';
 function openPic(){Gate.loadProfile(()=>Profile.openPicker({sb:sb,uid:me.id||ctx.user.id,current:me.avatar,lang:COURSE.uiLang||'en',onSaved:id=>{me.avatar=id;Gate.setAvatar(id);}}));}
@@ -245,6 +246,7 @@ async function pays0(){
   const subs=a.data||[];
   let PRQ=[];try{const q=await sb.from('plan_requests').select('*').order('created_at',{ascending:false});if(!q.error)PRQ=q.data||[];}catch(e){}
   const c=await sb.from('charges').select('*').order('due_date',{ascending:false});const ch=c.data||[];
+  const RH=/^#recibo-(\d+)$/.exec(location.hash);if(RH){history.replaceState(null,'',location.pathname+location.search);const x0=ch.find(q=>String(q.id)===RH[1]&&q.paid_on);if(x0){const s0=subs.find(q=>q.id===x0.sub_id);try{await Receipt.download({charge:x0,plan:s0?s0.plan:'',name:(ctx.profile&&ctx.profile.name)||'',base:'../'});}catch(e){}}}
   const today=iso(new Date());
   /* assinatura recorrente (Stripe/Asaas), quando existir; as tabelas novas podem nao existir ainda: tudo opcional */
   let GS=[],GI=[],GP={};
