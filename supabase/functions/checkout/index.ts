@@ -96,8 +96,7 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return out({ error: "method" }, 405);
 
   const auth = req.headers.get("authorization") || "";
-  const userSb = createClient(URL_, Deno.env.get("SUPABASE_ANON_KEY")!, { global: { headers: { authorization: auth } }, auth: { persistSession: false } });
-  const { data: u } = await userSb.auth.getUser();
+  const { data: u } = await admin.auth.getUser(auth.replace(/^Bearer\s+/i, ""));
   const user = u?.user;
   if (!user) return out({ error: "login" }, 401);
 
