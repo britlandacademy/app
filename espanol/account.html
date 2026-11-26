@@ -67,6 +67,7 @@ summary{cursor:pointer;font-weight:700;padding:4px 0}
 .pill.ok{background:var(--ok-bg);color:var(--ok)}.pill.bad{background:var(--bad-bg);color:var(--bad)}.pill.wt{background:var(--warn-bg);color:var(--warn)}
 .next{border:2px solid var(--accent);border-radius:18px;padding:14px;margin:10px 0;background:var(--surface)}
 .next b{font-size:1.3rem}
+.mseg{display:flex;gap:6px;background:var(--card);border-radius:99px;padding:4px;margin:12px 0 2px}.mseg button{flex:1;border:0;background:transparent;color:var(--ink);border-radius:99px!important;padding:8px 6px;font:inherit;font-size:.92rem;font-weight:700;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;cursor:pointer}.mseg button small{font-size:.76rem;font-weight:400;color:var(--muted)}.mseg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}.mseg button[aria-pressed="true"] small{color:var(--accent-ink);opacity:.85}
 /* mensalidade: formas de pagamento dentro do cartao da proxima parcela (opcao B) */
 .mtl{font-weight:700;margin:12px 0 8px;font-size:.95rem}
 .mg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -295,7 +296,7 @@ async function pays0(){
   function payGrid(x){
     const g=el('div',{class:'mg'}),t=(k,a,b)=>{const bt=el('button',{type:'button',class:'mt','data-noi18n':'1'});
       bt.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+PI[k]+'</svg>';bt.append(el('b',{},a),el('small',{},b));
-      bt.addEventListener('click',()=>k==='proof'?paidSheet(x,'Pix'):openPay(x,k));g.append(bt);};
+      bt.addEventListener('click',async()=>{if(bt.disabled)return;bt.disabled=true;const y=await realCharge(x);bt.disabled=false;if(!y)return;k==='proof'?paidSheet(y,'Pix'):openPay(y,k);});g.append(bt);};
     if(x.currency!=='EUR')t('pix','Pix','al instante');
     t('card','Tarjeta','crédito');t('wise','Wise','desde el exterior');t('proof','Enviar comprobante','pagaste por fuera');
     const c=CLM&&CLM.find(k=>k.charge_id===x.id&&k.status==='pendente');
@@ -362,9 +363,30 @@ async function pays0(){
     if(+n.promo_credit>0)w.append(row('Referral credit','\u2212'+money(n.promo_credit,n.currency),';color:var(--ok)'));
     w.append(row('Total',money(n.amount,n.currency),';font-weight:700;border-top:1px solid var(--line);margin-top:6px;padding-top:6px'));return w;}
   const open=ch.filter(x=>!x.paid_on).sort((x,y)=>x.due_date<y.due_date?-1:1);
-  if(open.length){const n=open[0],late=n.due_date<today;
-    box.append(el('div',{class:'next'},el('small',{},late?'Overdue payment':'Next payment'),el('br'),el('b',{},money(n.amount,n.currency)),
-      el('span',{},' · due '+dt(n.due_date)+' '),el('span',{class:'pill '+(late?'bad':'wt')},late?'Overdue':'Open'),promoBox(n),(function(){const dd=new Date(n.due_date+'T12:00:00'),st=new Date(dd);st.setMonth(st.getMonth()-1);const p=Math.max(0,Math.min(1,(Date.now()-st)/(dd-st)));return el('div',{class:'bar'},el('i',{style:'width:'+Math.round((late?1:p)*100)+'%'}));})(),(n.sub_id&&subs.some(q=>q.id===n.sub_id))?payGrid(n):null));}
+  /* adiantar a mensalidade do proximo mes (so plano manual, sem assinatura automatica): a parcela e criada no banco quando o aluno escolhe a forma de pagar */
+  const MES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const advSub=(function(){const s0=open.length?subs.find(q=>q.id===open[0].sub_id):subs.find(q=>q.active!==false);return s0&&s0.active!==false&&!gwOf(s0)?s0:null;})();
+  let adv=null;
+  if(advSub){const t0=new Date(),dd=new Date(t0.getFullYear(),t0.getMonth()+1,Math.max(1,+advSub.due_day||1),12),due=iso(dd);
+    const ex=ch.find(x=>x.sub_id===advSub.id&&x.due_date===due);
+    if(!ex)adv={virt:true,sub_id:advSub.id,due_date:due,amount:+advSub.amount,currency:advSub.currency,title:null};
+    else if(!ex.paid_on&&ex!==open[0])adv=ex;}
+  async function realCharge(x){if(!x.virt)return x;
+    const r=await sb.rpc('advance_charge',{p_sub:x.sub_id});
+    if(r.error||!r.data||!r.data.id){if(window.BL_DLG)BL_DLG.alert('No fue posible preparar la mensualidad. Inténtalo de nuevo.');return null;}
+    return r.data;}
+  const mlab=x=>{const m=MES[+x.due_date.slice(5,7)-1];return m.charAt(0).toUpperCase()+m.slice(1);};
+  const opts=[];if(open.length)opts.push(open[0]);if(adv)opts.push(adv);
+  if(opts.length){const host=el('div',{});box.append(host);let sel=0;
+    const draw=()=>{host.textContent='';const n=opts[sel],late=!n.virt&&n.due_date<today;
+      let seg=null;
+      if(opts.length>1){seg=el('div',{class:'mseg',role:'group','data-noi18n':'1'});
+        opts.forEach((o,k)=>{const b=el('button',{type:'button','aria-pressed':k===sel?'true':'false'},el('span',{},mlab(o)),el('small',{},'vence el '+o.due_date.slice(8,10)+'/'+o.due_date.slice(5,7)));
+          b.addEventListener('click',()=>{if(sel===k)return;sel=k;draw();});seg.append(b);});}
+      host.append(el('div',{class:'next'},el('small',{},late?'Overdue payment':'Next payment'),el('br'),el('b',{},money(n.amount,n.currency)),
+        el('span',{},' · due '+dt(n.due_date)+' '),el('span',{class:'pill '+(late?'bad':'wt')},late?'Overdue':'Open'),n.virt?null:promoBox(n),(function(){const dd=new Date(n.due_date+'T12:00:00'),st=new Date(dd);st.setMonth(st.getMonth()-1);const p=Math.max(0,Math.min(1,(Date.now()-st)/(dd-st)));return el('div',{class:'bar'},el('i',{style:'width:'+Math.round((late?1:p)*100)+'%'}));})(),seg,(n.sub_id&&subs.some(q=>q.id===n.sub_id))?payGrid(n):null));};
+    if(!open.length&&ch.length)box.insertBefore(el('div',{class:'next'},el('b',{},'All paid. Thank you!')),host);
+    draw();}
   else if(ch.length)box.append(el('div',{class:'next'},el('b',{},'All paid. Thank you!')));
   if(ch.length){const paid={};ch.forEach(x=>{if(x.paid_on)paid[x.currency]=(paid[x.currency]||0)+ +x.amount;});
     box.append(el('p',{class:'hint'},'Total paid so far: '+(Object.keys(paid).map(k=>money(paid[k],k)).join(' + ')||'—')));
