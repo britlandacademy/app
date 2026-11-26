@@ -2,6 +2,7 @@
    Newest first. Written for students (no technical terms). Each entry: v, d [pt, es], t [pt, es] short title, p [pt, es] one sentence,
    show:1 = also shown once in the "O que há de novo" notice after the update (use ONLY when the teacher marks a version as important; none is marked by default), c:'en'|'es' = only that course (omit = both). */
 window.BL_RELEASES=[
+{v:'2.0.156',d:['26 de novembro','26 de noviembre'],t:['Correção de bugs','Corrección de errores'],p:['',''],c:'en'},
 {v:'2.0.154',d:['26 de novembro','26 de noviembre'],t:['Confirmação das aulas da semana','Confirmación de las clases de la semana'],p:['Toda semana você recebe no WhatsApp os dias e horários das aulas da semana seguinte, no seu fuso, para confirmar.','Cada semana recibes por WhatsApp los días y horarios de las clases de la semana siguiente, en tu huso horario, para confirmar.']},
 {v:'2.0.153',d:['25 de novembro','25 de noviembre'],t:['Contrato por e-mail da escola','Contrato por correo de la escuela'],p:['O convite para assinar o contrato chega por e-mail da Britland, com um botão para ler e assinar em um minuto.','La invitación para firmar el contrato llega por correo de Britland, con un botón para leer y firmar en un minuto.']},
 {v:'2.0.152',d:['25 de novembro','25 de noviembre'],t:['Mensalidade por e-mail','Mensualidad por correo'],p:['Você recebe a mensalidade por e-mail alguns dias antes do vencimento e o recibo assim que o pagamento é confirmado.','Recibes la mensualidad por correo unos días antes del vencimiento y el recibo en cuanto se confirma el pago.']},
