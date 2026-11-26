@@ -1,5 +1,7 @@
 // contract-send: gera o PDF do contrato e envia ao Autentique (aluno + escola assinam).
-// Chamada pelo painel (admin logado). Segredos: AUTENTIQUE_TOKEN, SCHOOL_EMAIL, SCHOOL_NAME, AUTENTIQUE_SANDBOX (opcional "1")
+// Chamada pelo painel (admin logado). Segredos: AUTENTIQUE_TOKEN, SCHOOL_EMAIL, SCHOOL_NAME, AUTENTIQUE_SANDBOX (opcional "1"),
+// SMTP_USER, SMTP_PASS (Gmail da escola). O aluno entra no Autentique so por link (DELIVERY_METHOD_LINK) e o convite
+// sai da escola, de contact@ (modelo A "Boas-vindas"); MAIL_FROM_CONTACT troca o remetente, se precisar.
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { PDFDocument, StandardFonts, rgb } from "npm:pdf-lib@1.17.1";
 
@@ -30,6 +32,29 @@ function fill(body: string, v: Record<string, string>) {
   return body.replace(/\{\{(\w+)\}\}/g, (_, k) => (v[k] ?? `{{${k}}}`));
 }
 const clean = (s: string) => s.replace(/[^\x09\x0A\x0D\x20-\x7E -ÿ€–—‘’“”•]/g, "?");
+
+/* ---------- e-mail do contrato (modelo A "Boas-vindas", mesmo visual da mensalidade) ---------- */
+const SITE_LOGO = Deno.env.get("SUPABASE_URL") + "/storage/v1/object/public/pix-qr/brand/britland-shield-v1.png";
+const esc = (x: unknown) => String(x ?? "").replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]!));
+function contractMail(first: string, link: string, es: boolean) {
+  const n = esc(first);
+  const T = es
+    ? { sub: "Tu contrato con Britland Academy", h: `¡Bienvenido a Britland, ${n}!`, e: "Tu contrato está listo.", p1: "Preparamos el contrato de prestación de servicios educativos con todo lo que acordamos: curso, plan, valor y fecha de inicio.", p2: "Solo tienes que leerlo con calma y firmarlo en el móvil o en el ordenador. Tarda cerca de un minuto.", b: "Leer y firmar el contrato", note: "La firma es electrónica, hecha por Autentique, y tiene validez jurídica. Cuando las dos partes firmen, recibirás la copia firmada en PDF.", sig: "Secretaría · Inglés y español 100% online" }
+    : { sub: "Seu contrato com a Britland Academy", h: `Bem-vindo à Britland, ${n}!`, e: "Seu contrato está pronto.", p1: "Preparamos o contrato de prestação de serviços educacionais com tudo o que combinamos: curso, plano, valor e data de início.", p2: "É só ler com calma e assinar pelo celular ou computador. Leva cerca de um minuto.", b: "Ler e assinar o contrato", note: "A assinatura é eletrônica, feita pelo Autentique, e tem validade jurídica. Depois que as duas partes assinarem, você recebe a cópia assinada em PDF.", sig: "Secretaria · Inglês e espanhol 100% online" };
+  const L = esc(link);
+  const html = `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#EFE9D9"><tr><td align="center" style="padding:20px 10px"><table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" bgcolor="#FAF8F3" style="width:100%;max-width:560px;border-radius:6px;overflow:hidden"><tr><td bgcolor="#0B1733" style="padding:22px 30px;border-bottom:4px solid #C9A13B"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right:14px"><img src="${SITE_LOGO}" width="48" alt="Britland Academy" style="display:block;border:0"></td><td style="font-family:Georgia,serif;color:#F2F5FA"><div style="font-size:21px;font-weight:bold;letter-spacing:2px">BRITLAND</div><div style="font-family:Arial,sans-serif;font-size:10px;letter-spacing:5px;color:#EC4654;font-weight:bold">ACADEMY</div></td></tr></table></td></tr><tr><td style="padding:30px 30px 8px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#17202F"><div style="font-family:Georgia,serif;font-size:26px;line-height:1.2;font-weight:bold;color:#0B1733;margin:0 0 6px">${T.h}</div><div style="font-family:Georgia,serif;font-style:italic;font-size:16px;color:#B3202A;margin:0 0 18px">${T.e}</div><p style="margin:0 0 14px">${T.p1}</p><p style="margin:0 0 20px">${T.p2}</p><div style="text-align:center;margin:0 0 22px"><a href="${L}" style="display:inline-block;background:#C9A13B;color:#0B1733;font-family:Arial,sans-serif;font-weight:bold;font-size:15px;text-decoration:none;padding:13px 28px;border-radius:999px">${T.b}</a></div><p style="margin:0 0 6px;font-size:13px;color:#5A6577">${T.note}</p></td></tr><tr><td style="padding:14px 30px 26px;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#17202F"><div style="border-top:1px solid #d9d2bf;padding-top:14px"><div style="font-family:Georgia,serif;font-weight:bold;font-size:16px;color:#0B1733">Britland Academy</div><div style="color:#5A6577">${T.sig}</div></div></td></tr><tr><td bgcolor="#0B1733" style="padding:14px 30px;font-family:Arial,sans-serif;font-size:11px;line-height:1.5;color:#B4BFD6;text-align:center">Britland Academy · Cruz e Trento Cursos de Idiomas · Franca, SP</td></tr></table></td></tr></table>`;
+  const text = `${T.h}\n${T.e}\n\n${T.p1}\n${T.p2}\n\n${T.b}: ${link}\n\n${T.note}\n\nBritland Academy · ${es ? "Secretaría" : "Secretaria"}`;
+  return { subject: T.sub, html, text };
+}
+async function sendContractMail(to: string, first: string, link: string, es: boolean) {
+  const pass = (Deno.env.get("SMTP_PASS") || "").replace(/\s/g, ""), user = Deno.env.get("SMTP_USER");
+  if (!pass || !user) throw new Error("sem SMTP_PASS");
+  const { SMTPClient } = await import("https://deno.land/x/denomailer@1.6.0/mod.ts");
+  const client = new SMTPClient({ connection: { hostname: "smtp.gmail.com", port: 465, tls: true, auth: { username: user, password: pass } } });
+  const m = contractMail(first, link, es);
+  try { await client.send({ from: Deno.env.get("MAIL_FROM_CONTACT") || "Britland Academy <contact@britlandacademy.co.uk>", to, subject: m.subject, content: m.text, html: m.html }); }
+  finally { try { await client.close(); } catch (_e) { /* ignora */ } }
+}
 
 async function makePdf(text: string, title: string) {
   const pdf = await PDFDocument.create();
@@ -70,6 +95,16 @@ Deno.serve(async (req) => {
     if (!me?.is_admin) return json({ ok: false, error: "forbidden" }, 403);
 
     const body = await req.json().catch(() => ({}));
+    // teste: manda o convite (PT e ES) so para o e-mail do proprio admin, sem criar documento no Autentique
+    if (body.test) {
+      const to = u.user.email || "";
+      const out: Record<string, string> = {};
+      for (const es of [false, true]) {
+        try { await sendContractMail(to, "Paulo", "https://assina.ae/exemplo", es); out[es ? "es" : "pt"] = "sent"; }
+        catch (e) { out[es ? "es" : "pt"] = "erro: " + String((e as Error).message).slice(0, 160); }
+      }
+      return json({ ok: true, test: true, to, from: Deno.env.get("MAIL_FROM_CONTACT") || "Britland Academy <contact@britlandacademy.co.uk>", out });
+    }
     const uid = String(body.user_id || "");
     if (!uid) return json({ ok: false, error: "user_id" }, 400);
 
@@ -111,12 +146,12 @@ Deno.serve(async (req) => {
     if (!token) return json({ ok: false, error: "no_autentique_token" });
     const schoolEmail = Deno.env.get("SCHOOL_EMAIL") || "";
     const schoolName = Deno.env.get("SCHOOL_NAME") || "Paulo Sérgio Cruz";
-    const signers: Record<string, string>[] = [{ email, name: nome, action: "SIGN" }];
+    const signers: Record<string, string>[] = [{ name: nome, action: "SIGN", delivery_method: "DELIVERY_METHOD_LINK" }]; // aluno: so o link; o e-mail sai da escola
     if (schoolEmail) signers.push({ email: schoolEmail, name: schoolName, action: "SIGN" });
     const sandbox = Deno.env.get("AUTENTIQUE_SANDBOX") === "1";
     const query = `mutation($document: DocumentInput!, $signers: [SignerInput!]!, $file: Upload!) {
       createDocument(document: $document, signers: $signers, file: $file${sandbox ? ", sandbox: true" : ""}) {
-        id signatures { public_id email link { short_link } } } }`;
+        id signatures { public_id name email link { short_link } } } }`;
     const fd = new FormData();
     fd.append("operations", JSON.stringify({ query, variables: { document: { name: `Contrato - ${nome}` }, signers, file: null } }));
     fd.append("map", JSON.stringify({ file: ["variables.file"] }));
@@ -129,12 +164,21 @@ Deno.serve(async (req) => {
       await db.from("contracts").update({ status: "error", error: msg, updated_at: new Date().toISOString() }).eq("user_id", uid);
       return json({ ok: false, error: "autentique", detail: msg });
     }
-    const mine = (doc.signatures || []).find((s: { email: string }) => s.email === email);
+    const sigs = (doc.signatures || []) as { email?: string; name?: string; link?: { short_link?: string } }[];
+    // aluno = a assinatura sem e-mail (entrou por link); o dono da conta Autentique tambem pode aparecer na lista
+    const mine = sigs.find((s) => !s.email && s.link?.short_link) || sigs.find((s) => s.name === nome && s.link?.short_link);
+    const link = mine?.link?.short_link || null;
+    // convite ao aluno, saindo de contact@ (se falhar, o painel ainda tem o botao "Copiar link do aluno")
+    let mail: string | null = null;
+    if (link) {
+      try { await sendContractMail(email, nome.split(/\s+/)[0], link, (p?.course || c.course || "") === "es" || /espa/i.test(String(c.course || ""))); mail = "sent"; }
+      catch (e) { mail = "erro: " + String((e as Error).message).slice(0, 120); }
+    } else mail = "sem link";
     await db.from("contracts").update({
-      status: "sent", doc_id: doc.id, sign_link: mine?.link?.short_link || null, error: null,
+      status: "sent", doc_id: doc.id, sign_link: link, error: mail === "sent" ? null : "e-mail ao aluno: " + mail,
       sent_at: new Date().toISOString(), updated_at: new Date().toISOString(),
     }).eq("user_id", uid);
-    return json({ ok: true, doc_id: doc.id });
+    return json({ ok: true, doc_id: doc.id, mail });
   } catch (e) {
     return json({ ok: false, error: "exception", detail: String(e).slice(0, 300) }, 500);
   }
