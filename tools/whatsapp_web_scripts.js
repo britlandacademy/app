@@ -109,26 +109,46 @@ function ExecuteScript() {
    LEITURA: os arquivos de "ler" tem {key, group, marks[]}; o fluxo usa os scripts 1 e 2 (busca e abre o grupo) e depois o 6 abaixo,
    e grava o retorno (texto JSON) em "respostas" com o mesmo nome do arquivo. */
 
-/* 6) Le as mensagens que chegaram depois da ultima confirmacao semanal (saida: Lidas -> JSON) */
+/* 6) Le as mensagens que chegaram depois da ultima confirmacao semanal (saida: Lidas -> JSON)
+   Nao depende das classes do WhatsApp Web (.message-in/out mudam): usa os blocos [data-pre-plain-text].
+   Direcao: data-id true_/false_ > classe message-out/in > icone de status (msg-*) > lado da tela. */
 function ExecuteScript() {
   var d = %Conteudo%;
   var g = d.group, marks = d.marks || [];
-  var hd = document.querySelector('#main header');
-  var nm = hd ? ((hd.innerText || '').split('\n').filter(function (x) { return x.trim(); })[0] || '').trim() : '';
-  if (!(nm === g || nm.indexOf(g) === 0)) return JSON.stringify({ key: d.key, ok: false, error: 'CHAT:' + nm });
-  var els = document.querySelectorAll('#main .message-in, #main .message-out');
-  var list = [], norm = function (s) { return String(s || '').replace(/\s+/g, ' ').trim().toLowerCase(); };
-  for (var i = 0; i < els.length; i++) {
-    var e = els[i], c = e.querySelector('.copyable-text'), pre = c ? (c.getAttribute('data-pre-plain-text') || '') : '';
-    var tx = e.querySelector('.selectable-text');
-    var text = tx ? tx.innerText : (c ? c.innerText : '');
-    if (!text) { var im = e.querySelector('img[alt]'); text = im ? im.getAttribute('alt') : ''; }
-    list.push({ dir: e.classList.contains('message-in') ? 'in' : 'out', who: pre.replace(/^\[[^\]]*\]\s*/, '').replace(/:\s*$/, ''), at: (pre.match(/^\[([^\]]*)\]/) || [])[1] || '', text: text || '' });
+  var main = document.querySelector('#main');
+  var hd = main ? main.querySelector('header') : null;
+  var ls = hd ? (hd.innerText || '').split(/\r?\n/).map(function (s) { return s.trim(); }).filter(function (s) { return s; }) : [];
+  var nm = ls[0] || '';
+  if (!(nm === g || nm.indexOf(g) === 0)) return JSON.stringify({ key: d.key, ok: false, error: 'CHAT:' + nm.slice(0, 40) });
+  var norm = function (s) { return String(s || '').replace(/\s+/g, ' ').trim().toLowerCase(); };
+  var mr = main.getBoundingClientRect();
+  var cs = main.querySelectorAll('[data-pre-plain-text]');
+  var list = [];
+  for (var i = 0; i < cs.length; i++) {
+    var c = cs[i];
+    if (c.parentElement && c.parentElement.closest('[data-pre-plain-text]')) continue;
+    var row = c.closest('[role="row"]') || c.closest('[data-id]') || c.parentElement;
+    var id = '', di = c.closest('[data-id]');
+    if (di) id = di.getAttribute('data-id') || '';
+    var out;
+    if (/^true_/.test(id)) out = true;
+    else if (/^false_/.test(id)) out = false;
+    else if (c.closest('.message-out')) out = true;
+    else if (c.closest('.message-in')) out = false;
+    else if (row && row.querySelector('[data-icon^="msg-"],[data-icon*="check"],[data-icon="msg-time"]')) out = true;
+    else { var r = c.getBoundingClientRect(); out = (r.left - mr.left) > (mr.right - r.right); }
+    var pre = c.getAttribute('data-pre-plain-text') || '';
+    var tx = c.querySelector('.selectable-text');
+    var text = tx ? tx.innerText : c.innerText;
+    list.push({ dir: out ? 'out' : 'in', who: pre.replace(/^\[[^\]]*\]\s*/, '').replace(/:\s*$/, ''), at: (pre.match(/^\[([^\]]*)\]/) || [])[1] || '', text: text || '', all: norm(c.innerText) });
   }
-  /* a confirmacao desta semana e a ULTIMA mensagem enviada que contem marks[0]; tudo que veio depois dela conta (lembrete e agradecimento sao ignorados por serem "out") */
-  var last = -1;
-  for (var j = list.length - 1; j >= 0; j--) if (list[j].dir === 'out' && marks[0] && norm(list[j].text).indexOf(norm(marks[0])) >= 0) { last = j; break; }
-  if (last < 0) return JSON.stringify({ key: d.key, ok: false, error: 'SEM_MENSAGEM_SEMANAL' });
-  var firstIdx = last;
-  return JSON.stringify({ key: d.key, ok: true, msgs: list.slice(firstIdx + 1).filter(function (x) { return x.text; }) });
+  /* a confirmacao desta semana e a ULTIMA mensagem que contem o inicio de marks[0]; tudo que veio depois dela conta */
+  var last = -1, m0 = norm(marks[0]).slice(0, 25);
+  for (var j = list.length - 1; j >= 0; j--) { if (m0 && list[j].all.indexOf(m0) >= 0) { last = j; break; } }
+  if (last < 0) {
+    var rows = main.querySelectorAll('[role="row"]').length, ids = main.querySelectorAll('[data-id]').length, sel = main.querySelectorAll('.selectable-text').length;
+    return JSON.stringify({ key: d.key, ok: false, error: 'SEM_MENSAGEM_SEMANAL:pre=' + cs.length + ',rows=' + rows + ',ids=' + ids + ',sel=' + sel + ':' + list.slice(-2).map(function (x) { return x.dir + '>' + x.all.slice(0, 40); }).join('|') });
+  }
+  var res = list.slice(last + 1).filter(function (x) { return x.text; }).map(function (x) { return { dir: x.dir, who: x.who, at: x.at, text: x.text }; });
+  return JSON.stringify({ key: d.key, ok: true, msgs: res });
 }

@@ -228,7 +228,11 @@ async function replies(b: any) {
   await db.from("weekly_confirm_reads").update({ status: b.error ? "error" : "done", done_at: new Date().toISOString() }).eq("id", id);
   const { data: c } = await db.from("weekly_confirm").select("*").eq("id", rd.confirm_id).maybeSingle();
   if (!c || b.error) return { ok: true, error: b.error || null };
-  const ins = (b.msgs || []).filter((m: any) => m && m.dir === "in" && String(m.text || "").trim()).map((m: any) => String(m.text).trim());
+  // no grupo de teste o professor responde do proprio numero (mensagem "out"); ignora so os textos automaticos
+  const { data: md } = await db.from("teacher_cfg").select("value").eq("key", "weekly_mode").maybeSingle();
+  const isTest = !!md?.value?.test_group && c.target === md.value.test_group;
+  const auto = new Set([thanksText("en"), thanksText("es")]);
+  const ins = (b.msgs || []).filter((m: any) => m && (m.dir === "in" || (isTest && !auto.has(String(m.text || "").trim()))) && String(m.text || "").trim()).map((m: any) => String(m.text).trim());
   if (!ins.length) return { ok: true, replies: 0 };
   const all = ins.join("\n");
   if (c.reply_text && c.reply_text === all) return { ok: true, same: true };
